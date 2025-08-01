@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "347784301575",
+    "project_id": "ebidan-91a0e",
+    "storage_bucket": "ebidan-91a0e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:347784301575:android:506c51c13ed7a7f05ceea2",
+        "android_client_info": {
+          "package_name": "id.ebidan.aos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "347784301575-5p4da7ubhuho5avn8cad4if895debbut.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdzRWxjluHXfnWRktMn-K4oC-O2aH6B9I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "347784301575-5p4da7ubhuho5avn8cad4if895debbut.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "347784301575-rr0pgmi2sg52nnpa9960074n8bk7sa70.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "id.ebidan.ios"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
