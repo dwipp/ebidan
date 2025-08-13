@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -65,9 +66,12 @@ class _RegisterState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate() || _selectedPuskesmasRef == null) {
       return;
     }
+    if (user == null) {
+      return;
+    }
     setState(() => _isSubmitting = true);
 
-    await _firestore.collection('bidan').add({
+    await _firestore.collection('bidan').doc(user!.uid).set({
       'nama': _namaController.text,
       'nip': _nipController.text,
       'no_hp': _noHpController.text,
@@ -93,8 +97,9 @@ class _RegisterState extends State<RegisterScreen> {
         content: const Text('Bidan berhasil diregistrasi'),
         actions: [
           TextButton(
-            onPressed: () =>
-                Navigator.popUntil(context, (route) => route.isFirst),
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed(AppRouter.homepage);
+            },
             child: const Text('OK'),
           ),
         ],
