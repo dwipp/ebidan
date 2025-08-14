@@ -21,14 +21,10 @@ class _RegisterState extends State<RegisterScreen> {
   final _noHpController = TextEditingController();
   final _emailController = TextEditingController();
   final _desaController = TextEditingController();
-  final _kecamatanController = TextEditingController();
-  final _kabupatenController = TextEditingController();
-  final _provinsiController = TextEditingController();
 
   // Dropdown & Autocomplete
   String _role = 'bidan';
-  String? _selectedPuskesmasName;
-  DocumentReference? _selectedPuskesmasRef;
+  Map<String, dynamic>? _selectedPuskesmas;
 
   bool _isSubmitting = false;
 
@@ -54,16 +50,18 @@ class _RegisterState extends State<RegisterScreen> {
     // print("query: $kataKunci");
     final snapshot = await FirebaseFirestore.instance
         .collection('puskesmas')
-        .where('search', arrayContainsAny: kataKunci)
+        .where('keywords', arrayContainsAny: kataKunci)
         .get();
     // print('result: ${snapshot.docs}');
-    return snapshot.docs
-        .map((doc) => {'nama': doc['nama'], 'ref': doc.reference})
-        .toList();
+    return snapshot.docs.map((doc) {
+      final data = doc.data(); // semua field
+      data['ref'] = doc.reference; // tambahkan reference juga jika perlu
+      return data;
+    }).toList();
   }
 
   Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate() || _selectedPuskesmasRef == null) {
+    if (!_formKey.currentState!.validate() || _selectedPuskesmas == null) {
       return;
     }
     if (user == null) {
@@ -78,14 +76,11 @@ class _RegisterState extends State<RegisterScreen> {
       'email': _emailController.text,
       'role': _role,
       'created_at': FieldValue.serverTimestamp(),
-      'puskesmas': _selectedPuskesmasName,
-      'id_puskesmas': _selectedPuskesmasRef,
-      'wilayah': {
-        'desa': _desaController.text,
-        'kecamatan': _kecamatanController.text,
-        'kabupaten': _kabupatenController.text,
-        'provinsi': _provinsiController.text,
-      },
+      'puskesmas': _selectedPuskesmas?['nama'],
+      'id_puskesmas': _selectedPuskesmas?['ref'],
+      'active': true,
+      'premium': false,
+      'desa': _desaController.text,
     });
 
     setState(() => _isSubmitting = false);
@@ -224,8 +219,7 @@ class _RegisterState extends State<RegisterScreen> {
                     },
                     onSelected: (option) {
                       setState(() {
-                        _selectedPuskesmasName = option['nama'];
-                        _selectedPuskesmasRef = option['ref'];
+                        _selectedPuskesmas = option;
                       });
                     },
                     fieldViewBuilder: (context, controller, focusNode, _) {
@@ -236,33 +230,18 @@ class _RegisterState extends State<RegisterScreen> {
                           labelText: 'Cari Puskesmas',
                           prefixIcon: Icon(Icons.local_hospital),
                         ),
-                        validator: (_) => _selectedPuskesmasRef == null
+                        validator: (_) => _selectedPuskesmas == null
                             ? 'Pilih puskesmas'
                             : null,
                       );
                     },
                   ),
 
-                  const SizedBox(height: 16),
-                  _buildSectionTitle('Wilayah'),
+                  const SizedBox(height: 12),
+                  // _buildSectionTitle('Wilayah'),
                   TextFormField(
                     controller: _desaController,
                     decoration: const InputDecoration(labelText: 'Desa'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _kecamatanController,
-                    decoration: const InputDecoration(labelText: 'Kecamatan'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _kabupatenController,
-                    decoration: const InputDecoration(labelText: 'Kabupaten'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _provinsiController,
-                    decoration: const InputDecoration(labelText: 'Provinsi'),
                   ),
 
                   const SizedBox(height: 24),
