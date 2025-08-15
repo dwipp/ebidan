@@ -59,26 +59,36 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
       }
     }
 
-    try {
-      await docRef.update({'riwayat': riwayatMap});
+    if (riwayatMap.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Data bumil di simpan tanpa riwayat kehamilan'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.of(context).pushReplacementNamed(AppRouter.homepage);
+    } else {
+      try {
+        await docRef.update({'riwayat': riwayatMap});
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Riwayat berhasil disimpan'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.of(context).pushReplacementNamed(AppRouter.homepage);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal menyimpan riwayat: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Riwayat berhasil disimpan'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.of(context).pushReplacementNamed(AppRouter.homepage);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Gagal menyimpan riwayat: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }
@@ -174,15 +184,45 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
                   ),
                 );
               }),
-              ElevatedButton.icon(
-                onPressed: _addRiwayat,
-                icon: const Icon(Icons.add),
-                label: const Text('Tambah Riwayat'),
+              // ElevatedButton.icon(
+              //   onPressed: _addRiwayat,
+              //   icon: const Icon(Icons.add),
+              //   label: const Text('Tambah Riwayat'),
+              // ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _addRiwayat,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Tambah Riwayat'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _submitData,
-                child: const Text('Simpan'),
+              // ElevatedButton(
+              //   onPressed: _submitData,
+              //   child: const Text('Simpan'),
+              // ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _submitData,
+                  icon: const Icon(Icons.save),
+                  label: const Text('Simpan'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
               ),
             ],
           ),

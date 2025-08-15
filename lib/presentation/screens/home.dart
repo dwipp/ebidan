@@ -92,7 +92,7 @@ class HomeScreen extends StatelessWidget {
                 child: Text("Tambah Bumil"),
               ),
               onTap: () {
-                Navigator.of(context).pushReplacementNamed(AppRouter.addBumil);
+                Navigator.of(context).pushNamed(AppRouter.addBumil);
               },
             ),
           ),
