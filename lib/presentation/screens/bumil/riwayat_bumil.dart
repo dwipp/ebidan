@@ -13,6 +13,21 @@ class RiwayatBumilScreen extends StatefulWidget {
 class _RiwayatBumilState extends State<RiwayatBumilScreen> {
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> riwayatList = [];
+
+  final List<String> statusBayiList = ['Hidup', 'Mati', 'Abortus'];
+
+  final List<String> statusKehamilanList = ['Aterm', 'Preterm', 'Postterm'];
+
+  final List<String> penolongList = [
+    'Dukun Kampung',
+    'Tenaga Kesehatan',
+    'Lainnya',
+  ];
+
+  final List<String> tempatList = ['Rumah', 'RS', 'Jalan', 'Lainnya'];
+
+  final List<String> statusLahirList = ['Spontan', 'SC', 'Lainnya'];
+
   void _addRiwayat() {
     setState(() {
       riwayatList.add({
@@ -147,30 +162,120 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
                           icon: Icons.straighten,
                           onSaved: (val) => data['panjang_bayi'] = val,
                         ),
-                        _buildTextField(
-                          label: 'Penolong',
-                          icon: Icons.person,
-                          onSaved: (val) => data['penolong'] = val,
+                        DropdownButtonFormField<String>(
+                          value: data['penolong'].isNotEmpty
+                              ? data['penolong']
+                              : null,
+                          decoration: const InputDecoration(
+                            labelText: 'Penolong',
+                            prefixIcon: Icon(Icons.person),
+                          ),
+                          items: penolongList.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              data['penolong'] = newValue ?? '';
+                            });
+                          },
+                          validator: (val) => val == null || val.isEmpty
+                              ? 'Wajib dipilih'
+                              : null,
                         ),
-                        _buildTextField(
-                          label: 'Status Bayi',
-                          icon: Icons.child_care,
-                          onSaved: (val) => data['status_bayi'] = val,
+                        DropdownButtonFormField<String>(
+                          value: data['status_bayi'].isNotEmpty
+                              ? data['status_bayi']
+                              : null,
+                          decoration: const InputDecoration(
+                            labelText: 'Status Bayi',
+                            prefixIcon: Icon(Icons.child_care),
+                          ),
+                          items: statusBayiList.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              data['status_bayi'] = newValue ?? '';
+                            });
+                          },
+                          validator: (val) => val == null || val.isEmpty
+                              ? 'Wajib dipilih'
+                              : null,
                         ),
-                        _buildTextField(
-                          label: 'Status Lahir',
-                          icon: Icons.pregnant_woman,
-                          onSaved: (val) => data['status_lahir'] = val,
+                        DropdownButtonFormField<String>(
+                          value: data['status_lahir'].isNotEmpty
+                              ? data['status_lahir']
+                              : null,
+                          decoration: const InputDecoration(
+                            labelText: 'Status Lahir',
+                            prefixIcon: Icon(Icons.pregnant_woman),
+                          ),
+                          items: statusLahirList.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              data['status_lahir'] = newValue ?? '';
+                            });
+                          },
+                          validator: (val) => val == null || val.isEmpty
+                              ? 'Wajib dipilih'
+                              : null,
                         ),
-                        _buildTextField(
-                          label: 'Status Term',
-                          icon: Icons.date_range,
-                          onSaved: (val) => data['status_term'] = val,
+                        DropdownButtonFormField<String>(
+                          value: data['status_term'].isNotEmpty
+                              ? data['status_term']
+                              : null,
+                          decoration: const InputDecoration(
+                            labelText: 'Status Kehamilan',
+                            prefixIcon: Icon(Icons.date_range),
+                          ),
+                          items: statusKehamilanList.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              data['status_term'] = newValue ?? '';
+                            });
+                          },
+                          validator: (val) => val == null || val.isEmpty
+                              ? 'Wajib dipilih'
+                              : null,
                         ),
-                        _buildTextField(
-                          label: 'Tempat',
-                          icon: Icons.home,
-                          onSaved: (val) => data['tempat'] = val,
+                        DropdownButtonFormField<String>(
+                          value: data['tempat'].isNotEmpty
+                              ? data['tempat']
+                              : null,
+                          decoration: const InputDecoration(
+                            labelText: 'Tempat Persalinan',
+                            prefixIcon: Icon(Icons.home),
+                          ),
+                          items: tempatList.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              data['tempat'] = newValue ?? '';
+                            });
+                          },
+                          validator: (val) => val == null || val.isEmpty
+                              ? 'Wajib dipilih'
+                              : null,
                         ),
                         Align(
                           alignment: Alignment.centerRight,
@@ -235,7 +340,7 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
     required BuildContext context,
     required String label,
     required IconData icon,
-    required String initialYear, // ubah ke String
+    required String initialYear,
     required Function(String) onSaved,
   }) {
     final controller = TextEditingController(text: initialYear);
@@ -247,49 +352,73 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
       validator: (val) => val == null || val.isEmpty ? 'Wajib diisi' : null,
       onTap: () async {
         final currentYear = DateTime.now().year;
-        int selectedYear = initialYear.isNotEmpty
+        const minYear = 1900;
+        int tempSelectedYear = initialYear.isNotEmpty
             ? int.tryParse(initialYear) ?? currentYear
             : currentYear;
 
         await showDialog(
           context: context,
           builder: (context) {
-            return AlertDialog(
-              title: const Text('Pilih Tahun'),
-              content: SizedBox(
-                height: 200,
-                child: ListWheelScrollView.useDelegate(
-                  itemExtent: 50,
-                  onSelectedItemChanged: (index) {
-                    selectedYear = currentYear - index;
-                  },
-                  childDelegate: ListWheelChildBuilderDelegate(
-                    builder: (context, index) {
-                      final year = currentYear - index;
-                      return Center(
-                        child: Text(
-                          '$year',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      );
-                    },
+            return StatefulBuilder(
+              builder: (context, setStateDialog) {
+                return AlertDialog(
+                  title: const Text('Pilih Tahun'),
+                  content: SizedBox(
+                    height: 200,
+                    child: ListWheelScrollView.useDelegate(
+                      itemExtent: 50,
+                      onSelectedItemChanged: (index) {
+                        setStateDialog(() {
+                          tempSelectedYear = currentYear - index;
+                        });
+                      },
+                      physics: const FixedExtentScrollPhysics(),
+                      childDelegate: ListWheelChildBuilderDelegate(
+                        childCount: currentYear - minYear + 1, // Batas tahun
+                        builder: (context, index) {
+                          final year = currentYear - index;
+                          final isSelected = year == tempSelectedYear;
+
+                          return Container(
+                            decoration: isSelected
+                                ? BoxDecoration(
+                                    color: Colors.blue.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(8),
+                                  )
+                                : null,
+                            alignment: Alignment.center,
+                            child: Text(
+                              '$year',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: isSelected ? Colors.blue : Colors.black,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Batal'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    controller.text = selectedYear.toString();
-                    onSaved(selectedYear.toString());
-                  },
-                  child: const Text('Pilih'),
-                ),
-              ],
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Batal'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        controller.text = tempSelectedYear.toString();
+                        onSaved(tempSelectedYear.toString());
+                      },
+                      child: const Text('Pilih'),
+                    ),
+                  ],
+                );
+              },
             );
           },
         );
