@@ -1,3 +1,4 @@
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -88,10 +89,10 @@ class HomeScreen extends StatelessWidget {
             child: InkWell(
               child: Container(
                 color: Colors.teal[200],
-                child: Text("Clickable"),
+                child: Text("Tambah Bumil"),
               ),
               onTap: () {
-                print('test');
+                Navigator.of(context).pushReplacementNamed(AppRouter.addBumil);
               },
             ),
           ),
