@@ -14,19 +14,27 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> riwayatList = [];
 
+  List<bool> showPenolongLainnyaList = [];
   final List<String> statusBayiList = ['Hidup', 'Mati', 'Abortus'];
 
   final List<String> statusKehamilanList = ['Aterm', 'Preterm', 'Postterm'];
 
   final List<String> penolongList = [
     'Dukun Kampung',
-    'Tenaga Kesehatan',
+    'Dokter',
+    'Bidan',
     'Lainnya',
   ];
 
-  final List<String> tempatList = ['Rumah', 'RS', 'Jalan', 'Lainnya'];
+  final List<String> tempatList = [
+    'Rumah Sakit',
+    'Poskesdes',
+    'Polindes',
+    'Rumah',
+    'Jalan',
+  ];
 
-  final List<String> statusLahirList = ['Spontan', 'SC', 'Lainnya'];
+  final List<String> statusLahirList = ['Spontan', 'SC'];
 
   void _addRiwayat() {
     setState(() {
@@ -41,12 +49,14 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
         'status_term': '',
         'tempat': '',
       });
+      showPenolongLainnyaList.add(false);
     });
   }
 
   void _removeRiwayat(int index) {
     setState(() {
       riwayatList.removeAt(index);
+      showPenolongLainnyaList.removeAt(index);
     });
   }
 
@@ -112,10 +122,19 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
     required String label,
     required IconData icon,
     required Function(String) onSaved,
+    bool isNumber = false,
+    String? suffixText,
   }) {
     return TextFormField(
-      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
-      textCapitalization: TextCapitalization.sentences,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        suffixText: suffixText,
+      ),
+      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      textCapitalization: isNumber
+          ? TextCapitalization.none
+          : TextCapitalization.sentences,
       validator: (val) => val == null || val.isEmpty ? 'Wajib diisi' : null,
       onSaved: (val) => onSaved(val ?? ''),
     );
@@ -151,40 +170,17 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
                           label: 'Berat Bayi',
                           icon: Icons.monitor_weight,
                           onSaved: (val) => data['berat_bayi'] = val,
-                        ),
-                        _buildTextField(
-                          label: 'Komplikasi',
-                          icon: Icons.health_and_safety,
-                          onSaved: (val) => data['komplikasi'] = val,
+                          isNumber: true,
+                          suffixText: 'gram',
                         ),
                         _buildTextField(
                           label: 'Panjang Bayi',
                           icon: Icons.straighten,
                           onSaved: (val) => data['panjang_bayi'] = val,
+                          isNumber: true,
+                          suffixText: 'cm',
                         ),
-                        DropdownButtonFormField<String>(
-                          value: data['penolong'].isNotEmpty
-                              ? data['penolong']
-                              : null,
-                          decoration: const InputDecoration(
-                            labelText: 'Penolong',
-                            prefixIcon: Icon(Icons.person),
-                          ),
-                          items: penolongList.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (newValue) {
-                            setState(() {
-                              data['penolong'] = newValue ?? '';
-                            });
-                          },
-                          validator: (val) => val == null || val.isEmpty
-                              ? 'Wajib dipilih'
-                              : null,
-                        ),
+                        _buildPenolongField(data),
                         DropdownButtonFormField<String>(
                           value: data['status_bayi'].isNotEmpty
                               ? data['status_bayi']
@@ -289,11 +285,6 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
                   ),
                 );
               }),
-              // ElevatedButton.icon(
-              //   onPressed: _addRiwayat,
-              //   icon: const Icon(Icons.add),
-              //   label: const Text('Tambah Riwayat'),
-              // ),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
@@ -309,10 +300,6 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              // ElevatedButton(
-              //   onPressed: _submitData,
-              //   child: const Text('Simpan'),
-              // ),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
@@ -383,7 +370,7 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
                           return Container(
                             decoration: isSelected
                                 ? BoxDecoration(
-                                    color: Colors.blue.withOpacity(0.2),
+                                    color: Colors.blue.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(8),
                                   )
                                 : null,
@@ -423,6 +410,52 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
           },
         );
       },
+    );
+  }
+
+  Widget _buildPenolongField(Map<String, dynamic> data) {
+    bool isLainnya = data['penolong'] == 'Lainnya';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownButtonFormField<String>(
+          value: !isLainnya && data['penolong'].isNotEmpty
+              ? data['penolong']
+              : null,
+          decoration: const InputDecoration(
+            labelText: 'Penolong',
+            prefixIcon: Icon(Icons.person),
+          ),
+          items: penolongList.map((String value) {
+            return DropdownMenuItem<String>(value: value, child: Text(value));
+          }).toList(),
+          onChanged: (newValue) {
+            setState(() {
+              data['penolong'] = (newValue == 'Lainnya')
+                  ? 'Lainnya'
+                  : (newValue ?? '');
+            });
+          },
+          validator: (val) =>
+              (val == null || val.isEmpty) ? 'Wajib dipilih' : null,
+        ),
+        if (isLainnya) const SizedBox(height: 8),
+        if (isLainnya)
+          TextFormField(
+            decoration: const InputDecoration(
+              labelText: 'Penolong Lainnya',
+              prefixIcon: Icon(Icons.person_outline),
+            ),
+            onChanged: (val) => data['penolong'] = val,
+            validator: (val) {
+              if (isLainnya && (val == null || val.isEmpty)) {
+                return 'Wajib diisi';
+              }
+              return null;
+            },
+          ),
+      ],
     );
   }
 }
