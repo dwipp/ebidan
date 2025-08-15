@@ -14,7 +14,6 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> riwayatList = [];
 
-  List<bool> showPenolongLainnyaList = [];
   final List<String> statusBayiList = ['Hidup', 'Mati', 'Abortus'];
 
   final List<String> statusKehamilanList = ['Aterm', 'Preterm', 'Postterm'];
@@ -44,19 +43,18 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
         'komplikasi': '',
         'panjang_bayi': '',
         'penolong': '',
+        'penolongLainnya': '',
         'status_bayi': '',
         'status_lahir': '',
         'status_term': '',
         'tempat': '',
       });
-      showPenolongLainnyaList.add(false);
     });
   }
 
   void _removeRiwayat(int index) {
     setState(() {
       riwayatList.removeAt(index);
-      showPenolongLainnyaList.removeAt(index);
     });
   }
 
@@ -75,7 +73,9 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
           'berat_bayi': item['berat_bayi'],
           'komplikasi': item['komplikasi'],
           'panjang_bayi': item['panjang_bayi'],
-          'penolong': item['penolong'],
+          'penolong': item['penolong'] == 'Lainnya'
+              ? item['penolongLainnya']
+              : item['penolong'],
           'status_bayi': item['status_bayi'],
           'status_lahir': item['status_lahir'],
           'status_term': item['status_term'],
@@ -135,7 +135,6 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
       textCapitalization: isNumber
           ? TextCapitalization.none
           : TextCapitalization.sentences,
-      validator: (val) => val == null || val.isEmpty ? 'Wajib diisi' : null,
       onSaved: (val) => onSaved(val ?? ''),
     );
   }
@@ -272,6 +271,11 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
                           validator: (val) => val == null || val.isEmpty
                               ? 'Wajib dipilih'
                               : null,
+                        ),
+                        _buildTextField(
+                          label: 'Komplikasi',
+                          icon: Icons.local_hospital,
+                          onSaved: (val) => data['komplikasi'] = val,
                         ),
                         Align(
                           alignment: Alignment.centerRight,
@@ -414,15 +418,18 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
   }
 
   Widget _buildPenolongField(Map<String, dynamic> data) {
+    // Cek apakah user memilih "Lainnya"
     bool isLainnya = data['penolong'] == 'Lainnya';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownButtonFormField<String>(
-          value: !isLainnya && data['penolong'].isNotEmpty
+          value:
+              data['penolong'] != null &&
+                  penolongList.contains(data['penolong'])
               ? data['penolong']
-              : null,
+              : null, // hanya value yang ada di list
           decoration: const InputDecoration(
             labelText: 'Penolong',
             prefixIcon: Icon(Icons.person),
@@ -432,13 +439,15 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
           }).toList(),
           onChanged: (newValue) {
             setState(() {
-              data['penolong'] = (newValue == 'Lainnya')
-                  ? 'Lainnya'
-                  : (newValue ?? '');
+              data['penolong'] = newValue ?? '';
+              if (newValue == 'Lainnya') {
+                data['penolongLainnya'] = ''; // aktifkan field tambahan
+              } else {
+                data['penolongLainnya'] = null; // sembunyikan field tambahan
+              }
             });
           },
-          validator: (val) =>
-              (val == null || val.isEmpty) ? 'Wajib dipilih' : null,
+          validator: null, // dropdown tidak wajib
         ),
         if (isLainnya) const SizedBox(height: 8),
         if (isLainnya)
@@ -447,9 +456,9 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
               labelText: 'Penolong Lainnya',
               prefixIcon: Icon(Icons.person_outline),
             ),
-            onChanged: (val) => data['penolong'] = val,
+            onChanged: (val) => data['penolongLainnya'] = val,
             validator: (val) {
-              if (isLainnya && (val == null || val.isEmpty)) {
+              if (val == null || val.isEmpty) {
                 return 'Wajib diisi';
               }
               return null;
