@@ -1,4 +1,5 @@
 import 'package:ebidan/common/date_picker_field.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,10 +20,6 @@ class _AddBumilState extends State<AddBumilScreen> {
   final _namaSuamiController = TextEditingController();
   final _alamatController = TextEditingController();
   final _noHpController = TextEditingController();
-  final _agamaIbuController = TextEditingController();
-  final _agamaSuamiController = TextEditingController();
-  final _bloodIbuController = TextEditingController();
-  final _bloodSuamiController = TextEditingController();
   final _jobIbuController = TextEditingController();
   final _jobSuamiController = TextEditingController();
   final _nikIbuController = TextEditingController();
@@ -63,24 +60,6 @@ class _AddBumilState extends State<AddBumilScreen> {
     );
   }
 
-  Future<void> _pickDate(bool isIbu) async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(1990),
-      firstDate: DateTime(1960),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isIbu) {
-          _birthdateIbu = picked;
-        } else {
-          _birthdateSuami = picked;
-        }
-      });
-    }
-  }
-
   String? _validateNIK(String? val) {
     if (val == null || val.isEmpty) return 'Wajib diisi';
     if (!RegExp(r'^\d{16}$').hasMatch(val)) return 'Harus 16 digit angka';
@@ -99,11 +78,6 @@ class _AddBumilState extends State<AddBumilScreen> {
     return null;
   }
 
-  String? _validateBirthdate(DateTime? date) {
-    if (date == null) return 'Tanggal lahir wajib dipilih';
-    return null;
-  }
-
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSubmitting = true);
@@ -115,7 +89,7 @@ class _AddBumilState extends State<AddBumilScreen> {
     }
 
     try {
-      await FirebaseFirestore.instance.collection('bumil').add({
+      final docRef = await FirebaseFirestore.instance.collection('bumil').add({
         "nama_ibu": _namaIbuController.text.trim(),
         "nama_suami": _namaSuamiController.text.trim(),
         "alamat": _alamatController.text.trim(),
@@ -144,7 +118,12 @@ class _AddBumilState extends State<AddBumilScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Data Bumil berhasil disimpan')),
         );
-        // Navigator.pop(context);
+
+        Navigator.pushNamed(
+          context,
+          AppRouter.riwayatBumil,
+          arguments: {'bumilId': docRef.id},
+        );
       }
     } catch (e) {
       if (mounted) {
