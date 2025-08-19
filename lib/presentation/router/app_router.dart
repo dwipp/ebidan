@@ -1,5 +1,6 @@
 import 'package:ebidan/presentation/screens/bumil/riwayat_bumil.dart';
 import 'package:ebidan/presentation/screens/home.dart';
+import 'package:ebidan/presentation/screens/kunjungan/pilih_bumil.dart';
 import 'package:ebidan/presentation/screens/login.dart';
 import 'package:ebidan/presentation/screens/register.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class AppRouter {
   static const String register = '/register';
   static const String addBumil = '/addbumil';
   static const String riwayatBumil = '/riwayatbumil';
+  static const String pilihBumil = '/pilihbumil';
 
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
@@ -25,10 +27,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => RegisterScreen());
       case addBumil:
         return MaterialPageRoute(builder: (_) => AddBumilScreen());
-      // case riwayatBumil:
-      //   return MaterialPageRoute(
-      //     builder: (_) => RiwayatBumilScreen(bumilId: '123'),
-      //   );
+      case pilihBumil:
+        return MaterialPageRoute(builder: (_) => PilihBumilScreen());
       case riwayatBumil:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(

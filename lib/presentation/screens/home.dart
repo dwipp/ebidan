@@ -33,7 +33,7 @@ class HomeScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print("test");
+          Navigator.of(context).pushNamed(AppRouter.pilihBumil);
         },
         backgroundColor: Colors.lightBlue[100],
         child: Icon(Icons.add),
@@ -93,6 +93,12 @@ class HomeScreen extends StatelessWidget {
               ),
               onTap: () {
                 Navigator.of(context).pushNamed(AppRouter.addBumil);
+
+                // Navigator.pushNamed(
+                //   context,
+                //   AppRouter.riwayatBumil,
+                //   arguments: {'bumilId': '123'},
+                // );
               },
             ),
           ),
