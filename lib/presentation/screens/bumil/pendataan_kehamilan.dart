@@ -9,7 +9,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class PendataanKehamilanScreen extends StatefulWidget {
   final String bumilId;
-  const PendataanKehamilanScreen({super.key, required this.bumilId});
+  final int? latestHistoryYear;
+  const PendataanKehamilanScreen({
+    super.key,
+    required this.bumilId,
+    required this.latestHistoryYear,
+  });
 
   @override
   State<PendataanKehamilanScreen> createState() => _PendataanKehamilanState();
@@ -57,7 +62,9 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
   @override
   void initState() {
     super.initState();
-    _jarakKehamilan.text = '4 tahun'; // dummy
+    final jarakTahun =
+        DateTime.now().year - (widget.latestHistoryYear ?? DateTime.now().year);
+    _jarakKehamilan.text = jarakTahun == 0 ? '-' : '$jarakTahun tahun';
   }
 
   Future<void> _submitForm() async {

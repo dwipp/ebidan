@@ -66,10 +66,12 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
         .collection('bumil')
         .doc(widget.bumilId);
 
+    String? latestYear; // untuk simpan tahun terbaru
     Map<String, dynamic> riwayatMap = {};
     for (var item in riwayatList) {
       if (item['tahun'] != '') {
-        riwayatMap[item['tahun']] = {
+        String tahun = item['tahun'];
+        riwayatMap[tahun] = {
           'berat_bayi': item['berat_bayi'],
           'komplikasi': item['komplikasi'],
           'panjang_bayi': item['panjang_bayi'],
@@ -81,6 +83,11 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
           'status_term': item['status_term'],
           'tempat': item['tempat'],
         };
+
+        // cek apakah tahun lebih besar dari latest
+        if (latestYear == null || int.parse(tahun) > int.parse(latestYear)) {
+          latestYear = tahun;
+        }
       }
     }
 
@@ -95,7 +102,7 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
       Navigator.pushReplacementNamed(
         context,
         AppRouter.pendataanKehamilan,
-        arguments: {'bumilId': widget.bumilId},
+        arguments: {'bumilId': widget.bumilId, 'latestHistoryYear': null},
       );
     } else {
       try {
@@ -112,7 +119,10 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
           Navigator.pushReplacementNamed(
             context,
             AppRouter.pendataanKehamilan,
-            arguments: {'bumilId': widget.bumilId},
+            arguments: {
+              'bumilId': widget.bumilId,
+              'latestHistoryYear': latestYear,
+            },
           );
         }
       } catch (e) {

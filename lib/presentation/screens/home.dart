@@ -95,7 +95,10 @@ class HomeScreen extends StatelessWidget {
                 Navigator.pushReplacementNamed(
                   context,
                   AppRouter.pendataanKehamilan,
-                  arguments: {'bumilId': 'HUM71xYwMXuWb6Nastcx'},
+                  arguments: {
+                    'bumilId': 'HUM71xYwMXuWb6Nastcx',
+                    'latestHistoryYear': 2022,
+                  },
                 );
                 // Navigator.of(context).pushNamed(AppRouter.addBumil);
 
