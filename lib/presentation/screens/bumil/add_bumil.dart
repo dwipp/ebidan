@@ -119,7 +119,7 @@ class _AddBumilState extends State<AddBumilScreen> {
           const SnackBar(content: Text('Data Bumil berhasil disimpan')),
         );
 
-        Navigator.pushNamed(
+        Navigator.pushReplacementNamed(
           context,
           AppRouter.riwayatBumil,
           arguments: {'bumilId': docRef.id},
@@ -139,7 +139,10 @@ class _AddBumilState extends State<AddBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Tambah Data Bumil")),
+      appBar: AppBar(
+        title: const Text("Tambah Data Bumil"),
+        automaticallyImplyLeading: false,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

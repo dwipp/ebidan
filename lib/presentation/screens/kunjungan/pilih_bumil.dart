@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/logic/general/cubit/bumil_cubit.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,7 +12,18 @@ class PilihBumilScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     context.read<BumilCubit>().fetchData();
     return Scaffold(
-      appBar: AppBar(title: const Text('Data Bumil')),
+      appBar: AppBar(
+        title: const Text('Data Bumil'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
+            onPressed: () {
+              // print('tambah bumil');
+              Navigator.of(context).pushNamed(AppRouter.addBumil);
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(

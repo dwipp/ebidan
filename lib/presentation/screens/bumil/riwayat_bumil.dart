@@ -91,7 +91,7 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.of(context).pushReplacementNamed(AppRouter.homepage);
+      Navigator.of(context).pushReplacementNamed(AppRouter.pendataanKehamilan);
     } else {
       try {
         await docRef.update({'riwayat': riwayatMap});
@@ -103,7 +103,9 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.of(context).pushReplacementNamed(AppRouter.homepage);
+          Navigator.of(
+            context,
+          ).pushReplacementNamed(AppRouter.pendataanKehamilan);
         }
       } catch (e) {
         if (mounted) {
