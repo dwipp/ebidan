@@ -92,6 +92,11 @@ class HomeScreen extends StatelessWidget {
                 child: Text("Tambah Bumil"),
               ),
               onTap: () {
+                Navigator.pushReplacementNamed(
+                  context,
+                  AppRouter.pendataanKehamilan,
+                  arguments: {'bumilId': 'HUM71xYwMXuWb6Nastcx'},
+                );
                 // Navigator.of(context).pushNamed(AppRouter.addBumil);
 
                 // Navigator.pushNamed(

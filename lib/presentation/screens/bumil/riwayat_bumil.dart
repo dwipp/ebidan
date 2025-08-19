@@ -91,7 +91,12 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.of(context).pushReplacementNamed(AppRouter.pendataanKehamilan);
+
+      Navigator.pushReplacementNamed(
+        context,
+        AppRouter.pendataanKehamilan,
+        arguments: {'bumilId': widget.bumilId},
+      );
     } else {
       try {
         await docRef.update({'riwayat': riwayatMap});
@@ -103,9 +108,12 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.of(
+
+          Navigator.pushReplacementNamed(
             context,
-          ).pushReplacementNamed(AppRouter.pendataanKehamilan);
+            AppRouter.pendataanKehamilan,
+            arguments: {'bumilId': widget.bumilId},
+          );
         }
       } catch (e) {
         if (mounted) {
@@ -144,7 +152,10 @@ class _RiwayatBumilState extends State<RiwayatBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Riwayat Bumil')),
+      appBar: AppBar(
+        title: const Text('Riwayat Bumil'),
+        automaticallyImplyLeading: false,
+      ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(

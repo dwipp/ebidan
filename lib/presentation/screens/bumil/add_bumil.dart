@@ -139,10 +139,7 @@ class _AddBumilState extends State<AddBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Tambah Data Bumil"),
-        automaticallyImplyLeading: false,
-      ),
+      appBar: AppBar(title: const Text("Tambah Data Bumil")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
