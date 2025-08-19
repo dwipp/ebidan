@@ -6,6 +6,7 @@ class CustomTextField extends StatelessWidget {
   final Function(String)? onSaved; // ✅ opsional
   final bool isNumber;
   final String? suffixText;
+  final TextCapitalization textCapitalization;
   final TextEditingController? controller; // ✅ opsional
   final bool readOnly; // ✅ tambahkan readOnly
   final bool isMultiline; // ✅ tambahkan untuk auto grow textfield
@@ -17,6 +18,7 @@ class CustomTextField extends StatelessWidget {
     this.onSaved, // ✅ tidak wajib
     this.isNumber = false,
     this.suffixText,
+    this.textCapitalization = TextCapitalization.sentences,
     this.controller, // ✅ tidak wajib
     this.readOnly = false, // ✅ default false
     this.isMultiline = false, // ✅ default: single line
@@ -43,7 +45,7 @@ class CustomTextField extends StatelessWidget {
           : TextInputType.text,
       textCapitalization: isNumber
           ? TextCapitalization.none
-          : TextCapitalization.sentences,
+          : textCapitalization,
       onSaved: onSaved != null
           ? (val) => onSaved!(val ?? '')
           : null, // ✅ hanya dipakai kalau ada

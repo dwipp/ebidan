@@ -1,3 +1,4 @@
+import 'package:ebidan/common/dropdown_field.dart';
 import 'package:ebidan/common/date_picker_field.dart';
 import 'package:ebidan/common/textfield.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -29,7 +30,6 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
   final _kontrasepsiController = TextEditingController();
   final _riwayatAlergiController = TextEditingController();
   final _riwayatPenyakitController = TextEditingController();
-  final _statusIbuController = TextEditingController();
   final _statusTtController = TextEditingController();
   final _hasilLabController = TextEditingController();
   final _jarakKehamilan = TextEditingController();
@@ -37,6 +37,9 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
   DateTime? _hpht;
   DateTime? _htp;
   DateTime? _tglPeriksaUsg;
+
+  String? _selectedStatusIbu;
+  final List<String> _statusBumilList = ['Resti Nakes', 'Resti Masyarakat'];
 
   @override
   void initState() {
@@ -67,7 +70,7 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
         "kontrasepsi_sebelum_hamil": _kontrasepsiController.text,
         "riwayat_alergi": _riwayatAlergiController.text,
         "riwayat_penyakit": _riwayatPenyakitController.text,
-        "status_ibu": _statusIbuController.text,
+        "status_ibu": _selectedStatusIbu,
         "status_tt": _statusTtController.text,
         "hasil_lab": _hasilLabController.text,
         "hpht": _hpht,
@@ -120,18 +123,26 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 label: "No. Kohort Ibu",
                 icon: Icons.numbers,
                 controller: _noKohortController,
+                textCapitalization: TextCapitalization.characters,
               ),
               const SizedBox(height: 12),
               CustomTextField(
                 label: "No. Rekam Medis",
                 icon: Icons.local_hospital,
                 controller: _noRekaMedisController,
+                textCapitalization: TextCapitalization.characters,
               ),
               const SizedBox(height: 12),
-              CustomTextField(
-                label: "Status Ibu", // resti nakes, resti kader,
+              DropdownField(
+                label: 'Status Ibu',
                 icon: Icons.person,
-                controller: _statusIbuController,
+                items: _statusBumilList,
+                value: _selectedStatusIbu,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedStatusIbu = newValue;
+                  });
+                },
               ),
               const SizedBox(height: 12),
               CustomTextField(
