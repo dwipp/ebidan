@@ -1,5 +1,6 @@
 import 'package:ebidan/common/dropdown_field.dart';
 import 'package:ebidan/common/date_picker_field.dart';
+import 'package:ebidan/common/gpa_field.dart';
 import 'package:ebidan/common/textfield.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
@@ -26,12 +27,13 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
   final _bpjsController = TextEditingController();
   final _noKohortController = TextEditingController();
   final _noRekaMedisController = TextEditingController();
-  final _gpaController = TextEditingController();
   final _riwayatAlergiController = TextEditingController();
   final _riwayatPenyakitController = TextEditingController();
-  final _statusTtController = TextEditingController();
   final _hasilLabController = TextEditingController();
   final _jarakKehamilan = TextEditingController();
+  final _gravidaController = TextEditingController();
+  final _paraController = TextEditingController();
+  final _abortusController = TextEditingController();
 
   DateTime? _hpht;
   DateTime? _htp;
@@ -55,7 +57,7 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
   @override
   void initState() {
     super.initState();
-    _jarakKehamilan.text = '4 tahun';
+    _jarakKehamilan.text = '4 tahun'; // dummy
   }
 
   Future<void> _submitForm() async {
@@ -77,7 +79,8 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
         "bpjs": _bpjsController.text,
         "no_kohort_ibu": _noKohortController.text,
         "no_reka_medis": _noRekaMedisController.text,
-        "gpa": _gpaController.text,
+        "gpa":
+            'G${_gravidaController.text}P${_paraController.text}A${_abortusController.text}',
         "kontrasepsi_sebelum_hamil": _selectedKB,
         "riwayat_alergi": _riwayatAlergiController.text,
         "riwayat_penyakit": _riwayatPenyakitController.text,
@@ -264,11 +267,10 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 validator: (val) => val == null ? 'Wajib dipilih' : null,
               ),
               const SizedBox(height: 12),
-              CustomTextField(
-                label: "GPA",
-                icon: Icons.info,
-                controller: _gpaController,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+              GPAField(
+                gravidaController: _gravidaController,
+                paraController: _paraController,
+                abortusController: _abortusController,
               ),
               const SizedBox(height: 12),
               CustomTextField(
