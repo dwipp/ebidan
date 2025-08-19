@@ -6,6 +6,8 @@ class DatePickerFormField extends FormField<DateTime> {
     required String labelText,
     required IconData prefixIcon,
     DateTime? initialValue,
+    DateTime? initialDate,
+    DateTime? lastDate,
     required BuildContext context,
     required ValueChanged<DateTime> onDateSelected,
     FormFieldValidator<DateTime>? validator,
@@ -18,9 +20,9 @@ class DatePickerFormField extends FormField<DateTime> {
              onTap: () async {
                final picked = await showDatePicker(
                  context: context,
-                 initialDate: DateTime(1990),
+                 initialDate: initialDate ?? DateTime.now(),
                  firstDate: DateTime(1960),
-                 lastDate: DateTime.now(),
+                 lastDate: lastDate ?? DateTime.now(),
                );
                if (picked != null) {
                  field.didChange(picked);

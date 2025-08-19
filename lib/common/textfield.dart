@@ -10,6 +10,7 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController? controller; // ✅ opsional
   final bool readOnly; // ✅ tambahkan readOnly
   final bool isMultiline; // ✅ tambahkan untuk auto grow textfield
+  final FormFieldValidator<String>? validator; // ✅ tambahkan validator
 
   const CustomTextField({
     super.key,
@@ -22,6 +23,7 @@ class CustomTextField extends StatelessWidget {
     this.controller, // ✅ tidak wajib
     this.readOnly = false, // ✅ default false
     this.isMultiline = false, // ✅ default: single line
+    this.validator, // ✅ opsional
   }) : assert(
          onSaved != null || controller != null,
          'Harus isi salah satu: onSaved atau controller',
@@ -49,6 +51,7 @@ class CustomTextField extends StatelessWidget {
       onSaved: onSaved != null
           ? (val) => onSaved!(val ?? '')
           : null, // ✅ hanya dipakai kalau ada
+      validator: validator, // ✅ aktifkan
     );
   }
 }

@@ -27,7 +27,6 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
   final _noKohortController = TextEditingController();
   final _noRekaMedisController = TextEditingController();
   final _gpaController = TextEditingController();
-  final _kontrasepsiController = TextEditingController();
   final _riwayatAlergiController = TextEditingController();
   final _riwayatPenyakitController = TextEditingController();
   final _statusTtController = TextEditingController();
@@ -40,6 +39,18 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
 
   String? _selectedStatusIbu;
   final List<String> _statusBumilList = ['Resti Nakes', 'Resti Masyarakat'];
+
+  String? _selectedKB;
+  final List<String> _kbList = [
+    'Pil',
+    'Suntik',
+    'Implan',
+    'IUD',
+    'Tidak ber-KB',
+  ];
+
+  String? _selectedTT;
+  final List<String> _ttList = ['TT0', 'TT1', 'TT2', 'TT3', 'TT4', 'TT5'];
 
   @override
   void initState() {
@@ -67,11 +78,11 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
         "no_kohort_ibu": _noKohortController.text,
         "no_reka_medis": _noRekaMedisController.text,
         "gpa": _gpaController.text,
-        "kontrasepsi_sebelum_hamil": _kontrasepsiController.text,
+        "kontrasepsi_sebelum_hamil": _selectedKB,
         "riwayat_alergi": _riwayatAlergiController.text,
         "riwayat_penyakit": _riwayatPenyakitController.text,
         "status_ibu": _selectedStatusIbu,
-        "status_tt": _statusTtController.text,
+        "status_tt": _selectedTT,
         "hasil_lab": _hasilLabController.text,
         "hpht": _hpht,
         "htp": _htp,
@@ -124,6 +135,7 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 icon: Icons.numbers,
                 controller: _noKohortController,
                 textCapitalization: TextCapitalization.characters,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -131,6 +143,7 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 icon: Icons.local_hospital,
                 controller: _noRekaMedisController,
                 textCapitalization: TextCapitalization.characters,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               DropdownField(
@@ -143,6 +156,7 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                     _selectedStatusIbu = newValue;
                   });
                 },
+                validator: (val) => val == null ? 'Wajib dipilih' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -160,17 +174,20 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 onDateSelected: (date) {
                   setState(() => _hpht = date);
                 },
-                validator: (val) => val == null ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               DatePickerFormField(
                 labelText: 'Hari Taksiran Persalinan (HTP)',
                 prefixIcon: Icons.event,
                 context: context,
+                lastDate: DateTime(
+                  DateTime.now().year + 1,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                ),
                 onDateSelected: (date) {
                   setState(() => _htp = date);
                 },
-                validator: (val) => val == null ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -179,6 +196,7 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 controller: _lilaController,
                 suffixText: 'cm',
                 isNumber: true,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -187,14 +205,16 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 controller: _tbController,
                 suffixText: 'cm',
                 isNumber: true,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
                 label: "Berat Badan (BB)",
                 icon: Icons.monitor_weight,
                 controller: _bbController,
-                suffixText: 'gram',
+                suffixText: 'kilogram',
                 isNumber: true,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -203,12 +223,20 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 controller: _lpController,
                 suffixText: 'cm',
                 isNumber: true,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
-              CustomTextField(
-                label: "Penggunaan KB Sebelum Hamil",
+              DropdownField(
+                label: 'Penggunaan KB Sebelum Hamil',
                 icon: Icons.medication,
-                controller: _kontrasepsiController,
+                items: _kbList,
+                value: _selectedKB,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedKB = newValue;
+                  });
+                },
+                validator: (val) => val == null ? 'Wajib dipilih' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -223,16 +251,24 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 controller: _riwayatAlergiController,
               ),
               const SizedBox(height: 12),
-              CustomTextField(
-                label: "Status Imunisasi TT",
+              DropdownField(
+                label: 'Status Imunisasi TT',
                 icon: Icons.vaccines,
-                controller: _statusTtController,
+                items: _ttList,
+                value: _selectedTT,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedTT = newValue;
+                  });
+                },
+                validator: (val) => val == null ? 'Wajib dipilih' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
                 label: "GPA",
                 icon: Icons.info,
                 controller: _gpaController,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -256,7 +292,6 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 onDateSelected: (date) {
                   setState(() => _tglPeriksaUsg = date);
                 },
-                validator: (val) => val == null ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 20),
               SizedBox(

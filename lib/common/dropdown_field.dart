@@ -6,7 +6,7 @@ class DropdownField extends StatelessWidget {
   final List<String> items;
   final String? value;
   final void Function(String?) onChanged;
-  // final String? Function(String?)? validator;
+  final String? Function(String?)? validator;
 
   const DropdownField({
     super.key,
@@ -15,7 +15,7 @@ class DropdownField extends StatelessWidget {
     required this.items,
     required this.value,
     required this.onChanged,
-    // this.validator,
+    this.validator,
   });
 
   @override
@@ -27,7 +27,7 @@ class DropdownField extends StatelessWidget {
         return DropdownMenuItem<String>(value: val, child: Text(val));
       }).toList(),
       onChanged: onChanged,
-      validator: (val) => val == null ? 'Wajib dipilih' : null,
+      validator: validator,
     );
   }
 }
