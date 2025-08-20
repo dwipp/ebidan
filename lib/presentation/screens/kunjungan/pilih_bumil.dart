@@ -76,7 +76,7 @@ class PilihBumilScreen extends StatelessWidget {
                               );
 
                           if (latestKehamilanId != null) {
-                            Navigator.pushReplacementNamed(
+                            Navigator.pushNamed(
                               context,
                               AppRouter.kunjungan,
                               arguments: {'kehamilanId': latestKehamilanId},

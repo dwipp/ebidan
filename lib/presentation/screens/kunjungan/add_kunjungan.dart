@@ -1,12 +1,13 @@
 import 'package:ebidan/common/blood_pressure_field.dart';
+import 'package:ebidan/common/dropdown_field.dart';
 import 'package:ebidan/common/textfield.dart';
 import 'package:ebidan/logic/utility/Utils.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class KunjunganScreen extends StatefulWidget {
-  final String kehamilanId; // misalnya id bumil-C5kNHJsd... untuk parent doc
+  final String kehamilanId;
 
   const KunjunganScreen({super.key, required this.kehamilanId});
 
@@ -22,12 +23,9 @@ class _KunjunganState extends State<KunjunganScreen> {
   final TextEditingController lilaController = TextEditingController();
   final TextEditingController lpController = TextEditingController();
   final TextEditingController planningController = TextEditingController();
-  final TextEditingController statusController = TextEditingController();
   final TextEditingController tdController = TextEditingController();
   final TextEditingController tfuController = TextEditingController();
   final TextEditingController ukController = TextEditingController();
-
-  bool _isLoading = false;
 
   var maskUsiaKandungan = MaskTextInputFormatter(
     mask: '± ##',
@@ -35,45 +33,38 @@ class _KunjunganState extends State<KunjunganScreen> {
     type: MaskAutoCompletionType.lazy,
   );
 
+  String? _selectedStatusKunjungan;
+  final List<String> _statusKunjunganList = [
+    'Kunjungan 1',
+    'Kunjungan 2',
+    'Kunjungan 3',
+    'Kunjungan 4',
+    'Kunjungan 5',
+    'Kunjungan 6',
+    '-',
+  ];
+
   Future<void> _saveData() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    final resultData = {
+      'kehamilanId': widget.kehamilanId,
+      'keluhan': keluhanController.text,
+      'bb': bbController.text,
+      'lila': lilaController.text,
+      'lp': lpController.text,
+      'td': tdController.text,
+      'tfu': tfuController.text,
+      'uk': ukController.text,
+      'planning': planningController.text,
+      'status': _selectedStatusKunjungan ?? '-',
+    };
 
-    try {
-      final docRef = FirebaseFirestore.instance
-          .collection('kehamilan')
-          .doc(widget.kehamilanId)
-          .collection('kunjungan');
-
-      // Ambil jumlah dokumen di collection kunjungan
-      final snapshot = await docRef.get();
-      final nextId = (snapshot.docs.length + 1).toString(); // 1,2,3 dst
-
-      await docRef.doc(nextId).set({
-        'bb': bbController.text,
-        'created_at': DateTime.now(),
-        'keluhan': keluhanController.text,
-        'lila': lilaController.text,
-        'lp': lpController.text,
-        'planning': planningController.text,
-        'status': statusController.text,
-        'td': tdController.text,
-        'tfu': tfuController.text,
-        'uk': ukController.text,
-      });
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Data berhasil disimpan')));
-      Navigator.pop(context);
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Gagal simpan: $e')));
-    } finally {
-      setState(() => _isLoading = false);
-    }
+    Navigator.pushNamed(
+      context,
+      AppRouter.reviewKunjungan,
+      arguments: {'data': resultData},
+    );
   }
 
   @override
@@ -92,6 +83,7 @@ class _KunjunganState extends State<KunjunganScreen> {
                 label: "Keluhan",
                 icon: Icons.warning_amber,
                 isMultiline: true,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 16),
               Utils.sectionTitle('Objective'),
@@ -102,6 +94,7 @@ class _KunjunganState extends State<KunjunganScreen> {
                 icon: Icons.monitor_weight,
                 suffixText: 'kilogram',
                 isNumber: true,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -110,6 +103,7 @@ class _KunjunganState extends State<KunjunganScreen> {
                 icon: Icons.straighten,
                 suffixText: 'cm',
                 isNumber: true,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -118,9 +112,10 @@ class _KunjunganState extends State<KunjunganScreen> {
                 icon: Icons.pregnant_woman,
                 suffixText: 'cm',
                 isNumber: true,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
-              BloodPressureField(),
+              BloodPressureField(controller: tdController),
               const SizedBox(height: 12),
               CustomTextField(
                 controller: tfuController,
@@ -138,6 +133,7 @@ class _KunjunganState extends State<KunjunganScreen> {
                 suffixText: 'minggu',
                 isNumber: true,
                 inputFormatters: [maskUsiaKandungan],
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 16),
               Utils.sectionTitle('Planning'),
@@ -147,26 +143,26 @@ class _KunjunganState extends State<KunjunganScreen> {
                 label: "Planning",
                 icon: Icons.assignment,
                 isMultiline: true,
+                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
-              CustomTextField(
-                controller: statusController,
-                label: "Status Kunjungan",
+              DropdownField(
+                label: 'Status Kunjungan',
                 icon: Icons.info_outline,
+                items: _statusKunjunganList,
+                value: _selectedStatusKunjungan,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedStatusKunjungan = newValue;
+                  });
+                },
               ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: _isLoading ? null : _saveData,
-                  icon: _isLoading
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.check),
-                  label: Text(_isLoading ? 'Menyimpan...' : 'Simpan'),
+                  onPressed: _saveData,
+                  label: Text('Review'),
                 ),
               ),
             ],
