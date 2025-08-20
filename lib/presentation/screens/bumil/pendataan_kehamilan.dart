@@ -45,7 +45,11 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
   DateTime? _tglPeriksaUsg;
 
   String? _selectedStatusIbu;
-  final List<String> _statusBumilList = ['Resti Nakes', 'Resti Masyarakat'];
+  final List<String> _statusBumilList = [
+    'Resti Nakes',
+    'Resti Masyarakat',
+    '-',
+  ];
 
   String? _selectedKB;
   final List<String> _kbList = [
@@ -75,10 +79,8 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    String docId = 'bumil-${widget.bumilId}-${DateTime.now().year}';
-
     try {
-      await FirebaseFirestore.instance.collection('kehamilan').doc(docId).set({
+      final docRef = await FirebaseFirestore.instance.collection('kehamilan').add({
         "bb": _bbController.text,
         "tb": _tbController.text,
         "lila": _lilaController.text,
@@ -99,13 +101,18 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
         "tgl_periksa_usg": _tglPeriksaUsg,
         "id_bidan": user.uid,
         "created_at": DateTime.now(),
+        "id_bumil": widget.bumilId,
       });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Data kehamilan berhasil disimpan')),
         );
-        Navigator.pushReplacementNamed(context, AppRouter.kunjungan);
+        Navigator.pushReplacementNamed(
+          context,
+          AppRouter.kunjungan,
+          arguments: {'kehamilanId': docRef.id},
+        );
       }
     } catch (e) {
       if (mounted) {

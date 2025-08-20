@@ -57,18 +57,31 @@ class PilihBumilScreen extends StatelessWidget {
                 return ListView.builder(
                   itemCount: state.filteredList.length,
                   itemBuilder: (context, i) {
-                    Bumil b = state.filteredList[i];
+                    Bumil bumil = state.filteredList[i];
                     return Card(
                       margin: const EdgeInsets.symmetric(
                         horizontal: 8,
                         vertical: 4,
                       ),
                       child: ListTile(
-                        title: Text(b.namaIbu),
-                        subtitle: Text('No HP: ${b.noHp}'),
+                        title: Text(bumil.namaIbu),
+                        subtitle: Text('No HP: ${bumil.noHp}'),
                         trailing: const Icon(Icons.chevron_right),
-                        onTap: () {
-                          print('selected bumil: ${b.namaIbu}');
+                        onTap: () async {
+                          // print('selected bumil: ${b.namaIbu}');
+                          final latestKehamilanId =
+                              await getLatestKehamilanDocId(
+                                bumilId: bumil.idBumil,
+                                bidanId: bumil.idBidan,
+                              );
+
+                          if (latestKehamilanId != null) {
+                            Navigator.pushReplacementNamed(
+                              context,
+                              AppRouter.kunjungan,
+                              arguments: {'kehamilanId': latestKehamilanId},
+                            );
+                          }
                         },
                       ),
                     );
@@ -80,5 +93,28 @@ class PilihBumilScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<String?> getLatestKehamilanDocId({
+    required String bumilId,
+    required String bidanId,
+  }) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('kehamilan')
+          .where('id_bumil', isEqualTo: bumilId)
+          .where('id_bidan', isEqualTo: bidanId)
+          .orderBy('created_at', descending: true)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.first.id;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error getLatestKehamilanDocId: $e');
+      return null;
+    }
   }
 }

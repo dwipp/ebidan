@@ -47,7 +47,10 @@ class AppRouter {
           ),
         );
       case kunjungan:
-        return MaterialPageRoute(builder: (_) => KunjunganScreen());
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => KunjunganScreen(kehamilanId: args['kehamilanId']),
+        );
       default:
         throw const RouteException('Route not found!');
     }
