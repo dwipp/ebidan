@@ -1,6 +1,9 @@
+import 'package:ebidan/common/blood_pressure_field.dart';
 import 'package:ebidan/common/textfield.dart';
+import 'package:ebidan/logic/utility/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class KunjunganScreen extends StatefulWidget {
   final String kehamilanId; // misalnya id bumil-C5kNHJsd... untuk parent doc
@@ -25,6 +28,12 @@ class _KunjunganState extends State<KunjunganScreen> {
   final TextEditingController ukController = TextEditingController();
 
   bool _isLoading = false;
+
+  var maskUsiaKandungan = MaskTextInputFormatter(
+    mask: '± ##',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
 
   Future<void> _saveData() async {
     if (!_formKey.currentState!.validate()) return;
@@ -77,55 +86,73 @@ class _KunjunganState extends State<KunjunganScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              CustomTextField(
-                controller: bbController,
-                label: "BB",
-                icon: Icons.monitor_weight,
-                suffixText: 'kilogram',
-              ),
+              Utils.sectionTitle('Subjective'),
               CustomTextField(
                 controller: keluhanController,
                 label: "Keluhan",
                 icon: Icons.warning_amber,
                 isMultiline: true,
               ),
+              const SizedBox(height: 16),
+              Utils.sectionTitle('Objective'),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: bbController,
+                label: "BB",
+                icon: Icons.monitor_weight,
+                suffixText: 'kilogram',
+                isNumber: true,
+              ),
+              const SizedBox(height: 12),
               CustomTextField(
                 controller: lilaController,
                 label: "LILA",
                 icon: Icons.straighten,
                 suffixText: 'cm',
+                isNumber: true,
               ),
+              const SizedBox(height: 12),
               CustomTextField(
                 controller: lpController,
                 label: "LP",
-                icon: Icons.circle_outlined,
+                icon: Icons.pregnant_woman,
                 suffixText: 'cm',
+                isNumber: true,
               ),
+              const SizedBox(height: 12),
+              BloodPressureField(),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: tfuController,
+                label: "TFU",
+                icon: Icons.height,
+                isMultiline: true,
+              ),
+              const SizedBox(height: 16),
+              Utils.sectionTitle('Analysis'),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: ukController,
+                label: "Usia Kandungan",
+                icon: Icons.calendar_today,
+                suffixText: 'minggu',
+                isNumber: true,
+                inputFormatters: [maskUsiaKandungan],
+              ),
+              const SizedBox(height: 16),
+              Utils.sectionTitle('Planning'),
+              const SizedBox(height: 12),
               CustomTextField(
                 controller: planningController,
                 label: "Planning",
                 icon: Icons.assignment,
                 isMultiline: true,
               ),
+              const SizedBox(height: 12),
               CustomTextField(
                 controller: statusController,
-                label: "Status",
+                label: "Status Kunjungan",
                 icon: Icons.info_outline,
-              ),
-              CustomTextField(
-                controller: tdController,
-                label: "TD",
-                icon: Icons.favorite_outline,
-              ),
-              CustomTextField(
-                controller: tfuController,
-                label: "TFU",
-                icon: Icons.height,
-              ),
-              CustomTextField(
-                controller: ukController,
-                label: "UK",
-                icon: Icons.numbers,
               ),
               const SizedBox(height: 20),
               SizedBox(

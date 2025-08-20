@@ -20,4 +20,14 @@ class Utils {
     }
     return null;
   }
+
+  static Widget sectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
 }

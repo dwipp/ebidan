@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
@@ -11,6 +12,7 @@ class CustomTextField extends StatelessWidget {
   final bool readOnly; // ✅ tambahkan readOnly
   final bool isMultiline; // ✅ tambahkan untuk auto grow textfield
   final FormFieldValidator<String>? validator; // ✅ tambahkan validator
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomTextField({
     super.key,
@@ -24,6 +26,7 @@ class CustomTextField extends StatelessWidget {
     this.readOnly = false, // ✅ default false
     this.isMultiline = false, // ✅ default: single line
     this.validator, // ✅ opsional
+    this.inputFormatters,
   }) : assert(
          onSaved != null || controller != null,
          'Harus isi salah satu: onSaved atau controller',
@@ -35,10 +38,12 @@ class CustomTextField extends StatelessWidget {
       maxLines: isMultiline ? null : 1,
       controller: controller,
       readOnly: readOnly, // ✅ aktifkan
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
         suffixText: suffixText,
+        suffixStyle: TextStyle(color: Colors.black54, fontSize: 16),
       ),
       keyboardType: isNumber
           ? TextInputType.number
