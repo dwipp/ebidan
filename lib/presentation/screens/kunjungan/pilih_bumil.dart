@@ -6,14 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PilihBumilScreen extends StatelessWidget {
-  const PilihBumilScreen({super.key});
+  final String pilihState;
+  const PilihBumilScreen({super.key, required this.pilihState});
 
   @override
   Widget build(BuildContext context) {
     context.read<BumilCubit>().fetchData();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Data Bumil'),
+        title: const Text('Pilih Bumil'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
@@ -68,19 +69,28 @@ class PilihBumilScreen extends StatelessWidget {
                         subtitle: Text('No HP: ${bumil.noHp}'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () async {
-                          // print('selected bumil: ${b.namaIbu}');
-                          final latestKehamilanId =
-                              await getLatestKehamilanDocId(
-                                bumilId: bumil.idBumil,
-                                bidanId: bumil.idBidan,
-                              );
-
-                          if (latestKehamilanId != null) {
+                          print('state: $pilihState');
+                          if (pilihState == 'bumil') {
                             Navigator.pushNamed(
                               context,
-                              AppRouter.kunjungan,
-                              arguments: {'kehamilanId': latestKehamilanId},
+                              AppRouter.dataBumil,
+                              arguments: {'bumil': bumil},
                             );
+                          } else {
+                            // kunjungan
+                            final latestKehamilanId =
+                                await getLatestKehamilanDocId(
+                                  bumilId: bumil.idBumil,
+                                  bidanId: bumil.idBidan,
+                                );
+
+                            if (latestKehamilanId != null) {
+                              Navigator.pushNamed(
+                                context,
+                                AppRouter.kunjungan,
+                                arguments: {'kehamilanId': latestKehamilanId},
+                              );
+                            }
                           }
                         },
                       ),

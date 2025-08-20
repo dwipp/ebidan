@@ -33,7 +33,9 @@ class HomeScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed(AppRouter.pilihBumil);
+          Navigator.of(
+            context,
+          ).pushNamed(AppRouter.pilihBumil, arguments: {'state': 'kunjungan'});
         },
         backgroundColor: Colors.lightBlue[100],
         child: Icon(Icons.add),
@@ -89,17 +91,21 @@ class HomeScreen extends StatelessWidget {
             child: InkWell(
               child: Container(
                 color: Colors.teal[200],
-                child: Text("Tambah Bumil"),
+                child: Text("Data Bumil"),
               ),
               onTap: () {
-                Navigator.pushReplacementNamed(
-                  context,
-                  AppRouter.pendataanKehamilan,
-                  arguments: {
-                    'bumilId': 'HUM71xYwMXuWb6Nastcx',
-                    'latestHistoryYear': 2022,
-                  },
+                Navigator.of(context).pushNamed(
+                  AppRouter.pilihBumil,
+                  arguments: {'state': 'bumil'},
                 );
+                // Navigator.pushReplacementNamed(
+                //   context,
+                //   AppRouter.pendataanKehamilan,
+                //   arguments: {
+                //     'bumilId': 'HUM71xYwMXuWb6Nastcx',
+                //     'latestHistoryYear': 2022,
+                //   },
+                // );
                 // Navigator.of(context).pushNamed(AppRouter.addBumil);
 
                 // Navigator.pushNamed(

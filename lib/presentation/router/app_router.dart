@@ -1,3 +1,4 @@
+import 'package:ebidan/presentation/screens/bumil/data_bumil.dart';
 import 'package:ebidan/presentation/screens/bumil/pendataan_kehamilan.dart';
 import 'package:ebidan/presentation/screens/bumil/riwayat_bumil.dart';
 import 'package:ebidan/presentation/screens/home.dart';
@@ -21,6 +22,7 @@ class AppRouter {
   static const String pendataanKehamilan = '/pendataankehamilan';
   static const String kunjungan = '/kunjungan';
   static const String reviewKunjungan = '/reviewkunjungan';
+  static const String dataBumil = '/databumil';
 
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
@@ -34,7 +36,10 @@ class AppRouter {
       case addBumil:
         return MaterialPageRoute(builder: (_) => AddBumilScreen());
       case pilihBumil:
-        return MaterialPageRoute(builder: (_) => PilihBumilScreen());
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => PilihBumilScreen(pilihState: args['state']),
+        );
       case riwayatBumil:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
@@ -57,6 +62,11 @@ class AppRouter {
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => ReviewKunjunganScreen(data: args['data']),
+        );
+      case dataBumil:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => DataBumilScreen(bumil: args['bumil']),
         );
       default:
         throw const RouteException('Route not found!');
