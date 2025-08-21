@@ -2,15 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 
-class RiwayatBumilScreen extends StatefulWidget {
+class AddRiwayatBumilScreen extends StatefulWidget {
   final String bumilId;
-  const RiwayatBumilScreen({super.key, required this.bumilId});
+  const AddRiwayatBumilScreen({super.key, required this.bumilId});
 
   @override
-  State<RiwayatBumilScreen> createState() => _RiwayatBumilState();
+  State<AddRiwayatBumilScreen> createState() => _AddRiwayatBumilState();
 }
 
-class _RiwayatBumilState extends State<RiwayatBumilScreen> {
+class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> riwayatList = [];
 

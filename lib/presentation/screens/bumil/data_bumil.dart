@@ -1,4 +1,5 @@
 import 'package:ebidan/data/models/bumil_model.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 
 class DataBumilScreen extends StatelessWidget {
@@ -55,12 +56,30 @@ class DataBumilScreen extends StatelessWidget {
             _buildMenuButton(
               icon: Icons.person,
               title: 'Detail Bumil',
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.detailBumil,
+                  arguments: {'bumil': bumil},
+                );
+              },
             ),
             _buildMenuButton(
               icon: Icons.history,
               title: 'Riwayat Bumil',
-              onTap: () {},
+              onTap: () {
+                // if (bumil.riwayat!.isNotEmpty) {
+                //   Navigator.pushNamed(
+                //     context,
+                //     AppRouter.listRiwayat,
+                //     arguments: {'riwayatList': bumil.riwayat},
+                //   );
+                // } else {
+                print('riwayat: ${bumil.riwayat}');
+                print('nama: ${bumil.namaIbu}');
+                // tampilan toast bahwa tidak ada riwayat
+                // }
+              },
             ),
             _buildMenuButton(
               icon: Icons.pregnant_woman,

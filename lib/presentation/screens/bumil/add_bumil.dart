@@ -121,7 +121,7 @@ class _AddBumilState extends State<AddBumilScreen> {
 
         Navigator.pushReplacementNamed(
           context,
-          AppRouter.riwayatBumil,
+          AppRouter.addRiwayatBumil,
           arguments: {'bumilId': docRef.id},
         );
       }
