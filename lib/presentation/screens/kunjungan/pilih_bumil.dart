@@ -16,13 +16,15 @@ class PilihBumilScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Pilih Bumil'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
-            onPressed: () {
-              // print('tambah bumil');
-              Navigator.of(context).pushNamed(AppRouter.addBumil);
-            },
-          ),
+          pilihState == 'kunjungan'
+              ? IconButton(
+                  icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
+                  onPressed: () {
+                    // print('tambah bumil');
+                    Navigator.of(context).pushNamed(AppRouter.addBumil);
+                  },
+                )
+              : SizedBox(),
         ],
       ),
       body: Column(
@@ -100,7 +102,10 @@ class PilihBumilScreen extends StatelessWidget {
                                   'age': bumil.age,
                                   'latestHistoryYear':
                                       bumil.latestRiwayat?.tahun,
-                                  'jumlahRiwayat': bumil.riwayat?.length ?? 0,
+                                  'jumlahRiwayat': bumil
+                                      .gpa['gravida'], //bumil.riwayat?.length ?? 0,
+                                  'jumlahPara': bumil.gpa['para'],
+                                  'jumlahAbortus': bumil.gpa['abortus'],
                                 },
                               );
                             }

@@ -12,12 +12,16 @@ class PendataanKehamilanScreen extends StatefulWidget {
   final int age;
   final int? latestHistoryYear;
   final int jumlahRiwayat;
+  final int jumlahPara;
+  final int jumlahAbortus;
   const PendataanKehamilanScreen({
     super.key,
     required this.bumilId,
     required this.age,
     required this.latestHistoryYear,
     required this.jumlahRiwayat,
+    required this.jumlahPara,
+    required this.jumlahAbortus,
   });
 
   @override
@@ -74,6 +78,9 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
     final jarakTahun =
         DateTime.now().year - (widget.latestHistoryYear ?? DateTime.now().year);
     _jarakKehamilan.text = jarakTahun == 0 ? '-' : '$jarakTahun tahun';
+    _gravidaController.text = '${widget.jumlahRiwayat}';
+    _paraController.text = '${widget.jumlahPara}';
+    _abortusController.text = '${widget.jumlahAbortus}';
   }
 
   Map<String, int> hitungSelisihTahunBulan(DateTime dari, DateTime ke) {
@@ -126,8 +133,11 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
       resti.add('Anemia (Hb: ${_hemoglobinController.text} g/dL)');
     }
 
+    if (int.parse(_abortusController.text) > 0) {
+      resti.add('Pernah keguguran ${_abortusController.text}x');
+    }
+
     // hipertensi -> sistol > 120 && diatol > 80
-    // keguguran berulang -> keguguran sekali dianggap resti
     // lahir dengan berat rendah -> lahir dengan berat < 2500 gram
 
     return resti;

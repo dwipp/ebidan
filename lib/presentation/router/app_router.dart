@@ -60,6 +60,8 @@ class AppRouter {
             age: args['age'],
             latestHistoryYear: args['latestHistoryYear'] as int?,
             jumlahRiwayat: args['jumlahRiwayat'],
+            jumlahPara: args['jumlahPara'],
+            jumlahAbortus: args['jumlahAbortus'],
           ),
         );
       case kunjungan:

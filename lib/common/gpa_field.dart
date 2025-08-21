@@ -33,6 +33,7 @@ class GPAField extends StatelessWidget {
                   child: TextFormField(
                     controller: gravidaController,
                     keyboardType: TextInputType.number,
+                    readOnly: true,
                     decoration: InputDecoration(
                       labelText: "G",
                       prefixIcon: const Icon(Icons.pregnant_woman),
@@ -40,7 +41,6 @@ class GPAField extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    validator: (val) => val!.isEmpty ? "Isi G" : null,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -48,6 +48,7 @@ class GPAField extends StatelessWidget {
                   child: TextFormField(
                     controller: paraController,
                     keyboardType: TextInputType.number,
+                    readOnly: true,
                     decoration: InputDecoration(
                       labelText: "P",
                       prefixIcon: const Icon(Icons.child_care),
@@ -55,7 +56,6 @@ class GPAField extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    validator: (val) => val!.isEmpty ? "Isi P" : null,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -63,6 +63,7 @@ class GPAField extends StatelessWidget {
                   child: TextFormField(
                     controller: abortusController,
                     keyboardType: TextInputType.number,
+                    readOnly: true,
                     decoration: InputDecoration(
                       labelText: "A",
                       prefixIcon: const Icon(Icons.warning_amber_rounded),
@@ -70,7 +71,6 @@ class GPAField extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    validator: (val) => val!.isEmpty ? "Isi A" : null,
                   ),
                 ),
               ],

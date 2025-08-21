@@ -71,11 +71,24 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
         .collection('bumil')
         .doc(widget.bumilId);
 
+    int hidup = 0;
+    int mati = 0;
+    int abortus = 0;
     String? latestYear; // untuk simpan tahun terbaru
     Map<String, dynamic> riwayatMap = {};
     for (var item in riwayatList) {
       if (item['tahun'] != '') {
         String tahun = item['tahun'];
+
+        // hitung jumlah berdasarkan status_bayi
+        if (item['status_bayi'] == 'hidup') {
+          hidup++;
+        } else if (item['status_bayi'] == 'mati') {
+          mati++;
+        } else if (item['status_bayi'] == 'abortus') {
+          abortus++;
+        }
+
         riwayatMap[tahun] = {
           'berat_bayi': item['berat_bayi'],
           'komplikasi': item['komplikasi'],
@@ -112,6 +125,8 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
           'age': widget.age,
           'latestHistoryYear': null,
           'jumlahRiwayat': 0,
+          'jumlahPara': 0,
+          'julmahAbortus': 0,
         },
       );
     } else {
@@ -134,6 +149,8 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
               'age': widget.age,
               'latestHistoryYear': latestYear,
               'jumlahRiwayat': riwayatMap.length,
+              'jumlahPara': hidup + mati,
+              'jumlahAbortus': abortus,
             },
           );
         }
