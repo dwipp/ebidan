@@ -8,8 +8,13 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class KunjunganScreen extends StatefulWidget {
   final String kehamilanId;
+  final bool firstTime;
 
-  const KunjunganScreen({super.key, required this.kehamilanId});
+  const KunjunganScreen({
+    super.key,
+    required this.kehamilanId,
+    required this.firstTime,
+  });
 
   @override
   State<KunjunganScreen> createState() => _KunjunganState();
@@ -48,6 +53,7 @@ class _KunjunganState extends State<KunjunganScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final resultData = {
+      'firstTime': widget.firstTime ? '1' : '0',
       'kehamilanId': widget.kehamilanId,
       'keluhan': keluhanController.text,
       'bb': bbController.text,

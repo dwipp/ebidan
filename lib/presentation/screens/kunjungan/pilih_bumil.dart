@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
+import 'package:ebidan/data/models/kehamilan_model.dart';
+import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/logic/general/cubit/bumil_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
@@ -80,17 +82,21 @@ class PilihBumilScreen extends StatelessWidget {
                             );
                           } else {
                             // kunjungan
-                            final latestKehamilanId =
-                                await getLatestKehamilanDocId(
-                                  bumilId: bumil.idBumil,
-                                  bidanId: bumil.idBidan,
-                                );
+                            final latestKehamilan = await getLatestKehamilan(
+                              bumilId: bumil.idBumil,
+                              bidanId: bumil.idBidan,
+                            );
 
-                            if (latestKehamilanId != null) {
+                            if (latestKehamilan?.id != null) {
+                              final firstTime =
+                                  latestKehamilan!.kunjungan?.isEmpty;
                               Navigator.pushNamed(
                                 context,
                                 AppRouter.kunjungan,
-                                arguments: {'kehamilanId': latestKehamilanId},
+                                arguments: {
+                                  'kehamilanId': latestKehamilan.id,
+                                  'firstTime': firstTime,
+                                },
                               );
                             } else {
                               // buka pendataan kehamilan
@@ -126,7 +132,7 @@ class PilihBumilScreen extends StatelessWidget {
     );
   }
 
-  Future<String?> getLatestKehamilanDocId({
+  Future<Kehamilan?> getLatestKehamilan({
     required String bumilId,
     required String bidanId,
   }) async {
@@ -139,12 +145,20 @@ class PilihBumilScreen extends StatelessWidget {
           .limit(1)
           .get();
 
-      if (snapshot.docs.isNotEmpty) {
-        return snapshot.docs.first.id;
-      }
-      return null;
+      if (snapshot.docs.isEmpty) return null;
+
+      final doc = snapshot.docs.first;
+      final data = doc.data();
+
+      // ambil subcollection kunjungan
+      final kunjunganSnap = await doc.reference.collection('kunjungan').get();
+      final kunjunganList = kunjunganSnap.docs
+          .map((e) => Kunjungan.fromFirestore(e.data()))
+          .toList();
+
+      return Kehamilan.fromFirestore(doc.id, data, kunjunganList);
     } catch (e) {
-      debugPrint('Error getLatestKehamilanDocId: $e');
+      debugPrint('Error getLatestKehamilan: $e');
       return null;
     }
   }

@@ -64,6 +64,35 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
         'tfu': widget.data['tfu'],
         'uk': uk.replaceAll(RegExp(r'[^0-9]'), ''),
       });
+      print('resti masuk: ${widget.data['firstTime']}');
+      if (widget.data['firstTime'] == "1") {
+        List<String> resti = [];
+        if (widget.data['td'] != null && widget.data['td']!.contains('/')) {
+          List<String> parts = widget.data['td']!.split("/");
+          if (parts.length == 2) {
+            int sistolik = int.parse(parts[0]);
+            int diastolik = int.parse(parts[1]);
+
+            if (sistolik >= 140 || diastolik >= 90) {
+              resti.add('Hipertensi dalam kehamilan ${widget.data['td']} mmHg');
+            }
+          }
+        }
+        if (widget.data['lila'] != null) {
+          if (int.parse(widget.data['lila']!) < 23.5) {
+            resti.add(
+              'Kekurangan Energi Kronis (lila: ${widget.data['lila']} cm)',
+            );
+          }
+        }
+        print('resti: $resti');
+        if (resti.isNotEmpty) {
+          await FirebaseFirestore.instance
+              .collection('kehamilan')
+              .doc(widget.data['kehamilanId'])
+              .update({'resti': FieldValue.arrayUnion(resti)});
+        }
+      }
 
       ScaffoldMessenger.of(
         context,

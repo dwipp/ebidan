@@ -35,11 +35,11 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
   bool _isSubmitting = false;
 
   // Controller untuk setiap field
-  final _bbController = TextEditingController();
+  // final _bbController = TextEditingController();
   final _tbController = TextEditingController();
-  final _lilaController = TextEditingController();
+  // final _lilaController = TextEditingController();
   final _hemoglobinController = TextEditingController();
-  final _lpController = TextEditingController();
+  // final _lpController = TextEditingController();
   final _bpjsController = TextEditingController();
   final _noKohortController = TextEditingController();
   final _noRekaMedisController = TextEditingController();
@@ -126,11 +126,8 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
       resti.add('Risiko panggul sempit (tb: ${_tbController.text} cm)');
     }
 
-    if (int.parse(_lilaController.text) < 23.5) {
-      resti.add('Kekurangan Energi Kronis (lila: ${_lilaController.text} cm)');
-    }
-
-    if (int.parse(_hemoglobinController.text) < 11) {
+    if (_hemoglobinController.text.isNotEmpty &&
+        int.parse(_hemoglobinController.text) < 11) {
       resti.add('Anemia (Hb: ${_hemoglobinController.text} g/dL)');
     }
 
@@ -143,8 +140,6 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
         'Pernah melahirkan bayi dengan berat < 2500 gram (${widget.jumlahLahirBeratRendah}x)',
       );
     }
-
-    // hipertensi -> sistol > 120 && diatol > 80
 
     return resti;
   }
@@ -159,11 +154,11 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
 
     try {
       final docRef = await FirebaseFirestore.instance.collection('kehamilan').add({
-        "bb": _bbController.text,
+        // "bb": _bbController.text,
         "tb": _tbController.text,
-        "lila": _lilaController.text,
+        // "lila": _lilaController.text,
         "hemoglobin": _hemoglobinController.text,
-        "lp": _lpController.text,
+        // "lp": _lpController.text,
         "bpjs": _bpjsController.text,
         "no_kohort_ibu": _noKohortController.text,
         "no_reka_medis": _noRekaMedisController.text,
@@ -191,7 +186,7 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
         Navigator.pushReplacementNamed(
           context,
           AppRouter.kunjungan,
-          arguments: {'kehamilanId': docRef.id},
+          arguments: {'kehamilanId': docRef.id, 'firstTime': true},
         );
       }
     } catch (e) {
@@ -286,15 +281,15 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                   setState(() => _htp = date);
                 },
               ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                label: "Lingkar Lengan Atas (LILA)",
-                icon: Icons.straighten,
-                controller: _lilaController,
-                suffixText: 'cm',
-                isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
-              ),
+              // const SizedBox(height: 12),
+              // CustomTextField(
+              //   label: "Lingkar Lengan Atas (LILA)",
+              //   icon: Icons.straighten,
+              //   controller: _lilaController,
+              //   suffixText: 'cm',
+              //   isNumber: true,
+              //   validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+              // ),
               const SizedBox(height: 12),
               CustomTextField(
                 label: "Tinggi Badan (TB)",
@@ -304,24 +299,24 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 isNumber: true,
                 validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                label: "Berat Badan (BB)",
-                icon: Icons.monitor_weight,
-                controller: _bbController,
-                suffixText: 'kilogram',
-                isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
-              ),
-              const SizedBox(height: 12),
-              CustomTextField(
-                label: "Lingkar Perut (LP)",
-                icon: Icons.accessibility,
-                controller: _lpController,
-                suffixText: 'cm',
-                isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
-              ),
+              // const SizedBox(height: 12),
+              // CustomTextField(
+              //   label: "Berat Badan (BB)",
+              //   icon: Icons.monitor_weight,
+              //   controller: _bbController,
+              //   suffixText: 'kilogram',
+              //   isNumber: true,
+              //   validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+              // ),
+              // const SizedBox(height: 12),
+              // CustomTextField(
+              //   label: "Lingkar Perut (LP)",
+              //   icon: Icons.accessibility,
+              //   controller: _lpController,
+              //   suffixText: 'cm',
+              //   isNumber: true,
+              //   validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+              // ),
               const SizedBox(height: 12),
               DropdownField(
                 label: 'Penggunaan KB Sebelum Hamil',
