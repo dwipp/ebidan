@@ -90,6 +90,17 @@ class PilihBumilScreen extends StatelessWidget {
                                 AppRouter.kunjungan,
                                 arguments: {'kehamilanId': latestKehamilanId},
                               );
+                            } else {
+                              // buka pendataan kehamilan
+                              Navigator.pushNamed(
+                                context,
+                                AppRouter.pendataanKehamilan,
+                                arguments: {
+                                  'bumilId': bumil.idBumil,
+                                  'latestHistoryYear':
+                                      bumil.latestRiwayat?.tahun,
+                                },
+                              );
                             }
                           }
                         },

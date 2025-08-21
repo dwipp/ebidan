@@ -50,7 +50,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => PendataanKehamilanScreen(
             bumilId: args['bumilId'],
-            latestHistoryYear: args['latestHistoryYear'],
+            latestHistoryYear: args['latestHistoryYear'] as int?,
           ),
         );
       case kunjungan:
