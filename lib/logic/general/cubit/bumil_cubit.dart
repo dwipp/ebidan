@@ -29,7 +29,7 @@ class BumilCubit extends Cubit<BumilState> {
       final list = snapshot.docs
           .map((doc) => Bumil.fromMap(doc.id, doc.data()))
           .toList();
-      // print('bumil: ${list.length}');
+
       emit(state.copyWith(bumilList: list, filteredList: list));
     } catch (e) {
       emit(BumilState.initial());

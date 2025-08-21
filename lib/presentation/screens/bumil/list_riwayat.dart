@@ -22,11 +22,11 @@ class ListRiwayatBumilScreen extends StatelessWidget {
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             child: ListTile(
-              title: Text("Tahun ${riwayat.tahun}"),
-              subtitle: Text(
-                "Berat: ${riwayat.beratBayi} g, Panjang: ${riwayat.panjangBayi} cm\n"
-                "Status: ${riwayat.statusBayi}, Tempat: ${riwayat.tempat}",
+              title: Text(
+                "Tahun ${riwayat.tahun}",
+                style: TextStyle(fontWeight: FontWeight.w500),
               ),
+              subtitle: Text(riwayat.statusTerm),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.pushNamed(

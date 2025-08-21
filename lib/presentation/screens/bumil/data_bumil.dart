@@ -68,17 +68,20 @@ class DataBumilScreen extends StatelessWidget {
               icon: Icons.history,
               title: 'Riwayat Bumil',
               onTap: () {
-                // if (bumil.riwayat!.isNotEmpty) {
-                //   Navigator.pushNamed(
-                //     context,
-                //     AppRouter.listRiwayat,
-                //     arguments: {'riwayatList': bumil.riwayat},
-                //   );
-                // } else {
-                print('riwayat: ${bumil.riwayat}');
-                print('nama: ${bumil.namaIbu}');
-                // tampilan toast bahwa tidak ada riwayat
-                // }
+                if (bumil.riwayat != null) {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.listRiwayat,
+                    arguments: {'riwayatList': bumil.riwayat},
+                  );
+                } else {
+                  // tampilan toast bahwa tidak ada riwayat
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Tidak ada riwayat kehamilan'),
+                    ),
+                  );
+                }
               },
             ),
             _buildMenuButton(

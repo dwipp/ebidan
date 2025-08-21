@@ -45,7 +45,7 @@ class PilihBumilScreen extends StatelessWidget {
           Expanded(
             child: BlocBuilder<BumilCubit, BumilState>(
               builder: (context, state) {
-                print('update: ${state.filteredList}');
+                // print('update: ${state.filteredList}');
                 // print('loading: ${state.loading}');
                 if (state is BumilLoading) {
                   return const Center(child: CircularProgressIndicator());
@@ -69,7 +69,7 @@ class PilihBumilScreen extends StatelessWidget {
                         subtitle: Text('No HP: ${bumil.noHp}'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () async {
-                          print('state: $pilihState');
+                          // print('bumil: ${bumil.riwayat}}');
                           if (pilihState == 'bumil') {
                             Navigator.pushNamed(
                               context,
