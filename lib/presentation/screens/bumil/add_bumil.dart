@@ -28,8 +28,6 @@ class _AddBumilState extends State<AddBumilScreen> {
   final _kkSuamiController = TextEditingController();
   final _pendidikanIbuController = TextEditingController();
   final _pendidikanSuamiController = TextEditingController();
-  final _kabupatenController = TextEditingController();
-  final _kecamatanController = TextEditingController();
 
   DateTime? _birthdateIbu;
   DateTime? _birthdateSuami;
@@ -106,8 +104,6 @@ class _AddBumilState extends State<AddBumilScreen> {
         "kk_suami": _kkSuamiController.text.trim(),
         "pendidikan_ibu": _pendidikanIbuController.text.trim(),
         "pendidikan_suami": _pendidikanSuamiController.text.trim(),
-        "kabupaten": _kabupatenController.text.trim(),
-        "kecamatan": _kecamatanController.text.trim(),
         "id_bidan": user.uid,
         "birthdate_ibu": _birthdateIbu,
         "birthdate_suami": _birthdateSuami,
@@ -382,22 +378,6 @@ class _AddBumilState extends State<AddBumilScreen> {
                     ),
                     keyboardType: TextInputType.phone,
                     validator: _validateHP,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _kabupatenController,
-                    decoration: const InputDecoration(
-                      labelText: 'Kabupaten',
-                      prefixIcon: Icon(Icons.location_city),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _kecamatanController,
-                    decoration: const InputDecoration(
-                      labelText: 'Kecamatan',
-                      prefixIcon: Icon(Icons.map),
-                    ),
                   ),
 
                   const SizedBox(height: 24),

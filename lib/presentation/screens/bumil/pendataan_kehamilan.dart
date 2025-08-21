@@ -32,6 +32,7 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
   final _bbController = TextEditingController();
   final _tbController = TextEditingController();
   final _lilaController = TextEditingController();
+  final _hemoglobinController = TextEditingController();
   final _lpController = TextEditingController();
   final _bpjsController = TextEditingController();
   final _noKohortController = TextEditingController();
@@ -100,7 +101,7 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
   List<String> collectingResti() {
     List<String> resti = [];
     if (widget.age < 20 && widget.age > 35) {
-      resti.add('Usia ${widget.age}');
+      resti.add('Usia ${widget.age} tahun');
     }
     if (widget.jumlahRiwayat >= 4) {
       resti.add('Riwayat kehamilan ${widget.jumlahRiwayat}x');
@@ -114,18 +115,20 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
     }
 
     if (int.parse(_tbController.text) < 145) {
-      resti.add('Risiko panggul sempit (tb: ${_tbController.text})');
+      resti.add('Risiko panggul sempit (tb: ${_tbController.text} cm)');
     }
 
     if (int.parse(_lilaController.text) < 23.5) {
-      resti.add('Kekurangan Energi Kronis (lila: ${_lilaController.text})');
+      resti.add('Kekurangan Energi Kronis (lila: ${_lilaController.text} cm)');
     }
 
-    // anemia -> hb < 11 g/dL
+    if (int.parse(_hemoglobinController.text) < 11) {
+      resti.add('Anemia (Hb: ${_hemoglobinController.text} g/dL)');
+    }
+
     // hipertensi -> sistol > 120 && diatol > 80
-    // keguguran berulang
-    // bayi lahir mati
-    // lahir dengan berat rendah
+    // keguguran berulang -> keguguran sekali dianggap resti
+    // lahir dengan berat rendah -> lahir dengan berat < 2500 gram
 
     return resti;
   }
@@ -143,6 +146,7 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
         "bb": _bbController.text,
         "tb": _tbController.text,
         "lila": _lilaController.text,
+        "hemoglobin": _hemoglobinController.text,
         "lp": _lpController.text,
         "bpjs": _bpjsController.text,
         "no_kohort_ibu": _noKohortController.text,
@@ -359,6 +363,14 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
                 icon: Icons.science,
                 controller: _hasilLabController,
                 isMultiline: true,
+              ),
+              const SizedBox(height: 12),
+              CustomTextField(
+                label: "Kadar Hemoglobin",
+                icon: Icons.bloodtype,
+                controller: _hemoglobinController,
+                suffixText: 'g/dL',
+                isNumber: true,
               ),
               const SizedBox(height: 12),
               DatePickerFormField(

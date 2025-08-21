@@ -118,8 +118,6 @@ class Bumil {
       'kk_ibu': kkIbu,
       'kk_suami': kkSuami,
       'alamat': alamat,
-      'kabupaten': kabupaten,
-      'kecamatan': kecamatan,
       'agama_ibu': agamaIbu,
       'agama_suami': agamaSuami,
       'blood_ibu': bloodIbu,
