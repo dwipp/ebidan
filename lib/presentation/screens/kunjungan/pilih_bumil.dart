@@ -97,8 +97,10 @@ class PilihBumilScreen extends StatelessWidget {
                                 AppRouter.pendataanKehamilan,
                                 arguments: {
                                   'bumilId': bumil.idBumil,
+                                  'age': bumil.age,
                                   'latestHistoryYear':
                                       bumil.latestRiwayat?.tahun,
+                                  'jumlahRiwayat': bumil.riwayat?.length ?? 0,
                                 },
                               );
                             }

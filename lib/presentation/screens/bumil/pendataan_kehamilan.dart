@@ -9,11 +9,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class PendataanKehamilanScreen extends StatefulWidget {
   final String bumilId;
+  final int age;
   final int? latestHistoryYear;
+  final int jumlahRiwayat;
   const PendataanKehamilanScreen({
     super.key,
     required this.bumilId,
+    required this.age,
     required this.latestHistoryYear,
+    required this.jumlahRiwayat,
   });
 
   @override
@@ -71,6 +75,61 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
     _jarakKehamilan.text = jarakTahun == 0 ? '-' : '$jarakTahun tahun';
   }
 
+  Map<String, int> hitungSelisihTahunBulan(DateTime dari, DateTime ke) {
+    int tahun = ke.year - dari.year;
+    int bulan = ke.month - dari.month;
+
+    // kalau bulan negatif, berarti tahunnya harus dikurangi 1
+    if (bulan < 0) {
+      tahun--;
+      bulan += 12;
+    }
+
+    // opsional: kalau harinya belum lewat, bulan dikurangi 1
+    if (ke.day < dari.day) {
+      bulan--;
+      if (bulan < 0) {
+        bulan += 12;
+        tahun--;
+      }
+    }
+
+    return {"tahun": tahun, "bulan": bulan};
+  }
+
+  List<String> collectingResti() {
+    List<String> resti = [];
+    if (widget.age < 20 && widget.age > 35) {
+      resti.add('Usia ${widget.age}');
+    }
+    if (widget.jumlahRiwayat >= 4) {
+      resti.add('Riwayat kehamilan ${widget.jumlahRiwayat}x');
+    }
+
+    // final selisih = hitungSelisihTahunBulan(widget.latestHistoryYear, DateTime.now());
+    final jarakTahun =
+        DateTime.now().year - (widget.latestHistoryYear ?? DateTime.now().year);
+    if (jarakTahun < 2) {
+      resti.add('Jarak kehamilan terlalu dekat ($jarakTahun tahun)');
+    }
+
+    if (int.parse(_tbController.text) < 145) {
+      resti.add('Risiko panggul sempit (tb: ${_tbController.text})');
+    }
+
+    if (int.parse(_lilaController.text) < 23.5) {
+      resti.add('Kekurangan Energi Kronis (lila: ${_lilaController.text})');
+    }
+
+    // anemia -> hb < 11 g/dL
+    // hipertensi -> sistol > 120 && diatol > 80
+    // keguguran berulang
+    // bayi lahir mati
+    // lahir dengan berat rendah
+
+    return resti;
+  }
+
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -102,6 +161,7 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
         "id_bidan": user.uid,
         "created_at": DateTime.now(),
         "id_bumil": widget.bumilId,
+        "resti": collectingResti(),
       });
 
       if (mounted) {

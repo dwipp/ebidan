@@ -143,4 +143,8 @@ class Bumil {
   }
 
   int? get latestHistoryYear => latestRiwayat?.tahun;
+
+  int get age {
+    return (DateTime.now().year - (birthdateIbu?.year ?? 0));
+  }
 }

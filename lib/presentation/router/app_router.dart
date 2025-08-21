@@ -49,14 +49,17 @@ class AppRouter {
       case addRiwayatBumil:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => AddRiwayatBumilScreen(bumilId: args['bumilId']),
+          builder: (_) =>
+              AddRiwayatBumilScreen(bumilId: args['bumilId'], age: args['age']),
         );
       case pendataanKehamilan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => PendataanKehamilanScreen(
             bumilId: args['bumilId'],
+            age: args['age'],
             latestHistoryYear: args['latestHistoryYear'] as int?,
+            jumlahRiwayat: args['jumlahRiwayat'],
           ),
         );
       case kunjungan:

@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 
 class AddRiwayatBumilScreen extends StatefulWidget {
   final String bumilId;
-  const AddRiwayatBumilScreen({super.key, required this.bumilId});
+  final int age;
+  const AddRiwayatBumilScreen({
+    super.key,
+    required this.bumilId,
+    required this.age,
+  });
 
   @override
   State<AddRiwayatBumilScreen> createState() => _AddRiwayatBumilState();
@@ -102,7 +107,12 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
       Navigator.pushReplacementNamed(
         context,
         AppRouter.pendataanKehamilan,
-        arguments: {'bumilId': widget.bumilId, 'latestHistoryYear': null},
+        arguments: {
+          'bumilId': widget.bumilId,
+          'age': widget.age,
+          'latestHistoryYear': null,
+          'jumlahRiwayat': 0,
+        },
       );
     } else {
       try {
@@ -121,7 +131,9 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
             AppRouter.pendataanKehamilan,
             arguments: {
               'bumilId': widget.bumilId,
+              'age': widget.age,
               'latestHistoryYear': latestYear,
+              'jumlahRiwayat': riwayatMap.length,
             },
           );
         }
