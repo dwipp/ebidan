@@ -9,7 +9,7 @@ class Kehamilan {
   final String? hasilLab;
   final String? hemoglobin;
   final DateTime? hpht;
-  final DateTime? http;
+  final DateTime? htp;
   final String? idBidan;
   final String? idBumil;
   final String? kontrasepsiSebelumHamil;
@@ -22,6 +22,7 @@ class Kehamilan {
   final String? statusTt;
   final String? tb;
   final DateTime? tglPeriksaUsg;
+  final String? statusPersalinan; // sudah | belum
   final List<Kunjungan>? kunjungan;
 
   Kehamilan({
@@ -32,7 +33,7 @@ class Kehamilan {
     this.hasilLab,
     this.hemoglobin,
     this.hpht,
-    this.http,
+    this.htp,
     this.idBidan,
     this.idBumil,
     this.kontrasepsiSebelumHamil,
@@ -45,6 +46,7 @@ class Kehamilan {
     this.statusTt,
     this.tb,
     this.tglPeriksaUsg,
+    this.statusPersalinan,
     this.kunjungan,
   });
 
@@ -61,7 +63,7 @@ class Kehamilan {
       hasilLab: json['hasil_lab'],
       hemoglobin: json['hemoglobin'],
       hpht: (json['hpht'] as Timestamp?)?.toDate(),
-      http: (json['http'] as Timestamp?)?.toDate(),
+      htp: (json['htp'] as Timestamp?)?.toDate(),
       idBidan: json['id_bidan'],
       idBumil: json['id_bumil'],
       kontrasepsiSebelumHamil: json['kontrasepsi_sebelum_hamil'],
@@ -74,6 +76,7 @@ class Kehamilan {
       statusTt: json['status_tt'],
       tb: json['tb'],
       tglPeriksaUsg: (json['tgl_periksa_usg'] as Timestamp?)?.toDate(),
+      statusPersalinan: json['status_persalinan'],
       kunjungan: kunjungan,
     );
   }

@@ -87,7 +87,16 @@ class DataBumilScreen extends StatelessWidget {
             _buildMenuButton(
               icon: Icons.pregnant_woman,
               title: 'Data Kehamilan Bumil',
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.listKehamilan,
+                  arguments: {
+                    'bidanId': bumil.idBidan,
+                    'bumilId': bumil.idBumil,
+                  },
+                );
+              },
             ),
           ],
         ),
