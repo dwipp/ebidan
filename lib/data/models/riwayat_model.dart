@@ -1,6 +1,6 @@
 class Riwayat {
   final int tahun;
-  final String beratBayi;
+  final int beratBayi;
   final String komplikasi;
   final String panjangBayi;
   final String penolong;
@@ -24,7 +24,7 @@ class Riwayat {
   factory Riwayat.fromMap(String tahun, Map<String, dynamic> map) {
     return Riwayat(
       tahun: int.tryParse(tahun) ?? 0,
-      beratBayi: map['berat_bayi'] ?? '',
+      beratBayi: map['berat_bayi'] ?? 0,
       komplikasi: map['komplikasi'] ?? '',
       panjangBayi: map['panjang_bayi'] ?? '',
       penolong: map['penolong'] ?? '',

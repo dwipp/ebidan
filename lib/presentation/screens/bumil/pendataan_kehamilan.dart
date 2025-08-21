@@ -14,6 +14,7 @@ class PendataanKehamilanScreen extends StatefulWidget {
   final int jumlahRiwayat;
   final int jumlahPara;
   final int jumlahAbortus;
+  final int jumlahLahirBeratRendah;
   const PendataanKehamilanScreen({
     super.key,
     required this.bumilId,
@@ -22,6 +23,7 @@ class PendataanKehamilanScreen extends StatefulWidget {
     required this.jumlahRiwayat,
     required this.jumlahPara,
     required this.jumlahAbortus,
+    required this.jumlahLahirBeratRendah,
   });
 
   @override
@@ -114,7 +116,6 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
       resti.add('Riwayat kehamilan ${widget.jumlahRiwayat}x');
     }
 
-    // final selisih = hitungSelisihTahunBulan(widget.latestHistoryYear, DateTime.now());
     final jarakTahun =
         DateTime.now().year - (widget.latestHistoryYear ?? DateTime.now().year);
     if (jarakTahun < 2) {
@@ -137,8 +138,13 @@ class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
       resti.add('Pernah keguguran ${_abortusController.text}x');
     }
 
+    if (widget.jumlahLahirBeratRendah > 0) {
+      resti.add(
+        'Pernah melahirkan bayi dengan berat < 2500 gram (${widget.jumlahLahirBeratRendah}x)',
+      );
+    }
+
     // hipertensi -> sistol > 120 && diatol > 80
-    // lahir dengan berat rendah -> lahir dengan berat < 2500 gram
 
     return resti;
   }

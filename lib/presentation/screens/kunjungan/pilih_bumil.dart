@@ -103,9 +103,12 @@ class PilihBumilScreen extends StatelessWidget {
                                   'latestHistoryYear':
                                       bumil.latestRiwayat?.tahun,
                                   'jumlahRiwayat': bumil
-                                      .gpa['gravida'], //bumil.riwayat?.length ?? 0,
-                                  'jumlahPara': bumil.gpa['para'],
-                                  'jumlahAbortus': bumil.gpa['abortus'],
+                                      .statisticRiwayat['gravida'], //bumil.riwayat?.length ?? 0,
+                                  'jumlahPara': bumil.statisticRiwayat['para'],
+                                  'jumlahAbortus':
+                                      bumil.statisticRiwayat['abortus'],
+                                  'jumlahBeratRendah':
+                                      bumil.statisticRiwayat['beratRendah'],
                                 },
                               );
                             }

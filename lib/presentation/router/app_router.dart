@@ -62,6 +62,7 @@ class AppRouter {
             jumlahRiwayat: args['jumlahRiwayat'],
             jumlahPara: args['jumlahPara'],
             jumlahAbortus: args['jumlahAbortus'],
+            jumlahLahirBeratRendah: args['jumlahBeratRendah'],
           ),
         );
       case kunjungan:

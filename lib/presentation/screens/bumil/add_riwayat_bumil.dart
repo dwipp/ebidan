@@ -74,6 +74,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     int hidup = 0;
     int mati = 0;
     int abortus = 0;
+    int beratRendah = 0;
     String? latestYear; // untuk simpan tahun terbaru
     Map<String, dynamic> riwayatMap = {};
     for (var item in riwayatList) {
@@ -89,8 +90,13 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
           abortus++;
         }
 
+        final beratBayi = int.parse(item['berat_bayi']);
+        if (beratBayi < 2500) {
+          beratRendah++;
+        }
+
         riwayatMap[tahun] = {
-          'berat_bayi': item['berat_bayi'],
+          'berat_bayi': beratBayi,
           'komplikasi': item['komplikasi'],
           'panjang_bayi': item['panjang_bayi'],
           'penolong': item['penolong'] == 'Lainnya'
@@ -127,6 +133,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
           'jumlahRiwayat': 0,
           'jumlahPara': 0,
           'julmahAbortus': 0,
+          'jumlahBeratRendah': 0,
         },
       );
     } else {
@@ -151,6 +158,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
               'jumlahRiwayat': riwayatMap.length,
               'jumlahPara': hidup + mati,
               'jumlahAbortus': abortus,
+              'jumlahBeratRendah': beratRendah,
             },
           );
         }

@@ -147,24 +147,30 @@ class Bumil {
   }
 
   /// Hitung jumlah bayi lahir hidup/mati dan jumlah abortus
-  Map<String, int> get gpa {
+  Map<String, int> get statisticRiwayat {
     int para = 0; // hidup + mati
     int abortus = 0;
+    int beratRendah = 0;
 
-    print('riwayat jumlah: ${riwayat?.length}');
     if (riwayat != null) {
       for (final r in riwayat!) {
-        print('riwayat: ${r.statusBayi}');
         if (r.statusBayi.toLowerCase() == 'hidup' ||
             r.statusBayi.toLowerCase() == 'mati') {
           para++;
         } else if (r.statusBayi.toLowerCase() == 'abortus') {
           abortus++;
         }
+
+        if (r.beratBayi < 2500) {
+          beratRendah++;
+        }
       }
     }
-    print('riwayat para: $para');
-    print('riwayat abortus: $abortus');
-    return {'para': para, 'abortus': abortus, 'gravida': para + abortus};
+    return {
+      'para': para,
+      'abortus': abortus,
+      'gravida': para + abortus,
+      'beratRendah': beratRendah,
+    };
   }
 }

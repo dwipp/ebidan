@@ -58,7 +58,7 @@ class DetailRiwayatScreen extends StatelessWidget {
             _buildInfoTile(
               Icons.monitor_weight,
               "Berat Bayi",
-              riwayat.beratBayi,
+              riwayat.beratBayi.toString(),
               suffixText: 'gram',
             ),
             _buildInfoTile(
