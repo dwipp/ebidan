@@ -105,12 +105,13 @@ class DataKehamilanScreen extends StatelessWidget {
               const SizedBox(height: 8),
               if (kehamilan.resti != null && kehamilan.resti!.isNotEmpty)
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: kehamilan.resti!
                       .map(
                         (r) => Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(8),
-                          margin: const EdgeInsets.only(bottom: 4),
+                          color: Colors.red.shade100,
                           child: Text('- $r'),
                         ),
                       )

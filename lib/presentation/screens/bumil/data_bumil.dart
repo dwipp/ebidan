@@ -98,6 +98,20 @@ class DataBumilScreen extends StatelessWidget {
                 );
               },
             ),
+            _buildMenuButton(
+              icon: Icons.calendar_month,
+              title: 'Kunjungan',
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.listKunjungan,
+                  arguments: {
+                    'bidanId': bumil.idBidan,
+                    'bumilId': bumil.idBumil,
+                  },
+                );
+              },
+            ),
           ],
         ),
       ),

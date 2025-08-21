@@ -1,4 +1,5 @@
 import 'package:ebidan/data/models/bumil_model.dart';
+import 'package:ebidan/logic/utility/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -6,12 +7,6 @@ class DetailBumilScreen extends StatelessWidget {
   final Bumil bumil;
 
   const DetailBumilScreen({super.key, required this.bumil});
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return "-";
-    // Format ke bahasa Indonesia: 1 Januari 1990
-    return DateFormat("d MMMM yyyy", "id_ID").format(date);
-  }
 
   Widget _buildRow(String label, String? value, {String suffix = ''}) {
     return Padding(
@@ -71,7 +66,10 @@ class DetailBumilScreen extends StatelessWidget {
               _buildRow("Pendidikan", bumil.pendidikanIbu),
               _buildRow("Pekerjaan", bumil.jobIbu),
               _buildRow("Golongan Darah", bumil.bloodIbu),
-              _buildRow("Tanggal Lahir", _formatDate(bumil.birthdateIbu)),
+              _buildRow(
+                "Tanggal Lahir",
+                Utils.formattedDate(bumil.birthdateIbu),
+              ),
 
               const SizedBox(height: 16),
               const Text(
@@ -86,7 +84,10 @@ class DetailBumilScreen extends StatelessWidget {
               _buildRow("Pendidikan", bumil.pendidikanSuami),
               _buildRow("Pekerjaan", bumil.jobSuami),
               _buildRow("Golongan Darah", bumil.bloodSuami),
-              _buildRow("Tanggal Lahir", _formatDate(bumil.birthdateSuami)),
+              _buildRow(
+                "Tanggal Lahir",
+                Utils.formattedDate(bumil.birthdateSuami),
+              ),
 
               const SizedBox(height: 16),
               const Text(
@@ -103,7 +104,10 @@ class DetailBumilScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("Menerima buku KIA", _formatDate(bumil.createdAt)),
+              _buildRow(
+                "Menerima buku KIA",
+                Utils.formattedDate(bumil.createdAt),
+              ),
             ],
           ),
         ),

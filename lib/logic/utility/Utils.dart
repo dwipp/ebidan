@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Utils {
   /// Ambil nama route sebelumnya sesuai level.
@@ -29,5 +30,11 @@ class Utils {
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
     );
+  }
+
+  static String formattedDate(DateTime? date) {
+    if (date == null) return "-";
+    // Format ke bahasa Indonesia: 1 Januari 1990
+    return DateFormat("d MMMM yyyy", "id_ID").format(date);
   }
 }

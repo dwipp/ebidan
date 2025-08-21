@@ -3,6 +3,7 @@ import 'package:ebidan/presentation/screens/bumil/data_kehamilan.dart';
 import 'package:ebidan/presentation/screens/bumil/detail_bumil.dart';
 import 'package:ebidan/presentation/screens/bumil/detail_riwayat.dart';
 import 'package:ebidan/presentation/screens/bumil/list_kehamilan.dart';
+import 'package:ebidan/presentation/screens/bumil/list_kunjungan.dart';
 import 'package:ebidan/presentation/screens/bumil/list_riwayat.dart';
 import 'package:ebidan/presentation/screens/bumil/pendataan_kehamilan.dart';
 import 'package:ebidan/presentation/screens/bumil/add_riwayat_bumil.dart';
@@ -33,6 +34,7 @@ class AppRouter {
   static const String detailRiwayat = '/detailriwayat';
   static const String dataKehamilan = '/datakehamilan';
   static const String listKehamilan = '/listkehamilan';
+  static const String listKunjungan = '/listkunjungan';
 
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
@@ -112,6 +114,14 @@ class AppRouter {
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => ListKehamilanScreen(
+            bidanId: args['bidanId'],
+            bumilId: args['bumilId'],
+          ),
+        );
+      case listKunjungan:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => ListKunjunganScreen(
             bidanId: args['bidanId'],
             bumilId: args['bumilId'],
           ),
