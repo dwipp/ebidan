@@ -75,7 +75,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     int mati = 0;
     int abortus = 0;
     int beratRendah = 0;
-    String? latestYear; // untuk simpan tahun terbaru
+    int? latestYear; // untuk simpan tahun terbaru
     Map<String, dynamic> riwayatMap = {};
     for (var item in riwayatList) {
       if (item['tahun'] != '') {
@@ -109,8 +109,9 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
         };
 
         // cek apakah tahun lebih besar dari latest
-        if (latestYear == null || int.parse(tahun) > int.parse(latestYear)) {
-          latestYear = tahun;
+        final year = int.parse(tahun);
+        if (latestYear == null || year > latestYear) {
+          latestYear = year;
         }
       }
     }
