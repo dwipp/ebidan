@@ -1,11 +1,10 @@
-import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 
-class DataBumilScreen extends StatelessWidget {
-  final Bumil bumil;
+class UpdateKehamilanScreen extends StatelessWidget {
+  final String kehamilanId;
 
-  const DataBumilScreen({super.key, required this.bumil});
+  const UpdateKehamilanScreen({super.key, required this.kehamilanId});
 
   Widget _buildMenuButton({
     required IconData icon,
@@ -45,7 +44,7 @@ class DataBumilScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(bumil.namaIbu),
+        title: Text('Update Kehamilan'),
         // centerTitle: true,
         elevation: 0,
       ),
@@ -54,61 +53,24 @@ class DataBumilScreen extends StatelessWidget {
         child: Column(
           children: [
             _buildMenuButton(
-              icon: Icons.person,
-              title: 'Detail Bumil',
+              icon: Icons.calendar_month,
+              title: 'Kunjungan Baru',
               onTap: () {
                 Navigator.pushNamed(
                   context,
-                  AppRouter.detailBumil,
-                  arguments: {'bumil': bumil},
+                  AppRouter.kunjungan,
+                  arguments: {'kehamilanId': kehamilanId, 'firstTime': false},
                 );
-              },
-            ),
-            _buildMenuButton(
-              icon: Icons.history,
-              title: 'Riwayat Bumil',
-              onTap: () {
-                if (bumil.riwayat != null) {
-                  Navigator.pushNamed(
-                    context,
-                    AppRouter.listRiwayat,
-                    arguments: {'riwayatList': bumil.riwayat},
-                  );
-                } else {
-                  // tampilan toast bahwa tidak ada riwayat
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Tidak ada riwayat kehamilan'),
-                    ),
-                  );
-                }
               },
             ),
             _buildMenuButton(
               icon: Icons.pregnant_woman,
-              title: 'Data Kehamilan Bumil',
+              title: 'Persalinan',
               onTap: () {
                 Navigator.pushNamed(
                   context,
-                  AppRouter.listKehamilan,
-                  arguments: {
-                    'bidanId': bumil.idBidan,
-                    'bumilId': bumil.idBumil,
-                  },
-                );
-              },
-            ),
-            _buildMenuButton(
-              icon: Icons.calendar_month,
-              title: 'Kunjungan',
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  AppRouter.listKunjungan,
-                  arguments: {
-                    'bidanId': bumil.idBidan,
-                    'bumilId': bumil.idBumil,
-                  },
+                  AppRouter.addPersalinan,
+                  arguments: {'kehamilanId': kehamilanId},
                 );
               },
             ),

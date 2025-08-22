@@ -1,7 +1,10 @@
 import 'package:ebidan/presentation/screens/bumil/data_bumil.dart';
 import 'package:ebidan/presentation/screens/kehamilan/detail_kehamilan.dart';
 import 'package:ebidan/presentation/screens/bumil/detail_bumil.dart';
+import 'package:ebidan/presentation/screens/kehamilan/update_kehamilan.dart';
 import 'package:ebidan/presentation/screens/kunjungan/detail_kunjungan.dart';
+import 'package:ebidan/presentation/screens/persalinan/add_persalinan.dart';
+import 'package:ebidan/presentation/screens/persalinan/review_persalinan.dart';
 import 'package:ebidan/presentation/screens/riwayat/detail_riwayat.dart';
 import 'package:ebidan/presentation/screens/kehamilan/list_kehamilan.dart';
 import 'package:ebidan/presentation/screens/kunjungan/list_kunjungan.dart';
@@ -37,6 +40,9 @@ class AppRouter {
   static const String listKehamilan = '/listkehamilan';
   static const String listKunjungan = '/listkunjungan';
   static const String detailKunjungan = '/detailkunjungan';
+  static const String updateKehamilan = '/updatekehamilan';
+  static const String reviewPersalinan = '/reviewpersalinan';
+  static const String addPersalinan = '/addpersalinan';
 
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
@@ -132,6 +138,22 @@ class AppRouter {
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => DetailKunjunganScreen(kunjungan: args['kunjungan']),
+        );
+      case updateKehamilan:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) =>
+              UpdateKehamilanScreen(kehamilanId: args['kehamilanId']),
+        );
+      case addPersalinan:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => AddPersalinanScreen(kehamilanId: args['kehamilanId']),
+        );
+      case reviewPersalinan:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => ReviewPersalinanScreen(data: args['data']),
         );
       default:
         throw const RouteException('Route not found!');

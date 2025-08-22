@@ -90,14 +90,26 @@ class PilihBumilScreen extends StatelessWidget {
                             if (latestKehamilan?.id != null) {
                               final firstTime =
                                   latestKehamilan!.kunjungan?.isEmpty;
-                              Navigator.pushNamed(
-                                context,
-                                AppRouter.kunjungan,
-                                arguments: {
-                                  'kehamilanId': latestKehamilan.id,
-                                  'firstTime': firstTime,
-                                },
-                              );
+
+                              if (firstTime == true) {
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRouter.kunjungan,
+                                  arguments: {
+                                    'kehamilanId': latestKehamilan.id,
+                                    'firstTime': true,
+                                  },
+                                );
+                              } else {
+                                // tampilkan update kehamilan yang berisi menu Kunjungan Baru dan Persalinan
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRouter.updateKehamilan,
+                                  arguments: {
+                                    'kehamilanId': latestKehamilan.id,
+                                  },
+                                );
+                              }
                             } else {
                               // buka pendataan kehamilan
                               Navigator.pushNamed(
