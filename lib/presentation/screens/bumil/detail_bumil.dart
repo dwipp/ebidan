@@ -8,32 +8,6 @@ class DetailBumilScreen extends StatelessWidget {
 
   const DetailBumilScreen({super.key, required this.bumil});
 
-  Widget _buildRow(String label, String? value, {String suffix = ''}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 3,
-            child: Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.normal),
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Text(
-              (value != null && value.isNotEmpty) ? '$value $suffix' : "-",
-              softWrap: true,
-              maxLines: null,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,14 +33,14 @@ class DetailBumilScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("Nama", bumil.namaIbu),
-              _buildRow("NIK", bumil.nikIbu),
-              _buildRow("KK", bumil.kkIbu),
-              _buildRow("Agama", bumil.agamaIbu),
-              _buildRow("Pendidikan", bumil.pendidikanIbu),
-              _buildRow("Pekerjaan", bumil.jobIbu),
-              _buildRow("Golongan Darah", bumil.bloodIbu),
-              _buildRow(
+              Utils.generateRowLabelValue("Nama", bumil.namaIbu),
+              Utils.generateRowLabelValue("NIK", bumil.nikIbu),
+              Utils.generateRowLabelValue("KK", bumil.kkIbu),
+              Utils.generateRowLabelValue("Agama", bumil.agamaIbu),
+              Utils.generateRowLabelValue("Pendidikan", bumil.pendidikanIbu),
+              Utils.generateRowLabelValue("Pekerjaan", bumil.jobIbu),
+              Utils.generateRowLabelValue("Golongan Darah", bumil.bloodIbu),
+              Utils.generateRowLabelValue(
                 "Tanggal Lahir",
                 Utils.formattedDate(bumil.birthdateIbu),
               ),
@@ -77,14 +51,14 @@ class DetailBumilScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("Nama", bumil.namaSuami),
-              _buildRow("NIK", bumil.nikSuami),
-              _buildRow("KK", bumil.kkSuami),
-              _buildRow("Agama", bumil.agamaSuami),
-              _buildRow("Pendidikan", bumil.pendidikanSuami),
-              _buildRow("Pekerjaan", bumil.jobSuami),
-              _buildRow("Golongan Darah", bumil.bloodSuami),
-              _buildRow(
+              Utils.generateRowLabelValue("Nama", bumil.namaSuami),
+              Utils.generateRowLabelValue("NIK", bumil.nikSuami),
+              Utils.generateRowLabelValue("KK", bumil.kkSuami),
+              Utils.generateRowLabelValue("Agama", bumil.agamaSuami),
+              Utils.generateRowLabelValue("Pendidikan", bumil.pendidikanSuami),
+              Utils.generateRowLabelValue("Pekerjaan", bumil.jobSuami),
+              Utils.generateRowLabelValue("Golongan Darah", bumil.bloodSuami),
+              Utils.generateRowLabelValue(
                 "Tanggal Lahir",
                 Utils.formattedDate(bumil.birthdateSuami),
               ),
@@ -95,8 +69,8 @@ class DetailBumilScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("No. HP", bumil.noHp),
-              _buildRow("Alamat", bumil.alamat),
+              Utils.generateRowLabelValue("No. HP", bumil.noHp),
+              Utils.generateRowLabelValue("Alamat", bumil.alamat),
 
               const SizedBox(height: 16),
               const Text(
@@ -104,7 +78,7 @@ class DetailBumilScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow(
+              Utils.generateRowLabelValue(
                 "Menerima buku KIA",
                 Utils.formattedDate(bumil.createdAt),
               ),

@@ -37,4 +37,43 @@ class Utils {
     // Format ke bahasa Indonesia: 1 Januari 1990
     return DateFormat("d MMMM yyyy", "id_ID").format(date);
   }
+
+  static Widget generateRowLabelValue(
+    String label,
+    String? value, {
+    String suffix = '',
+  }) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: 3,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              color: Colors.grey.shade100, // bg label
+              alignment: Alignment.centerLeft,
+              child: Text(
+                label,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 4,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              color: Colors.transparent, // bg value
+              alignment: Alignment.centerLeft,
+              child: Text(
+                (value != null && value.isNotEmpty) ? '$value $suffix' : "-",
+                softWrap: true,
+                maxLines: null,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

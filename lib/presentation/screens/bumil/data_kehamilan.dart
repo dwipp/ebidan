@@ -1,3 +1,4 @@
+import 'package:ebidan/logic/utility/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
@@ -10,41 +11,6 @@ class DataKehamilanScreen extends StatelessWidget {
   String _formatDate(DateTime? date) {
     if (date == null) return "-";
     return DateFormat("d MMMM yyyy", "id_ID").format(date);
-  }
-
-  Widget _buildRow(String label, String? value, {String suffix = ''}) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            flex: 3,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              color: Colors.grey.shade100, // bg label
-              alignment: Alignment.centerLeft,
-              child: Text(
-                label,
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              color: Colors.transparent, // bg value
-              alignment: Alignment.centerLeft,
-              child: Text(
-                (value != null && value.isNotEmpty) ? '$value $suffix' : "-",
-                softWrap: true,
-                maxLines: null,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -74,28 +40,51 @@ class DataKehamilanScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("Tinggi Badan", kehamilan.tb?.toString(), suffix: "cm"),
-              _buildRow("No. Kohort Ibu", kehamilan.noKohortIbu),
-              _buildRow("No. Rekam Medis", kehamilan.noRekaMedis),
-              _buildRow("BPJS", kehamilan.bpjs),
-              _buildRow("Status Ibu", kehamilan.statusIbu),
-              _buildRow("Status TT", kehamilan.statusTt),
-              _buildRow(
+              Utils.generateRowLabelValue(
+                "Tinggi Badan",
+                kehamilan.tb?.toString(),
+                suffix: "cm",
+              ),
+              Utils.generateRowLabelValue(
+                "No. Kohort Ibu",
+                kehamilan.noKohortIbu,
+              ),
+              Utils.generateRowLabelValue(
+                "No. Rekam Medis",
+                kehamilan.noRekaMedis,
+              ),
+              Utils.generateRowLabelValue("BPJS", kehamilan.bpjs),
+              Utils.generateRowLabelValue("Status Ibu", kehamilan.statusIbu),
+              Utils.generateRowLabelValue("Status TT", kehamilan.statusTt),
+              Utils.generateRowLabelValue(
                 "Kontrasepsi Sebelum Hamil",
                 kehamilan.kontrasepsiSebelumHamil,
               ),
-              _buildRow("GPA", kehamilan.gpa),
-              _buildRow("HPHT", _formatDate(kehamilan.hpht)),
-              _buildRow("HTP", _formatDate(kehamilan.htp)),
-              _buildRow(
+              Utils.generateRowLabelValue("GPA", kehamilan.gpa),
+              Utils.generateRowLabelValue("HPHT", _formatDate(kehamilan.hpht)),
+              Utils.generateRowLabelValue("HTP", _formatDate(kehamilan.htp)),
+              Utils.generateRowLabelValue(
                 "Tanggal Periksa USG",
                 _formatDate(kehamilan.tglPeriksaUsg),
               ),
-              _buildRow("Riwayat Penyakit", kehamilan.riwayatPenyakit),
-              _buildRow("Riwayat Alergi", kehamilan.riwayatAlergi),
-              _buildRow("Hasil Lab", kehamilan.hasilLab),
-              _buildRow('Hemoglobin', kehamilan.hemoglobin, suffix: 'g/dL'),
-              _buildRow("Dibuat Pada", _formatDate(kehamilan.createdAt)),
+              Utils.generateRowLabelValue(
+                "Riwayat Penyakit",
+                kehamilan.riwayatPenyakit,
+              ),
+              Utils.generateRowLabelValue(
+                "Riwayat Alergi",
+                kehamilan.riwayatAlergi,
+              ),
+              Utils.generateRowLabelValue("Hasil Lab", kehamilan.hasilLab),
+              Utils.generateRowLabelValue(
+                'Hemoglobin',
+                kehamilan.hemoglobin,
+                suffix: 'g/dL',
+              ),
+              Utils.generateRowLabelValue(
+                "Dibuat Pada",
+                _formatDate(kehamilan.createdAt),
+              ),
 
               const SizedBox(height: 16),
               const Text(
@@ -121,6 +110,7 @@ class DataKehamilanScreen extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(8),
+                  color: Colors.grey.shade100, // bg label
                   child: const Text("-"),
                 ),
             ],

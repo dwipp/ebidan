@@ -1,4 +1,5 @@
 import 'package:ebidan/data/models/riwayat_model.dart';
+import 'package:ebidan/logic/utility/Utils.dart';
 import 'package:flutter/material.dart';
 
 class DetailRiwayatScreen extends StatelessWidget {
@@ -6,93 +7,56 @@ class DetailRiwayatScreen extends StatelessWidget {
 
   const DetailRiwayatScreen({super.key, required this.riwayat});
 
-  Widget _buildInfoTile(
-    IconData icon,
-    String label,
-    String value, {
-    String suffixText = '',
-  }) {
-    return Card(
-      elevation: 1,
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: Icon(icon, color: Colors.blueAccent),
-        title: Text(
-          label,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-            color: Colors.grey,
-          ),
-        ),
-        subtitle: Text(
-          value.isNotEmpty ? '$value $suffixText' : "-",
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Detail Riwayat ${riwayat.tahun}"),
-        backgroundColor: Colors.blueAccent,
-        elevation: 0,
+        title: const Text("Detail Riwayat"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () async {
+              print('edit');
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: ListView(
-          children: [
-            const Text(
-              "Informasi Bayi",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Informasi Bayi",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-            ),
-            const SizedBox(height: 8),
-            _buildInfoTile(
-              Icons.monitor_weight,
-              "Berat Bayi",
-              riwayat.beratBayi.toString(),
-              suffixText: 'gram',
-            ),
-            _buildInfoTile(
-              Icons.straighten,
-              "Panjang Bayi",
-              riwayat.panjangBayi,
-              suffixText: 'cm',
-            ),
-            _buildInfoTile(Icons.child_care, "Status Bayi", riwayat.statusBayi),
+              const SizedBox(height: 8),
+              Utils.generateRowLabelValue(
+                "Berat Bayi",
+                riwayat.beratBayi.toString(),
+                suffix: 'gram',
+              ),
+              Utils.generateRowLabelValue(
+                "Panjang Bayi",
+                riwayat.panjangBayi,
+                suffix: 'cm',
+              ),
+              Utils.generateRowLabelValue("Status Bayi", riwayat.statusBayi),
 
-            const SizedBox(height: 16),
-            const Text(
-              "Kelahiran",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+              const SizedBox(height: 16),
+              const Text(
+                "Kelahiran",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-            ),
-            const SizedBox(height: 8),
-            _buildInfoTile(
-              Icons.local_hospital,
-              "Status Lahir",
-              riwayat.statusLahir,
-            ),
-            _buildInfoTile(Icons.date_range, "Status Term", riwayat.statusTerm),
-            _buildInfoTile(Icons.place, "Tempat", riwayat.tempat),
-            _buildInfoTile(Icons.person, "Penolong", riwayat.penolong),
-            _buildInfoTile(
-              Icons.warning_amber_rounded,
-              "Komplikasi",
-              riwayat.komplikasi,
-            ),
-          ],
+              const SizedBox(height: 8),
+              Utils.generateRowLabelValue("Status Lahir", riwayat.statusLahir),
+              Utils.generateRowLabelValue("Status Term", riwayat.statusTerm),
+              Utils.generateRowLabelValue("Tempat", riwayat.tempat),
+              Utils.generateRowLabelValue("Penolong", riwayat.penolong),
+              Utils.generateRowLabelValue("Komplikasi", riwayat.komplikasi),
+            ],
+          ),
         ),
       ),
     );
