@@ -80,7 +80,7 @@ class DetailKunjunganScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Utils.generateRowLabelValue(
                 "Usia Kandungan",
-                ' ${kunjungan.uk}',
+                '± ${kunjungan.uk}',
                 suffix: 'minggu',
               ),
 

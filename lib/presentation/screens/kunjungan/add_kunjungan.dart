@@ -40,12 +40,12 @@ class _KunjunganState extends State<KunjunganScreen> {
 
   String? _selectedStatusKunjungan;
   final List<String> _statusKunjunganList = [
-    'Kunjungan 1',
-    'Kunjungan 2',
-    'Kunjungan 3',
-    'Kunjungan 4',
-    'Kunjungan 5',
-    'Kunjungan 6',
+    'K1',
+    'K2',
+    'K3',
+    'K4',
+    'K5',
+    'K6',
     '-',
   ];
 
@@ -96,16 +96,16 @@ class _KunjunganState extends State<KunjunganScreen> {
               const SizedBox(height: 12),
               CustomTextField(
                 controller: bbController,
-                label: "BB",
+                label: "Berat Badan",
                 icon: Icons.monitor_weight,
-                suffixText: 'kilogram',
+                suffixText: 'kg',
                 isNumber: true,
                 validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               CustomTextField(
                 controller: lilaController,
-                label: "LILA",
+                label: "Lingkar Lengan Atas (LILA)",
                 icon: Icons.straighten,
                 suffixText: 'cm',
                 isNumber: true,
@@ -114,7 +114,7 @@ class _KunjunganState extends State<KunjunganScreen> {
               const SizedBox(height: 12),
               CustomTextField(
                 controller: lpController,
-                label: "LP",
+                label: "Lingkar Perut",
                 icon: Icons.pregnant_woman,
                 suffixText: 'cm',
                 isNumber: true,
@@ -125,7 +125,7 @@ class _KunjunganState extends State<KunjunganScreen> {
               const SizedBox(height: 12),
               CustomTextField(
                 controller: tfuController,
-                label: "TFU",
+                label: "Tinggi Fundus Uteri (TFU)",
                 icon: Icons.height,
                 isMultiline: true,
               ),

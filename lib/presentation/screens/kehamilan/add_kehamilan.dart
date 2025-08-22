@@ -154,11 +154,8 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
 
     try {
       final docRef = await FirebaseFirestore.instance.collection('kehamilan').add({
-        // "bb": _bbController.text,
         "tb": _tbController.text,
-        // "lila": _lilaController.text,
         "hemoglobin": _hemoglobinController.text,
-        // "lp": _lpController.text,
         "bpjs": _bpjsController.text,
         "no_kohort_ibu": _noKohortController.text,
         "no_reka_medis": _noRekaMedisController.text,
@@ -282,15 +279,6 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                   setState(() => _htp = date);
                 },
               ),
-              // const SizedBox(height: 12),
-              // CustomTextField(
-              //   label: "Lingkar Lengan Atas (LILA)",
-              //   icon: Icons.straighten,
-              //   controller: _lilaController,
-              //   suffixText: 'cm',
-              //   isNumber: true,
-              //   validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
-              // ),
               const SizedBox(height: 12),
               CustomTextField(
                 label: "Tinggi Badan (TB)",
@@ -300,24 +288,6 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 isNumber: true,
                 validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
-              // const SizedBox(height: 12),
-              // CustomTextField(
-              //   label: "Berat Badan (BB)",
-              //   icon: Icons.monitor_weight,
-              //   controller: _bbController,
-              //   suffixText: 'kilogram',
-              //   isNumber: true,
-              //   validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
-              // ),
-              // const SizedBox(height: 12),
-              // CustomTextField(
-              //   label: "Lingkar Perut (LP)",
-              //   icon: Icons.accessibility,
-              //   controller: _lpController,
-              //   suffixText: 'cm',
-              //   isNumber: true,
-              //   validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
-              // ),
               const SizedBox(height: 12),
               DropdownField(
                 label: 'Penggunaan KB Sebelum Hamil',

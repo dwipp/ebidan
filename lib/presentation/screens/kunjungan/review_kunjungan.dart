@@ -133,7 +133,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("BB", widget.data['bb'] ?? "", suffix: 'kilogram'),
+              _buildRow("BB", widget.data['bb'] ?? "", suffix: 'kg'),
               _buildRow("LILA", widget.data['lila'] ?? "", suffix: 'cm'),
               _buildRow("LP", widget.data['lp'] ?? "", suffix: 'cm'),
               _buildRow(
