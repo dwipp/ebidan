@@ -1,15 +1,16 @@
 import 'package:ebidan/presentation/screens/bumil/data_bumil.dart';
-import 'package:ebidan/presentation/screens/bumil/data_kehamilan.dart';
+import 'package:ebidan/presentation/screens/kehamilan/detail_kehamilan.dart';
 import 'package:ebidan/presentation/screens/bumil/detail_bumil.dart';
-import 'package:ebidan/presentation/screens/bumil/detail_riwayat.dart';
-import 'package:ebidan/presentation/screens/bumil/list_kehamilan.dart';
-import 'package:ebidan/presentation/screens/bumil/list_kunjungan.dart';
-import 'package:ebidan/presentation/screens/bumil/list_riwayat.dart';
-import 'package:ebidan/presentation/screens/bumil/pendataan_kehamilan.dart';
-import 'package:ebidan/presentation/screens/bumil/add_riwayat_bumil.dart';
+import 'package:ebidan/presentation/screens/kunjungan/detail_kunjungan.dart';
+import 'package:ebidan/presentation/screens/riwayat/detail_riwayat.dart';
+import 'package:ebidan/presentation/screens/kehamilan/list_kehamilan.dart';
+import 'package:ebidan/presentation/screens/kunjungan/list_kunjungan.dart';
+import 'package:ebidan/presentation/screens/riwayat/list_riwayat.dart';
+import 'package:ebidan/presentation/screens/kehamilan/add_kehamilan.dart';
+import 'package:ebidan/presentation/screens/riwayat/add_riwayat_bumil.dart';
 import 'package:ebidan/presentation/screens/home.dart';
 import 'package:ebidan/presentation/screens/kunjungan/add_kunjungan.dart';
-import 'package:ebidan/presentation/screens/kunjungan/pilih_bumil.dart';
+import 'package:ebidan/presentation/screens/bumil/pilih_bumil.dart';
 import 'package:ebidan/presentation/screens/kunjungan/review_kunjungan.dart';
 import 'package:ebidan/presentation/screens/login.dart';
 import 'package:ebidan/presentation/screens/register.dart';
@@ -35,6 +36,7 @@ class AppRouter {
   static const String dataKehamilan = '/datakehamilan';
   static const String listKehamilan = '/listkehamilan';
   static const String listKunjungan = '/listkunjungan';
+  static const String detailKunjungan = '/detailkunjungan';
 
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
@@ -61,7 +63,7 @@ class AppRouter {
       case pendataanKehamilan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => PendataanKehamilanScreen(
+          builder: (_) => AddKehamilanScreen(
             bumilId: args['bumilId'],
             age: args['age'],
             latestHistoryYear: args['latestHistoryYear'] as int?,
@@ -108,7 +110,7 @@ class AppRouter {
       case dataKehamilan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => DataKehamilanScreen(kehamilan: args['kehamilan']),
+          builder: (_) => DetailKehamilanScreen(kehamilan: args['kehamilan']),
         );
       case listKehamilan:
         final args = routeSettings.arguments as Map<String, dynamic>;
@@ -125,6 +127,11 @@ class AppRouter {
             bidanId: args['bidanId'],
             bumilId: args['bumilId'],
           ),
+        );
+      case detailKunjungan:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => DetailKunjunganScreen(kunjungan: args['kunjungan']),
         );
       default:
         throw const RouteException('Route not found!');

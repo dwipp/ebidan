@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class PendataanKehamilanScreen extends StatefulWidget {
+class AddKehamilanScreen extends StatefulWidget {
   final String bumilId;
   final int age;
   final int? latestHistoryYear;
@@ -15,7 +15,7 @@ class PendataanKehamilanScreen extends StatefulWidget {
   final int jumlahPara;
   final int jumlahAbortus;
   final int jumlahLahirBeratRendah;
-  const PendataanKehamilanScreen({
+  const AddKehamilanScreen({
     super.key,
     required this.bumilId,
     required this.age,
@@ -27,10 +27,10 @@ class PendataanKehamilanScreen extends StatefulWidget {
   });
 
   @override
-  State<PendataanKehamilanScreen> createState() => _PendataanKehamilanState();
+  State<AddKehamilanScreen> createState() => _PendataanKehamilanState();
 }
 
-class _PendataanKehamilanState extends State<PendataanKehamilanScreen> {
+class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isSubmitting = false;
 

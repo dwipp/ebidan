@@ -85,13 +85,16 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             child: ListTile(
               title: Text(Utils.formattedDate(kunjungan.createdAt)),
+              subtitle: kunjungan.status == '-'
+                  ? null
+                  : Text('status: ${kunjungan.status}'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                // Navigator.pushNamed(
-                //   context,
-                //   AppRouter.dataKehamilan,
-                //   arguments: {'kunjungan': kunjungan},
-                // );
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.detailKunjungan,
+                  arguments: {'kunjungan': kunjungan},
+                );
               },
             ),
           );

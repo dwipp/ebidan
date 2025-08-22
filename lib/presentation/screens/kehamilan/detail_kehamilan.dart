@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 
-class DataKehamilanScreen extends StatelessWidget {
+class DetailKehamilanScreen extends StatelessWidget {
   final Kehamilan kehamilan;
 
-  const DataKehamilanScreen({super.key, required this.kehamilan});
+  const DetailKehamilanScreen({super.key, required this.kehamilan});
 
   String _formatDate(DateTime? date) {
     if (date == null) return "-";
