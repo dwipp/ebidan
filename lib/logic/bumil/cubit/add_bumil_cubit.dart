@@ -1,9 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/data/hive/bumil_hive.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/logic/utility/connection_util.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hive/hive.dart';
 
 part 'add_bumil_state.dart';
 
@@ -13,12 +15,16 @@ class AddBumilCubit extends Cubit<AddBumilState> {
   Future<void> submitBumil(Bumil bumil) async {
     emit(state.copyWith(isSubmitting: true, error: null));
 
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      emit(state.copyWith(isSubmitting: false, error: 'User belum login'));
+      return;
+    }
+
     await ConnectionUtil.checkConnection(
       onConnected: () async {
+        // Jika online, simpan langsung ke Firestore
         try {
-          final user = FirebaseAuth.instance.currentUser;
-          if (user == null) throw Exception('User belum login');
-
           final docRef = await FirebaseFirestore.instance
               .collection('bumil')
               .add({
@@ -52,21 +58,42 @@ class AddBumilCubit extends Cubit<AddBumilState> {
             ),
           );
         } catch (e) {
-          emit(
-            state.copyWith(
-              isSubmitting: false,
-              error: e.toString(),
-              bumilId: null,
-            ),
-          );
+          emit(state.copyWith(isSubmitting: false, error: e.toString()));
         }
       },
-      onDisconnected: () {
+      onDisconnected: () async {
+        // Jika offline, simpan lokal menggunakan Hive
+        final box = await Hive.openBox<BumilHive>('offline_bumil');
+        await box.add(
+          BumilHive(
+            namaIbu: bumil.namaIbu,
+            namaSuami: bumil.namaSuami,
+            alamat: bumil.alamat,
+            noHp: bumil.noHp,
+            agamaIbu: bumil.agamaIbu,
+            agamaSuami: bumil.agamaSuami,
+            bloodIbu: bumil.bloodIbu,
+            bloodSuami: bumil.bloodSuami,
+            jobIbu: bumil.jobIbu,
+            jobSuami: bumil.jobSuami,
+            nikIbu: bumil.nikIbu,
+            nikSuami: bumil.nikSuami,
+            kkIbu: bumil.kkIbu,
+            kkSuami: bumil.kkSuami,
+            pendidikanIbu: bumil.pendidikanIbu,
+            pendidikanSuami: bumil.pendidikanSuami,
+            birthdateIbu: bumil.birthdateIbu!,
+            birthdateSuami: bumil.birthdateSuami!,
+            idBidan: user.uid,
+            createdAt: DateTime.now(),
+          ),
+        );
+
         emit(
           state.copyWith(
             isSubmitting: false,
-            error: 'Tidak ada koneksi internet',
-            bumilId: null,
+            isSuccess: true,
+            error: 'Offline: Data tersimpan sementara',
           ),
         );
       },

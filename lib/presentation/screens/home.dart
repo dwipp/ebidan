@@ -1,3 +1,4 @@
+import 'package:ebidan/logic/utility/sync_util.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -64,9 +65,11 @@ class HomeScreen extends StatelessWidget {
           StaggeredGridTile.count(
             crossAxisCellCount: 2,
             mainAxisCellCount: 1,
-            child: Container(
-              color: Colors.lime[200],
-              child: Text("diisi apa yaa"),
+            child: InkWell(
+              child: Container(color: Colors.lime[200], child: Text("sync")),
+              onTap: () {
+                SyncUtil.syncAll();
+              },
             ),
           ),
           StaggeredGridTile.count(
