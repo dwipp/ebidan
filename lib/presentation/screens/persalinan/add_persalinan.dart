@@ -29,9 +29,9 @@ class _PersalinanScreenState extends State<AddPersalinanScreen> {
 
   String? _selectedPenolong;
   final List<String> _penolongList = [
-    'Dukun Kampung',
-    'Dokter',
     'Bidan',
+    'Dokter',
+    'Dukun Kampung',
     'Lainnya',
   ];
 

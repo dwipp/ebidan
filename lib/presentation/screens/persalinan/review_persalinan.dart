@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/data/models/persalinan_model.dart';
 import 'package:ebidan/logic/utility/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,17 @@ class ReviewPersalinanScreen extends StatefulWidget {
   State<ReviewPersalinanScreen> createState() => _ReviewPersalinanScreenState();
 }
 
+Future<void> tambahPersalinan(String kehamilanId, Persalinan persalinan) async {
+  final docRef = FirebaseFirestore.instance
+      .collection('kehamilan')
+      .doc(kehamilanId);
+
+  await docRef.update({
+    'persalinan': persalinan.toMap(),
+    'status_persalinan': 'sudah',
+  });
+}
+
 class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
   bool _isLoading = false;
 
@@ -19,22 +31,23 @@ class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final docRef = FirebaseFirestore.instance
-          .collection('kehamilan')
-          .doc(widget.data['kehamilanId'] as String)
-          .collection('persalinan')
-          .add({
-            'berat_lahir': widget.data['berat_lahir'],
-            'cara': widget.data['cara'],
-            'lingkar_kepala': widget.data['lingkar_kepala'],
-            'panjang_badan': widget.data['panjang_badan'],
-            'penolong': widget.data['penolong'],
-            'sex': widget.data['sex'],
-            'tempat': widget.data['tempat'],
-            'tgl_persalinan': widget.data['tgl_persalinan'],
-            'umur_kehamilan': widget.data['umur_kehamilan'],
-            'created_at': DateTime.now(),
-          });
+      final persalinanBaru = Persalinan(
+        beratLahir: widget.data['berat_lahir'] as String,
+        cara: widget.data['cara'] as String,
+        createdAt: DateTime.now(),
+        lingkarKepala: widget.data['lingkar_kepala'] as String,
+        panjangBadan: widget.data['panjang_badan'] as String,
+        penolong: widget.data['penolong'] as String,
+        sex: widget.data['sex'] as String,
+        tempat: widget.data['tempat'] as String,
+        tglPersalinan: widget.data['tgl_persalinan'] as DateTime,
+        umurKehamilan: widget.data['umur_kehamilan'] as String,
+      );
+
+      await tambahPersalinan(
+        widget.data['kehamilanId'] as String,
+        persalinanBaru,
+      );
 
       ScaffoldMessenger.of(
         context,
@@ -84,7 +97,7 @@ class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
               ),
               Utils.generateRowLabelValue(
                 "Lingkar Kepala",
-                widget.data['lignkar_kepala'] as String,
+                widget.data['lingkar_kepala'] as String,
                 suffix: 'cm',
               ),
               Utils.generateRowLabelValue(

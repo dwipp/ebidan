@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
+import 'package:ebidan/data/models/persalinan_model.dart';
 
 class Kehamilan {
   final String id;
@@ -24,6 +25,7 @@ class Kehamilan {
   final DateTime? tglPeriksaUsg;
   final String? statusPersalinan; // sudah | belum
   final List<Kunjungan>? kunjungan;
+  final Persalinan? persalinan;
 
   Kehamilan({
     required this.id,
@@ -48,6 +50,7 @@ class Kehamilan {
     this.tglPeriksaUsg,
     this.statusPersalinan,
     this.kunjungan,
+    this.persalinan,
   });
 
   factory Kehamilan.fromFirestore(
@@ -78,6 +81,36 @@ class Kehamilan {
       tglPeriksaUsg: (json['tgl_periksa_usg'] as Timestamp?)?.toDate(),
       statusPersalinan: json['status_persalinan'],
       kunjungan: kunjungan,
+      persalinan: Persalinan.fromMap(json['persalinan']),
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'bpjs': bpjs,
+      'created_at': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
+      'gpa': gpa,
+      'hasil_lab': hasilLab,
+      'hemoglobin': hemoglobin,
+      'hpht': hpht != null ? Timestamp.fromDate(hpht!) : null,
+      'htp': htp != null ? Timestamp.fromDate(htp!) : null,
+      'id_bidan': idBidan,
+      'id_bumil': idBumil,
+      'kontrasepsi_sebelum_hamil': kontrasepsiSebelumHamil,
+      'no_kohort_ibu': noKohortIbu,
+      'no_reka_medis': noRekaMedis,
+      'resti': resti,
+      'riwayat_alergi': riwayatAlergi,
+      'riwayat_penyakit': riwayatPenyakit,
+      'status_ibu': statusIbu,
+      'status_tt': statusTt,
+      'tb': tb,
+      'tgl_periksa_usg': tglPeriksaUsg != null
+          ? Timestamp.fromDate(tglPeriksaUsg!)
+          : null,
+      'status_persalinan': statusPersalinan,
+      'persalinan': persalinan?.toMap(),
+      // ⚠️ kunjungan tidak disimpan langsung karena biasanya koleksi terpisah
+    }..removeWhere((key, value) => value == null);
   }
 }
