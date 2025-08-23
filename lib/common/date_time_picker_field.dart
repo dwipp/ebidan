@@ -3,13 +3,20 @@ import 'package:intl/intl.dart';
 
 class DateTimePickerField extends FormField<DateTime> {
   DateTimePickerField({
-    super.key,
+    Key? key,
     required String labelText,
     required IconData prefixIcon,
-    super.validator,
-    super.onSaved,
+    FormFieldSetter<DateTime>? onSaved,
+    FormFieldValidator<DateTime>? validator,
+    DateTime? initialValue,
+    AutovalidateMode? autovalidateMode,
     required BuildContext context,
   }) : super(
+         key: key,
+         onSaved: onSaved,
+         validator: validator,
+         initialValue: initialValue,
+         autovalidateMode: autovalidateMode ?? AutovalidateMode.disabled,
          builder: (FormFieldState<DateTime> field) {
            void selectDateTime() async {
              final DateTime? pickedDate = await showDatePicker(

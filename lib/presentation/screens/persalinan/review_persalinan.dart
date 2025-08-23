@@ -4,7 +4,7 @@ import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 
 class ReviewPersalinanScreen extends StatefulWidget {
-  final Map<String, String> data;
+  final Map<String, Object?> data;
 
   const ReviewPersalinanScreen({super.key, required this.data});
 
@@ -21,7 +21,7 @@ class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
     try {
       final docRef = FirebaseFirestore.instance
           .collection('kehamilan')
-          .doc(widget.data['kehamilanId'])
+          .doc(widget.data['kehamilanId'] as String)
           .collection('persalinan')
           .add({
             'berat_lahir': widget.data['berat_lahir'],
@@ -64,65 +64,55 @@ class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Subjective",
+                "Detail Kelahiran",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Utils.generateRowLabelValue(
-                "Keluhan",
-                widget.data['keluhan'] ?? "",
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                "Objective",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Utils.generateRowLabelValue(
-                "BB",
-                widget.data['bb'] ?? "",
-                suffix: 'kg',
+                "Tanggal Persalinan",
+                Utils.formattedDate(widget.data['tgl_persalinan'] as DateTime),
               ),
               Utils.generateRowLabelValue(
-                "LILA",
-                widget.data['lila'] ?? "",
+                "Berat Lahir",
+                widget.data['berat_lahir'] as String,
+                suffix: 'gram',
+              ),
+              Utils.generateRowLabelValue(
+                "Panjang Badan",
+                widget.data['panjang_badan'] as String,
                 suffix: 'cm',
               ),
               Utils.generateRowLabelValue(
-                "LP",
-                widget.data['lp'] ?? "",
+                "Lingkar Kepala",
+                widget.data['lignkar_kepala'] as String,
                 suffix: 'cm',
               ),
               Utils.generateRowLabelValue(
-                "Tekanan Darah",
-                widget.data['td'] ?? "",
-                suffix: 'mmHg',
-              ),
-              Utils.generateRowLabelValue("TFU", widget.data['tfu'] ?? ""),
-              const SizedBox(height: 16),
-              const Text(
-                "Analysis",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Utils.generateRowLabelValue(
-                "Usia Kandungan",
-                widget.data['uk'] ?? "",
+                "Umur Kehamilan",
+                widget.data['umur_kehamilan'] as String,
                 suffix: 'minggu',
               ),
               const SizedBox(height: 16),
               const Text(
-                "Planning",
+                "Kondisi Kelahiran",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Utils.generateRowLabelValue(
-                "Planning",
-                widget.data['planning'] ?? "",
+                "Jenis Kelamin",
+                widget.data['sex'] as String,
               ),
               Utils.generateRowLabelValue(
-                "Status Kunjungan",
-                widget.data['status'] ?? "",
+                "Cara Lahir",
+                widget.data['cara'] as String,
+              ),
+              Utils.generateRowLabelValue(
+                "Penolong",
+                widget.data['penolong'] as String,
+              ),
+              Utils.generateRowLabelValue(
+                "Penolong",
+                widget.data['penolong'] as String,
               ),
               const SizedBox(height: 20),
               SizedBox(

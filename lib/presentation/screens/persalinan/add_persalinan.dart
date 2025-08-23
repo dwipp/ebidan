@@ -47,31 +47,10 @@ class _PersalinanScreenState extends State<AddPersalinanScreen> {
     'Jalan',
   ];
 
-  DateTime? _selectedDate;
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
-
   Future<void> _saveData() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tanggal lahir bayi wajib diisi')),
-      );
-      return;
-    }
-
+    _formKey.currentState!.save();
+    print('tanggal: ${_tglPersalinan}');
     final resultData = {
       'kehamilanId': widget.kehamilanId,
       'berat_lahir': beratLahirController.text,
@@ -107,7 +86,8 @@ class _PersalinanScreenState extends State<AddPersalinanScreen> {
                 labelText: 'Tanggal Persalinan',
                 prefixIcon: Icons.calendar_today,
                 onSaved: (dateTime) {
-                  setState(() => _tglPersalinan = dateTime);
+                  print('datetime: $dateTime');
+                  _tglPersalinan = dateTime;
                 },
                 validator: (val) => val == null ? 'Wajib diisi' : null,
                 context: context,

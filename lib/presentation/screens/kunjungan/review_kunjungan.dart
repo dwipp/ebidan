@@ -133,15 +133,19 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("BB", widget.data['bb'] ?? "", suffix: 'kg'),
-              _buildRow("LILA", widget.data['lila'] ?? "", suffix: 'cm'),
-              _buildRow("LP", widget.data['lp'] ?? "", suffix: 'cm'),
+              _buildRow("Berat Badan", widget.data['bb'] ?? "", suffix: 'kg'),
+              _buildRow(
+                "Lingkar Lengan Atas (LILA)",
+                widget.data['lila'] ?? "",
+                suffix: 'cm',
+              ),
+              _buildRow("Lingkar Perut", widget.data['lp'] ?? "", suffix: 'cm'),
               _buildRow(
                 "Tekanan Darah",
                 widget.data['td'] ?? "",
                 suffix: 'mmHg',
               ),
-              _buildRow("TFU", widget.data['tfu'] ?? ""),
+              _buildRow("Tinggi Fundus Uteri (TFU)", widget.data['tfu'] ?? ""),
               const SizedBox(height: 16),
               const Text(
                 "Analysis",
