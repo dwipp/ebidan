@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class UpdateKehamilanScreen extends StatelessWidget {
   final String kehamilanId;
   final String bumilId;
+  final List<String> resti;
 
   const UpdateKehamilanScreen({
     super.key,
     required this.kehamilanId,
     required this.bumilId,
+    required this.resti,
   });
 
   Widget _buildMenuButton({
@@ -75,7 +77,11 @@ class UpdateKehamilanScreen extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   AppRouter.addPersalinan,
-                  arguments: {'kehamilanId': kehamilanId, 'bumilId': bumilId},
+                  arguments: {
+                    'kehamilanId': kehamilanId,
+                    'bumilId': bumilId,
+                    'resti': resti,
+                  },
                 );
               },
             ),

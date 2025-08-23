@@ -142,6 +142,7 @@ class AppRouter {
           builder: (_) => UpdateKehamilanScreen(
             kehamilanId: args['kehamilanId'],
             bumilId: args['bumilId'],
+            resti: args['resti'],
           ),
         );
       case addPersalinan:
@@ -150,6 +151,7 @@ class AppRouter {
           builder: (_) => AddPersalinanScreen(
             kehamilanId: args['kehamilanId'],
             bumilId: args['bumilId'],
+            resti: args['resti'],
           ),
         );
       default:

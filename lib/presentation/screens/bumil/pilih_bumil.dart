@@ -108,6 +108,7 @@ class PilihBumilScreen extends StatelessWidget {
                                   arguments: {
                                     'kehamilanId': latestKehamilan.id,
                                     'bumilId': latestKehamilan.idBumil,
+                                    'resti': latestKehamilan.resti ?? [],
                                   },
                                 );
                               }

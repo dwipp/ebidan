@@ -11,10 +11,12 @@ import 'package:ebidan/common/date_time_picker_field.dart';
 class AddPersalinanScreen extends StatefulWidget {
   final String kehamilanId;
   final String bumilId;
+  final List<String> resti;
   const AddPersalinanScreen({
     super.key,
     required this.bumilId,
     required this.kehamilanId,
+    required this.resti,
   });
 
   @override
@@ -107,7 +109,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
         final riwayat = Riwayat(
           tahun: persalinan.tglPersalinan!.year,
           beratBayi: int.parse(persalinan.beratLahir!),
-          komplikasi: "komplikasi",
+          komplikasi: widget.resti.join(", "),
           panjangBayi: persalinan.panjangBadan!,
           penolong: persalinan.penolong!,
           statusBayi: persalinan.statusBayi!,
@@ -149,10 +151,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Data Persalinan'),
-        automaticallyImplyLeading: false,
-      ),
+      appBar: AppBar(title: const Text('Data Persalinan')),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
