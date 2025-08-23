@@ -1,4 +1,5 @@
 import 'package:ebidan/common/blood_pressure_field.dart';
+import 'package:ebidan/common/date_picker_field.dart';
 import 'package:ebidan/common/dropdown_field.dart';
 import 'package:ebidan/common/textfield.dart';
 import 'package:ebidan/logic/utility/Utils.dart';
@@ -32,6 +33,8 @@ class _KunjunganState extends State<KunjunganScreen> {
   final TextEditingController tfuController = TextEditingController();
   final TextEditingController ukController = TextEditingController();
 
+  DateTime? _createdAt = DateTime.now();
+
   var maskUsiaKandungan = MaskTextInputFormatter(
     mask: '± ##',
     filter: {"#": RegExp(r'[0-9]')},
@@ -64,6 +67,7 @@ class _KunjunganState extends State<KunjunganScreen> {
       'uk': ukController.text,
       'planning': planningController.text,
       'status': _selectedStatusKunjungan ?? '-',
+      'createdAt': _createdAt,
     };
 
     Navigator.pushNamed(
@@ -161,6 +165,16 @@ class _KunjunganState extends State<KunjunganScreen> {
                   setState(() {
                     _selectedStatusKunjungan = newValue;
                   });
+                },
+              ),
+              const SizedBox(height: 12),
+              DatePickerFormField(
+                labelText: 'Tanggal Pembuatan Data (Auto)',
+                prefixIcon: Icons.calendar_view_day,
+                initialValue: _createdAt,
+                context: context,
+                onDateSelected: (date) {
+                  setState(() => _createdAt = date);
                 },
               ),
               const SizedBox(height: 20),

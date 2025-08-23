@@ -54,6 +54,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   DateTime? _hpht;
   DateTime? _htp;
   DateTime? _tglPeriksaUsg;
+  DateTime? _createdAt = DateTime.now();
 
   String? _selectedStatusIbu;
   final List<String> _statusBumilList = [
@@ -171,7 +172,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
         "htp": _htp,
         "tgl_periksa_usg": _tglPeriksaUsg,
         "id_bidan": user.uid,
-        "created_at": DateTime.now(),
+        "created_at": _createdAt,
         "id_bumil": widget.bumilId,
         "resti": collectingResti(),
       });
@@ -360,6 +361,16 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 context: context,
                 onDateSelected: (date) {
                   setState(() => _tglPeriksaUsg = date);
+                },
+              ),
+              const SizedBox(height: 12),
+              DatePickerFormField(
+                labelText: 'Tanggal Pembuatan Data (Auto)',
+                prefixIcon: Icons.calendar_view_day,
+                initialValue: _createdAt,
+                context: context,
+                onDateSelected: (date) {
+                  setState(() => _createdAt = date);
                 },
               ),
               const SizedBox(height: 20),

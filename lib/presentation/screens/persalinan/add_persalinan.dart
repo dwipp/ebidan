@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/common/date_picker_field.dart';
 import 'package:ebidan/common/dropdown_field.dart';
 import 'package:ebidan/common/textfield.dart';
 import 'package:ebidan/data/models/persalinan_model.dart';
@@ -304,6 +305,15 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                           validator: (val) => val == null || val.isEmpty
                               ? 'Wajib dipilih'
                               : null,
+                        ),
+                        DatePickerFormField(
+                          labelText: 'Tanggal Pembuatan Data (Auto)',
+                          prefixIcon: Icons.calendar_view_day,
+                          initialValue: data.createdAt,
+                          context: context,
+                          onDateSelected: (date) {
+                            setState(() => data.createdAt = date);
+                          },
                         ),
                         Align(
                           alignment: Alignment.centerRight,

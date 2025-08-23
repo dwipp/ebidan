@@ -3,7 +3,7 @@ import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 
 class ReviewKunjunganScreen extends StatefulWidget {
-  final Map<String, String> data;
+  final Map<String, Object?> data;
 
   const ReviewKunjunganScreen({super.key, required this.data});
 
@@ -45,7 +45,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
     try {
       final docRef = FirebaseFirestore.instance
           .collection('kehamilan')
-          .doc(widget.data['kehamilanId'])
+          .doc(widget.data['kehamilanId'] as String)
           .collection('kunjungan');
 
       // Ambil jumlah dokumen di collection kunjungan
@@ -54,7 +54,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
       final uk = widget.data['uk'] as String;
       await docRef.doc(nextId).set({
         'bb': widget.data['bb'],
-        'created_at': DateTime.now(),
+        'created_at': widget.data['createdAt'],
         'keluhan': widget.data['keluhan'],
         'lila': widget.data['lila'],
         'lp': widget.data['lp'],
@@ -67,8 +67,9 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
       print('resti masuk: ${widget.data['firstTime']}');
       if (widget.data['firstTime'] == "1") {
         List<String> resti = [];
-        if (widget.data['td'] != null && widget.data['td']!.contains('/')) {
-          List<String> parts = widget.data['td']!.split("/");
+        if (widget.data['td'] != null &&
+            (widget.data['td']! as String).contains('/')) {
+          List<String> parts = (widget.data['td']! as String).split("/");
           if (parts.length == 2) {
             int sistolik = int.parse(parts[0]);
             int diastolik = int.parse(parts[1]);
@@ -79,7 +80,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
           }
         }
         if (widget.data['lila'] != null) {
-          if (int.parse(widget.data['lila']!) < 23.5) {
+          if (int.parse(widget.data['lila']! as String) < 23.5) {
             resti.add(
               'Kekurangan Energi Kronis (lila: ${widget.data['lila']} cm)',
             );
@@ -89,7 +90,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
         if (resti.isNotEmpty) {
           await FirebaseFirestore.instance
               .collection('kehamilan')
-              .doc(widget.data['kehamilanId'])
+              .doc(widget.data['kehamilanId'] as String)
               .update({'resti': FieldValue.arrayUnion(resti)});
         }
       }
@@ -126,26 +127,37 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("Keluhan", widget.data['keluhan'] ?? ""),
+              _buildRow("Keluhan", widget.data['keluhan'] as String),
               const SizedBox(height: 16),
               const Text(
                 "Objective",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("Berat Badan", widget.data['bb'] ?? "", suffix: 'kg'),
+              _buildRow(
+                "Berat Badan",
+                widget.data['bb'] as String,
+                suffix: 'kg',
+              ),
               _buildRow(
                 "Lingkar Lengan Atas (LILA)",
-                widget.data['lila'] ?? "",
+                widget.data['lila'] as String,
                 suffix: 'cm',
               ),
-              _buildRow("Lingkar Perut", widget.data['lp'] ?? "", suffix: 'cm'),
+              _buildRow(
+                "Lingkar Perut",
+                widget.data['lp'] as String,
+                suffix: 'cm',
+              ),
               _buildRow(
                 "Tekanan Darah",
-                widget.data['td'] ?? "",
+                widget.data['td'] as String,
                 suffix: 'mmHg',
               ),
-              _buildRow("Tinggi Fundus Uteri (TFU)", widget.data['tfu'] ?? ""),
+              _buildRow(
+                "Tinggi Fundus Uteri (TFU)",
+                widget.data['tfu'] as String,
+              ),
               const SizedBox(height: 16),
               const Text(
                 "Analysis",
@@ -154,7 +166,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
               const SizedBox(height: 8),
               _buildRow(
                 "Usia Kandungan",
-                widget.data['uk'] ?? "",
+                widget.data['uk'] as String,
                 suffix: 'minggu',
               ),
               const SizedBox(height: 16),
@@ -163,8 +175,8 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("Planning", widget.data['planning'] ?? ""),
-              _buildRow("Status Kunjungan", widget.data['status'] ?? ""),
+              _buildRow("Planning", widget.data['planning'] as String),
+              _buildRow("Status Kunjungan", widget.data['status'] as String),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
