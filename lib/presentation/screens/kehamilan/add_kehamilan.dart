@@ -174,7 +174,6 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
         "created_at": DateTime.now(),
         "id_bumil": widget.bumilId,
         "resti": collectingResti(),
-        "status_persalinan": 'belum',
       });
 
       if (mounted) {

@@ -18,16 +18,7 @@ class DetailKehamilanScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Data Kehamilan"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.child_care),
-            onPressed: () {
-              // telah partus
-              // munculkan popup untuk konfirmasi, apakah sudah partus.
-              // jika sudah partus, update status_persalinan
-            },
-          ),
-        ],
+        actions: [IconButton(icon: const Icon(Icons.edit), onPressed: () {})],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

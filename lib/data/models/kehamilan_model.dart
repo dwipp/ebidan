@@ -23,7 +23,6 @@ class Kehamilan {
   final String? statusTt;
   final String? tb;
   final DateTime? tglPeriksaUsg;
-  final String? statusPersalinan; // sudah | belum
   final List<Kunjungan>? kunjungan;
   final Persalinan? persalinan;
 
@@ -48,7 +47,6 @@ class Kehamilan {
     this.statusTt,
     this.tb,
     this.tglPeriksaUsg,
-    this.statusPersalinan,
     this.kunjungan,
     this.persalinan,
   });
@@ -79,7 +77,6 @@ class Kehamilan {
       statusTt: json['status_tt'],
       tb: json['tb'],
       tglPeriksaUsg: (json['tgl_periksa_usg'] as Timestamp?)?.toDate(),
-      statusPersalinan: json['status_persalinan'],
       kunjungan: kunjungan,
       persalinan: Persalinan.fromMap(json['persalinan']),
     );
@@ -108,7 +105,6 @@ class Kehamilan {
       'tgl_periksa_usg': tglPeriksaUsg != null
           ? Timestamp.fromDate(tglPeriksaUsg!)
           : null,
-      'status_persalinan': statusPersalinan,
       'persalinan': persalinan?.toMap(),
       // ⚠️ kunjungan tidak disimpan langsung karena biasanya koleksi terpisah
     }..removeWhere((key, value) => value == null);

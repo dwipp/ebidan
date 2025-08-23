@@ -18,10 +18,7 @@ Future<void> tambahPersalinan(String kehamilanId, Persalinan persalinan) async {
       .collection('kehamilan')
       .doc(kehamilanId);
 
-  await docRef.update({
-    'persalinan': persalinan.toMap(),
-    'status_persalinan': 'sudah',
-  });
+  await docRef.update({'persalinan': persalinan.toMap()});
 }
 
 class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
