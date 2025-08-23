@@ -81,17 +81,37 @@ class PilihBumilScreen extends StatelessWidget {
                               arguments: {'bumil': bumil},
                             );
                           } else {
-                            // kunjungan
+                            // pilihState == kunjungan
                             final latestKehamilan = await getLatestKehamilan(
                               bumilId: bumil.idBumil,
                               bidanId: bumil.idBidan,
                             );
 
-                            if (latestKehamilan?.id != null) {
+                            if (latestKehamilan == null ||
+                                latestKehamilan.persalinan != null) {
+                              Navigator.pushNamed(
+                                context,
+                                AppRouter.pendataanKehamilan,
+                                arguments: {
+                                  'bumilId': bumil.idBumil,
+                                  'age': bumil.age,
+                                  'latestHistoryYear':
+                                      bumil.latestRiwayat?.tahun,
+                                  'jumlahRiwayat':
+                                      bumil.statisticRiwayat['gravida'],
+                                  'jumlahPara': bumil.statisticRiwayat['para'],
+                                  'jumlahAbortus':
+                                      bumil.statisticRiwayat['abortus'],
+                                  'jumlahBeratRendah':
+                                      bumil.statisticRiwayat['beratRendah'],
+                                },
+                              );
+                            } else {
                               final firstTime =
-                                  latestKehamilan!.kunjungan?.isEmpty;
+                                  latestKehamilan.kunjungan?.isEmpty;
 
                               if (firstTime == true) {
+                                // buka kunjungan
                                 Navigator.pushNamed(
                                   context,
                                   AppRouter.kunjungan,
@@ -112,25 +132,6 @@ class PilihBumilScreen extends StatelessWidget {
                                   },
                                 );
                               }
-                            } else {
-                              // buka pendataan kehamilan
-                              Navigator.pushNamed(
-                                context,
-                                AppRouter.pendataanKehamilan,
-                                arguments: {
-                                  'bumilId': bumil.idBumil,
-                                  'age': bumil.age,
-                                  'latestHistoryYear':
-                                      bumil.latestRiwayat?.tahun,
-                                  'jumlahRiwayat': bumil
-                                      .statisticRiwayat['gravida'], //bumil.riwayat?.length ?? 0,
-                                  'jumlahPara': bumil.statisticRiwayat['para'],
-                                  'jumlahAbortus':
-                                      bumil.statisticRiwayat['abortus'],
-                                  'jumlahBeratRendah':
-                                      bumil.statisticRiwayat['beratRendah'],
-                                },
-                              );
                             }
                           }
                         },
