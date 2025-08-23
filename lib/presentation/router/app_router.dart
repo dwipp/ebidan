@@ -126,10 +126,7 @@ class AppRouter {
       case listKunjungan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => ListKunjunganScreen(
-            bidanId: args['bidanId'],
-            bumilId: args['bumilId'],
-          ),
+          builder: (_) => ListKunjunganScreen(docId: args['docId']),
         );
       case detailKunjungan:
         final args = routeSettings.arguments as Map<String, dynamic>;

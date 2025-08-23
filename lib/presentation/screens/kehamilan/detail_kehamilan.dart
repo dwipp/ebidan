@@ -1,4 +1,6 @@
+import 'package:ebidan/common/menu_button.dart';
 import 'package:ebidan/logic/utility/Utils.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
@@ -20,12 +22,31 @@ class DetailKehamilanScreen extends StatelessWidget {
         title: const Text("Data Kehamilan"),
         actions: [IconButton(icon: const Icon(Icons.edit), onPressed: () {})],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              MenuButton(
+                icon: Icons.calendar_month,
+                title: 'Kunjungan',
+                enabled: kehamilan.kunjungan != null,
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.listKunjungan,
+                    arguments: {'docId': kehamilan.id},
+                  );
+                },
+              ),
+              MenuButton(
+                icon: Icons.pregnant_woman,
+                title: 'Persalinan',
+                enabled: kehamilan.persalinan != null,
+                onTap: () {},
+              ),
+              const SizedBox(height: 16),
               const Text(
                 "Data Kehamilan",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

@@ -6,14 +6,9 @@ import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 
 class ListKunjunganScreen extends StatefulWidget {
-  final String bumilId;
-  final String bidanId;
+  final String docId;
 
-  const ListKunjunganScreen({
-    super.key,
-    required this.bumilId,
-    required this.bidanId,
-  });
+  const ListKunjunganScreen({super.key, required this.docId});
 
   @override
   State<ListKunjunganScreen> createState() => _ListKunjunganScreenState();
@@ -33,27 +28,16 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('kehamilan')
-          .where('id_bumil', isEqualTo: widget.bumilId)
-          .where('id_bidan', isEqualTo: widget.bidanId)
-          .orderBy('created_at', descending: true)
-          .limit(1)
+          .doc(widget.docId)
+          .collection('kunjungan')
           .get();
-
-      List<Kunjungan> list = [];
-      for (var doc in snapshot.docs) {
-        final data = doc.data();
-
-        final kunjunganSnap = await doc.reference.collection('kunjungan').get();
-        final kunjunganList = kunjunganSnap.docs
-            .map((e) => Kunjungan.fromFirestore(e.data()))
-            .toList();
-        list = kunjunganList;
-        // list.add(Kehamilan.fromFirestore(doc.id, data, kunjunganList));
-      }
+      final kunjunganList = snapshot.docs
+          .map((e) => Kunjungan.fromFirestore(e.data()))
+          .toList();
 
       if (mounted) {
         setState(() {
-          _kunjunganlist = list;
+          _kunjunganlist = kunjunganList;
           _loading = false;
         });
       }
