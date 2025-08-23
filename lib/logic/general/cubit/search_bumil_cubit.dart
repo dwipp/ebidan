@@ -4,10 +4,10 @@ import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-part 'bumil_state.dart';
+part 'search_bumil_state.dart';
 
-class BumilCubit extends Cubit<BumilState> {
-  BumilCubit() : super(BumilState.initial());
+class SearchBumilCubit extends Cubit<SearchBumilState> {
+  SearchBumilCubit() : super(SearchBumilState.initial());
 
   Future<void> fetchData() async {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? "";
@@ -32,7 +32,7 @@ class BumilCubit extends Cubit<BumilState> {
       print('jumlah data bumil: ${list.length}');
       emit(state.copyWith(bumilList: list, filteredList: list));
     } catch (e) {
-      emit(BumilState.initial());
+      emit(SearchBumilState.initial());
     }
   }
 

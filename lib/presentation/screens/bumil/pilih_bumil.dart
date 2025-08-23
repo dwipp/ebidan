@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
-import 'package:ebidan/logic/general/cubit/bumil_cubit.dart';
+import 'package:ebidan/logic/general/cubit/search_bumil_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,12 +12,12 @@ class PilihBumilScreen extends StatelessWidget {
   const PilihBumilScreen({super.key, required this.pilihState});
 
   Future<void> _refresh(BuildContext context) async {
-    await context.read<BumilCubit>().fetchData();
+    await context.read<SearchBumilCubit>().fetchData();
   }
 
   @override
   Widget build(BuildContext context) {
-    context.read<BumilCubit>().fetchData();
+    context.read<SearchBumilCubit>().fetchData();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pilih Bumil'),
@@ -45,12 +45,12 @@ class PilihBumilScreen extends StatelessWidget {
                 ),
               ),
               onChanged: (val) {
-                context.read<BumilCubit>().search(val);
+                context.read<SearchBumilCubit>().search(val);
               },
             ),
           ),
           Expanded(
-            child: BlocBuilder<BumilCubit, BumilState>(
+            child: BlocBuilder<SearchBumilCubit, SearchBumilState>(
               builder: (context, state) {
                 if (state is BumilLoading) {
                   return const Center(child: CircularProgressIndicator());
