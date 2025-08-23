@@ -58,6 +58,7 @@ class Bumil {
     this.riwayat,
   });
 
+  /// ====== Factory from Firestore ======
   factory Bumil.fromMap(String idBumil, Map<String, dynamic> map) {
     List<Riwayat>? riwayat;
     if (map['riwayat'] != null) {
@@ -81,23 +82,18 @@ class Bumil {
       agamaSuami: map['agama_suami'] ?? '',
       bloodIbu: map['blood_ibu'] ?? '',
       bloodSuami: map['blood_suami'] ?? '',
-      birthdateIbu: map['birthdate_ibu'] != null
-          ? (map['birthdate_ibu'] as Timestamp).toDate()
-          : null,
-      birthdateSuami: map['birthdate_suami'] != null
-          ? (map['birthdate_suami'] as Timestamp).toDate()
-          : null,
+      birthdateIbu: _toDateTime(map['birthdate_ibu']),
+      birthdateSuami: _toDateTime(map['birthdate_suami']),
       jobIbu: map['job_ibu'] ?? '',
       jobSuami: map['job_suami'] ?? '',
       pendidikanIbu: map['pendidikan_ibu'] ?? '',
       pendidikanSuami: map['pendidikan_suami'] ?? '',
-      createdAt: map['created_at'] != null
-          ? (map['created_at'] as Timestamp).toDate()
-          : null,
+      createdAt: _toDateTime(map['created_at']),
       riwayat: riwayat,
     );
   }
 
+  /// Convert ke Firestore & JSON
   Map<String, dynamic> toMap() {
     return {
       'id_bidan': idBidan,
@@ -113,33 +109,103 @@ class Bumil {
       'agama_suami': agamaSuami,
       'blood_ibu': bloodIbu,
       'blood_suami': bloodSuami,
-      'birthdate_ibu': birthdateIbu,
-      'birthdate_suami': birthdateSuami,
+      'birthdate_ibu': birthdateIbu?.toIso8601String(),
+      'birthdate_suami': birthdateSuami?.toIso8601String(),
       'job_ibu': jobIbu,
       'job_suami': jobSuami,
       'pendidikan_ibu': pendidikanIbu,
       'pendidikan_suami': pendidikanSuami,
-      'created_at': createdAt,
+      'created_at': createdAt?.toIso8601String(),
       'riwayat': riwayat?.map((r) => r.toMap()).toList(),
     };
   }
 
+  /// Untuk HydratedBloc
+  factory Bumil.fromJson(Map<String, dynamic> json) {
+    return Bumil(
+      idBumil: json['id_bumil'],
+      idBidan: json['id_bidan'],
+      namaIbu: json['nama_ibu'],
+      namaSuami: json['nama_suami'],
+      noHp: json['no_hp'],
+      nikIbu: json['nik_ibu'],
+      nikSuami: json['nik_suami'],
+      kkIbu: json['kk_ibu'],
+      kkSuami: json['kk_suami'],
+      alamat: json['alamat'],
+      agamaIbu: json['agama_ibu'],
+      agamaSuami: json['agama_suami'],
+      bloodIbu: json['blood_ibu'],
+      bloodSuami: json['blood_suami'],
+      birthdateIbu: json['birthdate_ibu'] != null
+          ? DateTime.parse(json['birthdate_ibu'])
+          : null,
+      birthdateSuami: json['birthdate_suami'] != null
+          ? DateTime.parse(json['birthdate_suami'])
+          : null,
+      jobIbu: json['job_ibu'],
+      jobSuami: json['job_suami'],
+      pendidikanIbu: json['pendidikan_ibu'],
+      pendidikanSuami: json['pendidikan_suami'],
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
+      riwayat: json['riwayat'] != null
+          ? (json['riwayat'] as List)
+                .map((e) => Riwayat.fromMap(Map<String, dynamic>.from(e)))
+                .toList()
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id_bumil': idBumil,
+      'id_bidan': idBidan,
+      'nama_ibu': namaIbu,
+      'nama_suami': namaSuami,
+      'no_hp': noHp,
+      'nik_ibu': nikIbu,
+      'nik_suami': nikSuami,
+      'kk_ibu': kkIbu,
+      'kk_suami': kkSuami,
+      'alamat': alamat,
+      'agama_ibu': agamaIbu,
+      'agama_suami': agamaSuami,
+      'blood_ibu': bloodIbu,
+      'blood_suami': bloodSuami,
+      'birthdate_ibu': birthdateIbu?.toIso8601String(),
+      'birthdate_suami': birthdateSuami?.toIso8601String(),
+      'job_ibu': jobIbu,
+      'job_suami': jobSuami,
+      'pendidikan_ibu': pendidikanIbu,
+      'pendidikan_suami': pendidikanSuami,
+      'created_at': createdAt?.toIso8601String(),
+      'riwayat': riwayat?.map((r) => r.toMap()).toList(),
+    };
+  }
+
+  /// Utility agar Timestamp/String bisa jadi DateTime
+  static DateTime? _toDateTime(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
+  /// ====== Getter Utility ======
   Riwayat? get latestRiwayat {
     if (riwayat == null || riwayat!.isEmpty) return null;
-
     riwayat!.sort((a, b) => b.tahun.compareTo(a.tahun));
     return riwayat!.first;
   }
 
   int? get latestHistoryYear => latestRiwayat?.tahun;
 
-  int get age {
-    return (DateTime.now().year - (birthdateIbu?.year ?? 0));
-  }
+  int get age => (DateTime.now().year - (birthdateIbu?.year ?? 0));
 
-  /// Hitung jumlah bayi lahir hidup/mati dan jumlah abortus
   Map<String, int> get statisticRiwayat {
-    int para = 0; // hidup + mati
+    int para = 0;
     int abortus = 0;
     int beratRendah = 0;
 
@@ -152,9 +218,7 @@ class Bumil {
           abortus++;
         }
 
-        if (r.beratBayi < 2500) {
-          beratRendah++;
-        }
+        if (r.beratBayi < 2500) beratRendah++;
       }
     }
     return {
