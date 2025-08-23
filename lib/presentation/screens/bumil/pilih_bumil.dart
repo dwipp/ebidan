@@ -11,6 +11,10 @@ class PilihBumilScreen extends StatelessWidget {
   final String pilihState;
   const PilihBumilScreen({super.key, required this.pilihState});
 
+  Future<void> _refresh(BuildContext context) async {
+    await context.read<BumilCubit>().fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     context.read<BumilCubit>().fetchData();
@@ -22,11 +26,10 @@ class PilihBumilScreen extends StatelessWidget {
               ? IconButton(
                   icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
                   onPressed: () {
-                    // print('tambah bumil');
                     Navigator.of(context).pushNamed(AppRouter.addBumil);
                   },
                 )
-              : SizedBox(),
+              : const SizedBox(),
         ],
       ),
       body: Column(
@@ -49,8 +52,6 @@ class PilihBumilScreen extends StatelessWidget {
           Expanded(
             child: BlocBuilder<BumilCubit, BumilState>(
               builder: (context, state) {
-                // print('update: ${state.filteredList}');
-                // print('loading: ${state.loading}');
                 if (state is BumilLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -59,85 +60,88 @@ class PilihBumilScreen extends StatelessWidget {
                   return const Center(child: Text('Data tidak ditemukan.'));
                 }
 
-                return ListView.builder(
-                  itemCount: state.filteredList.length,
-                  itemBuilder: (context, i) {
-                    Bumil bumil = state.filteredList[i];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      child: ListTile(
-                        title: Text(bumil.namaIbu),
-                        subtitle: Text('No HP: ${bumil.noHp}'),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () async {
-                          // print('bumil: ${bumil.riwayat}}');
-                          if (pilihState == 'bumil') {
-                            Navigator.pushNamed(
-                              context,
-                              AppRouter.dataBumil,
-                              arguments: {'bumil': bumil},
-                            );
-                          } else {
-                            // pilihState == kunjungan
-                            final latestKehamilan = await getLatestKehamilan(
-                              bumilId: bumil.idBumil,
-                              bidanId: bumil.idBidan,
-                            );
-
-                            if (latestKehamilan == null ||
-                                latestKehamilan.persalinan != null) {
+                // Tambahkan RefreshIndicator di sini
+                return RefreshIndicator(
+                  onRefresh: () => _refresh(context),
+                  child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: state.filteredList.length,
+                    itemBuilder: (context, i) {
+                      Bumil bumil = state.filteredList[i];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        child: ListTile(
+                          title: Text(bumil.namaIbu),
+                          subtitle: Text('No HP: ${bumil.noHp}'),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () async {
+                            if (pilihState == 'bumil') {
                               Navigator.pushNamed(
                                 context,
-                                AppRouter.pendataanKehamilan,
-                                arguments: {
-                                  'bumilId': bumil.idBumil,
-                                  'age': bumil.age,
-                                  'latestHistoryYear':
-                                      bumil.latestRiwayat?.tahun,
-                                  'jumlahRiwayat':
-                                      bumil.statisticRiwayat['gravida'],
-                                  'jumlahPara': bumil.statisticRiwayat['para'],
-                                  'jumlahAbortus':
-                                      bumil.statisticRiwayat['abortus'],
-                                  'jumlahBeratRendah':
-                                      bumil.statisticRiwayat['beratRendah'],
-                                },
+                                AppRouter.dataBumil,
+                                arguments: {'bumil': bumil},
                               );
                             } else {
-                              final firstTime =
-                                  latestKehamilan.kunjungan?.isEmpty;
+                              // pilihState == kunjungan
+                              final latestKehamilan = await getLatestKehamilan(
+                                bumilId: bumil.idBumil,
+                                bidanId: bumil.idBidan,
+                              );
 
-                              if (firstTime == true) {
-                                // buka kunjungan
+                              if (latestKehamilan == null ||
+                                  latestKehamilan.persalinan != null) {
                                 Navigator.pushNamed(
                                   context,
-                                  AppRouter.kunjungan,
+                                  AppRouter.pendataanKehamilan,
                                   arguments: {
-                                    'kehamilanId': latestKehamilan.id,
-                                    'firstTime': true,
+                                    'bumilId': bumil.idBumil,
+                                    'age': bumil.age,
+                                    'latestHistoryYear':
+                                        bumil.latestRiwayat?.tahun,
+                                    'jumlahRiwayat':
+                                        bumil.statisticRiwayat['gravida'],
+                                    'jumlahPara':
+                                        bumil.statisticRiwayat['para'],
+                                    'jumlahAbortus':
+                                        bumil.statisticRiwayat['abortus'],
+                                    'jumlahBeratRendah':
+                                        bumil.statisticRiwayat['beratRendah'],
                                   },
                                 );
                               } else {
-                                // tampilkan update kehamilan yang berisi menu Kunjungan Baru dan Persalinan
-                                Navigator.pushNamed(
-                                  context,
-                                  AppRouter.updateKehamilan,
-                                  arguments: {
-                                    'kehamilanId': latestKehamilan.id,
-                                    'bumilId': latestKehamilan.idBumil,
-                                    'resti': latestKehamilan.resti ?? [],
-                                  },
-                                );
+                                final firstTime =
+                                    latestKehamilan.kunjungan?.isEmpty;
+
+                                if (firstTime == true) {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRouter.kunjungan,
+                                    arguments: {
+                                      'kehamilanId': latestKehamilan.id,
+                                      'firstTime': true,
+                                    },
+                                  );
+                                } else {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRouter.updateKehamilan,
+                                    arguments: {
+                                      'kehamilanId': latestKehamilan.id,
+                                      'bumilId': latestKehamilan.idBumil,
+                                      'resti': latestKehamilan.resti ?? [],
+                                    },
+                                  );
+                                }
                               }
                             }
-                          }
-                        },
-                      ),
-                    );
-                  },
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             ),
