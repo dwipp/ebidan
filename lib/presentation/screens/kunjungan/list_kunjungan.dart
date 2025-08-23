@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/logic/utility/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -15,38 +14,49 @@ class ListKunjunganScreen extends StatefulWidget {
 }
 
 class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
-  List<Kunjungan> _kunjunganlist = [];
+  List<Kunjungan> _kunjunganList = [];
   bool _loading = true;
+  bool _sortDesc = true; // default: terbaru di atas
 
   @override
   void initState() {
     super.initState();
-    _fetchKehamilan();
+    _fetchKunjungan();
   }
 
-  Future<void> _fetchKehamilan() async {
+  Future<void> _fetchKunjungan() async {
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('kehamilan')
           .doc(widget.docId)
           .collection('kunjungan')
+          .orderBy('created_at', descending: _sortDesc)
           .get();
+
       final kunjunganList = snapshot.docs
           .map((e) => Kunjungan.fromFirestore(e.data()))
           .toList();
 
       if (mounted) {
         setState(() {
-          _kunjunganlist = kunjunganList;
+          _kunjunganList = kunjunganList;
           _loading = false;
         });
       }
     } catch (e) {
-      debugPrint('Error fetch kehamilan: $e');
+      debugPrint('Error fetch kunjungan: $e');
       if (mounted) {
         setState(() => _loading = false);
       }
     }
+  }
+
+  void _toggleSort() {
+    setState(() {
+      _sortDesc = !_sortDesc;
+      _loading = true;
+    });
+    _fetchKunjungan();
   }
 
   @override
@@ -55,16 +65,25 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_kunjunganlist.isEmpty) {
+    if (_kunjunganList.isEmpty) {
       return const Center(child: Text("Tidak ada data kunjungan"));
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text("List Kunjungan")),
+      appBar: AppBar(
+        title: const Text("Kunjungan"),
+        actions: [
+          IconButton(
+            icon: Icon(_sortDesc ? Icons.arrow_downward : Icons.arrow_upward),
+            tooltip: _sortDesc ? "Urutkan Ascending" : "Urutkan Descending",
+            onPressed: _toggleSort,
+          ),
+        ],
+      ),
       body: ListView.builder(
-        itemCount: _kunjunganlist.length,
+        itemCount: _kunjunganList.length,
         itemBuilder: (context, index) {
-          final kunjungan = _kunjunganlist[index];
+          final kunjungan = _kunjunganList[index];
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             child: ListTile(
