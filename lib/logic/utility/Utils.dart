@@ -82,4 +82,17 @@ class Utils {
       ),
     );
   }
+
+  static void sortByDateTime<T>(
+    List<T> list,
+    DateTime Function(T item) getDateTime, {
+    bool descending = true,
+  }) {
+    list.sort((a, b) {
+      final dateA = getDateTime(a);
+      final dateB = getDateTime(b);
+
+      return descending ? dateB.compareTo(dateA) : dateA.compareTo(dateB);
+    });
+  }
 }

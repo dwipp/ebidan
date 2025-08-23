@@ -30,12 +30,18 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
           .collection('kehamilan')
           .doc(widget.docId)
           .collection('kunjungan')
-          .orderBy('created_at', descending: _sortDesc)
           .get();
 
       final kunjunganList = snapshot.docs
           .map((e) => Kunjungan.fromFirestore(e.data()))
           .toList();
+
+      // lakukan sorting lokal
+      Utils.sortByDateTime<Kunjungan>(
+        kunjunganList,
+        (k) => k.createdAt!,
+        descending: _sortDesc,
+      );
 
       if (mounted) {
         setState(() {
@@ -54,9 +60,12 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
   void _toggleSort() {
     setState(() {
       _sortDesc = !_sortDesc;
-      _loading = true;
+      Utils.sortByDateTime<Kunjungan>(
+        _kunjunganList,
+        (k) => k.createdAt!,
+        descending: _sortDesc,
+      );
     });
-    _fetchKunjungan();
   }
 
   @override
