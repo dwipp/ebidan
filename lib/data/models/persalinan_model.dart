@@ -1,64 +1,70 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Persalinan {
-  final String? beratLahir;
-  final String? cara;
-  final DateTime? createdAt;
-  final String? lingkarKepala;
-  final String? panjangBadan;
-  final String? penolong;
-  final String? sex;
-  final String? tempat;
-  final DateTime? tglPersalinan;
-  final String? umurKehamilan;
-  final String? statusBayi;
+  String? beratLahir;
+  String? cara;
+  String? lingkarKepala;
+  String? panjangBadan;
+  String? penolong;
+  String? sex;
+  String? statusBayi;
+  String? tempat;
+  String? umurKehamilan;
+  DateTime? tglPersalinan;
+  DateTime? createdAt;
 
   Persalinan({
     this.beratLahir,
     this.cara,
-    this.createdAt,
     this.lingkarKepala,
     this.panjangBadan,
     this.penolong,
     this.sex,
-    this.tempat,
-    this.tglPersalinan,
-    this.umurKehamilan,
     this.statusBayi,
+    this.tempat,
+    this.umurKehamilan,
+    this.tglPersalinan,
+    this.createdAt,
   });
 
-  factory Persalinan.fromMap(Map<String, dynamic>? json) {
-    if (json == null) return Persalinan();
-    return Persalinan(
-      beratLahir: json['berat_lahir'],
-      cara: json['cara'],
-      createdAt: (json['created_at'] as Timestamp?)?.toDate(),
-      lingkarKepala: json['lingkar_kepala'],
-      panjangBadan: json['panjang_badan'],
-      penolong: json['penolong'],
-      sex: json['sex'],
-      tempat: json['tempat'],
-      tglPersalinan: (json['tgl_persalinan'] as Timestamp?)?.toDate(),
-      umurKehamilan: json['umur_kehamilan']?.toString(),
-      statusBayi: json['status_bayi']?.toString(),
-    );
+  /// constructor kosong untuk form
+  factory Persalinan.empty() {
+    return Persalinan(createdAt: DateTime.now());
   }
 
+  /// convert ke map firestore
   Map<String, dynamic> toMap() {
     return {
-      'berat_lahir': beratLahir,
-      'cara': cara,
-      'created_at': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
-      'lingkar_kepala': lingkarKepala,
-      'panjang_badan': panjangBadan,
-      'penolong': penolong,
-      'sex': sex,
-      'tempat': tempat,
-      'tgl_persalinan': tglPersalinan != null
-          ? Timestamp.fromDate(tglPersalinan!)
-          : null,
-      'umur_kehamilan': umurKehamilan,
-      'status_bayi': statusBayi,
-    }..removeWhere((key, value) => value == null);
+      "berat_lahir": beratLahir,
+      "cara": cara,
+      "lingkar_kepala": lingkarKepala,
+      "panjang_badan": panjangBadan,
+      "penolong": penolong,
+      "sex": sex,
+      "status_bayi": statusBayi,
+      "tempat": tempat,
+      "umur_kehamilan": umurKehamilan,
+      "tgl_persalinan": tglPersalinan,
+      "created_at": createdAt ?? DateTime.now(),
+    };
+  }
+
+  /// convert dari firestore ke model
+  factory Persalinan.fromMap(Map<String, dynamic> map) {
+    return Persalinan(
+      beratLahir: map['berat_lahir']?.toString(),
+      cara: map['cara'],
+      lingkarKepala: map['lingkar_kepala']?.toString(),
+      panjangBadan: map['panjang_badan']?.toString(),
+      penolong: map['penolong'],
+      sex: map['sex'],
+      statusBayi: map['status_bayi'],
+      tempat: map['tempat'],
+      umurKehamilan: map['umur_kehamilan']?.toString(),
+      tglPersalinan: map['tgl_persalinan'] is DateTime
+          ? map['tgl_persalinan']
+          : (map['tgl_persalinan']?.toDate()),
+      createdAt: map['created_at'] is DateTime
+          ? map['created_at']
+          : (map['created_at']?.toDate()),
+    );
   }
 }

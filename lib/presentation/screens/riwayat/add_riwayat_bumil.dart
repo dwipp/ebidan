@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/common/dropdown_field.dart';
+import 'package:ebidan/common/textfield.dart';
+import 'package:ebidan/common/year_picker_field.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 
@@ -183,27 +186,6 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     }
   }
 
-  Widget _buildTextField({
-    required String label,
-    required IconData icon,
-    required Function(String) onSaved,
-    bool isNumber = false,
-    String? suffixText,
-  }) {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        suffixText: suffixText,
-      ),
-      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      textCapitalization: isNumber
-          ? TextCapitalization.none
-          : TextCapitalization.sentences,
-      onSaved: (val) => onSaved(val ?? ''),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -226,21 +208,21 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       children: [
-                        _buildYearPickerField(
-                          context: context,
+                        YearPickerField(
+                          contextField: context,
                           label: 'Tahun',
                           icon: Icons.calendar_today,
                           initialYear: data['tahun'],
                           onSaved: (year) => data['tahun'] = year,
                         ),
-                        _buildTextField(
+                        CustomTextField(
                           label: 'Berat Bayi',
                           icon: Icons.monitor_weight,
                           onSaved: (val) => data['berat_bayi'] = val,
                           isNumber: true,
                           suffixText: 'gram',
                         ),
-                        _buildTextField(
+                        CustomTextField(
                           label: 'Panjang Bayi',
                           icon: Icons.straighten,
                           onSaved: (val) => data['panjang_bayi'] = val,
@@ -248,20 +230,13 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           suffixText: 'cm',
                         ),
                         _buildPenolongField(data),
-                        DropdownButtonFormField<String>(
+                        DropdownField(
+                          label: 'Status Bayi',
+                          icon: Icons.child_care,
+                          items: statusBayiList,
                           value: data['status_bayi'].isNotEmpty
                               ? data['status_bayi']
                               : null,
-                          decoration: const InputDecoration(
-                            labelText: 'Status Bayi',
-                            prefixIcon: Icon(Icons.child_care),
-                          ),
-                          items: statusBayiList.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
                           onChanged: (newValue) {
                             setState(() {
                               data['status_bayi'] = newValue ?? '';
@@ -271,20 +246,13 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               ? 'Wajib dipilih'
                               : null,
                         ),
-                        DropdownButtonFormField<String>(
+                        DropdownField(
+                          label: 'Status Lahir',
+                          icon: Icons.pregnant_woman,
+                          items: statusLahirList,
                           value: data['status_lahir'].isNotEmpty
                               ? data['status_lahir']
                               : null,
-                          decoration: const InputDecoration(
-                            labelText: 'Status Lahir',
-                            prefixIcon: Icon(Icons.pregnant_woman),
-                          ),
-                          items: statusLahirList.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
                           onChanged: (newValue) {
                             setState(() {
                               data['status_lahir'] = newValue ?? '';
@@ -294,20 +262,13 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               ? 'Wajib dipilih'
                               : null,
                         ),
-                        DropdownButtonFormField<String>(
+                        DropdownField(
+                          label: 'Status Kehamilan',
+                          icon: Icons.date_range,
+                          items: statusKehamilanList,
                           value: data['status_term'].isNotEmpty
                               ? data['status_term']
                               : null,
-                          decoration: const InputDecoration(
-                            labelText: 'Status Kehamilan',
-                            prefixIcon: Icon(Icons.date_range),
-                          ),
-                          items: statusKehamilanList.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
                           onChanged: (newValue) {
                             setState(() {
                               data['status_term'] = newValue ?? '';
@@ -317,20 +278,13 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               ? 'Wajib dipilih'
                               : null,
                         ),
-                        DropdownButtonFormField<String>(
+                        DropdownField(
+                          label: 'Tempat Persalinan',
+                          icon: Icons.home,
+                          items: tempatList,
                           value: data['tempat'].isNotEmpty
                               ? data['tempat']
                               : null,
-                          decoration: const InputDecoration(
-                            labelText: 'Tempat Persalinan',
-                            prefixIcon: Icon(Icons.home),
-                          ),
-                          items: tempatList.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
                           onChanged: (newValue) {
                             setState(() {
                               data['tempat'] = newValue ?? '';
@@ -340,7 +294,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               ? 'Wajib dipilih'
                               : null,
                         ),
-                        _buildTextField(
+                        CustomTextField(
                           label: 'Komplikasi',
                           icon: Icons.local_hospital,
                           onSaved: (val) => data['komplikasi'] = val,
@@ -392,96 +346,6 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildYearPickerField({
-    required BuildContext context,
-    required String label,
-    required IconData icon,
-    required String initialYear,
-    required Function(String) onSaved,
-  }) {
-    final controller = TextEditingController(text: initialYear);
-
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
-      readOnly: true,
-      validator: (val) => val == null || val.isEmpty ? 'Wajib diisi' : null,
-      onTap: () async {
-        final currentYear = DateTime.now().year;
-        const minYear = 1900;
-        int tempSelectedYear = initialYear.isNotEmpty
-            ? int.tryParse(initialYear) ?? currentYear
-            : currentYear;
-
-        await showDialog(
-          context: context,
-          builder: (context) {
-            return StatefulBuilder(
-              builder: (context, setStateDialog) {
-                return AlertDialog(
-                  title: const Text('Pilih Tahun'),
-                  content: SizedBox(
-                    height: 200,
-                    child: ListWheelScrollView.useDelegate(
-                      itemExtent: 50,
-                      onSelectedItemChanged: (index) {
-                        setStateDialog(() {
-                          tempSelectedYear = currentYear - index;
-                        });
-                      },
-                      physics: const FixedExtentScrollPhysics(),
-                      childDelegate: ListWheelChildBuilderDelegate(
-                        childCount: currentYear - minYear + 1, // Batas tahun
-                        builder: (context, index) {
-                          final year = currentYear - index;
-                          final isSelected = year == tempSelectedYear;
-
-                          return Container(
-                            decoration: isSelected
-                                ? BoxDecoration(
-                                    color: Colors.blue.withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(8),
-                                  )
-                                : null,
-                            alignment: Alignment.center,
-                            child: Text(
-                              '$year',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                color: isSelected ? Colors.blue : Colors.black,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Batal'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        controller.text = tempSelectedYear.toString();
-                        onSaved(tempSelectedYear.toString());
-                      },
-                      child: const Text('Pilih'),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        );
-      },
     );
   }
 

@@ -19,7 +19,6 @@ import 'package:ebidan/presentation/screens/login.dart';
 import 'package:ebidan/presentation/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:ebidan/common/exceptions/route_exception.dart';
-import 'package:ebidan/main.dart';
 import 'package:ebidan/presentation/screens/bumil/add_bumil.dart';
 
 class AppRouter {
