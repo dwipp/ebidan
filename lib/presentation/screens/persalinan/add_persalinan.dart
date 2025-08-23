@@ -76,7 +76,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
     } else if (usiaMinggu >= 42) {
       return "Postterm";
     } else {
-      return "Tidak diketahui";
+      return "-";
     }
   }
 
@@ -106,16 +106,19 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
 
       List<Riwayat> riwayats = [];
       for (var persalinan in persalinanList) {
+        print('riwayat');
         final riwayat = Riwayat(
-          tahun: persalinan.tglPersalinan!.year,
-          beratBayi: int.parse(persalinan.beratLahir!),
+          tahun: persalinan.tglPersalinan?.year ?? 0,
+          beratBayi: int.tryParse(persalinan.beratLahir ?? '0') ?? 0,
           komplikasi: widget.resti.join(", "),
-          panjangBayi: persalinan.panjangBadan!,
-          penolong: persalinan.penolong!,
-          statusBayi: persalinan.statusBayi!,
-          statusLahir: persalinan.cara!,
-          statusTerm: getStatusKehamilan(int.parse(persalinan.umurKehamilan!)),
-          tempat: persalinan.tempat!,
+          panjangBayi: persalinan.panjangBadan ?? '0',
+          penolong: persalinan.penolong ?? '-',
+          statusBayi: persalinan.statusBayi ?? '-',
+          statusLahir: persalinan.cara ?? '-',
+          statusTerm: getStatusKehamilan(
+            int.tryParse(persalinan.umurKehamilan ?? '-1') ?? -1,
+          ),
+          tempat: persalinan.tempat ?? '-',
         );
         riwayats.add(riwayat);
       }
