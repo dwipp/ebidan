@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 
 class UpdateKehamilanScreen extends StatelessWidget {
   final String kehamilanId;
+  final String bumilId;
 
-  const UpdateKehamilanScreen({super.key, required this.kehamilanId});
+  const UpdateKehamilanScreen({
+    super.key,
+    required this.kehamilanId,
+    required this.bumilId,
+  });
 
   Widget _buildMenuButton({
     required IconData icon,
@@ -70,7 +75,7 @@ class UpdateKehamilanScreen extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   AppRouter.addPersalinan,
-                  arguments: {'kehamilanId': kehamilanId},
+                  arguments: {'kehamilanId': kehamilanId, 'bumilId': bumilId},
                 );
               },
             ),

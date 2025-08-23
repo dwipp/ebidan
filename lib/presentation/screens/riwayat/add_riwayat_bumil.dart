@@ -38,7 +38,10 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     'Jalan',
   ];
 
-  final List<String> statusLahirList = ['Spontan', 'SC'];
+  final List<String> statusLahirList = [
+    'Spontan Belakang Kepala',
+    'Section Caesarea (SC)',
+  ];
 
   void _addRiwayat() {
     setState(() {
@@ -76,10 +79,13 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     int abortus = 0;
     int beratRendah = 0;
     int? latestYear; // untuk simpan tahun terbaru
-    Map<String, dynamic> riwayatMap = {};
+
+    List<Map<String, dynamic>> riwayatListFinal = [];
+
     for (var item in riwayatList) {
       if (item['tahun'] != '') {
-        String tahun = item['tahun'];
+        final tahun = int.tryParse(item['tahun']);
+        if (tahun == null) continue;
 
         // hitung jumlah berdasarkan status_bayi
         if (item['status_bayi'] == 'hidup') {
@@ -95,7 +101,8 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
           beratRendah++;
         }
 
-        riwayatMap[tahun] = {
+        riwayatListFinal.add({
+          'tahun': tahun,
           'berat_bayi': beratBayi,
           'komplikasi': item['komplikasi'],
           'panjang_bayi': item['panjang_bayi'],
@@ -106,20 +113,19 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
           'status_lahir': item['status_lahir'],
           'status_term': item['status_term'],
           'tempat': item['tempat'],
-        };
+        });
 
         // cek apakah tahun lebih besar dari latest
-        final year = int.parse(tahun);
-        if (latestYear == null || year > latestYear) {
-          latestYear = year;
+        if (latestYear == null || tahun > latestYear) {
+          latestYear = tahun;
         }
       }
     }
 
-    if (riwayatMap.isEmpty) {
+    if (riwayatListFinal.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Data bumil di simpan tanpa riwayat kehamilan'),
+          content: Text('Data bumil disimpan tanpa riwayat kehamilan'),
           backgroundColor: Colors.green,
         ),
       );
@@ -139,7 +145,8 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
       );
     } else {
       try {
-        await docRef.update({'riwayat': riwayatMap});
+        // simpan sebagai array of maps
+        await docRef.update({'riwayat': riwayatListFinal});
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -156,7 +163,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
               'bumilId': widget.bumilId,
               'age': widget.age,
               'latestHistoryYear': latestYear,
-              'jumlahRiwayat': riwayatMap.length,
+              'jumlahRiwayat': riwayatListFinal.length,
               'jumlahPara': hidup + mati,
               'jumlahAbortus': abortus,
               'jumlahBeratRendah': beratRendah,

@@ -21,9 +21,11 @@ class Riwayat {
     required this.tempat,
   });
 
-  factory Riwayat.fromMap(String tahun, Map<String, dynamic> map) {
+  factory Riwayat.fromMap(Map<String, dynamic> map) {
     return Riwayat(
-      tahun: int.tryParse(tahun) ?? 0,
+      tahun: map['tahun'] is int
+          ? map['tahun']
+          : int.tryParse(map['tahun']?.toString() ?? '') ?? 0,
       beratBayi: map['berat_bayi'] ?? 0,
       komplikasi: map['komplikasi'] ?? '',
       panjangBayi: map['panjang_bayi'] ?? '',

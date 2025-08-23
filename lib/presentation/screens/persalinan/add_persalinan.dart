@@ -7,8 +7,13 @@ import 'package:flutter/material.dart';
 
 class AddPersalinanScreen extends StatefulWidget {
   final String kehamilanId;
+  final String bumilId;
 
-  const AddPersalinanScreen({super.key, required this.kehamilanId});
+  const AddPersalinanScreen({
+    super.key,
+    required this.kehamilanId,
+    required this.bumilId,
+  });
 
   @override
   State<AddPersalinanScreen> createState() => _PersalinanScreenState();
@@ -25,7 +30,12 @@ class _PersalinanScreenState extends State<AddPersalinanScreen> {
   DateTime? _tglPersalinan;
 
   String? _selectedCara;
-  final List<String> _caraList = ['Sectio', 'Normal'];
+  final List<String> _caraLahirList = [
+    'Spontan Belakang Kepala',
+    'Section Caesarea (SC)',
+  ];
+
+  final List<String> _caraAbortusList = ['Kuretase', 'Mandiri'];
 
   String? _selectedPenolong;
   final List<String> _penolongList = [
@@ -34,6 +44,9 @@ class _PersalinanScreenState extends State<AddPersalinanScreen> {
     'Dukun Kampung',
     'Lainnya',
   ];
+
+  String? _selectedStatusBayi;
+  final List<String> _statusBayiList = ['Hidup', 'Mati', 'Abortus'];
 
   String? _selectedSex;
   final List<String> _sexList = ['Perempuan', 'Laki-laki'];
@@ -52,6 +65,7 @@ class _PersalinanScreenState extends State<AddPersalinanScreen> {
     _formKey.currentState!.save();
     print('tanggal: ${_tglPersalinan}');
     final resultData = {
+      'bumilId': widget.bumilId,
       'kehamilanId': widget.kehamilanId,
       'berat_lahir': beratLahirController.text,
       'cara': _selectedCara ?? '-',
@@ -62,6 +76,7 @@ class _PersalinanScreenState extends State<AddPersalinanScreen> {
       'tempat': _selectedTempat ?? '-',
       'tgl_persalinan': _tglPersalinan,
       'umur_kehamilan': umurKehamilanController.text,
+      'status_bayi': _selectedStatusBayi ?? '-',
     };
 
     Navigator.pushNamed(
@@ -93,13 +108,33 @@ class _PersalinanScreenState extends State<AddPersalinanScreen> {
                 context: context,
               ),
               const SizedBox(height: 12),
+              DropdownField(
+                label: 'Status Bayi',
+                icon: Icons.child_care,
+                items: _statusBayiList,
+                value: _selectedStatusBayi,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedStatusBayi = newValue;
+                  });
+                },
+                validator: (val) => val == null ? 'Wajib dipilih' : null,
+              ),
+              const SizedBox(height: 12),
               CustomTextField(
                 controller: beratLahirController,
                 label: "Berat Lahir",
                 icon: Icons.monitor_weight,
                 suffixText: 'gram',
                 isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                validator: (val) {
+                  if (_selectedStatusBayi != "Abortus") {
+                    if (val == null || val.isEmpty) {
+                      return 'Wajib diisi';
+                    }
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -108,7 +143,14 @@ class _PersalinanScreenState extends State<AddPersalinanScreen> {
                 icon: Icons.straighten,
                 suffixText: 'cm',
                 isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                validator: (val) {
+                  if (_selectedStatusBayi != "Abortus") {
+                    if (val == null || val.isEmpty) {
+                      return 'Wajib diisi';
+                    }
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -117,7 +159,14 @@ class _PersalinanScreenState extends State<AddPersalinanScreen> {
                 icon: Icons.circle_outlined,
                 suffixText: 'cm',
                 isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                validator: (val) {
+                  if (_selectedStatusBayi != "Abortus") {
+                    if (val == null || val.isEmpty) {
+                      return 'Wajib diisi';
+                    }
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -141,13 +190,22 @@ class _PersalinanScreenState extends State<AddPersalinanScreen> {
                     _selectedSex = newValue;
                   });
                 },
-                validator: (val) => val == null ? 'Wajib dipilih' : null,
+                validator: (val) {
+                  if (_selectedStatusBayi != "Abortus") {
+                    if (val == null || val.isEmpty) {
+                      return 'Wajib diisi';
+                    }
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
               DropdownField(
                 label: 'Cara Lahir',
                 icon: Icons.local_hospital,
-                items: _caraList,
+                items: _selectedStatusBayi == "Abortus"
+                    ? _caraAbortusList
+                    : _caraLahirList,
                 value: _selectedCara,
                 onChanged: (newValue) {
                   setState(() {

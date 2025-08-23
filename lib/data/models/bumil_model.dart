@@ -15,8 +15,6 @@ class Bumil {
   final String kkSuami;
 
   final String alamat;
-  final String kabupaten;
-  final String kecamatan;
 
   final String agamaIbu;
   final String agamaSuami;
@@ -33,8 +31,7 @@ class Bumil {
   final String pendidikanSuami;
 
   final DateTime? createdAt;
-
-  final List<Riwayat>? riwayat; // key = tahun
+  final List<Riwayat>? riwayat;
 
   Bumil({
     required this.idBumil,
@@ -47,8 +44,6 @@ class Bumil {
     required this.kkIbu,
     required this.kkSuami,
     required this.alamat,
-    required this.kabupaten,
-    required this.kecamatan,
     required this.agamaIbu,
     required this.agamaSuami,
     required this.bloodIbu,
@@ -66,10 +61,8 @@ class Bumil {
   factory Bumil.fromMap(String idBumil, Map<String, dynamic> map) {
     List<Riwayat>? riwayat;
     if (map['riwayat'] != null) {
-      riwayat = (map['riwayat'] as Map<String, dynamic>).entries
-          .map(
-            (e) => Riwayat.fromMap(e.key, Map<String, dynamic>.from(e.value)),
-          )
+      riwayat = (map['riwayat'] as List)
+          .map((e) => Riwayat.fromMap(Map<String, dynamic>.from(e)))
           .toList();
     }
 
@@ -84,8 +77,6 @@ class Bumil {
       kkIbu: map['kk_ibu'] ?? '',
       kkSuami: map['kk_suami'] ?? '',
       alamat: map['alamat'] ?? '',
-      kabupaten: map['kabupaten'] ?? '',
-      kecamatan: map['kecamatan'] ?? '',
       agamaIbu: map['agama_ibu'] ?? '',
       agamaSuami: map['agama_suami'] ?? '',
       bloodIbu: map['blood_ibu'] ?? '',

@@ -142,13 +142,18 @@ class AppRouter {
       case updateKehamilan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) =>
-              UpdateKehamilanScreen(kehamilanId: args['kehamilanId']),
+          builder: (_) => UpdateKehamilanScreen(
+            kehamilanId: args['kehamilanId'],
+            bumilId: args['bumilId'],
+          ),
         );
       case addPersalinan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => AddPersalinanScreen(kehamilanId: args['kehamilanId']),
+          builder: (_) => AddPersalinanScreen(
+            kehamilanId: args['kehamilanId'],
+            bumilId: args['bumilId'],
+          ),
         );
       case reviewPersalinan:
         final args = routeSettings.arguments as Map<String, dynamic>;

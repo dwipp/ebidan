@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/persalinan_model.dart';
+import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:ebidan/logic/utility/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,29 @@ class ReviewPersalinanScreen extends StatefulWidget {
 
   @override
   State<ReviewPersalinanScreen> createState() => _ReviewPersalinanScreenState();
+}
+
+Future<void> tambahRiwayatBumil(
+  String bumilId,
+  Map<String, dynamic> dataRiwayat,
+) async {
+  final docRef = FirebaseFirestore.instance.collection('bumil').doc(bumilId);
+
+  await docRef.set({
+    'riwayat': FieldValue.arrayUnion([dataRiwayat]),
+  }, SetOptions(merge: true));
+}
+
+String getStatusKehamilan(int usiaMinggu) {
+  if (usiaMinggu < 37) {
+    return "Preterm";
+  } else if (usiaMinggu >= 37 && usiaMinggu <= 41) {
+    return "Aterm";
+  } else if (usiaMinggu >= 42) {
+    return "Postterm";
+  } else {
+    return "Tidak diketahui";
+  }
 }
 
 Future<void> tambahPersalinan(String kehamilanId, Persalinan persalinan) async {
@@ -44,6 +68,24 @@ class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
       await tambahPersalinan(
         widget.data['kehamilanId'] as String,
         persalinanBaru,
+      );
+
+      final riwayatBaru = Riwayat(
+        tahun: persalinanBaru.tglPersalinan!.year,
+        beratBayi: int.parse(persalinanBaru.beratLahir!),
+        komplikasi: "komplikasi",
+        panjangBayi: persalinanBaru.panjangBadan!,
+        penolong: persalinanBaru.penolong!,
+        statusBayi: "statusBayi",
+        statusLahir: persalinanBaru.cara!,
+        statusTerm: getStatusKehamilan(
+          int.parse(persalinanBaru.umurKehamilan!),
+        ),
+        tempat: persalinanBaru.tempat!,
+      );
+      await tambahRiwayatBumil(
+        widget.data['bumilId'] as String,
+        riwayatBaru.toMap(),
       );
 
       ScaffoldMessenger.of(

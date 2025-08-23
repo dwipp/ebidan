@@ -25,11 +25,11 @@ class BumilCubit extends Cubit<BumilState> {
           .where('id_bidan', isEqualTo: userId)
           .orderBy('nama_ibu')
           .get();
-
+      print('jumlah data bumil mentab: ${snapshot.docs.length}');
       final list = snapshot.docs
           .map((doc) => Bumil.fromMap(doc.id, doc.data()))
           .toList();
-
+      print('jumlah data bumil: ${list.length}');
       emit(state.copyWith(bumilList: list, filteredList: list));
     } catch (e) {
       emit(BumilState.initial());

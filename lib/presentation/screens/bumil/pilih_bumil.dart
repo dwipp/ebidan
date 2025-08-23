@@ -107,6 +107,7 @@ class PilihBumilScreen extends StatelessWidget {
                                   AppRouter.updateKehamilan,
                                   arguments: {
                                     'kehamilanId': latestKehamilan.id,
+                                    'bumilId': latestKehamilan.idBumil,
                                   },
                                 );
                               }
