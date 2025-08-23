@@ -24,7 +24,7 @@ class Kehamilan {
   final String? tb;
   final DateTime? tglPeriksaUsg;
   final List<Kunjungan>? kunjungan;
-  final Persalinan? persalinan;
+  final List<Persalinan>? persalinan; // 🔥 sekarang array
 
   Kehamilan({
     required this.id,
@@ -78,7 +78,9 @@ class Kehamilan {
       tb: json['tb'],
       tglPeriksaUsg: (json['tgl_periksa_usg'] as Timestamp?)?.toDate(),
       kunjungan: kunjungan,
-      persalinan: Persalinan.fromMap(json['persalinan']),
+      persalinan: (json['persalinan'] as List?)
+          ?.map((e) => Persalinan.fromMap(e as Map<String, dynamic>))
+          .toList(), // 🔥 parse list
     );
   }
 
@@ -105,7 +107,9 @@ class Kehamilan {
       'tgl_periksa_usg': tglPeriksaUsg != null
           ? Timestamp.fromDate(tglPeriksaUsg!)
           : null,
-      'persalinan': persalinan?.toMap(),
+      'persalinan': persalinan
+          ?.map((e) => e.toMap())
+          .toList(), // 🔥 simpan array
       // ⚠️ kunjungan tidak disimpan langsung karena biasanya koleksi terpisah
     }..removeWhere((key, value) => value == null);
   }

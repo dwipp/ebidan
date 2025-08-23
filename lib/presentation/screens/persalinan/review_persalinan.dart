@@ -37,12 +37,22 @@ String getStatusKehamilan(int usiaMinggu) {
   }
 }
 
+// Future<void> tambahPersalinan(String kehamilanId, Persalinan persalinan) async {
+//   final docRef = FirebaseFirestore.instance
+//       .collection('kehamilan')
+//       .doc(kehamilanId);
+
+//   await docRef.update({'persalinan': persalinan.toMap()});
+// }
+
 Future<void> tambahPersalinan(String kehamilanId, Persalinan persalinan) async {
   final docRef = FirebaseFirestore.instance
       .collection('kehamilan')
       .doc(kehamilanId);
 
-  await docRef.update({'persalinan': persalinan.toMap()});
+  await docRef.set({
+    'persalinan': FieldValue.arrayUnion([persalinan.toMap()]),
+  }, SetOptions(merge: true));
 }
 
 class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
@@ -63,6 +73,7 @@ class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
         tempat: widget.data['tempat'] as String,
         tglPersalinan: widget.data['tgl_persalinan'] as DateTime,
         umurKehamilan: widget.data['umur_kehamilan'] as String,
+        statusBayi: widget.data['status_bayi'] as String,
       );
 
       await tambahPersalinan(
@@ -76,7 +87,7 @@ class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
         komplikasi: "komplikasi",
         panjangBayi: persalinanBaru.panjangBadan!,
         penolong: persalinanBaru.penolong!,
-        statusBayi: "statusBayi",
+        statusBayi: persalinanBaru.statusBayi!,
         statusLahir: persalinanBaru.cara!,
         statusTerm: getStatusKehamilan(
           int.parse(persalinanBaru.umurKehamilan!),
@@ -125,6 +136,10 @@ class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
                 Utils.formattedDate(widget.data['tgl_persalinan'] as DateTime),
               ),
               Utils.generateRowLabelValue(
+                "Status Bayi",
+                widget.data['status_bayi'] as String,
+              ),
+              Utils.generateRowLabelValue(
                 "Berat Lahir",
                 widget.data['berat_lahir'] as String,
                 suffix: 'gram',
@@ -163,8 +178,8 @@ class _ReviewPersalinanScreenState extends State<ReviewPersalinanScreen> {
                 widget.data['penolong'] as String,
               ),
               Utils.generateRowLabelValue(
-                "Penolong",
-                widget.data['penolong'] as String,
+                "Tempat Lahir",
+                widget.data['tempat'] as String,
               ),
               const SizedBox(height: 20),
               SizedBox(

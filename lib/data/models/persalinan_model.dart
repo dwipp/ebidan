@@ -11,6 +11,7 @@ class Persalinan {
   final String? tempat;
   final DateTime? tglPersalinan;
   final String? umurKehamilan;
+  final String? statusBayi;
 
   Persalinan({
     this.beratLahir,
@@ -23,6 +24,7 @@ class Persalinan {
     this.tempat,
     this.tglPersalinan,
     this.umurKehamilan,
+    this.statusBayi,
   });
 
   factory Persalinan.fromMap(Map<String, dynamic>? json) {
@@ -38,6 +40,7 @@ class Persalinan {
       tempat: json['tempat'],
       tglPersalinan: (json['tgl_persalinan'] as Timestamp?)?.toDate(),
       umurKehamilan: json['umur_kehamilan']?.toString(),
+      statusBayi: json['status_bayi']?.toString(),
     );
   }
 
@@ -55,6 +58,7 @@ class Persalinan {
           ? Timestamp.fromDate(tglPersalinan!)
           : null,
       'umur_kehamilan': umurKehamilan,
+      'status_bayi': statusBayi,
     }..removeWhere((key, value) => value == null);
   }
 }

@@ -79,13 +79,13 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
         itemCount: _kehamilanList.length,
         itemBuilder: (context, index) {
           final kehamilan = _kehamilanList[index];
-          print('kehamilan.persalinan: ${kehamilan.persalinan?.createdAt}');
+          print('kehamilan.persalinan: ${kehamilan.persalinan!.isNotEmpty}');
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             child: ListTile(
               title: Text("Tahun ${kehamilan.createdAt!.year}"),
               subtitle: Text(
-                "Status persalinan: ${kehamilan.persalinan?.createdAt != null ? 'sudah' : 'belum'}",
+                "Status persalinan: ${kehamilan.persalinan!.isNotEmpty ? 'sudah' : 'belum'}",
               ),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
