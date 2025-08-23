@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
-import 'package:ebidan/logic/general/cubit/search_bumil_cubit.dart';
+import 'package:ebidan/logic/bumil/cubit/search_bumil_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

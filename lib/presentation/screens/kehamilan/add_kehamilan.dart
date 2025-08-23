@@ -35,11 +35,8 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   bool _isSubmitting = false;
 
   // Controller untuk setiap field
-  // final _bbController = TextEditingController();
   final _tbController = TextEditingController();
-  // final _lilaController = TextEditingController();
   final _hemoglobinController = TextEditingController();
-  // final _lpController = TextEditingController();
   final _bpjsController = TextEditingController();
   final _noKohortController = TextEditingController();
   final _noRekaMedisController = TextEditingController();

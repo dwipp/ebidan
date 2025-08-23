@@ -1,6 +1,6 @@
 import 'package:ebidan/common/date_picker_field.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
-import 'package:ebidan/logic/general/cubit/add_bumil_cubit.dart';
+import 'package:ebidan/logic/bumil/cubit/add_bumil_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
