@@ -44,7 +44,21 @@ class DetailKehamilanScreen extends StatelessWidget {
                 icon: Icons.pregnant_woman,
                 title: 'Persalinan',
                 enabled: kehamilan.persalinan != null,
-                onTap: () {},
+                onTap: () {
+                  if (kehamilan.persalinan!.length > 1) {
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.listPersalinan,
+                      arguments: {'persalinans': kehamilan.persalinan!},
+                    );
+                  } else {
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.detailPersalinan,
+                      arguments: {'persalinan': kehamilan.persalinan![0]},
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 16),
               const Text(

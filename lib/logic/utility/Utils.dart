@@ -38,6 +38,12 @@ class Utils {
     return DateFormat("d MMMM yyyy", "id_ID").format(date);
   }
 
+  static String formattedDateTime(DateTime? date) {
+    if (date == null) return "-";
+    // Format ke bahasa Indonesia: 1 Januari 1990
+    return DateFormat("d MMMM yyyy - HH:mm", "id_ID").format(date);
+  }
+
   static Widget generateRowLabelValue(
     String label,
     String? value, {
