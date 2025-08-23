@@ -1,8 +1,9 @@
 import 'package:ebidan/common/date_picker_field.dart';
+import 'package:ebidan/data/models/bumil_model.dart';
+import 'package:ebidan/logic/general/cubit/add_bumil_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddBumilScreen extends StatefulWidget {
   const AddBumilScreen({Key? key}) : super(key: key);
@@ -13,7 +14,6 @@ class AddBumilScreen extends StatefulWidget {
 
 class _AddBumilState extends State<AddBumilScreen> {
   final _formKey = GlobalKey<FormState>();
-  bool _isSubmitting = false;
 
   // Controllers
   final _namaIbuController = TextEditingController();
@@ -76,63 +76,34 @@ class _AddBumilState extends State<AddBumilScreen> {
     return null;
   }
 
-  Future<void> _submitForm() async {
+  void _submitForm() {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isSubmitting = true);
 
-    User? user = FirebaseAuth.instance.currentUser;
+    final bumil = Bumil(
+      namaIbu: _namaIbuController.text.trim(),
+      namaSuami: _namaSuamiController.text.trim(),
+      alamat: _alamatController.text.trim(),
+      noHp: _noHpController.text.trim(),
+      agamaIbu: _selectedAgamaIbu!,
+      agamaSuami: _selectedAgamaSuami!,
+      bloodIbu: _selectedGolIbu!,
+      bloodSuami: _selectedGolSuami!,
+      jobIbu: _jobIbuController.text.trim(),
+      jobSuami: _jobSuamiController.text.trim(),
+      nikIbu: _nikIbuController.text.trim(),
+      nikSuami: _nikSuamiController.text.trim(),
+      kkIbu: _kkIbuController.text.trim(),
+      kkSuami: _kkSuamiController.text.trim(),
+      pendidikanIbu: _pendidikanIbuController.text.trim(),
+      pendidikanSuami: _pendidikanSuamiController.text.trim(),
+      birthdateIbu: _birthdateIbu!,
+      birthdateSuami: _birthdateSuami!,
+      idBumil: '',
+      idBidan: '',
+      createdAt: DateTime.now(),
+    );
 
-    if (user == null) {
-      return;
-    }
-
-    try {
-      final docRef = await FirebaseFirestore.instance.collection('bumil').add({
-        "nama_ibu": _namaIbuController.text.trim(),
-        "nama_suami": _namaSuamiController.text.trim(),
-        "alamat": _alamatController.text.trim(),
-        "no_hp": _noHpController.text.trim(),
-        "agama_ibu": _selectedAgamaIbu,
-        "agama_suami": _selectedAgamaSuami,
-        "blood_ibu": _selectedGolIbu,
-        "blood_suami": _selectedGolSuami,
-        "job_ibu": _jobIbuController.text.trim(),
-        "job_suami": _jobSuamiController.text.trim(),
-        "nik_ibu": _nikIbuController.text.trim(),
-        "nik_suami": _nikSuamiController.text.trim(),
-        "kk_ibu": _kkIbuController.text.trim(),
-        "kk_suami": _kkSuamiController.text.trim(),
-        "pendidikan_ibu": _pendidikanIbuController.text.trim(),
-        "pendidikan_suami": _pendidikanSuamiController.text.trim(),
-        "id_bidan": user.uid,
-        "birthdate_ibu": _birthdateIbu,
-        "birthdate_suami": _birthdateSuami,
-        "created_at": DateTime.now(),
-      });
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Data Bumil berhasil disimpan')),
-        );
-
-        Navigator.pushReplacementNamed(
-          context,
-          AppRouter.addRiwayatBumil,
-          arguments: {
-            'bumilId': docRef.id,
-            'age': (DateTime.now().year - _birthdateIbu!.year),
-          },
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan data: $e')));
-      }
-    } finally {
-      setState(() => _isSubmitting = false);
-    }
+    context.read<AddBumilCubit>().submitBumil(bumil);
   }
 
   @override
@@ -383,22 +354,57 @@ class _AddBumilState extends State<AddBumilScreen> {
                   const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: _isSubmitting ? null : _submitForm,
-                      icon: _isSubmitting
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.check),
-                      label: Text(
-                        _isSubmitting ? 'Menyimpan...' : 'Simpan Data Bumil',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        textStyle: const TextStyle(fontSize: 16),
-                      ),
+                    child: BlocConsumer<AddBumilCubit, AddBumilState>(
+                      listener: (context, state) {
+                        if (state.isSuccess && state.bumilId != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Data Bumil berhasil disimpan'),
+                            ),
+                          );
+                          Navigator.pushReplacementNamed(
+                            context,
+                            AppRouter.addRiwayatBumil,
+                            arguments: {
+                              'bumilId': state.bumilId,
+                              'age': (_birthdateIbu != null
+                                  ? DateTime.now().year - _birthdateIbu!.year
+                                  : 0),
+                            },
+                          );
+                        }
+                        if (state.error != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Gagal menyimpan data: ${state.error}',
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        final isSubmitting = state.isSubmitting;
+                        return ElevatedButton.icon(
+                          onPressed: isSubmitting ? null : _submitForm,
+                          icon: isSubmitting
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.check),
+                          label: Text(
+                            isSubmitting ? 'Menyimpan...' : 'Simpan Data Bumil',
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            textStyle: const TextStyle(fontSize: 16),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
