@@ -4,7 +4,6 @@ import 'package:ebidan/presentation/screens/bumil/detail_bumil.dart';
 import 'package:ebidan/presentation/screens/kehamilan/update_kehamilan.dart';
 import 'package:ebidan/presentation/screens/kunjungan/detail_kunjungan.dart';
 import 'package:ebidan/presentation/screens/persalinan/add_persalinan.dart';
-import 'package:ebidan/presentation/screens/persalinan/review_persalinan.dart';
 import 'package:ebidan/presentation/screens/riwayat/detail_riwayat.dart';
 import 'package:ebidan/presentation/screens/kehamilan/list_kehamilan.dart';
 import 'package:ebidan/presentation/screens/kunjungan/list_kunjungan.dart';
@@ -40,7 +39,6 @@ class AppRouter {
   static const String listKunjungan = '/listkunjungan';
   static const String detailKunjungan = '/detailkunjungan';
   static const String updateKehamilan = '/updatekehamilan';
-  static const String reviewPersalinan = '/reviewpersalinan';
   static const String addPersalinan = '/addpersalinan';
 
   const AppRouter._();
@@ -153,11 +151,6 @@ class AppRouter {
             kehamilanId: args['kehamilanId'],
             bumilId: args['bumilId'],
           ),
-        );
-      case reviewPersalinan:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => ReviewPersalinanScreen(data: args['data']),
         );
       default:
         throw const RouteException('Route not found!');

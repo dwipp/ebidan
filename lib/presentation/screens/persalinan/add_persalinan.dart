@@ -26,14 +26,17 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
   List<Persalinan> persalinanList = [];
 
   final List<String> statusBayiList = ['Hidup', 'Mati', 'Abortus'];
-  final List<String> caraList = [
+
+  final List<String> _caraLahirList = [
     'Spontan Belakang Kepala',
     'Section Caesarea (SC)',
   ];
+
+  final List<String> _caraAbortusList = ['Kuretase', 'Mandiri'];
   final List<String> penolongList = [
-    'Dukun Kampung',
-    'Dokter',
     'Bidan',
+    'Dokter',
+    'Dukun Kampung',
     'Lainnya',
   ];
   final List<String> tempatList = [
@@ -196,6 +199,15 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                           onSaved: (val) => data.beratLahir = val,
                           isNumber: true,
                           suffixText: 'gram',
+                          disable: data.statusBayi == "Abortus",
+                          validator: (val) {
+                            if (data.statusBayi != "Abortus") {
+                              if (val == null || val.isEmpty) {
+                                return 'Wajib diisi';
+                              }
+                            }
+                            return null;
+                          },
                         ),
                         CustomTextField(
                           label: 'Lingkar Kepala',
@@ -203,6 +215,15 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                           onSaved: (val) => data.lingkarKepala = val,
                           isNumber: true,
                           suffixText: 'cm',
+                          disable: data.statusBayi == "Abortus",
+                          validator: (val) {
+                            if (data.statusBayi != "Abortus") {
+                              if (val == null || val.isEmpty) {
+                                return 'Wajib diisi';
+                              }
+                            }
+                            return null;
+                          },
                         ),
                         CustomTextField(
                           label: 'Panjang Badan',
@@ -210,6 +231,15 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                           onSaved: (val) => data.panjangBadan = val,
                           isNumber: true,
                           suffixText: 'cm',
+                          disable: data.statusBayi == "Abortus",
+                          validator: (val) {
+                            if (data.statusBayi != "Abortus") {
+                              if (val == null || val.isEmpty) {
+                                return 'Wajib diisi';
+                              }
+                            }
+                            return null;
+                          },
                         ),
                         CustomTextField(
                           label: 'Umur Kehamilan',
@@ -217,6 +247,8 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                           onSaved: (val) => data.umurKehamilan = val,
                           isNumber: true,
                           suffixText: 'minggu',
+                          validator: (val) =>
+                              val!.isEmpty ? 'Wajib diisi' : null,
                         ),
                         const SizedBox(height: 16),
                         Utils.sectionTitle('Kondisi Kelahiran'),
@@ -230,14 +262,22 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                               data.sex = newValue ?? '';
                             });
                           },
-                          validator: (val) => val == null || val.isEmpty
-                              ? 'Wajib dipilih'
-                              : null,
+                          enabled: data.statusBayi != "Abortus",
+                          validator: (val) {
+                            if (data.statusBayi != "Abortus") {
+                              if (val == null || val.isEmpty) {
+                                return 'Wajib dipilih';
+                              }
+                            }
+                            return null;
+                          },
                         ),
                         DropdownField(
                           label: 'Cara Persalinan',
                           icon: Icons.pregnant_woman,
-                          items: caraList,
+                          items: data.statusBayi != "Abortus"
+                              ? _caraLahirList
+                              : _caraAbortusList,
                           value: data.cara,
                           onChanged: (newValue) {
                             setState(() {
@@ -319,37 +359,27 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DropdownButtonFormField<String>(
+        DropdownField(
+          label: 'Penolong',
+          icon: Icons.person,
+          items: penolongList,
           value: data.penolong != null && penolongList.contains(data.penolong)
               ? data.penolong
               : null,
-          decoration: const InputDecoration(
-            labelText: 'Penolong',
-            prefixIcon: Icon(Icons.person),
-          ),
-          items: penolongList.map((String value) {
-            return DropdownMenuItem<String>(value: value, child: Text(value));
-          }).toList(),
           onChanged: (newValue) {
             setState(() {
-              data.penolong = newValue ?? '';
+              data.penolong = newValue;
             });
           },
+          validator: (val) => val == null ? 'Wajib dipilih' : null,
         ),
         if (isLainnya) const SizedBox(height: 8),
         if (isLainnya)
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Penolong Lainnya',
-              prefixIcon: Icon(Icons.person_outline),
-            ),
-            onChanged: (val) => data.penolong = val,
-            validator: (val) {
-              if (val == null || val.isEmpty) {
-                return 'Wajib diisi';
-              }
-              return null;
-            },
+          CustomTextField(
+            label: 'Penolong Lainnya',
+            icon: Icons.person_outline,
+            onSaved: (val) => data.penolong = val,
+            validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
           ),
       ],
     );

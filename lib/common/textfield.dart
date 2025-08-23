@@ -10,6 +10,7 @@ class CustomTextField extends StatelessWidget {
   final TextCapitalization textCapitalization;
   final TextEditingController? controller; // ✅ opsional
   final bool readOnly; // ✅ tambahkan readOnly
+  final bool disable;
   final bool isMultiline; // ✅ tambahkan untuk auto grow textfield
   final FormFieldValidator<String>? validator; // ✅ tambahkan validator
   final List<TextInputFormatter>? inputFormatters;
@@ -24,6 +25,7 @@ class CustomTextField extends StatelessWidget {
     this.textCapitalization = TextCapitalization.sentences,
     this.controller, // ✅ tidak wajib
     this.readOnly = false, // ✅ default false
+    this.disable = false,
     this.isMultiline = false, // ✅ default: single line
     this.validator, // ✅ opsional
     this.inputFormatters,
@@ -38,6 +40,7 @@ class CustomTextField extends StatelessWidget {
       maxLines: isMultiline ? null : 1,
       controller: controller,
       readOnly: readOnly, // ✅ aktifkan
+      enabled: !disable,
       inputFormatters: inputFormatters,
       decoration: InputDecoration(
         labelText: label,

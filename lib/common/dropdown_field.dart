@@ -7,6 +7,7 @@ class DropdownField extends StatelessWidget {
   final String? value;
   final void Function(String?) onChanged;
   final String? Function(String?)? validator;
+  final bool enabled; // ✅ Tambahan
 
   const DropdownField({
     super.key,
@@ -16,6 +17,7 @@ class DropdownField extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.validator,
+    this.enabled = true, // ✅ default tetap aktif
   });
 
   @override
@@ -26,8 +28,11 @@ class DropdownField extends StatelessWidget {
       items: items.map((String val) {
         return DropdownMenuItem<String>(value: val, child: Text(val));
       }).toList(),
-      onChanged: onChanged,
+      onChanged: enabled ? onChanged : null, // ✅ kalau disabled, null
       validator: validator,
+      disabledHint: value != null
+          ? Text(value!)
+          : const Text("Tidak tersedia"), // ✅ hint saat disable
     );
   }
 }

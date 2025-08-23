@@ -27,9 +27,9 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
   final List<String> statusKehamilanList = ['Aterm', 'Preterm', 'Postterm'];
 
   final List<String> penolongList = [
-    'Dukun Kampung',
-    'Dokter',
     'Bidan',
+    'Dokter',
+    'Dukun Kampung',
     'Lainnya',
   ];
 
