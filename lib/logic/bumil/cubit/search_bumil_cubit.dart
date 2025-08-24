@@ -1,7 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/data/hive/bumil_hive.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hive/hive.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'dart:convert';
 import 'package:ebidan/data/models/bumil_model.dart';
@@ -10,7 +12,10 @@ import 'package:ebidan/logic/utility/connection_util.dart';
 part 'search_bumil_state.dart';
 
 class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
-  SearchBumilCubit() : super(SearchBumilState.initial());
+  final Box<BumilHive> offlineBumilBox;
+  final Box<BumilHive> addedBumilBox;
+  SearchBumilCubit({required this.addedBumilBox, required this.offlineBumilBox})
+    : super(SearchBumilState.initial());
 
   Future<void> fetchData() async {
     ConnectionUtil.checkConnection(
@@ -37,13 +42,24 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
               .toList();
 
           emit(state.copyWith(bumilList: list, filteredList: list));
+
+          await offlineBumilBox.clear();
+          for (final bumil in list) {
+            await offlineBumilBox.add(BumilHive.fromModel(bumil));
+          }
         } catch (e) {
           emit(state.copyWith(error: e.toString()));
         }
       },
-      onDisconnected: () {
+      onDisconnected: () async {
         // kalau offline, gunakan data terakhir yang sudah di-hydrate
         // tidak perlu reset ke initial agar data lokal tetap ada
+        final offlineList = offlineBumilBox.values
+            .map((b) => b.toModel())
+            .toList();
+        final addedList = addedBumilBox.values.map((b) => b.toModel()).toList();
+        final mergedList = [...addedList, ...offlineList];
+        emit(state.copyWith(bumilList: mergedList, filteredList: mergedList));
       },
     );
   }

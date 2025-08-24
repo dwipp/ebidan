@@ -7,8 +7,8 @@ import 'package:hive/hive.dart';
 part 'sync_state.dart';
 
 class SyncCubit extends Cubit<SyncState> {
-  final Box<BumilHive> bumilBox;
-  SyncCubit({required this.bumilBox}) : super(SyncState.initial());
+  final Box<BumilHive> addedBumilBox;
+  SyncCubit({required this.addedBumilBox}) : super(SyncState.initial());
 
   Future<void> syncAll() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -27,9 +27,9 @@ class SyncCubit extends Cubit<SyncState> {
       // 1. Sync Bumil
       try {
         // final addBumil = await Hive.openBox<BumilHive>('offline_bumil');
-        print('bumilBox.isNotEmpty: ${bumilBox.isNotEmpty}');
-        if (bumilBox.isNotEmpty) {
-          await SyncService.syncAddBumil(bumilBox);
+        print('bumilBox.isNotEmpty: ${addedBumilBox.isNotEmpty}');
+        if (addedBumilBox.isNotEmpty) {
+          await SyncService.syncAddBumil(addedBumilBox);
           emit(state.copyWith(message: "Berhasil sync bumil"));
         }
       } catch (e) {

@@ -8,20 +8,26 @@ import 'package:ebidan/logic/general/cubit/internet_cubit.dart';
 import 'package:hive/hive.dart';
 
 class BlocProviders {
-  final Box<BumilHive> bumilBox;
+  final Box<BumilHive> addedBumilBox;
+  final Box<BumilHive> offlineBumilBox;
 
-  BlocProviders({required this.bumilBox});
+  BlocProviders({required this.addedBumilBox, required this.offlineBumilBox});
 
   List<BlocProvider> providers() {
     return [
       BlocProvider<InternetCubit>(create: (context) => InternetCubit()),
       BlocProvider<AppVersionCubit>(create: (context) => AppVersionCubit()),
-      BlocProvider<SearchBumilCubit>(create: (context) => SearchBumilCubit()),
+      BlocProvider<SearchBumilCubit>(
+        create: (context) => SearchBumilCubit(
+          addedBumilBox: addedBumilBox,
+          offlineBumilBox: offlineBumilBox,
+        ),
+      ),
       BlocProvider<AddBumilCubit>(
-        create: (context) => AddBumilCubit(bumilBox: bumilBox),
+        create: (context) => AddBumilCubit(addedBumilBox: addedBumilBox),
       ),
       BlocProvider<SyncCubit>(
-        create: (context) => SyncCubit(bumilBox: bumilBox),
+        create: (context) => SyncCubit(addedBumilBox: addedBumilBox),
       ),
     ];
   }

@@ -10,8 +10,8 @@ import 'package:hive/hive.dart';
 part 'add_bumil_state.dart';
 
 class AddBumilCubit extends Cubit<AddBumilState> {
-  final Box<BumilHive> bumilBox;
-  AddBumilCubit({required this.bumilBox}) : super(AddBumilState());
+  final Box<BumilHive> addedBumilBox;
+  AddBumilCubit({required this.addedBumilBox}) : super(AddBumilState());
 
   Future<void> submitBumil(Bumil bumil) async {
     emit(state.copyWith(isSubmitting: true, error: null));
@@ -64,8 +64,7 @@ class AddBumilCubit extends Cubit<AddBumilState> {
       },
       onDisconnected: () async {
         // Jika offline, simpan lokal menggunakan Hive
-        // final box = await Hive.openBox<BumilHive>('offline_bumil');
-        await bumilBox.add(
+        await addedBumilBox.add(
           BumilHive(
             namaIbu: bumil.namaIbu,
             namaSuami: bumil.namaSuami,

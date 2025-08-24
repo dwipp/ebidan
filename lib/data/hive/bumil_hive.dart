@@ -1,3 +1,4 @@
+import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:hive/hive.dart';
 
 part 'bumil_hive.g.dart';
@@ -37,13 +38,13 @@ class BumilHive {
   @HiveField(15)
   final String pendidikanSuami;
   @HiveField(16)
-  final DateTime birthdateIbu;
+  final DateTime? birthdateIbu;
   @HiveField(17)
-  final DateTime birthdateSuami;
+  final DateTime? birthdateSuami;
   @HiveField(18)
   final String idBidan;
   @HiveField(19)
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
   BumilHive({
     required this.namaIbu,
@@ -67,4 +68,55 @@ class BumilHive {
     required this.idBidan,
     required this.createdAt,
   });
+
+  static BumilHive fromModel(Bumil bumil) {
+    return BumilHive(
+      namaIbu: bumil.namaIbu,
+      namaSuami: bumil.namaSuami,
+      alamat: bumil.alamat,
+      noHp: bumil.noHp,
+      agamaIbu: bumil.agamaIbu,
+      agamaSuami: bumil.agamaSuami,
+      bloodIbu: bumil.bloodIbu,
+      bloodSuami: bumil.bloodSuami,
+      jobIbu: bumil.jobIbu,
+      jobSuami: bumil.jobSuami,
+      nikIbu: bumil.nikIbu,
+      nikSuami: bumil.nikSuami,
+      kkIbu: bumil.kkIbu,
+      kkSuami: bumil.kkSuami,
+      pendidikanIbu: bumil.pendidikanIbu,
+      pendidikanSuami: bumil.pendidikanSuami,
+      birthdateIbu: bumil.birthdateIbu,
+      birthdateSuami: bumil.birthdateSuami,
+      idBidan: bumil.idBidan,
+      createdAt: bumil.createdAt,
+    );
+  }
+
+  Bumil toModel({String idBumil = ''}) {
+    return Bumil(
+      namaIbu: namaIbu,
+      namaSuami: namaSuami,
+      alamat: alamat,
+      noHp: noHp,
+      agamaIbu: agamaIbu,
+      agamaSuami: agamaSuami,
+      bloodIbu: bloodIbu,
+      bloodSuami: bloodSuami,
+      jobIbu: jobIbu,
+      jobSuami: jobSuami,
+      nikIbu: nikIbu,
+      nikSuami: nikSuami,
+      kkIbu: kkIbu,
+      kkSuami: kkSuami,
+      pendidikanIbu: pendidikanIbu,
+      pendidikanSuami: pendidikanSuami,
+      birthdateIbu: birthdateIbu,
+      birthdateSuami: birthdateSuami,
+      idBidan: idBidan,
+      createdAt: createdAt,
+      idBumil: idBumil,
+    );
+  }
 }
