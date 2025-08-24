@@ -15,6 +15,7 @@ class CustomTextField extends StatelessWidget {
   final bool isMultiline; // ✅ tambahkan untuk auto grow textfield
   final FormFieldValidator<String>? validator; // ✅ tambahkan validator
   final List<TextInputFormatter>? inputFormatters;
+  final int? maxLength;
 
   const CustomTextField({
     super.key,
@@ -31,6 +32,7 @@ class CustomTextField extends StatelessWidget {
     this.isMultiline = false, // ✅ default: single line
     this.validator, // ✅ opsional
     this.inputFormatters,
+    this.maxLength,
   }) : assert(
          onSaved != null || controller != null,
          'Harus isi salah satu: onSaved atau controller',
@@ -50,6 +52,7 @@ class CustomTextField extends StatelessWidget {
         suffixText: suffixText,
         suffixStyle: TextStyle(color: Colors.black54, fontSize: 16),
       ),
+      maxLength: maxLength,
       keyboardType: isNumber
           ? TextInputType.number
           : keyboardType ??
