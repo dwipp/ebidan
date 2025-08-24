@@ -1,7 +1,9 @@
-import 'package:ebidan/logic/utility/sync_util.dart';
+import 'package:ebidan/logic/general/cubit/sync_cubit.dart';
+import 'package:ebidan/logic/utility/sync_service.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -66,9 +68,23 @@ class HomeScreen extends StatelessWidget {
             crossAxisCellCount: 2,
             mainAxisCellCount: 1,
             child: InkWell(
-              child: Container(color: Colors.lime[200], child: Text("sync")),
+              child: Container(
+                color: Colors.lime[200],
+                child: BlocBuilder<SyncCubit, SyncState>(
+                  builder: (context, state) {
+                    if (state.status == SyncStatus.syncing) {
+                      return Text('${state.message}');
+                    } else if (state.status == SyncStatus.success) {
+                      return Text("✅ ${state.message}");
+                    } else if (state.status == SyncStatus.failed) {
+                      return Text("❌ ${state.message}");
+                    }
+                    return Text("sync");
+                  },
+                ),
+              ),
               onTap: () {
-                SyncUtil.syncAll();
+                context.read<SyncCubit>().syncAll();
               },
             ),
           ),

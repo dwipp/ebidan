@@ -3,22 +3,7 @@ import 'package:ebidan/data/hive/bumil_hive.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive/hive.dart';
 
-class SyncUtil {
-  static Future<void> syncAll() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    final addBumil = await Hive.openBox<BumilHive>('offline_bumil');
-    if (addBumil.isNotEmpty) {
-      syncAddBumil(addBumil);
-    }
-
-    // final addRiwayat = await Hive.openBox<RiwayatHive>('offline_riwayat');
-    // if (addRiwayat.isNotEmpty) {
-    //   syncAddRiwayat(addRiwayat);
-    // }
-  }
-
+class SyncService {
   static Future<void> syncAddBumil(Box<BumilHive> box) async {
     final batch = FirebaseFirestore.instance.batch();
 

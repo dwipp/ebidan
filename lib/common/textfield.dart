@@ -6,6 +6,7 @@ class CustomTextField extends StatelessWidget {
   final IconData icon;
   final Function(String)? onSaved; // ✅ opsional
   final bool isNumber;
+  final TextInputType? keyboardType;
   final String? suffixText;
   final TextCapitalization textCapitalization;
   final TextEditingController? controller; // ✅ opsional
@@ -21,6 +22,7 @@ class CustomTextField extends StatelessWidget {
     required this.icon,
     this.onSaved, // ✅ tidak wajib
     this.isNumber = false,
+    this.keyboardType,
     this.suffixText,
     this.textCapitalization = TextCapitalization.sentences,
     this.controller, // ✅ tidak wajib
@@ -50,9 +52,8 @@ class CustomTextField extends StatelessWidget {
       ),
       keyboardType: isNumber
           ? TextInputType.number
-          : isMultiline
-          ? TextInputType.multiline
-          : TextInputType.text,
+          : keyboardType ??
+                (isMultiline ? TextInputType.multiline : TextInputType.text),
       textCapitalization: isNumber
           ? TextCapitalization.none
           : textCapitalization,

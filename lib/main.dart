@@ -33,15 +33,16 @@ void main() async {
   await Hive.initFlutter();
 
   Hive.registerAdapter(BumilHiveAdapter());
-  await Hive.openBox<BumilHive>('bumilBox');
+  final bumilBox = await Hive.openBox<BumilHive>('offline_bumil');
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
-  ]).then((value) => runApp(const MainApp()));
+  ]).then((value) => runApp(MainApp(bumilBox: bumilBox)));
 }
 
 class MainApp extends StatefulWidget {
-  const MainApp({super.key});
+  final Box<BumilHive> bumilBox;
+  const MainApp({super.key, required this.bumilBox});
 
   @override
   State<MainApp> createState() => _MainAppState();
@@ -51,7 +52,7 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: BlocProviders().providers(),
+      providers: BlocProviders(bumilBox: widget.bumilBox).providers(),
       child: const MaterialApp(
         initialRoute: AppRouter.homepage,
         onGenerateRoute: AppRouter.onGenerateRoute,
