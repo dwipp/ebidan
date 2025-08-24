@@ -191,6 +191,29 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
     }
   }
 
+  DateTime hitungHTP(DateTime hpht) {
+    // Tambah 7 hari
+    DateTime tambahHari = hpht.add(const Duration(days: 7));
+
+    // Tambah 9 bulan
+    int bulan = tambahHari.month + 9;
+    int tahun = tambahHari.year;
+
+    // Kalau bulan lebih dari 12, adjust tahun & bulan
+    if (bulan > 12) {
+      bulan -= 12;
+      tahun += 1;
+    }
+
+    // Pastikan tanggal valid (misalnya Februari tidak ada tgl 30)
+    int hari = tambahHari.day;
+    int maxHari = DateTime(tahun, bulan + 1, 0).day;
+    if (hari > maxHari) {
+      hari = maxHari;
+    }
+    return DateTime(tahun, bulan, hari);
+  }
+
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -255,14 +278,20 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 prefixIcon: Icons.date_range,
                 context: context,
                 onDateSelected: (date) {
-                  setState(() => _hpht = date);
+                  setState(() {
+                    _hpht = date;
+                    _htp = hitungHTP(date);
+                  });
                 },
               ),
               const SizedBox(height: 12),
               DatePickerFormField(
+                key: ValueKey(_htp),
                 labelText: 'Hari Taksiran Persalinan (HTP)',
                 prefixIcon: Icons.event,
                 context: context,
+                initialValue: _htp,
+                readOnly: true,
                 lastDate: DateTime(
                   DateTime.now().year + 1,
                   DateTime.now().month,

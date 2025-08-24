@@ -5,30 +5,33 @@ class DatePickerFormField extends FormField<DateTime> {
     Key? key,
     required String labelText,
     required IconData prefixIcon,
-    DateTime? initialValue,
+    DateTime? initialValue, // ✅ bisa binding langsung
     DateTime? initialDate,
     DateTime? lastDate,
     required BuildContext context,
     required ValueChanged<DateTime> onDateSelected,
     FormFieldValidator<DateTime>? validator,
+    bool readOnly = false,
   }) : super(
          key: key,
-         initialValue: initialValue,
+         initialValue: initialValue, // pakai value terbaru
          validator: validator,
          builder: (FormFieldState<DateTime> field) {
            return InkWell(
-             onTap: () async {
-               final picked = await showDatePicker(
-                 context: context,
-                 initialDate: initialDate ?? DateTime.now(),
-                 firstDate: DateTime(1960),
-                 lastDate: lastDate ?? DateTime.now(),
-               );
-               if (picked != null) {
-                 field.didChange(picked);
-                 onDateSelected(picked);
-               }
-             },
+             onTap: readOnly
+                 ? null
+                 : () async {
+                     final picked = await showDatePicker(
+                       context: context,
+                       initialDate: initialDate ?? DateTime.now(),
+                       firstDate: DateTime(1960),
+                       lastDate: lastDate ?? DateTime.now(),
+                     );
+                     if (picked != null) {
+                       field.didChange(picked);
+                       onDateSelected(picked);
+                     }
+                   },
              child: InputDecorator(
                decoration: InputDecoration(
                  labelText: labelText,
