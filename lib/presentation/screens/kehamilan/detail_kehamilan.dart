@@ -80,7 +80,10 @@ class DetailKehamilanScreen extends StatelessWidget {
                 kehamilan.noRekaMedis,
               ),
               Utils.generateRowLabelValue("BPJS", kehamilan.bpjs),
-              Utils.generateRowLabelValue("Status Ibu", kehamilan.statusIbu),
+              Utils.generateRowLabelValue(
+                "Status Resti",
+                kehamilan.statusResti,
+              ),
               Utils.generateRowLabelValue("Status TT", kehamilan.statusTt),
               Utils.generateRowLabelValue(
                 "Kontrasepsi Sebelum Hamil",

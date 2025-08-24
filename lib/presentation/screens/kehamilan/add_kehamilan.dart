@@ -53,12 +53,8 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   DateTime? _tglPeriksaUsg;
   DateTime? _createdAt = DateTime.now();
 
-  String? _selectedStatusIbu;
-  final List<String> _statusBumilList = [
-    'Resti Nakes',
-    'Resti Masyarakat',
-    '-',
-  ];
+  String? _selectedStatusResti;
+  final List<String> _statusRestiList = ['Nakes', 'Masyarakat', '-'];
 
   String? _selectedKB;
   final List<String> _kbList = [
@@ -162,7 +158,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
         "kontrasepsi_sebelum_hamil": _selectedKB,
         "riwayat_alergi": _riwayatAlergiController.text,
         "riwayat_penyakit": _riwayatPenyakitController.text,
-        "status_ibu": _selectedStatusIbu,
+        "status_resti": _selectedStatusResti,
         "status_tt": _selectedTT,
         "hasil_lab": _hasilLabController.text,
         "hpht": _hpht,
@@ -234,13 +230,13 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
               ),
               const SizedBox(height: 12),
               DropdownField(
-                label: 'Status Ibu',
+                label: 'Status Resti',
                 icon: Icons.person,
-                items: _statusBumilList,
-                value: _selectedStatusIbu,
+                items: _statusRestiList,
+                value: _selectedStatusResti,
                 onChanged: (newValue) {
                   setState(() {
-                    _selectedStatusIbu = newValue;
+                    _selectedStatusResti = newValue;
                   });
                 },
                 validator: (val) => val == null ? 'Wajib dipilih' : null,

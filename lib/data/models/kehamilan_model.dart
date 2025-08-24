@@ -19,7 +19,7 @@ class Kehamilan {
   final List<String>? resti;
   final String? riwayatAlergi;
   final String? riwayatPenyakit;
-  final String? statusIbu;
+  final String? statusResti;
   final String? statusTt;
   final String? tb;
   final DateTime? tglPeriksaUsg;
@@ -43,7 +43,7 @@ class Kehamilan {
     this.resti,
     this.riwayatAlergi,
     this.riwayatPenyakit,
-    this.statusIbu,
+    this.statusResti,
     this.statusTt,
     this.tb,
     this.tglPeriksaUsg,
@@ -73,7 +73,7 @@ class Kehamilan {
       resti: (json['resti'] as List?)?.map((e) => e.toString()).toList(),
       riwayatAlergi: json['riwayat_alergi'],
       riwayatPenyakit: json['riwayat_penyakit'],
-      statusIbu: json['status_ibu'],
+      statusResti: json['status_resti'],
       statusTt: json['status_tt'],
       tb: json['tb'],
       tglPeriksaUsg: (json['tgl_periksa_usg'] as Timestamp?)?.toDate(),
@@ -101,7 +101,7 @@ class Kehamilan {
       'resti': resti,
       'riwayat_alergi': riwayatAlergi,
       'riwayat_penyakit': riwayatPenyakit,
-      'status_ibu': statusIbu,
+      'status_resti': statusResti,
       'status_tt': statusTt,
       'tb': tb,
       'tgl_periksa_usg': tglPeriksaUsg != null
