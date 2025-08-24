@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Persalinan {
   String? beratLahir;
   String? cara;
@@ -10,6 +12,7 @@ class Persalinan {
   String? umurKehamilan;
   DateTime? tglPersalinan;
   DateTime? createdAt;
+  final TextEditingController umurKehamilanController = TextEditingController();
 
   Persalinan({
     this.beratLahir,
@@ -23,7 +26,11 @@ class Persalinan {
     this.umurKehamilan,
     this.tglPersalinan,
     this.createdAt,
-  });
+  }) {
+    if (umurKehamilan != null) {
+      umurKehamilanController.text = umurKehamilan!;
+    }
+  }
 
   /// constructor kosong untuk form
   factory Persalinan.empty() {
@@ -41,7 +48,7 @@ class Persalinan {
       "sex": sex,
       "status_bayi": statusBayi,
       "tempat": tempat,
-      "umur_kehamilan": umurKehamilan,
+      "umur_kehamilan": umurKehamilanController.text,
       "tgl_persalinan": tglPersalinan,
       "created_at": createdAt ?? DateTime.now(),
     };

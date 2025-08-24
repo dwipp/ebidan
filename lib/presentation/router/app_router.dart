@@ -150,6 +150,7 @@ class AppRouter {
             kehamilanId: args['kehamilanId'],
             bumilId: args['bumilId'],
             resti: args['resti'],
+            hpht: args['hpht'],
           ),
         );
       case addPersalinan:
@@ -159,6 +160,7 @@ class AppRouter {
             kehamilanId: args['kehamilanId'],
             bumilId: args['bumilId'],
             resti: args['resti'],
+            hpht: args['hpht'],
           ),
         );
       case detailPersalinan:

@@ -11,6 +11,7 @@ import 'package:ebidan/common/date_time_picker_field.dart';
 
 class AddPersalinanScreen extends StatefulWidget {
   final String kehamilanId;
+  final DateTime? hpht;
   final String bumilId;
   final List<String> resti;
   const AddPersalinanScreen({
@@ -18,6 +19,7 @@ class AddPersalinanScreen extends StatefulWidget {
     required this.bumilId,
     required this.kehamilanId,
     required this.resti,
+    this.hpht,
   });
 
   @override
@@ -81,6 +83,29 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
     }
   }
 
+  static int hitungUsiaKehamilan({
+    required DateTime hpht,
+    DateTime? tanggalPersalinan,
+  }) {
+    // default: hari ini
+    tanggalPersalinan ??= DateTime.now();
+
+    if (tanggalPersalinan.isBefore(hpht)) {
+      throw ArgumentError("Tanggal acuan tidak boleh sebelum HPHT");
+    }
+
+    final duration = tanggalPersalinan.difference(hpht);
+    final minggu = duration.inDays ~/ 7;
+    // final hari = duration.inDays % 7;
+
+    // return {
+    //   'minggu': minggu,
+    //   'hari': hari,
+    // };
+
+    return minggu;
+  }
+
   Future<void> tambahRiwayatBumil(
     String bumilId,
     List<Riwayat> riwayats,
@@ -107,7 +132,6 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
 
       List<Riwayat> riwayats = [];
       for (var persalinan in persalinanList) {
-        print('riwayat');
         final riwayat = Riwayat(
           tahun: persalinan.tglPersalinan?.year ?? 0,
           beratBayi: int.tryParse(persalinan.beratLahir ?? '0') ?? 0,
@@ -177,6 +201,18 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                           prefixIcon: Icons.calendar_today,
                           onSaved: (dateTime) {
                             data.tglPersalinan = dateTime;
+                          },
+                          onDateSelected: (dateTime) {
+                            if (widget.hpht != null) {
+                              setState(() {
+                                final usia = hitungUsiaKehamilan(
+                                  hpht: widget.hpht!,
+                                  tanggalPersalinan: dateTime,
+                                );
+                                data.umurKehamilanController.text = usia
+                                    .toString();
+                              });
+                            }
                           },
                           validator: (val) =>
                               val == null ? 'Wajib diisi' : null,
@@ -249,6 +285,8 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                           icon: Icons.date_range,
                           onSaved: (val) => data.umurKehamilan = val,
                           isNumber: true,
+                          readOnly: true,
+                          controller: data.umurKehamilanController,
                           suffixText: 'minggu',
                           validator: (val) =>
                               val!.isEmpty ? 'Wajib diisi' : null,

@@ -11,6 +11,7 @@ class DateTimePickerField extends FormField<DateTime> {
     DateTime? initialValue,
     AutovalidateMode? autovalidateMode,
     required BuildContext context,
+    void Function(DateTime)? onDateSelected,
   }) : super(
          key: key,
          onSaved: onSaved,
@@ -43,6 +44,9 @@ class DateTimePickerField extends FormField<DateTime> {
                    pickedTime.minute,
                  );
                  field.didChange(newDateTime);
+                 if (onDateSelected != null) {
+                   onDateSelected(newDateTime); // <-- trigger langsung
+                 }
                }
              }
            }

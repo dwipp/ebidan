@@ -6,12 +6,14 @@ class UpdateKehamilanScreen extends StatelessWidget {
   final String kehamilanId;
   final String bumilId;
   final List<String> resti;
+  final DateTime? hpht;
 
   const UpdateKehamilanScreen({
     super.key,
     required this.kehamilanId,
     required this.bumilId,
     required this.resti,
+    this.hpht,
   });
 
   @override
@@ -48,6 +50,7 @@ class UpdateKehamilanScreen extends StatelessWidget {
                     'kehamilanId': kehamilanId,
                     'bumilId': bumilId,
                     'resti': resti,
+                    'hpht': hpht,
                   },
                 );
               },

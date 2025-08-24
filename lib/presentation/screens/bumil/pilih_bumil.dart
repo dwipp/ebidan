@@ -137,6 +137,7 @@ class PilihBumilScreen extends StatelessWidget {
                                       'kehamilanId': latestKehamilan.id,
                                       'bumilId': latestKehamilan.idBumil,
                                       'resti': latestKehamilan.resti ?? [],
+                                      'hpht': latestKehamilan.hpht,
                                     },
                                   );
                                 }
