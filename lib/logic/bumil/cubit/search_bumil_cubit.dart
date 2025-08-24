@@ -66,9 +66,11 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
 
   void search(String query) {
     final lower = query.toLowerCase();
-    final filtered = state.bumilList
-        .where((b) => b.namaIbu.toLowerCase().contains(lower))
-        .toList();
+    final filtered = state.bumilList.where((b) {
+      final namaMatch = b.namaIbu.toLowerCase().contains(lower);
+      final nikMatch = b.nikIbu.toLowerCase().contains(lower);
+      return namaMatch || nikMatch;
+    }).toList();
 
     emit(state.copyWith(filteredList: filtered));
   }

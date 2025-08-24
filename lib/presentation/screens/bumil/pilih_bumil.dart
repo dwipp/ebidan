@@ -38,7 +38,7 @@ class PilihBumilScreen extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Cari nama bumil...',
+                hintText: 'Nama atau NIK...',
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -75,7 +75,7 @@ class PilihBumilScreen extends StatelessWidget {
                         ),
                         child: ListTile(
                           title: Text(bumil.namaIbu),
-                          subtitle: Text('No HP: ${bumil.noHp}'),
+                          subtitle: Text('NIK: ${bumil.nikIbu}'),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () async {
                             if (pilihState == 'bumil') {
