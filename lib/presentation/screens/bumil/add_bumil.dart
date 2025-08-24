@@ -55,7 +55,7 @@ class _AddBumilState extends State<AddBumilScreen> {
     'S3',
   ];
 
-  final List<String> _golDarahList = ['A', 'B', 'AB', 'O'];
+  final List<String> _golDarahList = ['A', 'B', 'AB', 'O', '-'];
 
   String? _selectedPendidikanIbu;
   String? _selectedPendidikanSuami;
@@ -170,7 +170,6 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _selectedGolIbu = newValue;
                       });
                     },
-                    validator: (val) => val == null ? 'Wajib dipilih' : null,
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
@@ -258,7 +257,6 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _selectedGolSuami = newValue;
                       });
                     },
-                    validator: (val) => val == null ? 'Wajib dipilih' : null,
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
