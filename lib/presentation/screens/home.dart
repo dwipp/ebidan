@@ -1,5 +1,5 @@
+import 'package:ebidan/logic/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/logic/general/cubit/sync_cubit.dart';
-import 'package:ebidan/logic/utility/sync_service.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,12 +11,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ambil user yang sedang login
-    User? user = FirebaseAuth.instance.currentUser;
-
-    // Ambil displayName, kalau null pakai email
-    String displayName = user?.displayName ?? user?.email ?? "User";
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("eBidan"),
@@ -68,20 +62,24 @@ class HomeScreen extends StatelessWidget {
             crossAxisCellCount: 2,
             mainAxisCellCount: 1,
             child: InkWell(
-              child: Container(
-                color: Colors.lime[200],
-                child: BlocBuilder<SyncCubit, SyncState>(
-                  builder: (context, state) {
-                    if (state.status == SyncStatus.syncing) {
-                      return Text('${state.message}');
-                    } else if (state.status == SyncStatus.success) {
-                      return Text("✅ ${state.message}");
-                    } else if (state.status == SyncStatus.failed) {
-                      return Text("❌ ${state.message}");
-                    }
-                    return Text("sync");
-                  },
-                ),
+              child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
+                builder: (context, state) {
+                  return Container(
+                    color: state.connected ? Colors.lime[200] : Colors.red[300],
+                    child: BlocBuilder<SyncCubit, SyncState>(
+                      builder: (context, state) {
+                        if (state.status == SyncStatus.syncing) {
+                          return Text('${state.message}');
+                        } else if (state.status == SyncStatus.success) {
+                          return Text("✅ ${state.message}");
+                        } else if (state.status == SyncStatus.failed) {
+                          return Text("❌ ${state.message}");
+                        }
+                        return Text("sync");
+                      },
+                    ),
+                  );
+                },
               ),
               onTap: () {
                 context.read<SyncCubit>().syncAll();
@@ -117,21 +115,6 @@ class HomeScreen extends StatelessWidget {
                   AppRouter.pilihBumil,
                   arguments: {'state': 'bumil'},
                 );
-                // Navigator.pushReplacementNamed(
-                //   context,
-                //   AppRouter.pendataanKehamilan,
-                //   arguments: {
-                //     'bumilId': 'HUM71xYwMXuWb6Nastcx',
-                //     'latestHistoryYear': 2022,
-                //   },
-                // );
-                // Navigator.of(context).pushNamed(AppRouter.addBumil);
-
-                // Navigator.pushNamed(
-                //   context,
-                //   AppRouter.riwayatBumil,
-                //   arguments: {'bumilId': '123'},
-                // );
               },
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:ebidan/data/hive/bumil_hive.dart';
 import 'package:ebidan/firebase_options.dart';
+import 'package:ebidan/logic/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/logic/utility/app_bloc_observer.dart';
 import 'package:ebidan/logic/utility/bloc_providers.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -35,6 +36,10 @@ void main() async {
   Hive.registerAdapter(BumilHiveAdapter());
   final offlineBumilBox = await Hive.openBox<BumilHive>('offline_bumil');
   final addedBumilBox = await Hive.openBox<BumilHive>('added_bumil');
+
+  // check koneksi internet
+  final connectivityCubit = ConnectivityCubit();
+  connectivityCubit.checkNow();
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
     (value) => runApp(
