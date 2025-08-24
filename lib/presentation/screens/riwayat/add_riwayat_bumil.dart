@@ -2,16 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/common/dropdown_field.dart';
 import 'package:ebidan/common/textfield.dart';
 import 'package:ebidan/common/year_picker_field.dart';
+import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 
 class AddRiwayatBumilScreen extends StatefulWidget {
+  final String state;
   final String bumilId;
   final int age;
   const AddRiwayatBumilScreen({
     super.key,
     required this.bumilId,
     required this.age,
+    required this.state,
   });
 
   @override
@@ -83,7 +86,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     int beratRendah = 0;
     int? latestYear; // untuk simpan tahun terbaru
 
-    List<Map<String, dynamic>> riwayatListFinal = [];
+    List<Riwayat> riwayatListFinal = [];
 
     for (var item in riwayatList) {
       if (item['tahun'] != '') {
@@ -104,19 +107,21 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
           beratRendah++;
         }
 
-        riwayatListFinal.add({
-          'tahun': tahun,
-          'berat_bayi': beratBayi,
-          'komplikasi': item['komplikasi'],
-          'panjang_bayi': item['panjang_bayi'],
-          'penolong': item['penolong'] == 'Lainnya'
-              ? item['penolongLainnya']
-              : item['penolong'],
-          'status_bayi': item['status_bayi'],
-          'status_lahir': item['status_lahir'],
-          'status_term': item['status_term'],
-          'tempat': item['tempat'],
-        });
+        riwayatListFinal.add(
+          Riwayat(
+            tahun: tahun,
+            beratBayi: beratBayi,
+            komplikasi: item['komplikasi'],
+            panjangBayi: item['panjang_bayi'],
+            penolong: item['penolong'] == 'Lainnya'
+                ? item['penolongLainnya']
+                : item['penolong'],
+            statusBayi: item['status_bayi'],
+            statusLahir: item['status_lahir'],
+            statusTerm: item['status_term'],
+            tempat: item['tempat'],
+          ),
+        );
 
         // cek apakah tahun lebih besar dari latest
         if (latestYear == null || tahun > latestYear) {
@@ -133,23 +138,32 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
         ),
       );
 
-      Navigator.pushReplacementNamed(
-        context,
-        AppRouter.pendataanKehamilan,
-        arguments: {
-          'bumilId': widget.bumilId,
-          'age': widget.age,
-          'latestHistoryYear': null,
-          'jumlahRiwayat': 0,
-          'jumlahPara': 0,
-          'julmahAbortus': 0,
-          'jumlahBeratRendah': 0,
-        },
-      );
+      if (widget.state == 'lateUpdate') {
+        // kembali ke list riwayat
+        Navigator.pop(context);
+      } else {
+        Navigator.pushReplacementNamed(
+          context,
+          AppRouter.pendataanKehamilan,
+          arguments: {
+            'bumilId': widget.bumilId,
+            'age': widget.age,
+            'latestHistoryYear': null,
+            'jumlahRiwayat': 0,
+            'jumlahPara': 0,
+            'julmahAbortus': 0,
+            'jumlahBeratRendah': 0,
+          },
+        );
+      }
     } else {
       try {
         // simpan sebagai array of maps
-        await docRef.update({'riwayat': riwayatListFinal});
+        await docRef.update({
+          'riwayat': FieldValue.arrayUnion(
+            riwayatListFinal.map((riwayat) => riwayat.toMap()).toList(),
+          ),
+        });
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -159,19 +173,24 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
             ),
           );
 
-          Navigator.pushReplacementNamed(
-            context,
-            AppRouter.pendataanKehamilan,
-            arguments: {
-              'bumilId': widget.bumilId,
-              'age': widget.age,
-              'latestHistoryYear': latestYear,
-              'jumlahRiwayat': riwayatListFinal.length,
-              'jumlahPara': hidup + mati,
-              'jumlahAbortus': abortus,
-              'jumlahBeratRendah': beratRendah,
-            },
-          );
+          if (widget.state == 'lateUpdate') {
+            // kembali ke list riwayat dan refresh list
+            Navigator.pop(context, riwayatListFinal);
+          } else {
+            Navigator.pushReplacementNamed(
+              context,
+              AppRouter.pendataanKehamilan,
+              arguments: {
+                'bumilId': widget.bumilId,
+                'age': widget.age,
+                'latestHistoryYear': latestYear,
+                'jumlahRiwayat': riwayatListFinal.length,
+                'jumlahPara': hidup + mati,
+                'jumlahAbortus': abortus,
+                'jumlahBeratRendah': beratRendah,
+              },
+            );
+          }
         }
       } catch (e) {
         if (mounted) {
@@ -189,10 +208,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Riwayat Bumil'),
-        automaticallyImplyLeading: false,
-      ),
+      appBar: AppBar(title: const Text('Riwayat Bumil')),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -215,6 +231,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           initialYear: data['tahun'],
                           onSaved: (year) => data['tahun'] = year,
                         ),
+                        const SizedBox(height: 12),
                         CustomTextField(
                           label: 'Berat Bayi',
                           icon: Icons.monitor_weight,
@@ -222,6 +239,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           isNumber: true,
                           suffixText: 'gram',
                         ),
+                        const SizedBox(height: 12),
                         CustomTextField(
                           label: 'Panjang Bayi',
                           icon: Icons.straighten,
@@ -229,7 +247,9 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           isNumber: true,
                           suffixText: 'cm',
                         ),
+                        const SizedBox(height: 12),
                         _buildPenolongField(data),
+                        const SizedBox(height: 12),
                         DropdownField(
                           label: 'Status Bayi',
                           icon: Icons.child_care,
@@ -246,6 +266,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               ? 'Wajib dipilih'
                               : null,
                         ),
+                        const SizedBox(height: 12),
                         DropdownField(
                           label: 'Status Lahir',
                           icon: Icons.pregnant_woman,
@@ -262,6 +283,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               ? 'Wajib dipilih'
                               : null,
                         ),
+                        const SizedBox(height: 12),
                         DropdownField(
                           label: 'Status Kehamilan',
                           icon: Icons.date_range,
@@ -278,6 +300,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               ? 'Wajib dipilih'
                               : null,
                         ),
+                        const SizedBox(height: 12),
                         DropdownField(
                           label: 'Tempat Persalinan',
                           icon: Icons.home,
@@ -294,11 +317,13 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               ? 'Wajib dipilih'
                               : null,
                         ),
+                        const SizedBox(height: 12),
                         CustomTextField(
                           label: 'Komplikasi',
                           icon: Icons.local_hospital,
                           onSaved: (val) => data['komplikasi'] = val,
                         ),
+                        const SizedBox(height: 12),
                         Align(
                           alignment: Alignment.centerRight,
                           child: IconButton(

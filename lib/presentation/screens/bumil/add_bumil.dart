@@ -343,6 +343,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                             context,
                             AppRouter.addRiwayatBumil,
                             arguments: {
+                              'state': 'instantUpdate',
                               'bumilId': state.bumilId,
                               'age': (_birthdateIbu != null
                                   ? DateTime.now().year - _birthdateIbu!.year

@@ -35,20 +35,15 @@ class DataBumilScreen extends StatelessWidget {
               icon: Icons.history,
               title: 'Riwayat Bumil',
               onTap: () {
-                if (bumil.riwayat != null) {
-                  Navigator.pushNamed(
-                    context,
-                    AppRouter.listRiwayat,
-                    arguments: {'riwayatList': bumil.riwayat},
-                  );
-                } else {
-                  // tampilan toast bahwa tidak ada riwayat
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Tidak ada riwayat kehamilan'),
-                    ),
-                  );
-                }
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.listRiwayat,
+                  arguments: {
+                    'riwayatList': bumil.riwayat ?? [],
+                    'idBumil': bumil.idBumil,
+                    'birthdayIbu': bumil.birthdateIbu,
+                  },
+                );
               },
             ),
             MenuButton(
@@ -65,20 +60,6 @@ class DataBumilScreen extends StatelessWidget {
                 );
               },
             ),
-            // MenuButton(
-            //   icon: Icons.calendar_month,
-            //   title: 'Kunjungan (Hamil Terbaru)',
-            //   onTap: () {
-            //     Navigator.pushNamed(
-            //       context,
-            //       AppRouter.listKunjungan,
-            //       arguments: {
-            //         'bidanId': bumil.idBidan,
-            //         'bumilId': bumil.idBumil,
-            //       },
-            //     );
-            //   },
-            // ),
           ],
         ),
       ),
