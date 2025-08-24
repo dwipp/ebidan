@@ -1,4 +1,6 @@
 import 'package:ebidan/common/date_picker_field.dart';
+import 'package:ebidan/common/dropdown_field.dart';
+import 'package:ebidan/common/textfield.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/logic/bumil/cubit/add_bumil_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -120,28 +122,19 @@ class _AddBumilState extends State<AddBumilScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildSectionTitle('Data Ibu'),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'Nama Ibu',
+                    icon: Icons.person,
                     controller: _namaIbuController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nama Ibu',
-                      prefixIcon: Icon(Icons.person),
-                    ),
                     textCapitalization: TextCapitalization.words,
                     validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
+                  DropdownField(
+                    label: 'Agama Ibu',
+                    icon: Icons.account_balance,
+                    items: _agamaList,
                     value: _selectedAgamaIbu,
-                    decoration: const InputDecoration(
-                      labelText: 'Agama Ibu',
-                      prefixIcon: Icon(Icons.account_balance),
-                    ),
-                    items: _agamaList.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
                     onChanged: (newValue) {
                       setState(() {
                         _selectedAgamaIbu = newValue;
@@ -150,18 +143,11 @@ class _AddBumilState extends State<AddBumilScreen> {
                     validator: (val) => val == null ? 'Wajib dipilih' : null,
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
+                  DropdownField(
+                    label: 'Golongan Darah Ibu',
+                    icon: Icons.bloodtype,
+                    items: _golDarahList,
                     value: _selectedGolIbu,
-                    decoration: const InputDecoration(
-                      labelText: 'Golongan Darah Ibu',
-                      prefixIcon: Icon(Icons.bloodtype),
-                    ),
-                    items: _golDarahList.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
                     onChanged: (newValue) {
                       setState(() {
                         _selectedGolIbu = newValue;
@@ -170,43 +156,33 @@ class _AddBumilState extends State<AddBumilScreen> {
                     validator: (val) => val == null ? 'Wajib dipilih' : null,
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'Pekerjaan Ibu',
+                    icon: Icons.work,
                     controller: _jobIbuController,
-                    decoration: const InputDecoration(
-                      labelText: 'Pekerjaan Ibu',
-                      prefixIcon: Icon(Icons.work),
-                    ),
-                    textCapitalization: TextCapitalization.sentences,
                     validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'NIK Ibu',
+                    icon: Icons.badge,
                     controller: _nikIbuController,
-                    decoration: const InputDecoration(
-                      labelText: 'NIK Ibu',
-                      prefixIcon: Icon(Icons.badge),
-                    ),
-                    keyboardType: TextInputType.number,
+                    isNumber: true,
                     validator: _validateNIK,
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'KK Ibu',
+                    icon: Icons.credit_card,
                     controller: _kkIbuController,
-                    decoration: const InputDecoration(
-                      labelText: 'KK Ibu',
-                      prefixIcon: Icon(Icons.credit_card),
-                    ),
-                    keyboardType: TextInputType.number,
+                    isNumber: true,
                     validator: _validateKK,
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'Pendidikan Ibu',
+                    icon: Icons.school,
                     controller: _pendidikanIbuController,
-                    decoration: const InputDecoration(
-                      labelText: 'Pendidikan Ibu',
-                      prefixIcon: Icon(Icons.school),
-                    ),
-                    textCapitalization: TextCapitalization.sentences,
                     validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
                   ),
                   const SizedBox(height: 12),
@@ -226,28 +202,19 @@ class _AddBumilState extends State<AddBumilScreen> {
 
                   const SizedBox(height: 16),
                   _buildSectionTitle('Data Suami'),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'Nama Suami',
+                    icon: Icons.person,
                     controller: _namaSuamiController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nama Suami',
-                      prefixIcon: Icon(Icons.person_outline),
-                    ),
                     textCapitalization: TextCapitalization.words,
                     validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
+                  DropdownField(
+                    label: 'Agama Suami',
+                    icon: Icons.account_balance,
+                    items: _agamaList,
                     value: _selectedAgamaSuami,
-                    decoration: const InputDecoration(
-                      labelText: 'Agama Suami',
-                      prefixIcon: Icon(Icons.account_balance),
-                    ),
-                    items: _agamaList.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
                     onChanged: (newValue) {
                       setState(() {
                         _selectedAgamaSuami = newValue;
@@ -256,18 +223,11 @@ class _AddBumilState extends State<AddBumilScreen> {
                     validator: (val) => val == null ? 'Wajib dipilih' : null,
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
+                  DropdownField(
+                    label: 'Golongan Darah Suami',
+                    icon: Icons.bloodtype,
+                    items: _golDarahList,
                     value: _selectedGolSuami,
-                    decoration: const InputDecoration(
-                      labelText: 'Golongan Darah Suami',
-                      prefixIcon: Icon(Icons.bloodtype),
-                    ),
-                    items: _golDarahList.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
                     onChanged: (newValue) {
                       setState(() {
                         _selectedGolSuami = newValue;
@@ -276,43 +236,33 @@ class _AddBumilState extends State<AddBumilScreen> {
                     validator: (val) => val == null ? 'Wajib dipilih' : null,
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'Pekerjaan Suami',
+                    icon: Icons.work,
                     controller: _jobSuamiController,
-                    decoration: const InputDecoration(
-                      labelText: 'Pekerjaan Suami',
-                      prefixIcon: Icon(Icons.work_outline),
-                    ),
-                    textCapitalization: TextCapitalization.sentences,
                     validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'NIK Suami',
+                    icon: Icons.badge,
                     controller: _nikSuamiController,
-                    decoration: const InputDecoration(
-                      labelText: 'NIK Suami',
-                      prefixIcon: Icon(Icons.badge_outlined),
-                    ),
-                    keyboardType: TextInputType.number,
+                    isNumber: true,
                     validator: _validateNIK,
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'KK Suami',
+                    icon: Icons.credit_card,
                     controller: _kkSuamiController,
-                    decoration: const InputDecoration(
-                      labelText: 'KK Suami',
-                      prefixIcon: Icon(Icons.credit_card),
-                    ),
-                    keyboardType: TextInputType.number,
+                    isNumber: true,
                     validator: _validateKK,
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'Pendidikan Suami',
+                    icon: Icons.school,
                     controller: _pendidikanSuamiController,
-                    decoration: const InputDecoration(
-                      labelText: 'Pendidikan Suami',
-                      prefixIcon: Icon(Icons.school_outlined),
-                    ),
-                    textCapitalization: TextCapitalization.sentences,
                     validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
                   ),
                   const SizedBox(height: 12),
@@ -332,21 +282,17 @@ class _AddBumilState extends State<AddBumilScreen> {
 
                   const SizedBox(height: 16),
                   _buildSectionTitle('Data Lain'),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'Alamat',
+                    icon: Icons.home,
                     controller: _alamatController,
-                    decoration: const InputDecoration(
-                      labelText: 'Alamat',
-                      prefixIcon: Icon(Icons.home),
-                    ),
                     validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'No HP',
+                    icon: Icons.phone,
                     controller: _noHpController,
-                    decoration: const InputDecoration(
-                      labelText: 'No HP',
-                      prefixIcon: Icon(Icons.phone),
-                    ),
                     keyboardType: TextInputType.phone,
                     validator: _validateHP,
                   ),
