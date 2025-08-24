@@ -44,8 +44,21 @@ class _AddBumilState extends State<AddBumilScreen> {
     'Buddha',
     'Konghucu',
   ];
+
+  final List<String> _pendidikanList = [
+    'Tidak Sekolah',
+    'SD',
+    'SMP',
+    'SMA',
+    'S1',
+    'S2',
+    'S3',
+  ];
+
   final List<String> _golDarahList = ['A', 'B', 'AB', 'O'];
 
+  String? _selectedPendidikanIbu;
+  String? _selectedPendidikanSuami;
   String? _selectedAgamaIbu;
   String? _selectedAgamaSuami;
   String? _selectedGolIbu;
@@ -185,11 +198,17 @@ class _AddBumilState extends State<AddBumilScreen> {
                     validator: _validateKK,
                   ),
                   const SizedBox(height: 12),
-                  CustomTextField(
+                  DropdownField(
                     label: 'Pendidikan Ibu',
                     icon: Icons.school,
-                    controller: _pendidikanIbuController,
-                    validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                    items: _pendidikanList,
+                    value: _selectedPendidikanIbu,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedPendidikanIbu = newValue;
+                      });
+                    },
+                    validator: (val) => val == null ? 'Wajib dipilih' : null,
                   ),
                   const SizedBox(height: 12),
                   DatePickerFormField(
@@ -267,11 +286,17 @@ class _AddBumilState extends State<AddBumilScreen> {
                     validator: _validateKK,
                   ),
                   const SizedBox(height: 12),
-                  CustomTextField(
+                  DropdownField(
                     label: 'Pendidikan Suami',
                     icon: Icons.school,
-                    controller: _pendidikanSuamiController,
-                    validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                    items: _pendidikanList,
+                    value: _selectedPendidikanSuami,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedPendidikanSuami = newValue;
+                      });
+                    },
+                    validator: (val) => val == null ? 'Wajib dipilih' : null,
                   ),
                   const SizedBox(height: 12),
                   DatePickerFormField(
