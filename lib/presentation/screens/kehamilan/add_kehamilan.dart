@@ -249,7 +249,6 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 icon: Icons.local_hospital,
                 controller: _noRekaMedisController,
                 textCapitalization: TextCapitalization.characters,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               DropdownField(
