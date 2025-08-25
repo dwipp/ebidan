@@ -1,5 +1,4 @@
 import 'package:ebidan/logic/general/cubit/connectivity_cubit.dart';
-import 'package:ebidan/logic/general/cubit/sync_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -66,24 +65,11 @@ class HomeScreen extends StatelessWidget {
                 builder: (context, state) {
                   return Container(
                     color: state.connected ? Colors.lime[200] : Colors.red[300],
-                    child: BlocBuilder<SyncCubit, SyncState>(
-                      builder: (context, state) {
-                        if (state.status == SyncStatus.syncing) {
-                          return Text('${state.message}');
-                        } else if (state.status == SyncStatus.success) {
-                          return Text("✅ ${state.message}");
-                        } else if (state.status == SyncStatus.failed) {
-                          return Text("❌ ${state.message}");
-                        }
-                        return Text("sync");
-                      },
-                    ),
+                    child: Text("sync"),
                   );
                 },
               ),
-              onTap: () {
-                context.read<SyncCubit>().syncAll();
-              },
+              onTap: () {},
             ),
           ),
           StaggeredGridTile.count(

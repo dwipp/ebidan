@@ -3,7 +3,6 @@ import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/logic/bumil/cubit/search_bumil_cubit.dart';
-import 'package:ebidan/logic/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,16 +12,12 @@ class PilihBumilScreen extends StatelessWidget {
   const PilihBumilScreen({super.key, required this.pilihState});
 
   Future<void> _refresh(BuildContext context) async {
-    await context.read<SearchBumilCubit>().fetchData(
-      context.read<ConnectivityCubit>(),
-    );
+    await context.read<SearchBumilCubit>().fetchData();
   }
 
   @override
   Widget build(BuildContext context) {
-    context.read<SearchBumilCubit>().fetchData(
-      context.read<ConnectivityCubit>(),
-    );
+    context.read<SearchBumilCubit>().fetchData();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pilih Bumil'),
