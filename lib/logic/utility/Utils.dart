@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -94,5 +95,24 @@ class Utils {
 
       return descending ? dateB.compareTo(dateA) : dateA.compareTo(dateB);
     });
+  }
+
+  Future<bool> hasAnyPendingWrites() async {
+    final collections = ["bumil", "kehamilan", "kunjungan"];
+
+    for (final col in collections) {
+      final snapshot = await FirebaseFirestore.instance
+          .collection(col)
+          .get(const GetOptions(source: Source.cache));
+
+      final hasPending = snapshot.docs.any(
+        (doc) => doc.metadata.hasPendingWrites,
+      );
+      if (hasPending) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
