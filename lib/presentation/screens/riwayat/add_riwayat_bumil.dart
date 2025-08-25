@@ -1,10 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/common/dropdown_field.dart';
+import 'package:ebidan/common/button.dart';
 import 'package:ebidan/common/textfield.dart';
 import 'package:ebidan/common/year_picker_field.dart';
-import 'package:ebidan/data/models/riwayat_model.dart';
+import 'package:ebidan/logic/riwayat/cubit/add_riwayat_cubit.dart';
+import 'package:ebidan/logic/utility/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddRiwayatBumilScreen extends StatefulWidget {
   final String state;
@@ -49,6 +51,12 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     'Section Caesarea (SC)',
   ];
 
+  @override
+  void initState() {
+    context.read<AddRiwayatCubit>().setInitial();
+    super.initState();
+  }
+
   void _addRiwayat() {
     setState(() {
       riwayatList.add({
@@ -70,139 +78,6 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     setState(() {
       riwayatList.removeAt(index);
     });
-  }
-
-  Future<void> _submitData() async {
-    if (!_formKey.currentState!.validate()) return;
-    _formKey.currentState!.save();
-
-    final docRef = FirebaseFirestore.instance
-        .collection('bumil')
-        .doc(widget.bumilId);
-
-    int hidup = 0;
-    int mati = 0;
-    int abortus = 0;
-    int beratRendah = 0;
-    int? latestYear; // untuk simpan tahun terbaru
-
-    List<Riwayat> riwayatListFinal = [];
-
-    for (var item in riwayatList) {
-      if (item['tahun'] != '') {
-        final tahun = int.tryParse(item['tahun']);
-        if (tahun == null) continue;
-
-        // hitung jumlah berdasarkan status_bayi
-        if (item['status_bayi'] == 'hidup') {
-          hidup++;
-        } else if (item['status_bayi'] == 'mati') {
-          mati++;
-        } else if (item['status_bayi'] == 'abortus') {
-          abortus++;
-        }
-
-        final beratBayi = int.parse(item['berat_bayi']);
-        if (beratBayi < 2500) {
-          beratRendah++;
-        }
-
-        riwayatListFinal.add(
-          Riwayat(
-            tahun: tahun,
-            beratBayi: beratBayi,
-            komplikasi: item['komplikasi'],
-            panjangBayi: item['panjang_bayi'],
-            penolong: item['penolong'] == 'Lainnya'
-                ? item['penolongLainnya']
-                : item['penolong'],
-            statusBayi: item['status_bayi'],
-            statusLahir: item['status_lahir'],
-            statusTerm: item['status_term'],
-            tempat: item['tempat'],
-          ),
-        );
-
-        // cek apakah tahun lebih besar dari latest
-        if (latestYear == null || tahun > latestYear) {
-          latestYear = tahun;
-        }
-      }
-    }
-
-    if (riwayatListFinal.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Data bumil disimpan tanpa riwayat kehamilan'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      if (widget.state == 'lateUpdate') {
-        // kembali ke list riwayat
-        Navigator.pop(context);
-      } else {
-        Navigator.pushReplacementNamed(
-          context,
-          AppRouter.pendataanKehamilan,
-          arguments: {
-            'bumilId': widget.bumilId,
-            'age': widget.age,
-            'latestHistoryYear': null,
-            'jumlahRiwayat': 0,
-            'jumlahPara': 0,
-            'julmahAbortus': 0,
-            'jumlahBeratRendah': 0,
-          },
-        );
-      }
-    } else {
-      try {
-        // simpan sebagai array of maps
-        await docRef.update({
-          'riwayat': FieldValue.arrayUnion(
-            riwayatListFinal.map((riwayat) => riwayat.toMap()).toList(),
-          ),
-        });
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Riwayat berhasil disimpan'),
-              backgroundColor: Colors.green,
-            ),
-          );
-
-          if (widget.state == 'lateUpdate') {
-            // kembali ke list riwayat dan refresh list
-            Navigator.pop(context, riwayatListFinal);
-          } else {
-            Navigator.pushReplacementNamed(
-              context,
-              AppRouter.pendataanKehamilan,
-              arguments: {
-                'bumilId': widget.bumilId,
-                'age': widget.age,
-                'latestHistoryYear': latestYear,
-                'jumlahRiwayat': riwayatListFinal.length,
-                'jumlahPara': hidup + mati,
-                'jumlahAbortus': abortus,
-                'jumlahBeratRendah': beratRendah,
-              },
-            );
-          }
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Gagal menyimpan riwayat: $e'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    }
   }
 
   @override
@@ -338,33 +213,79 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
               }),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
+                child: Button(
+                  isSubmitting: false,
                   onPressed: _addRiwayat,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Tambah Riwayat'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
+                  icon: Icons.add,
+                  label: 'Tambah Riwayat',
+                  loadingLabel: '',
+                  secondaryButton: true,
                 ),
               ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _submitData,
-                  icon: const Icon(Icons.save),
-                  label: const Text('Simpan'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                  ),
+                child: BlocConsumer<AddRiwayatCubit, AddRiwayatState>(
+                  listener: (context, state) {
+                    if (state is AddRiwayatSuccess) {
+                      Utils.showSnackBar(
+                        context,
+                        content: 'Riwayat berhasil disimpan',
+                        isSuccess: true,
+                      );
+
+                      if (widget.state == 'lateUpdate') {
+                        Navigator.pop(context, state.listRiwayat);
+                      } else {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRouter.pendataanKehamilan,
+                          arguments: {
+                            'bumilId': widget.bumilId,
+                            'age': widget.age,
+                            'latestHistoryYear': state.latestYear,
+                            'jumlahRiwayat': state.jumlahRiwayat,
+                            'jumlahPara': state.jumlahPara,
+                            'jumlahAbortus': state.jumlahAbortus,
+                            'jumlahBeratRendah': state.jumlahBeratRendah,
+                          },
+                        );
+                      }
+                    } else if (state is AddRiwayatFailure) {
+                      Utils.showSnackBar(
+                        context,
+                        content: 'Gagal: ${state.message}',
+                        isSuccess: false,
+                      );
+                    } else if (state is AddRiwayatEmpty) {
+                      Utils.showSnackBar(
+                        context,
+                        content: 'Data bumil disimpan tanpa riwayat kehamilan',
+                        isSuccess: true,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    var isSubmitting = false;
+                    if (state is AddRiwayatLoading) {
+                      isSubmitting = true;
+                    }
+                    return Button(
+                      isSubmitting: isSubmitting,
+                      label: 'Simpan',
+                      loadingLabel: 'Menyimpan...',
+                      icon: Icons.save,
+                      onPressed: () {
+                        if (!_formKey.currentState!.validate()) return;
+                        _formKey.currentState!.save();
+
+                        context.read<AddRiwayatCubit>().addRiwayat(
+                          bumilId: widget.bumilId,
+                          riwayatList: riwayatList,
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ],

@@ -1,3 +1,4 @@
+import 'package:ebidan/common/button.dart';
 import 'package:ebidan/common/date_picker_field.dart';
 import 'package:ebidan/common/dropdown_field.dart';
 import 'package:ebidan/common/textfield.dart';
@@ -89,6 +90,12 @@ class _AddBumilState extends State<AddBumilScreen> {
     if (val == null || val.isEmpty) return 'Wajib diisi';
     if (!RegExp(r'^\d{10,15}$').hasMatch(val)) return 'Nomor HP tidak valid';
     return null;
+  }
+
+  @override
+  void initState() {
+    context.read<AddBumilCubit>().setInitial();
+    super.initState();
   }
 
   void _submitForm() {
@@ -359,24 +366,12 @@ class _AddBumilState extends State<AddBumilScreen> {
                       },
                       builder: (context, state) {
                         final isSubmitting = state.isSubmitting;
-                        return ElevatedButton.icon(
-                          onPressed: isSubmitting ? null : _submitForm,
-                          icon: isSubmitting
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.check),
-                          label: Text(
-                            isSubmitting ? 'Menyimpan...' : 'Simpan Data Bumil',
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            textStyle: const TextStyle(fontSize: 16),
-                          ),
+                        return Button(
+                          isSubmitting: isSubmitting,
+                          onPressed: _submitForm,
+                          label: 'Simpan',
+                          loadingLabel: 'Menyimpan...',
+                          icon: Icons.check,
                         );
                       },
                     ),

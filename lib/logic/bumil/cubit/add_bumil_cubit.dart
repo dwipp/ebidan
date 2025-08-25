@@ -49,4 +49,6 @@ class AddBumilCubit extends Cubit<AddBumilState> {
       emit(state.copyWith(isSubmitting: false, error: e.toString()));
     }
   }
+
+  void setInitial() => emit(AddBumilState());
 }
