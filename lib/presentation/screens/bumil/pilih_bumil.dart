@@ -1,7 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
-import 'package:ebidan/data/models/kehamilan_model.dart';
-import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/state_management/bumil/cubit/search_bumil_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -162,36 +159,5 @@ class PilihBumilScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Future<Kehamilan?> getLatestKehamilan({
-    required String bumilId,
-    required String bidanId,
-  }) async {
-    try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('kehamilan')
-          .where('id_bumil', isEqualTo: bumilId)
-          .where('id_bidan', isEqualTo: bidanId)
-          .orderBy('created_at', descending: true)
-          .limit(1)
-          .get();
-
-      if (snapshot.docs.isEmpty) return null;
-
-      final doc = snapshot.docs.first;
-      final data = doc.data();
-
-      // ambil subcollection kunjungan
-      final kunjunganSnap = await doc.reference.collection('kunjungan').get();
-      final kunjunganList = kunjunganSnap.docs
-          .map((e) => Kunjungan.fromFirestore(e.data()))
-          .toList();
-
-      return Kehamilan.fromFirestore(doc.id, data, kunjunganList);
-    } catch (e) {
-      debugPrint('Error getLatestKehamilan: $e');
-      return null;
-    }
   }
 }
