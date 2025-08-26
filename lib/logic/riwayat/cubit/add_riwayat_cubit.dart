@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:ebidan/data/models/riwayat_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 part 'add_riwayat_state.dart';
 
@@ -12,6 +13,11 @@ class AddRiwayatCubit extends Cubit<AddRiwayatState> {
     required String bumilId,
     required List<Map<String, dynamic>> riwayatList,
   }) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      emit(AddRiwayatFailure('User belum login'));
+      return;
+    }
     emit(AddRiwayatLoading());
 
     try {

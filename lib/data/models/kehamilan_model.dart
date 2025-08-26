@@ -3,7 +3,7 @@ import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/data/models/persalinan_model.dart';
 
 class Kehamilan {
-  final String id;
+  final String? id;
   final String? bpjs;
   final DateTime? createdAt;
   final String? gpa;
@@ -27,7 +27,7 @@ class Kehamilan {
   final List<Persalinan>? persalinan; // 🔥 sekarang array
 
   Kehamilan({
-    required this.id,
+    this.id,
     this.bpjs,
     this.createdAt,
     this.gpa,

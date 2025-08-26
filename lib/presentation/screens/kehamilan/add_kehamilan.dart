@@ -1,11 +1,13 @@
+import 'package:ebidan/common/button.dart';
 import 'package:ebidan/common/dropdown_field.dart';
 import 'package:ebidan/common/date_picker_field.dart';
 import 'package:ebidan/common/gpa_field.dart';
 import 'package:ebidan/common/textfield.dart';
-import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/data/models/kehamilan_model.dart';
+import 'package:ebidan/logic/kehamilan/cubit/add_kehamilan_cubit.dart';
+import 'package:ebidan/logic/utility/Utils.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddKehamilanScreen extends StatefulWidget {
   final String bumilId;
@@ -32,7 +34,7 @@ class AddKehamilanScreen extends StatefulWidget {
 
 class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   final _formKey = GlobalKey<FormState>();
-  bool _isSubmitting = false;
+  // bool _isSubmitting = false;
 
   // Controller untuk setiap field
   final _tbController = TextEditingController();
@@ -141,54 +143,29 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isSubmitting = true);
+    final kehamilan = Kehamilan(
+      tb: _tbController.text,
+      hemoglobin: _hemoglobinController.text,
+      bpjs: _bpjsController.text,
+      noKohortIbu: _noKohortController.text,
+      noRekaMedis: _noRekaMedisController.text,
+      gpa:
+          'G${_gravidaController.text}P${_paraController.text}A${_abortusController.text}',
+      kontrasepsiSebelumHamil: _selectedKB,
+      riwayatAlergi: _riwayatAlergiController.text,
+      riwayatPenyakit: _riwayatPenyakitController.text,
+      statusResti: _selectedStatusResti,
+      statusTt: _selectedTT,
+      hasilLab: _hasilLabController.text,
+      hpht: _hpht,
+      htp: _htp,
+      tglPeriksaUsg: _tglPeriksaUsg,
+      createdAt: _createdAt,
+      idBumil: widget.bumilId,
+      resti: collectingResti(),
+    );
 
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    try {
-      final docRef = await FirebaseFirestore.instance.collection('kehamilan').add({
-        "tb": _tbController.text,
-        "hemoglobin": _hemoglobinController.text,
-        "bpjs": _bpjsController.text,
-        "no_kohort_ibu": _noKohortController.text,
-        "no_reka_medis": _noRekaMedisController.text,
-        "gpa":
-            'G${_gravidaController.text}P${_paraController.text}A${_abortusController.text}',
-        "kontrasepsi_sebelum_hamil": _selectedKB,
-        "riwayat_alergi": _riwayatAlergiController.text,
-        "riwayat_penyakit": _riwayatPenyakitController.text,
-        "status_resti": _selectedStatusResti,
-        "status_tt": _selectedTT,
-        "hasil_lab": _hasilLabController.text,
-        "hpht": _hpht,
-        "htp": _htp,
-        "tgl_periksa_usg": _tglPeriksaUsg,
-        "id_bidan": user.uid,
-        "created_at": _createdAt,
-        "id_bumil": widget.bumilId,
-        "resti": collectingResti(),
-      });
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Data kehamilan berhasil disimpan')),
-        );
-        Navigator.pushReplacementNamed(
-          context,
-          AppRouter.kunjungan,
-          arguments: {'kehamilanId': docRef.id, 'firstTime': true},
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan data: $e')));
-      }
-    } finally {
-      setState(() => _isSubmitting = false);
-    }
+    context.read<AddKehamilanCubit>().addKehamilan(kehamilan);
   }
 
   DateTime hitungHTP(DateTime hpht) {
@@ -397,16 +374,35 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _isSubmitting ? null : _submitForm,
-                  icon: _isSubmitting
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.check),
-                  label: Text(_isSubmitting ? 'Menyimpan...' : 'Simpan Data'),
+                child: BlocConsumer<AddKehamilanCubit, AddKehamilanState>(
+                  listener: (context, state) {
+                    if (state is AddKehamilanSuccess) {
+                      Utils.showSnackBar(
+                        context,
+                        content: 'Data kehamilan berhasil disimpan',
+                        isSuccess: true,
+                      );
+                    } else if (state is AddKehamilanFailure) {
+                      Utils.showSnackBar(
+                        context,
+                        content: 'Gagal: ${state.message}',
+                        isSuccess: false,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    var isSubmitting = false;
+                    if (state is AddKehamilanLoading) {
+                      isSubmitting = true;
+                    }
+                    return Button(
+                      isSubmitting: isSubmitting,
+                      onPressed: _submitForm,
+                      label: 'Simpan',
+                      icon: Icons.check,
+                      loadingLabel: 'Menyimpan...',
+                    );
+                  },
                 ),
               ),
             ],
