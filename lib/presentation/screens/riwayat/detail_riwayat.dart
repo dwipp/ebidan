@@ -1,5 +1,5 @@
 import 'package:ebidan/data/models/riwayat_model.dart';
-import 'package:ebidan/logic/utility/Utils.dart';
+import 'package:ebidan/common/Utils.dart';
 import 'package:flutter/material.dart';
 
 class DetailRiwayatScreen extends StatelessWidget {

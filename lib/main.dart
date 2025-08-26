@@ -1,7 +1,7 @@
 import 'package:ebidan/firebase_options.dart';
-import 'package:ebidan/logic/general/cubit/connectivity_cubit.dart';
-import 'package:ebidan/logic/utility/app_bloc_observer.dart';
-import 'package:ebidan/logic/utility/bloc_providers.dart';
+import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
+import 'package:ebidan/state_management/app_bloc_observer.dart';
+import 'package:ebidan/state_management/bloc_providers.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

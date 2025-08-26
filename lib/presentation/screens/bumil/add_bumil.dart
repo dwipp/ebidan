@@ -1,9 +1,9 @@
-import 'package:ebidan/common/button.dart';
-import 'package:ebidan/common/date_picker_field.dart';
-import 'package:ebidan/common/dropdown_field.dart';
-import 'package:ebidan/common/textfield.dart';
+import 'package:ebidan/presentation/widgets/button.dart';
+import 'package:ebidan/presentation/widgets/date_picker_field.dart';
+import 'package:ebidan/presentation/widgets/dropdown_field.dart';
+import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
-import 'package:ebidan/logic/bumil/cubit/add_bumil_cubit.dart';
+import 'package:ebidan/state_management/bumil/cubit/add_bumil_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

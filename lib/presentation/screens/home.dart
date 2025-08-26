@@ -1,4 +1,4 @@
-import 'package:ebidan/logic/general/cubit/connectivity_cubit.dart';
+import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
