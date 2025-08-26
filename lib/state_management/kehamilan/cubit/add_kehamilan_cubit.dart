@@ -41,6 +41,15 @@ class AddKehamilanCubit extends Cubit<AddKehamilanState> {
         "id_bumil": data.idBumil,
         "resti": data.resti,
       });
+
+      FirebaseFirestore.instance.collection('bumil').doc(data.idBumil).update({
+        'latest_kehamilan_id': id,
+        'latest_kehamilan_hpht': data.hpht,
+        'latest_kehamilan_resti': data.resti,
+        'latest_kehamilan_persalinan': false,
+        'latest_kehamilan_kunjungan': false,
+      });
+
       emit(AddKehamilanSuccess(idKehamilan: id, firstTime: true));
     } catch (e) {
       emit(AddKehamilanFailure(e.toString()));

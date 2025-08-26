@@ -1,18 +1,26 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/presentation/widgets/button.dart';
+import 'package:ebidan/state_management/kunjungan/cubit/add_kunjungan_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReviewKunjunganScreen extends StatefulWidget {
-  final Map<String, Object?> data;
+  final Kunjungan data;
+  final bool firstTime;
 
-  const ReviewKunjunganScreen({super.key, required this.data});
+  const ReviewKunjunganScreen({
+    super.key,
+    required this.data,
+    required this.firstTime,
+  });
 
   @override
   State<ReviewKunjunganScreen> createState() => _ReviewKunjunganScreenState();
 }
 
 class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
-  bool _isLoading = false;
   Widget _buildRow(String label, String value, {String suffix = ''}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -39,79 +47,6 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
     );
   }
 
-  Future<void> _saveData() async {
-    setState(() => _isLoading = true);
-
-    try {
-      final docRef = FirebaseFirestore.instance
-          .collection('kehamilan')
-          .doc(widget.data['kehamilanId'] as String)
-          .collection('kunjungan');
-
-      // Ambil jumlah dokumen di collection kunjungan
-      final snapshot = await docRef.get();
-      final nextId = (snapshot.docs.length + 1).toString(); // 1,2,3 dst
-      final uk = widget.data['uk'] as String;
-      await docRef.doc(nextId).set({
-        'bb': widget.data['bb'],
-        'created_at': widget.data['createdAt'],
-        'keluhan': widget.data['keluhan'],
-        'lila': widget.data['lila'],
-        'lp': widget.data['lp'],
-        'planning': widget.data['planning'],
-        'status': widget.data['status'],
-        'td': widget.data['td'],
-        'tfu': widget.data['tfu'],
-        'uk': uk.replaceAll(RegExp(r'[^0-9]'), ''),
-      });
-      print('resti masuk: ${widget.data['firstTime']}');
-      if (widget.data['firstTime'] == "1") {
-        List<String> resti = [];
-        if (widget.data['td'] != null &&
-            (widget.data['td']! as String).contains('/')) {
-          List<String> parts = (widget.data['td']! as String).split("/");
-          if (parts.length == 2) {
-            int sistolik = int.parse(parts[0]);
-            int diastolik = int.parse(parts[1]);
-
-            if (sistolik >= 140 || diastolik >= 90) {
-              resti.add('Hipertensi dalam kehamilan ${widget.data['td']} mmHg');
-            }
-          }
-        }
-        if (widget.data['lila'] != null) {
-          if (int.parse(widget.data['lila']! as String) < 23.5) {
-            resti.add(
-              'Kekurangan Energi Kronis (lila: ${widget.data['lila']} cm)',
-            );
-          }
-        }
-        print('resti: $resti');
-        if (resti.isNotEmpty) {
-          await FirebaseFirestore.instance
-              .collection('kehamilan')
-              .doc(widget.data['kehamilanId'] as String)
-              .update({'resti': FieldValue.arrayUnion(resti)});
-        }
-      }
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Data berhasil disimpan')));
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRouter.homepage,
-        (route) => false,
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Gagal simpan: $e')));
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,37 +62,22 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("Keluhan", widget.data['keluhan'] as String),
+              _buildRow("Keluhan", widget.data.keluhan ?? '-'),
               const SizedBox(height: 16),
               const Text(
                 "Objective",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow(
-                "Berat Badan",
-                widget.data['bb'] as String,
-                suffix: 'kg',
-              ),
+              _buildRow("Berat Badan", widget.data.bb ?? '-', suffix: 'kg'),
               _buildRow(
                 "Lingkar Lengan Atas (LILA)",
-                widget.data['lila'] as String,
+                widget.data.lila ?? '-',
                 suffix: 'cm',
               ),
-              _buildRow(
-                "Lingkar Perut",
-                widget.data['lp'] as String,
-                suffix: 'cm',
-              ),
-              _buildRow(
-                "Tekanan Darah",
-                widget.data['td'] as String,
-                suffix: 'mmHg',
-              ),
-              _buildRow(
-                "Tinggi Fundus Uteri (TFU)",
-                widget.data['tfu'] as String,
-              ),
+              _buildRow("Lingkar Perut", widget.data.lp ?? '-', suffix: 'cm'),
+              _buildRow("Tekanan Darah", widget.data.td ?? '-', suffix: 'mmHg'),
+              _buildRow("Tinggi Fundus Uteri (TFU)", widget.data.tfu ?? '-'),
               const SizedBox(height: 16),
               const Text(
                 "Analysis",
@@ -166,7 +86,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
               const SizedBox(height: 8),
               _buildRow(
                 "Usia Kandungan",
-                widget.data['uk'] as String,
+                widget.data.uk ?? '-',
                 suffix: 'minggu',
               ),
               const SizedBox(height: 16),
@@ -175,21 +95,49 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("Planning", widget.data['planning'] as String),
-              _buildRow("Status Kunjungan", widget.data['status'] as String),
+              _buildRow("Planning", widget.data.planning ?? '-'),
+              _buildRow("Status Kunjungan", widget.data.status ?? '-'),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _isLoading ? null : _saveData,
-                  icon: _isLoading
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.check),
-                  label: Text(_isLoading ? 'Menyimpan...' : 'Simpan'),
+                child: BlocConsumer<AddKunjunganCubit, AddKunjunganState>(
+                  listener: (context, state) {
+                    if (state is AddKunjunganSuccess) {
+                      Utils.showSnackBar(
+                        context,
+                        content: 'Data berhasil disimpan',
+                        isSuccess: true,
+                      );
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        AppRouter.homepage,
+                        (route) => false,
+                      );
+                    } else if (state is AddKunjunganFailure) {
+                      Utils.showSnackBar(
+                        context,
+                        content: 'Gagal: ${state.message}',
+                        isSuccess: true,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    var isSubmitting = false;
+                    if (state is AddKunjunganCubit) {
+                      isSubmitting = true;
+                    }
+                    return Button(
+                      isSubmitting: isSubmitting,
+                      onPressed: () =>
+                          context.read<AddKunjunganCubit>().addKunjungan(
+                            widget.data,
+                            firstTime: widget.firstTime,
+                          ),
+                      label: 'Simpan',
+                      icon: Icons.check,
+                      loadingLabel: 'Menyimpan...',
+                    );
+                  },
                 ),
               ),
             ],

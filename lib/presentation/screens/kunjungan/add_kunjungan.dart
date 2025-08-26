@@ -1,4 +1,6 @@
+import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/presentation/widgets/blood_pressure_field.dart';
+import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
@@ -8,11 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class KunjunganScreen extends StatefulWidget {
+  final String bumilId;
   final String kehamilanId;
   final bool firstTime;
 
   const KunjunganScreen({
     super.key,
+    required this.bumilId,
     required this.kehamilanId,
     required this.firstTime,
   });
@@ -55,25 +59,25 @@ class _KunjunganState extends State<KunjunganScreen> {
   Future<void> _saveData() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final resultData = {
-      'firstTime': widget.firstTime ? '1' : '0',
-      'kehamilanId': widget.kehamilanId,
-      'keluhan': keluhanController.text,
-      'bb': bbController.text,
-      'lila': lilaController.text,
-      'lp': lpController.text,
-      'td': tdController.text,
-      'tfu': tfuController.text,
-      'uk': ukController.text,
-      'planning': planningController.text,
-      'status': _selectedStatusKunjungan ?? '-',
-      'createdAt': _createdAt,
-    };
+    final kunjungan = Kunjungan(
+      idBumil: widget.bumilId,
+      idKehamilan: widget.kehamilanId,
+      keluhan: keluhanController.text,
+      bb: bbController.text,
+      lila: lilaController.text,
+      lp: lpController.text,
+      td: tdController.text,
+      tfu: tfuController.text,
+      uk: ukController.text,
+      planning: planningController.text,
+      status: _selectedStatusKunjungan ?? '-',
+      createdAt: _createdAt,
+    );
 
     Navigator.pushNamed(
       context,
       AppRouter.reviewKunjungan,
-      arguments: {'data': resultData},
+      arguments: {'data': kunjungan, 'firstTime': widget.firstTime},
     );
   }
 
@@ -180,9 +184,11 @@ class _KunjunganState extends State<KunjunganScreen> {
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
+                child: Button(
+                  isSubmitting: false,
                   onPressed: _saveData,
-                  label: Text('Review'),
+                  label: 'Review',
+                  icon: Icons.check,
                 ),
               ),
             ],

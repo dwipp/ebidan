@@ -1,3 +1,4 @@
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
@@ -381,6 +382,14 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                         context,
                         content: 'Data kehamilan berhasil disimpan',
                         isSuccess: true,
+                      );
+                      Navigator.pushReplacementNamed(
+                        context,
+                        AppRouter.kunjungan,
+                        arguments: {
+                          'kehamilanId': state.idKehamilan,
+                          'firstTime': state.firstTime,
+                        },
                       );
                     } else if (state is AddKehamilanFailure) {
                       Utils.showSnackBar(

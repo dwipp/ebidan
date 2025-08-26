@@ -33,6 +33,12 @@ class Bumil {
   final DateTime? createdAt;
   final List<Riwayat>? riwayat;
 
+  final String? latestKehamilanId;
+  final DateTime? latestKehamilanHpht;
+  final List<String>? latestKehamilanResti;
+  final bool latestKehamilanPersalinan;
+  final bool latestKehamilanKunjungan;
+
   Bumil({
     required this.idBumil,
     required this.idBidan,
@@ -56,6 +62,11 @@ class Bumil {
     required this.pendidikanSuami,
     required this.createdAt,
     this.riwayat,
+    this.latestKehamilanHpht,
+    this.latestKehamilanId,
+    this.latestKehamilanResti,
+    this.latestKehamilanKunjungan = false,
+    this.latestKehamilanPersalinan = false,
   });
 
   /// ====== Factory from Firestore ======
@@ -90,6 +101,13 @@ class Bumil {
       pendidikanSuami: map['pendidikan_suami'] ?? '',
       createdAt: _toDateTime(map['created_at']),
       riwayat: riwayat,
+      latestKehamilanId: map['latest_kehamilan_id'],
+      latestKehamilanHpht: _toDateTime(map['latest_kehamilan_hpht']),
+      latestKehamilanKunjungan: map['latest_kehamilan_kunjungan'] ?? false,
+      latestKehamilanPersalinan: map['latest_kehamilan_persalinan'] ?? false,
+      latestKehamilanResti: map['latest_kehamilan_resti'] != null
+          ? List<String>.from(map['latest_kehamilan_resti'])
+          : null,
     );
   }
 
@@ -117,6 +135,11 @@ class Bumil {
       'pendidikan_suami': pendidikanSuami,
       'created_at': createdAt?.toIso8601String(),
       'riwayat': riwayat?.map((r) => r.toMap()).toList(),
+      'latest_kehamilan_id': latestKehamilanId,
+      'latest_kehamilan_hpht': latestKehamilanHpht?.toIso8601String(),
+      'latest_kehamilan_kunjungan': latestKehamilanKunjungan,
+      'latest_kehamilan_persalinan': latestKehamilanPersalinan,
+      'latest_kehamilan_resti': latestKehamilanResti,
     };
   }
 
@@ -155,6 +178,15 @@ class Bumil {
                 .map((e) => Riwayat.fromMap(Map<String, dynamic>.from(e)))
                 .toList()
           : null,
+      latestKehamilanId: json['latest_kehamilan_id'],
+      latestKehamilanHpht: json['latest_kehamilan_hpht'] != null
+          ? DateTime.parse(json['latest_kehamilan_hpht'])
+          : null,
+      latestKehamilanKunjungan: json['latest_kehamilan_kunjungan'] ?? false,
+      latestKehamilanPersalinan: json['latest_kehamilan_persalinan'] ?? false,
+      latestKehamilanResti: json['latest_kehamilan_resti'] != null
+          ? List<String>.from(json['latest_kehamilan_resti'])
+          : null,
     );
   }
 
@@ -182,6 +214,11 @@ class Bumil {
       'pendidikan_suami': pendidikanSuami,
       'created_at': createdAt?.toIso8601String(),
       'riwayat': riwayat?.map((r) => r.toMap()).toList(),
+      'latest_kehamilan_id': latestKehamilanId,
+      'latest_kehamilan_hpht': latestKehamilanHpht?.toIso8601String(),
+      'latest_kehamilan_kunjungan': latestKehamilanKunjungan,
+      'latest_kehamilan_persalinan': latestKehamilanPersalinan,
+      'latest_kehamilan_resti': latestKehamilanResti,
     };
   }
 

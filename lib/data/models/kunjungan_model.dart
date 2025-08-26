@@ -11,6 +11,9 @@ class Kunjungan {
   final String? td;
   final String? tfu;
   final String? uk;
+  final String? idKehamilan;
+  final String? idBidan;
+  final String? idBumil;
 
   Kunjungan({
     this.bb,
@@ -23,6 +26,9 @@ class Kunjungan {
     this.td,
     this.tfu,
     this.uk,
+    this.idBidan,
+    this.idBumil,
+    this.idKehamilan,
   });
 
   factory Kunjungan.fromFirestore(Map<String, dynamic> json) {
@@ -37,6 +43,9 @@ class Kunjungan {
       td: json['td'],
       tfu: json['tfu'],
       uk: json['uk'],
+      idBidan: json['idBidan'],
+      idBumil: json['idBumil'],
+      idKehamilan: json['idKehamilan'],
     );
   }
 }

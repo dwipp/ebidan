@@ -91,13 +91,19 @@ class PilihBumilScreen extends StatelessWidget {
                               );
                             } else {
                               // pilihState == kunjungan
-                              final latestKehamilan = await getLatestKehamilan(
-                                bumilId: bumil.idBumil,
-                                bidanId: bumil.idBidan,
+                              // final latestKehamilan = await getLatestKehamilan(
+                              //   bumilId: bumil.idBumil,
+                              //   bidanId: bumil.idBidan,
+                              // );
+                              print('latest id; ${bumil.latestKehamilanId}');
+                              print(
+                                'latest persalinan: ${bumil.latestKehamilanPersalinan}',
                               );
-
-                              if (latestKehamilan == null ||
-                                  latestKehamilan.persalinan != null) {
+                              print(
+                                'latest kubnjungan: ${bumil.latestKehamilanKunjungan}',
+                              );
+                              if (bumil.latestKehamilanId == null ||
+                                  bumil.latestKehamilanPersalinan == true) {
                                 Navigator.pushNamed(
                                   context,
                                   AppRouter.pendataanKehamilan,
@@ -118,14 +124,15 @@ class PilihBumilScreen extends StatelessWidget {
                                 );
                               } else {
                                 final firstTime =
-                                    latestKehamilan.kunjungan?.isEmpty;
+                                    !bumil.latestKehamilanKunjungan;
 
                                 if (firstTime == true) {
                                   Navigator.pushNamed(
                                     context,
                                     AppRouter.kunjungan,
                                     arguments: {
-                                      'kehamilanId': latestKehamilan.id,
+                                      'bumilId': bumil.idBumil,
+                                      'kehamilanId': bumil.latestKehamilanId,
                                       'firstTime': true,
                                     },
                                   );
@@ -134,10 +141,10 @@ class PilihBumilScreen extends StatelessWidget {
                                     context,
                                     AppRouter.updateKehamilan,
                                     arguments: {
-                                      'kehamilanId': latestKehamilan.id,
-                                      'bumilId': latestKehamilan.idBumil,
-                                      'resti': latestKehamilan.resti ?? [],
-                                      'hpht': latestKehamilan.hpht,
+                                      'kehamilanId': bumil.latestKehamilanId,
+                                      'bumilId': bumil.idBumil,
+                                      'resti': bumil.latestKehamilanResti ?? [],
+                                      'hpht': bumil.latestKehamilanHpht,
                                     },
                                   );
                                 }
