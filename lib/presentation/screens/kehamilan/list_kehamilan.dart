@@ -1,7 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/state_management/kehamilan/cubit/get_kehamilan_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListKehamilanScreen extends StatefulWidget {
   final Kehamilan latestKehamilan;
@@ -24,101 +26,116 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
   bool _loading = false;
   bool _expanded = false; // tanda apakah user sudah fetch semua
 
-  Future<void> _fetchKehamilan() async {
-    setState(() => _loading = true);
-    try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('kehamilan')
-          .where('id_bumil', isEqualTo: widget.bumilId)
-          .where('id_bidan', isEqualTo: widget.bidanId)
-          .orderBy('created_at', descending: true)
-          .get();
-
-      final List<Kehamilan> list = snapshot.docs
-          .map((doc) => Kehamilan.fromFirestore(doc.id, doc.data()))
-          .toList();
-
-      if (mounted) {
-        setState(() {
-          _kehamilanList = list;
-          _expanded = true;
-          _loading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error fetch kehamilan: $e');
-      if (mounted) setState(() => _loading = false);
-    }
+  @override
+  void initState() {
+    context.read<GetKehamilanCubit>().setInitial();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("List Kehamilan")),
-      body: ListView(
-        children: [
-          // item pertama: latest kehamilan
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: ListTile(
-              title: Text("Tahun ${widget.latestKehamilan.createdAt!.year}"),
-              subtitle: Text(
-                "Status persalinan: ${widget.latestKehamilan.persalinan != null ? 'sudah' : 'belum'}",
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  AppRouter.dataKehamilan,
-                  arguments: {'kehamilan': widget.latestKehamilan},
-                );
-              },
-            ),
-          ),
-
-          // item kedua: tombol atau daftar riwayat
-          if (_expanded)
-            ..._kehamilanList
-                .skip(1)
-                .map(
-                  (kehamilan) => Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    child: ListTile(
-                      title: Text("Tahun ${kehamilan.createdAt!.year}"),
-                      subtitle: Text(
-                        "Status persalinan: ${kehamilan.persalinan != null ? 'sudah' : 'belum'}",
-                      ),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          AppRouter.dataKehamilan,
-                          arguments: {'kehamilan': kehamilan},
-                        );
-                      },
-                    ),
+      body: BlocConsumer<GetKehamilanCubit, GetKehamilanState>(
+        listener: (context, state) {
+          if (state is GetKehamilanSuccess) {
+            _kehamilanList = state.kehamilans;
+            _expanded = true;
+            _loading = false;
+          } else if (state is GetKehamilanEmpty) {
+            _expanded = true;
+            _loading = false;
+          } else if (state is GetKehamilanLoading) {
+            _expanded = false;
+            _loading = true;
+          } else if (state is GetKehamilanFailure) {
+            Utils.showSnackBar(
+              context,
+              content: 'Gagal: ${state.message}',
+              isSuccess: false,
+            );
+            _expanded = false;
+            _loading = false;
+          }
+        },
+        builder: (context, state) {
+          return ListView(
+            children: [
+              // item pertama: latest kehamilan
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: ListTile(
+                  title: Text(
+                    "Tahun ${widget.latestKehamilan.createdAt!.year}",
                   ),
-                )
-          else
-            Card(
-              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: ListTile(
-                leading: const Icon(Icons.history),
-                title: const Text("Lihat riwayat kehamilan lainnya"),
-                trailing: _loading
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.expand_more),
-                onTap: _loading ? null : _fetchKehamilan,
+                  subtitle: Text(
+                    "Status persalinan: ${widget.latestKehamilan.persalinan != null ? 'sudah' : 'belum'}",
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.dataKehamilan,
+                      arguments: {'kehamilan': widget.latestKehamilan},
+                    );
+                  },
+                ),
               ),
-            ),
-        ],
+
+              // item kedua: tombol atau daftar riwayat
+              if (_expanded)
+                ..._kehamilanList
+                    .skip(1)
+                    .map(
+                      (kehamilan) => Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        child: ListTile(
+                          title: Text("Tahun ${kehamilan.createdAt!.year}"),
+                          subtitle: Text(
+                            "Status persalinan: ${kehamilan.persalinan != null ? 'sudah' : 'belum'}",
+                          ),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRouter.dataKehamilan,
+                              arguments: {'kehamilan': kehamilan},
+                            );
+                          },
+                        ),
+                      ),
+                    )
+              else
+                Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  child: ListTile(
+                    leading: const Icon(Icons.history),
+                    title: const Text("Lihat riwayat kehamilan lainnya"),
+                    trailing: _loading
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.expand_more),
+                    onTap: _loading
+                        ? null
+                        : () {
+                            context.read<GetKehamilanCubit>().getKehamilan(
+                              bumilId: widget.bumilId,
+                            );
+                          },
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }

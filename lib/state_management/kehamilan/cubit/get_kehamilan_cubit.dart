@@ -36,4 +36,6 @@ class GetKehamilanCubit extends Cubit<GetKehamilanState> {
       emit(GetKehamilanFailure(e.toString()));
     }
   }
+
+  void setInitial() => emit(GetKehamilanInitial());
 }
