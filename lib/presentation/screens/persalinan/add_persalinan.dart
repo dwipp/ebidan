@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
@@ -6,8 +7,10 @@ import 'package:ebidan/data/models/persalinan_model.dart';
 import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/state_management/persalinan/cubit/add_persalinan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:ebidan/presentation/widgets/date_time_picker_field.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddPersalinanScreen extends StatefulWidget {
   final String kehamilanId;
@@ -56,6 +59,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<AddPersalinanCubit>().setInitial();
     _addPersalinan();
   }
 
@@ -106,74 +110,17 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
     return minggu;
   }
 
-  Future<void> tambahRiwayatBumil(
-    String bumilId,
-    List<Riwayat> riwayats,
-  ) async {
-    final docRef = FirebaseFirestore.instance.collection('bumil').doc(bumilId);
-
-    await docRef.set({
-      'riwayat': FieldValue.arrayUnion(riwayats.map((e) => e.toMap()).toList()),
-    }, SetOptions(merge: true));
-  }
-
   Future<void> _submitData() async {
+    print('submit');
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
 
-    final docRef = FirebaseFirestore.instance
-        .collection('kehamilan')
-        .doc(widget.kehamilanId);
-
-    try {
-      await docRef.update({
-        'persalinan': persalinanList.map((e) => e.toMap()).toList(),
-      });
-
-      List<Riwayat> riwayats = [];
-      for (var persalinan in persalinanList) {
-        final riwayat = Riwayat(
-          tahun: persalinan.tglPersalinan?.year ?? 0,
-          beratBayi: int.tryParse(persalinan.beratLahir ?? '0') ?? 0,
-          komplikasi: widget.resti.join(", "),
-          panjangBayi: persalinan.panjangBadan ?? '0',
-          penolong: persalinan.penolong ?? '-',
-          statusBayi: persalinan.statusBayi ?? '-',
-          statusLahir: persalinan.cara ?? '-',
-          statusTerm: getStatusKehamilan(
-            int.tryParse(persalinan.umurKehamilan ?? '-1') ?? -1,
-          ),
-          tempat: persalinan.tempat ?? '-',
-        );
-        riwayats.add(riwayat);
-      }
-
-      await tambahRiwayatBumil(widget.bumilId, riwayats);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Data persalinan berhasil disimpan'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRouter.homepage,
-          (route) => false,
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal menyimpan data: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+    context.read<AddPersalinanCubit>().addPersalinan(
+      persalinanList,
+      bumilId: widget.bumilId,
+      kehamilanId: widget.kehamilanId,
+      resti: widget.resti.join(", "),
+    );
   }
 
   @override
@@ -367,33 +314,51 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
               }),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
+                child: Button(
+                  isSubmitting: false,
                   onPressed: _addPersalinan,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Tambah Persalinan (kembar)'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
+                  label: 'Tambah Persalinan (kembar)',
+                  icon: Icons.add,
+                  secondaryButton: true,
                 ),
               ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _submitData,
-                  icon: const Icon(Icons.save),
-                  label: const Text('Simpan'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                  ),
+                child: BlocConsumer<AddPersalinanCubit, AddPersalinanState>(
+                  listener: (context, state) {
+                    if (state is AddPersalinanSuccess) {
+                      Utils.showSnackBar(
+                        context,
+                        content: 'Data persalinan berhasil disimpan',
+                        isSuccess: true,
+                      );
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        AppRouter.homepage,
+                        (route) => false,
+                      );
+                    } else if (state is AddPersalinanFailure) {
+                      Utils.showSnackBar(
+                        context,
+                        content: 'Gagal: ${state.message}',
+                        isSuccess: true,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    var isSubmitting = false;
+                    if (state is AddPersalinanLoading) {
+                      isSubmitting = true;
+                    }
+                    return Button(
+                      isSubmitting: isSubmitting,
+                      onPressed: _submitData,
+                      label: 'Simpan',
+                      icon: Icons.save,
+                      loadingLabel: 'Menyimpan...',
+                    );
+                  },
                 ),
               ),
             ],
