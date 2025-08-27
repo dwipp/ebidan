@@ -31,6 +31,7 @@ class Kunjungan {
     this.idKehamilan,
   });
 
+  /// ✅ Dari Firestore (pakai Timestamp)
   factory Kunjungan.fromFirestore(Map<String, dynamic> json) {
     return Kunjungan(
       bb: json['bb'],
@@ -47,5 +48,45 @@ class Kunjungan {
       idBumil: json['idBumil'],
       idKehamilan: json['idKehamilan'],
     );
+  }
+
+  /// ✅ Dari Map/JSON biasa (pakai string date)
+  factory Kunjungan.fromMap(Map<String, dynamic> map) {
+    return Kunjungan(
+      bb: map['bb'],
+      createdAt: map['created_at'] != null
+          ? DateTime.parse(map['created_at'])
+          : null,
+      keluhan: map['keluhan'],
+      lila: map['lila'],
+      lp: map['lp'],
+      planning: map['planning'],
+      status: map['status'],
+      td: map['td'],
+      tfu: map['tfu'],
+      uk: map['uk'],
+      idBidan: map['idBidan'],
+      idBumil: map['idBumil'],
+      idKehamilan: map['idKehamilan'],
+    );
+  }
+
+  /// ✅ Untuk simpan ke Firestore/JSON
+  Map<String, dynamic> toMap() {
+    return {
+      'bb': bb,
+      'created_at': createdAt?.toIso8601String(),
+      'keluhan': keluhan,
+      'lila': lila,
+      'lp': lp,
+      'planning': planning,
+      'status': status,
+      'td': td,
+      'tfu': tfu,
+      'uk': uk,
+      'idBidan': idBidan,
+      'idBumil': idBumil,
+      'idKehamilan': idKehamilan,
+    }..removeWhere((key, value) => value == null);
   }
 }

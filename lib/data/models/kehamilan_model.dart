@@ -23,8 +23,8 @@ class Kehamilan {
   final String? statusTt;
   final String? tb;
   final DateTime? tglPeriksaUsg;
-  final List<Kunjungan>? kunjungan;
-  final List<Persalinan>? persalinan; // 🔥 sekarang array
+  final bool kunjungan;
+  final List<Persalinan>? persalinan;
 
   Kehamilan({
     this.id,
@@ -47,15 +47,12 @@ class Kehamilan {
     this.statusTt,
     this.tb,
     this.tglPeriksaUsg,
-    this.kunjungan,
+    this.kunjungan = false,
     this.persalinan,
   });
 
-  factory Kehamilan.fromFirestore(
-    String id,
-    Map<String, dynamic> json,
-    List<Kunjungan> kunjungan,
-  ) {
+  /// ✅ Dari Firestore (pakai Timestamp)
+  factory Kehamilan.fromFirestore(String id, Map<String, dynamic> json) {
     return Kehamilan(
       id: id,
       bpjs: json['bpjs'],
@@ -77,22 +74,57 @@ class Kehamilan {
       statusTt: json['status_tt'],
       tb: json['tb'],
       tglPeriksaUsg: (json['tgl_periksa_usg'] as Timestamp?)?.toDate(),
-      kunjungan: kunjungan,
+      kunjungan: json['kunjungan'] ?? false,
       persalinan: (json['persalinan'] as List?)
           ?.map((e) => Persalinan.fromMap(e as Map<String, dynamic>))
-          .toList(), // 🔥 parse list
+          .toList(),
     );
   }
 
+  /// ✅ Dari JSON biasa (pakai string date)
+  factory Kehamilan.fromJson(Map<String, dynamic> json) {
+    return Kehamilan(
+      id: json['id'],
+      bpjs: json['bpjs'],
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
+      gpa: json['gpa'],
+      hasilLab: json['hasil_lab'],
+      hemoglobin: json['hemoglobin'],
+      hpht: json['hpht'] != null ? DateTime.parse(json['hpht']) : null,
+      htp: json['htp'] != null ? DateTime.parse(json['htp']) : null,
+      idBidan: json['id_bidan'],
+      idBumil: json['id_bumil'],
+      kontrasepsiSebelumHamil: json['kontrasepsi_sebelum_hamil'],
+      noKohortIbu: json['no_kohort_ibu'],
+      noRekaMedis: json['no_reka_medis'],
+      resti: (json['resti'] as List?)?.map((e) => e.toString()).toList(),
+      riwayatAlergi: json['riwayat_alergi'],
+      riwayatPenyakit: json['riwayat_penyakit'],
+      statusResti: json['status_resti'],
+      statusTt: json['status_tt'],
+      tb: json['tb'],
+      tglPeriksaUsg: json['tgl_periksa_usg'] != null
+          ? DateTime.parse(json['tgl_periksa_usg'])
+          : null,
+      kunjungan: json['kunjungan'] ?? false,
+      persalinan: (json['persalinan'] as List?)
+          ?.map((e) => Persalinan.fromMap(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  /// ✅ Untuk Firestore
   Map<String, dynamic> toMap() {
     return {
       'bpjs': bpjs,
-      'created_at': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
+      'created_at': createdAt?.toIso8601String(),
       'gpa': gpa,
       'hasil_lab': hasilLab,
       'hemoglobin': hemoglobin,
-      'hpht': hpht != null ? Timestamp.fromDate(hpht!) : null,
-      'htp': htp != null ? Timestamp.fromDate(htp!) : null,
+      'hpht': hpht?.toIso8601String(),
+      'htp': htp?.toIso8601String(),
       'id_bidan': idBidan,
       'id_bumil': idBumil,
       'kontrasepsi_sebelum_hamil': kontrasepsiSebelumHamil,
@@ -104,13 +136,37 @@ class Kehamilan {
       'status_resti': statusResti,
       'status_tt': statusTt,
       'tb': tb,
-      'tgl_periksa_usg': tglPeriksaUsg != null
-          ? Timestamp.fromDate(tglPeriksaUsg!)
-          : null,
-      'persalinan': persalinan
-          ?.map((e) => e.toMap())
-          .toList(), // 🔥 simpan array
-      // ⚠️ kunjungan tidak disimpan langsung karena biasanya koleksi terpisah
+      'tgl_periksa_usg': tglPeriksaUsg?.toIso8601String(),
+      'kunjungan': kunjungan,
+      'persalinan': persalinan?.map((e) => e.toMap()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
+
+  /// ✅ Untuk JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'bpjs': bpjs,
+      'created_at': createdAt?.toIso8601String(),
+      'gpa': gpa,
+      'hasil_lab': hasilLab,
+      'hemoglobin': hemoglobin,
+      'hpht': hpht?.toIso8601String(),
+      'htp': htp?.toIso8601String(),
+      'id_bidan': idBidan,
+      'id_bumil': idBumil,
+      'kontrasepsi_sebelum_hamil': kontrasepsiSebelumHamil,
+      'no_kohort_ibu': noKohortIbu,
+      'no_reka_medis': noRekaMedis,
+      'resti': resti,
+      'riwayat_alergi': riwayatAlergi,
+      'riwayat_penyakit': riwayatPenyakit,
+      'status_resti': statusResti,
+      'status_tt': statusTt,
+      'tb': tb,
+      'tgl_periksa_usg': tglPeriksaUsg?.toIso8601String(),
+      'kunjungan': kunjungan,
+      'persalinan': persalinan?.map((e) => e.toMap()).toList(),
     }..removeWhere((key, value) => value == null);
   }
 }

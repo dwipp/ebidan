@@ -53,6 +53,7 @@ class _MainAppState extends State<MainApp> {
       child: const MaterialApp(
         initialRoute: AppRouter.homepage,
         onGenerateRoute: AppRouter.onGenerateRoute,
+        debugShowCheckedModeBanner: false,
       ),
     );
   }

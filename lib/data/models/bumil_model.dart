@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/data/models/riwayat_model.dart';
 
 class Bumil {
@@ -38,6 +39,7 @@ class Bumil {
   final List<String>? latestKehamilanResti;
   final bool latestKehamilanPersalinan;
   final bool latestKehamilanKunjungan;
+  final Kehamilan? latestKehamilan;
 
   Bumil({
     required this.idBumil,
@@ -67,6 +69,7 @@ class Bumil {
     this.latestKehamilanResti,
     this.latestKehamilanKunjungan = false,
     this.latestKehamilanPersalinan = false,
+    this.latestKehamilan,
   });
 
   /// ====== Factory from Firestore ======
@@ -108,10 +111,16 @@ class Bumil {
       latestKehamilanResti: map['latest_kehamilan_resti'] != null
           ? List<String>.from(map['latest_kehamilan_resti'])
           : null,
+      latestKehamilan: map['latest_kehamilan'] != null
+          ? Kehamilan.fromFirestore(
+              map['latest_kehamilan_id'] ?? '',
+              Map<String, dynamic>.from(map['latest_kehamilan']),
+            )
+          : null,
     );
   }
 
-  /// Convert ke Firestore & JSON
+  /// Convert ke Firestore
   Map<String, dynamic> toMap() {
     return {
       'id_bidan': idBidan,
@@ -140,7 +149,8 @@ class Bumil {
       'latest_kehamilan_kunjungan': latestKehamilanKunjungan,
       'latest_kehamilan_persalinan': latestKehamilanPersalinan,
       'latest_kehamilan_resti': latestKehamilanResti,
-    };
+      'latest_kehamilan': latestKehamilan?.toMap(),
+    }..removeWhere((key, value) => value == null);
   }
 
   /// Untuk HydratedBloc
@@ -187,6 +197,11 @@ class Bumil {
       latestKehamilanResti: json['latest_kehamilan_resti'] != null
           ? List<String>.from(json['latest_kehamilan_resti'])
           : null,
+      latestKehamilan: json['latest_kehamilan'] != null
+          ? Kehamilan.fromJson(
+              Map<String, dynamic>.from(json['latest_kehamilan']),
+            )
+          : null,
     );
   }
 
@@ -219,6 +234,7 @@ class Bumil {
       'latest_kehamilan_kunjungan': latestKehamilanKunjungan,
       'latest_kehamilan_persalinan': latestKehamilanPersalinan,
       'latest_kehamilan_resti': latestKehamilanResti,
+      'latest_kehamilan': latestKehamilan?.toJson(),
     };
   }
 

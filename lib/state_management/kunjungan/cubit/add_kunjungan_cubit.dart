@@ -58,7 +58,10 @@ class AddKunjunganCubit extends Cubit<AddKunjunganState> {
           FirebaseFirestore.instance
               .collection('kehamilan')
               .doc(data.idKehamilan)
-              .update({'resti': FieldValue.arrayUnion(resti)});
+              .update({
+                'resti': FieldValue.arrayUnion(resti),
+                'kunjungan': true,
+              });
         }
         FirebaseFirestore.instance.collection('bumil').doc(data.idBumil).update(
           {'latest_kehamilan_kunjungan': true},

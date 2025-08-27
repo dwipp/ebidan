@@ -133,6 +133,7 @@ class AppRouter {
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => ListKehamilanScreen(
+            latestKehamilan: args['latestKehamilan'],
             bidanId: args['bidanId'],
             bumilId: args['bumilId'],
           ),

@@ -263,6 +263,19 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                         content: 'Data bumil disimpan tanpa riwayat kehamilan',
                         isSuccess: true,
                       );
+                      Navigator.pushReplacementNamed(
+                        context,
+                        AppRouter.pendataanKehamilan,
+                        arguments: {
+                          'bumilId': widget.bumilId,
+                          'age': widget.age,
+                          'latestHistoryYear': null,
+                          'jumlahRiwayat': 0,
+                          'jumlahPara': 0,
+                          'jumlahAbortus': 0,
+                          'jumlahBeratRendah': 0,
+                        },
+                      );
                     }
                   },
                   builder: (context, state) {

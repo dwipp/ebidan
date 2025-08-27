@@ -31,7 +31,7 @@ class DetailKehamilanScreen extends StatelessWidget {
               MenuButton(
                 icon: Icons.calendar_month,
                 title: 'Kunjungan',
-                enabled: kehamilan.kunjungan != null,
+                enabled: kehamilan.kunjungan,
                 onTap: () {
                   Navigator.pushNamed(
                     context,

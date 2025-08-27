@@ -19,8 +19,7 @@ class AddKehamilanCubit extends Cubit<AddKehamilanState> {
     emit(AddKehamilanLoading());
 
     try {
-      final id = FirebaseFirestore.instance.collection('kehamilan').doc().id;
-      FirebaseFirestore.instance.collection('kehamilan').doc(id).set({
+      final Map<String, dynamic> kehamilan = {
         "tb": data.tb,
         "hemoglobin": data.hemoglobin,
         "bpjs": data.bpjs,
@@ -40,7 +39,9 @@ class AddKehamilanCubit extends Cubit<AddKehamilanState> {
         "created_at": data.createdAt,
         "id_bumil": data.idBumil,
         "resti": data.resti,
-      });
+      };
+      final id = FirebaseFirestore.instance.collection('kehamilan').doc().id;
+      FirebaseFirestore.instance.collection('kehamilan').doc(id).set(kehamilan);
 
       FirebaseFirestore.instance.collection('bumil').doc(data.idBumil).update({
         'latest_kehamilan_id': id,
@@ -48,6 +49,7 @@ class AddKehamilanCubit extends Cubit<AddKehamilanState> {
         'latest_kehamilan_resti': data.resti,
         'latest_kehamilan_persalinan': false,
         'latest_kehamilan_kunjungan': false,
+        'latest_kehamilan': kehamilan,
       });
 
       emit(AddKehamilanSuccess(idKehamilan: id, firstTime: true));

@@ -387,6 +387,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                         context,
                         AppRouter.kunjungan,
                         arguments: {
+                          'bumilId': widget.bumilId,
                           'kehamilanId': state.idKehamilan,
                           'firstTime': state.firstTime,
                         },
