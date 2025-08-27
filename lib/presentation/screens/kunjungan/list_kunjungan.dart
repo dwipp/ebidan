@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/state_management/kunjungan/cubit/get_kunjungan_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListKunjunganScreen extends StatefulWidget {
   final String docId;
@@ -16,48 +18,12 @@ class ListKunjunganScreen extends StatefulWidget {
 
 class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
   List<Kunjungan> _kunjunganList = [];
-  bool _loading = true;
   bool _sortDesc = true; // default: terbaru di atas
 
   @override
   void initState() {
     super.initState();
-    _fetchKunjungan();
-  }
-
-  Future<void> _fetchKunjungan() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid ?? "";
-    try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('kunjungan')
-          .where('id_bidan', isEqualTo: userId)
-          .where('id_kehamilan', isEqualTo: widget.docId)
-          .orderBy('created_at', descending: true)
-          .get();
-
-      final kunjunganList = snapshot.docs
-          .map((e) => Kunjungan.fromFirestore(e.data()))
-          .toList();
-
-      // lakukan sorting lokal
-      Utils.sortByDateTime<Kunjungan>(
-        kunjunganList,
-        (k) => k.createdAt!,
-        descending: _sortDesc,
-      );
-
-      if (mounted) {
-        setState(() {
-          _kunjunganList = kunjunganList;
-          _loading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error fetch kunjungan: $e');
-      if (mounted) {
-        setState(() => _loading = false);
-      }
-    }
+    context.read<GetKunjunganCubit>().getKunjungan(kehamilanId: widget.docId);
   }
 
   void _toggleSort() {
@@ -73,14 +39,6 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_kunjunganList.isEmpty) {
-      return const Center(child: Text("Tidak ada data kunjungan"));
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Kunjungan"),
@@ -92,26 +50,49 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: _kunjunganList.length,
-        itemBuilder: (context, index) {
-          final kunjungan = _kunjunganList[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: ListTile(
-              title: Text(Utils.formattedDate(kunjungan.createdAt)),
-              subtitle: kunjungan.status == '-'
-                  ? null
-                  : Text('status: ${kunjungan.status}'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  AppRouter.detailKunjungan,
-                  arguments: {'kunjungan': kunjungan},
-                );
-              },
-            ),
+      body: BlocConsumer<GetKunjunganCubit, GetKunjunganState>(
+        listener: (context, state) {
+          if (state is GetKunjunganSuccess) {
+            _kunjunganList = state.kunjungans;
+          } else if (state is GetKunjunganFailure) {
+            Utils.showSnackBar(
+              context,
+              content: 'Gagal: ${state.message}',
+              isSuccess: false,
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is GetKunjunganLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is GetKunjunganEmpty ||
+              state is GetKunjunganFailure) {
+            return const Center(child: Text("Tidak ada data kunjungan"));
+          } else if (state is GetKunjunganFailure) {
+            return const Center(child: Text("Tidak ada data kunjungan"));
+          }
+          return ListView.builder(
+            itemCount: _kunjunganList.length,
+            itemBuilder: (context, index) {
+              final kunjungan = _kunjunganList[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: ListTile(
+                  title: Text(Utils.formattedDate(kunjungan.createdAt)),
+                  subtitle: kunjungan.status == '-'
+                      ? null
+                      : Text('status: ${kunjungan.status}'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.detailKunjungan,
+                      arguments: {'kunjungan': kunjungan},
+                    );
+                  },
+                ),
+              );
+            },
           );
         },
       ),
