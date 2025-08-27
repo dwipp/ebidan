@@ -7,8 +7,13 @@ import 'package:ebidan/data/models/kehamilan_model.dart';
 
 class DetailKehamilanScreen extends StatelessWidget {
   final Kehamilan kehamilan;
+  final bool statusKunjungan;
 
-  const DetailKehamilanScreen({super.key, required this.kehamilan});
+  const DetailKehamilanScreen({
+    super.key,
+    required this.kehamilan,
+    required this.statusKunjungan,
+  });
 
   String _formatDate(DateTime? date) {
     if (date == null) return "-";
@@ -31,7 +36,7 @@ class DetailKehamilanScreen extends StatelessWidget {
               MenuButton(
                 icon: Icons.calendar_month,
                 title: 'Kunjungan',
-                enabled: kehamilan.kunjungan,
+                enabled: statusKunjungan,
                 onTap: () {
                   Navigator.pushNamed(
                     context,

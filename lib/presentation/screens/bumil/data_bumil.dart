@@ -55,6 +55,7 @@ class DataBumilScreen extends StatelessWidget {
                   AppRouter.listKehamilan,
                   arguments: {
                     'latestKehamilan': bumil.latestKehamilan,
+                    'latestStatusKunjungan': bumil.latestKehamilanKunjungan,
                     'bidanId': bumil.idBidan,
                     'bumilId': bumil.idBumil,
                   },

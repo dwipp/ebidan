@@ -31,9 +31,9 @@ class AddKunjunganCubit extends Cubit<AddKunjunganState> {
         'td': data.td,
         'tfu': data.tfu,
         'uk': data.uk!.replaceAll(RegExp(r'[^0-9]'), ''),
-        'idBidan': user.uid,
-        'idKehamilan': data.idKehamilan,
-        'idBumil': data.idBumil,
+        'id_bidan': user.uid,
+        'id_kehamilan': data.idKehamilan,
+        'id_bumil': data.idBumil,
       });
 
       if (firstTime == true) {

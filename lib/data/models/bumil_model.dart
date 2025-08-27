@@ -80,7 +80,6 @@ class Bumil {
           .map((e) => Riwayat.fromMap(Map<String, dynamic>.from(e)))
           .toList();
     }
-
     return Bumil(
       idBumil: idBumil,
       idBidan: map['id_bidan'] ?? '',

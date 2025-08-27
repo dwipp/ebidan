@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ListKunjunganScreen extends StatefulWidget {
@@ -25,11 +26,13 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
   }
 
   Future<void> _fetchKunjungan() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? "";
     try {
       final snapshot = await FirebaseFirestore.instance
-          .collection('kehamilan')
-          .doc(widget.docId)
           .collection('kunjungan')
+          .where('id_bidan', isEqualTo: userId)
+          .where('id_kehamilan', isEqualTo: widget.docId)
+          .orderBy('created_at', descending: true)
           .get();
 
       final kunjunganList = snapshot.docs

@@ -44,9 +44,9 @@ class Kunjungan {
       td: json['td'],
       tfu: json['tfu'],
       uk: json['uk'],
-      idBidan: json['idBidan'],
-      idBumil: json['idBumil'],
-      idKehamilan: json['idKehamilan'],
+      idBidan: json['id_bidan'],
+      idBumil: json['id_bumil'],
+      idKehamilan: json['id_kehamilan'],
     );
   }
 
@@ -65,9 +65,9 @@ class Kunjungan {
       td: map['td'],
       tfu: map['tfu'],
       uk: map['uk'],
-      idBidan: map['idBidan'],
-      idBumil: map['idBumil'],
-      idKehamilan: map['idKehamilan'],
+      idBidan: map['id_bidan'],
+      idBumil: map['id_bumil'],
+      idKehamilan: map['id_kehamilan'],
     );
   }
 
@@ -84,9 +84,9 @@ class Kunjungan {
       'td': td,
       'tfu': tfu,
       'uk': uk,
-      'idBidan': idBidan,
-      'idBumil': idBumil,
-      'idKehamilan': idKehamilan,
+      'id_bidan': idBidan,
+      'id_bumil': idBumil,
+      'id_kehamilan': idKehamilan,
     }..removeWhere((key, value) => value == null);
   }
 }

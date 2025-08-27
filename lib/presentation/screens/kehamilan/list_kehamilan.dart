@@ -7,12 +7,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListKehamilanScreen extends StatefulWidget {
   final Kehamilan latestKehamilan;
+  final bool latestStatusKunjungan;
   final String bumilId;
   final String bidanId;
 
   const ListKehamilanScreen({
     super.key,
     required this.latestKehamilan,
+    required this.latestStatusKunjungan,
     required this.bumilId,
     required this.bidanId,
   });
@@ -75,8 +77,11 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                   onTap: () {
                     Navigator.pushNamed(
                       context,
-                      AppRouter.dataKehamilan,
-                      arguments: {'kehamilan': widget.latestKehamilan},
+                      AppRouter.detailKehamilan,
+                      arguments: {
+                        'kehamilan': widget.latestKehamilan,
+                        'statusKunjungan': widget.latestStatusKunjungan,
+                      },
                     );
                   },
                 ),
@@ -101,8 +106,11 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                           onTap: () {
                             Navigator.pushNamed(
                               context,
-                              AppRouter.dataKehamilan,
-                              arguments: {'kehamilan': kehamilan},
+                              AppRouter.detailKehamilan,
+                              arguments: {
+                                'kehamilan': kehamilan,
+                                'statusKunjungan': widget.latestStatusKunjungan,
+                              },
                             );
                           },
                         ),

@@ -36,7 +36,7 @@ class AppRouter {
   static const String detailBumil = '/detailbumil';
   static const String listRiwayat = '/listriwayat';
   static const String detailRiwayat = '/detailriwayat';
-  static const String dataKehamilan = '/datakehamilan';
+  static const String detailKehamilan = '/detailkehamilan';
   static const String listKehamilan = '/listkehamilan';
   static const String listKunjungan = '/listkunjungan';
   static const String detailKunjungan = '/detailkunjungan';
@@ -124,16 +124,20 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => DetailRiwayatScreen(riwayat: args['riwayat']),
         );
-      case dataKehamilan:
+      case detailKehamilan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => DetailKehamilanScreen(kehamilan: args['kehamilan']),
+          builder: (_) => DetailKehamilanScreen(
+            kehamilan: args['kehamilan'],
+            statusKunjungan: args['statusKunjungan'],
+          ),
         );
       case listKehamilan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => ListKehamilanScreen(
             latestKehamilan: args['latestKehamilan'],
+            latestStatusKunjungan: args['latestStatusKunjungan'],
             bidanId: args['bidanId'],
             bumilId: args['bumilId'],
           ),
