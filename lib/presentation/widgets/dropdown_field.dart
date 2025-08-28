@@ -22,6 +22,8 @@ class DropdownField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('this.items: ${this.items}');
+    print('this.value: ${this.value}');
     return DropdownButtonFormField<String>(
       value: value,
       decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),

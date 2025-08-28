@@ -1,25 +1,25 @@
-part of 'add_bumil_cubit.dart';
+part of 'submit_bumil_cubit.dart';
 
-class AddBumilState extends Equatable {
+class SubmitBumilState extends Equatable {
   final bool isSubmitting;
   final bool isSuccess;
   final String? error;
   final String? bumilId;
 
-  const AddBumilState({
+  const SubmitBumilState({
     this.isSubmitting = false,
     this.isSuccess = false,
     this.error,
     this.bumilId,
   });
 
-  AddBumilState copyWith({
+  SubmitBumilState copyWith({
     bool? isSubmitting,
     bool? isSuccess,
     String? error,
     String? bumilId,
   }) {
-    return AddBumilState(
+    return SubmitBumilState(
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSuccess: isSuccess ?? this.isSuccess,
       error: error,

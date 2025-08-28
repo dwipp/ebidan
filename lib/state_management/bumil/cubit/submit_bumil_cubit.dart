@@ -1,13 +1,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-part 'add_bumil_state.dart';
+part 'submit_bumil_state.dart';
 
-class AddBumilCubit extends Cubit<AddBumilState> {
-  AddBumilCubit() : super(AddBumilState());
+class SubmitBumilCubit extends Cubit<SubmitBumilState> {
+  final SelectedBumilCubit selectedBumilCubit;
+  SubmitBumilCubit({required this.selectedBumilCubit})
+    : super(SubmitBumilState());
 
   Future<void> submitBumil(Bumil bumil) async {
     emit(state.copyWith(isSubmitting: true, error: null));
@@ -17,8 +20,11 @@ class AddBumilCubit extends Cubit<AddBumilState> {
       emit(state.copyWith(isSubmitting: false, error: 'User belum login'));
       return;
     }
+    print('bumil.idBumil: ${bumil.idBumil}');
     try {
-      final bumilId = FirebaseFirestore.instance.collection('bumil').doc().id;
+      final bumilId = bumil.idBumil.isNotEmpty
+          ? bumil.idBumil
+          : FirebaseFirestore.instance.collection('bumil').doc().id;
       FirebaseFirestore.instance.collection('bumil').doc(bumilId).set({
         "nama_ibu": bumil.namaIbu,
         "nama_suami": bumil.namaSuami,
@@ -36,12 +42,12 @@ class AddBumilCubit extends Cubit<AddBumilState> {
         "kk_suami": bumil.kkSuami,
         "pendidikan_ibu": bumil.pendidikanIbu,
         "pendidikan_suami": bumil.pendidikanSuami,
-        "id_bidan": user.uid,
+        "id_bidan": bumil.idBidan.isNotEmpty ? bumil.idBidan : user.uid,
         "birthdate_ibu": bumil.birthdateIbu,
         "birthdate_suami": bumil.birthdateSuami,
-        "created_at": DateTime.now(),
-      });
-
+        "created_at": bumil.createdAt,
+      }, SetOptions(merge: true));
+      selectedBumilCubit.selectBumil(bumil);
       emit(
         state.copyWith(isSubmitting: false, isSuccess: true, bumilId: bumilId),
       );
@@ -50,5 +56,5 @@ class AddBumilCubit extends Cubit<AddBumilState> {
     }
   }
 
-  void setInitial() => emit(AddBumilState());
+  void setInitial() => emit(SubmitBumilState());
 }

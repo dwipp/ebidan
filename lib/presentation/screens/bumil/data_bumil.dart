@@ -2,17 +2,18 @@ import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DataBumilScreen extends StatelessWidget {
-  final Bumil bumil;
-
-  const DataBumilScreen({super.key, required this.bumil});
+  const DataBumilScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final bumil = context.read<SelectedBumilCubit>().state;
     return Scaffold(
-      appBar: PageHeader(title: bumil.namaIbu),
+      appBar: PageHeader(title: bumil?.namaIbu ?? ''),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -36,9 +37,9 @@ class DataBumilScreen extends StatelessWidget {
                   context,
                   AppRouter.listRiwayat,
                   arguments: {
-                    'riwayatList': bumil.riwayat ?? [],
-                    'idBumil': bumil.idBumil,
-                    'birthdayIbu': bumil.birthdateIbu,
+                    'riwayatList': bumil?.riwayat ?? [],
+                    'idBumil': bumil?.idBumil,
+                    'birthdayIbu': bumil?.birthdateIbu,
                   },
                 );
               },
@@ -51,10 +52,10 @@ class DataBumilScreen extends StatelessWidget {
                   context,
                   AppRouter.listKehamilan,
                   arguments: {
-                    'latestKehamilan': bumil.latestKehamilan,
-                    'latestStatusKunjungan': bumil.latestKehamilanKunjungan,
-                    'bidanId': bumil.idBidan,
-                    'bumilId': bumil.idBumil,
+                    'latestKehamilan': bumil?.latestKehamilan,
+                    'latestStatusKunjungan': bumil?.latestKehamilanKunjungan,
+                    'bidanId': bumil?.idBidan,
+                    'bumilId': bumil?.idBumil,
                   },
                 );
               },

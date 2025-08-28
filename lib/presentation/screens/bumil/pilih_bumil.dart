@@ -1,6 +1,7 @@
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/bumil/cubit/search_bumil_cubit.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
@@ -81,6 +82,9 @@ class PilihBumilScreen extends StatelessWidget {
                           subtitle: Text('NIK: ${bumil.nikIbu}'),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () async {
+                            context.read<SelectedBumilCubit>().selectBumil(
+                              bumil,
+                            );
                             if (pilihState == 'bumil') {
                               Navigator.pushNamed(
                                 context,

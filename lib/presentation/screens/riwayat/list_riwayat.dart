@@ -1,19 +1,13 @@
+import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListRiwayatBumilScreen extends StatefulWidget {
-  final String idBumil;
-  final DateTime? birthdayIbu;
-  final List<Riwayat> riwayatList;
-
-  const ListRiwayatBumilScreen({
-    super.key,
-    required this.riwayatList,
-    required this.idBumil,
-    required this.birthdayIbu,
-  });
+  const ListRiwayatBumilScreen({super.key});
 
   @override
   State<ListRiwayatBumilScreen> createState() => _ListRiwayatBumilScreenState();
@@ -21,13 +15,21 @@ class ListRiwayatBumilScreen extends StatefulWidget {
 
 class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
   late List<Riwayat> _riwayatList;
+  Bumil? bumil;
 
   @override
-  void initState() {
-    super.initState();
-    // copy supaya bisa dimodifikasi
-    _riwayatList = List.from(widget.riwayatList);
-    _sortList();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // ambil state dari cubit
+    bumil = context.read<SelectedBumilCubit>().state;
+
+    if (bumil?.riwayat != null) {
+      _riwayatList = List.from(bumil!.riwayat!);
+      _sortList();
+    } else {
+      _riwayatList = [];
+    }
   }
 
   void _sortList() {
@@ -48,9 +50,9 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
                 AppRouter.addRiwayatBumil,
                 arguments: {
                   'state': 'lateUpdate',
-                  'bumilId': widget.idBumil,
-                  'age': (widget.birthdayIbu != null
-                      ? DateTime.now().year - widget.birthdayIbu!.year
+                  'bumilId': bumil?.idBumil,
+                  'age': (bumil?.birthdateIbu != null
+                      ? DateTime.now().year - bumil!.birthdateIbu!.year
                       : 0),
                 },
               );

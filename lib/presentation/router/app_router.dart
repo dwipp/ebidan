@@ -1,4 +1,5 @@
 import 'package:ebidan/presentation/screens/bumil/data_bumil.dart';
+import 'package:ebidan/presentation/screens/bumil/edit_bumil.dart';
 import 'package:ebidan/presentation/screens/kehamilan/detail_kehamilan.dart';
 import 'package:ebidan/presentation/screens/bumil/detail_bumil.dart';
 import 'package:ebidan/presentation/screens/kehamilan/update_kehamilan.dart';
@@ -29,6 +30,7 @@ class AppRouter {
   static const String addBumil = '/addbumil';
   static const String addRiwayatBumil = '/addriwayatbumil';
   static const String pilihBumil = '/pilihbumil';
+  static const String editBumil = '/editbumil';
   static const String pendataanKehamilan = '/pendataankehamilan';
   static const String kunjungan = '/kunjungan';
   static const String reviewKunjungan = '/reviewkunjungan';
@@ -101,24 +103,11 @@ class AppRouter {
           ),
         );
       case dataBumil:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => DataBumilScreen(bumil: args['bumil']),
-        );
+        return MaterialPageRoute(builder: (_) => DataBumilScreen());
       case detailBumil:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => DetailBumilScreen(bumil: args['bumil']),
-        );
+        return MaterialPageRoute(builder: (_) => DetailBumilScreen());
       case listRiwayat:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => ListRiwayatBumilScreen(
-            riwayatList: args['riwayatList'],
-            birthdayIbu: args['birthdayIbu'],
-            idBumil: args['idBumil'],
-          ),
-        );
+        return MaterialPageRoute(builder: (_) => ListRiwayatBumilScreen());
       case detailRiwayat:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
@@ -183,6 +172,11 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) =>
               ListPersalinanScreen(persalinans: args['persalinans']),
+        );
+      case editBumil:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => EditBumilScreen(bumil: args['bumil']),
         );
       default:
         throw const RouteException('Route not found!');

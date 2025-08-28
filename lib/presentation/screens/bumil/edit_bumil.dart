@@ -1,22 +1,23 @@
+import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
-import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/state_management/bumil/cubit/submit_bumil_cubit.dart';
-import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AddBumilScreen extends StatefulWidget {
-  const AddBumilScreen({Key? key}) : super(key: key);
+class EditBumilScreen extends StatefulWidget {
+  final Bumil bumil;
+  const EditBumilScreen({Key? key, required this.bumil}) : super(key: key);
 
   @override
-  State<AddBumilScreen> createState() => _AddBumilState();
+  State<EditBumilScreen> createState() => _EditBumilState();
 }
 
-class _AddBumilState extends State<AddBumilScreen> {
+class _EditBumilState extends State<EditBumilScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers
@@ -94,6 +95,25 @@ class _AddBumilState extends State<AddBumilScreen> {
   @override
   void initState() {
     context.read<SubmitBumilCubit>().setInitial();
+    _namaIbuController.text = widget.bumil.namaIbu;
+    _namaSuamiController.text = widget.bumil.namaSuami;
+    _alamatController.text = widget.bumil.alamat;
+    _noHpController.text = widget.bumil.noHp;
+    _selectedAgamaIbu = widget.bumil.agamaIbu;
+    _selectedAgamaSuami = widget.bumil.agamaSuami;
+    _selectedGolIbu = widget.bumil.bloodIbu;
+    _selectedGolSuami = widget.bumil.bloodSuami;
+    _jobIbuController.text = widget.bumil.jobIbu;
+    _jobSuamiController.text = widget.bumil.jobSuami;
+    _nikIbuController.text = widget.bumil.nikIbu;
+    _nikSuamiController.text = widget.bumil.nikSuami;
+    _kkIbuController.text = widget.bumil.kkIbu;
+    _kkSuamiController.text = widget.bumil.kkSuami;
+    _selectedPendidikanIbu = widget.bumil.pendidikanIbu;
+    _selectedPendidikanSuami = widget.bumil.pendidikanSuami;
+    _birthdateIbu = widget.bumil.birthdateIbu;
+    _birthdateSuami = widget.bumil.birthdateSuami;
+
     super.initState();
   }
 
@@ -119,9 +139,9 @@ class _AddBumilState extends State<AddBumilScreen> {
       pendidikanSuami: _selectedPendidikanSuami!,
       birthdateIbu: _birthdateIbu!,
       birthdateSuami: _birthdateSuami!,
-      idBumil: '',
-      idBidan: '',
-      createdAt: DateTime.now(),
+      idBumil: widget.bumil.idBumil,
+      idBidan: widget.bumil.idBidan,
+      createdAt: widget.bumil.createdAt,
     );
 
     context.read<SubmitBumilCubit>().submitBumil(bumil);
@@ -130,7 +150,7 @@ class _AddBumilState extends State<AddBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: 'Tambah Data Bumil'),
+      appBar: PageHeader(title: 'Perbaharui Data Bumil'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -338,20 +358,10 @@ class _AddBumilState extends State<AddBumilScreen> {
                         if (state.isSuccess && state.bumilId != null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Data Bumil berhasil disimpan'),
+                              content: Text('Data Bumil berhasil diperbaharui'),
                             ),
                           );
-                          Navigator.pushReplacementNamed(
-                            context,
-                            AppRouter.addRiwayatBumil,
-                            arguments: {
-                              'state': 'instantUpdate',
-                              'bumilId': state.bumilId,
-                              'age': (_birthdateIbu != null
-                                  ? DateTime.now().year - _birthdateIbu!.year
-                                  : 0),
-                            },
-                          );
+                          Navigator.pop(context);
                         }
                         if (state.error != null) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -368,7 +378,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                         return Button(
                           isSubmitting: isSubmitting,
                           onPressed: _submitForm,
-                          label: 'Simpan',
+                          label: 'perbaharui',
                           loadingLabel: 'Menyimpan...',
                           icon: Icons.check,
                         );
