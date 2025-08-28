@@ -1,5 +1,6 @@
 import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:flutter/material.dart';
 
 class DetailRiwayatScreen extends StatelessWidget {
@@ -10,8 +11,8 @@ class DetailRiwayatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Detail Riwayat"),
+      appBar: PageHeader(
+        title: "Detail Riwayat",
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

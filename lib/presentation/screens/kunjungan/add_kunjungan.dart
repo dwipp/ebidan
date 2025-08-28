@@ -3,6 +3,7 @@ import 'package:ebidan/presentation/widgets/blood_pressure_field.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -84,7 +85,7 @@ class _KunjunganState extends State<KunjunganScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Input Kunjungan")),
+      appBar: PageHeader(title: "Input Kunjungan"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(

@@ -1,5 +1,6 @@
 import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:flutter/material.dart';
 
 class UpdateKehamilanScreen extends StatelessWidget {
@@ -19,11 +20,7 @@ class UpdateKehamilanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Update Kehamilan'),
-        // centerTitle: true,
-        elevation: 0,
-      ),
+      appBar: PageHeader(title: 'Update Kehamilan'),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

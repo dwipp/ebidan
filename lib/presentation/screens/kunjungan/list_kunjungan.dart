@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/get_kunjungan_cubit.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -40,8 +39,8 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Kunjungan"),
+      appBar: PageHeader(
+        title: "Kunjungan",
         actions: [
           IconButton(
             icon: Icon(_sortDesc ? Icons.arrow_downward : Icons.arrow_upward),

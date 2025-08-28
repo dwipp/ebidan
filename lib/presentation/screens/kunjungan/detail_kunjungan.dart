@@ -1,5 +1,6 @@
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:flutter/material.dart';
 
 class DetailKunjunganScreen extends StatelessWidget {
@@ -10,8 +11,8 @@ class DetailKunjunganScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(Utils.formattedDate(kunjungan.createdAt)),
+      appBar: PageHeader(
+        title: Utils.formattedDate(kunjungan.createdAt),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

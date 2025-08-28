@@ -1,5 +1,6 @@
 import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:flutter/material.dart';
 
 class ListRiwayatBumilScreen extends StatefulWidget {
@@ -36,8 +37,8 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Riwayat Kehamilan"),
+      appBar: PageHeader(
+        title: "Riwayat Kehamilan",
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.lightBlueAccent),

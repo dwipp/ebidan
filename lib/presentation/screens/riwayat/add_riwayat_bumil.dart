@@ -1,5 +1,6 @@
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/presentation/widgets/year_picker_field.dart';
 import 'package:ebidan/state_management/riwayat/cubit/add_riwayat_cubit.dart';
@@ -83,7 +84,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Riwayat Bumil')),
+      appBar: PageHeader(title: 'Riwayat Bumil'),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(

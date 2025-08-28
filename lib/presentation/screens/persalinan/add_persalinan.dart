@@ -1,10 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/data/models/persalinan_model.dart';
-import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/persalinan/cubit/add_persalinan_cubit.dart';
@@ -127,7 +126,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Data Persalinan')),
+      appBar: PageHeader(title: 'Data Persalinan'),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(

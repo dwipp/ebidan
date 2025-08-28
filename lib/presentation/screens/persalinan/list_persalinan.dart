@@ -1,6 +1,7 @@
 import 'package:ebidan/data/models/persalinan_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:flutter/material.dart';
 
 class ListPersalinanScreen extends StatelessWidget {
@@ -11,16 +12,7 @@ class ListPersalinanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Kunjungan"),
-        actions: [
-          // IconButton(
-          //   icon: Icon(_sortDesc ? Icons.arrow_downward : Icons.arrow_upward),
-          //   tooltip: _sortDesc ? "Urutkan Ascending" : "Urutkan Descending",
-          //   onPressed: _toggleSort,
-          // ),
-        ],
-      ),
+      appBar: PageHeader(title: "Persalinan"),
       body: ListView.builder(
         itemCount: persalinans.length,
         itemBuilder: (context, index) {

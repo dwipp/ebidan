@@ -2,7 +2,6 @@ import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class DetailBumilScreen extends StatelessWidget {
   final Bumil bumil;

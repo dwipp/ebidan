@@ -2,6 +2,7 @@ import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/add_kunjungan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,7 +51,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Hasil Kunjungan")),
+      appBar: PageHeader(title: "Hasil Kunjungan"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(

@@ -3,6 +3,7 @@ import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/gpa_field.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/add_kehamilan_cubit.dart';
@@ -205,7 +206,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Data Kehamilan")),
+      appBar: PageHeader(title: "Data Kehamilan"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
