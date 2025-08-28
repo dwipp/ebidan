@@ -1,6 +1,7 @@
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/state_management/bumil/cubit/add_bumil_cubit.dart';
@@ -129,7 +130,7 @@ class _AddBumilState extends State<AddBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Tambah Data Bumil")),
+      appBar: PageHeader(title: 'Tambah Data Bumil'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

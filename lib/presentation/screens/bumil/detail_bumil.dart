@@ -1,5 +1,6 @@
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -11,8 +12,8 @@ class DetailBumilScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Detail Bumil"),
+      appBar: PageHeader(
+        title: "Detail Bumil",
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

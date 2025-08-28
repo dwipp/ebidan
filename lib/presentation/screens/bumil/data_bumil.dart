@@ -1,6 +1,7 @@
 import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:flutter/material.dart';
 
 class DataBumilScreen extends StatelessWidget {
@@ -11,11 +12,7 @@ class DataBumilScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(bumil.namaIbu),
-        // centerTitle: true,
-        elevation: 0,
-      ),
+      appBar: PageHeader(title: bumil.namaIbu),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

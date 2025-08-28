@@ -1,4 +1,5 @@
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +13,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("eBidan"),
-        automaticallyImplyLeading: false,
+      appBar: PageHeader(
+        title: 'eBidan',
+        hideBackButton: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
