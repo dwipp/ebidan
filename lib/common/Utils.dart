@@ -97,7 +97,7 @@ class Utils {
     });
   }
 
-  Future<bool> hasAnyPendingWrites() async {
+  static Future<bool> hasAnyPendingWrites() async {
     final collections = ["bumil", "kehamilan", "kunjungan"];
 
     for (final col in collections) {

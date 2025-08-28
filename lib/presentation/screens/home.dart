@@ -1,3 +1,4 @@
+import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +19,7 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              // Kembali ke login screen
-              if (context.mounted) {
-                Navigator.pushReplacementNamed(context, '/login');
-              }
+              await _onLogoutPressed(context);
             },
           ),
         ],
@@ -115,5 +112,49 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _onLogoutPressed(BuildContext context) async {
+    final hasPending = await Utils.hasAnyPendingWrites();
+
+    if (hasPending) {
+      // Tampilkan alert ke user
+      final shouldLogout = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text("Data Belum Tersinkron"),
+          content: const Text(
+            "Ada data yang masih offline dan belum tersinkron ke server. "
+            "Jika logout sekarang, data tersebut bisa hilang.\n\n"
+            "Apakah Anda yakin ingin tetap logout?",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text("Batal"),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text("Ya"),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldLogout == true) {
+        await FirebaseAuth.instance.signOut();
+        // Kembali ke login screen
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, '/login');
+        }
+      }
+    } else {
+      // langsung logout
+      await FirebaseAuth.instance.signOut();
+      // Kembali ke login screen
+      if (context.mounted) {
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+    }
   }
 }
