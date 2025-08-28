@@ -29,8 +29,6 @@ class _AddBumilState extends State<AddBumilScreen> {
   final _nikSuamiController = TextEditingController();
   final _kkIbuController = TextEditingController();
   final _kkSuamiController = TextEditingController();
-  final _pendidikanIbuController = TextEditingController();
-  final _pendidikanSuamiController = TextEditingController();
 
   DateTime? _birthdateIbu;
   DateTime? _birthdateSuami;
@@ -116,8 +114,8 @@ class _AddBumilState extends State<AddBumilScreen> {
       nikSuami: _nikSuamiController.text.trim(),
       kkIbu: _kkIbuController.text.trim(),
       kkSuami: _kkSuamiController.text.trim(),
-      pendidikanIbu: _pendidikanIbuController.text.trim(),
-      pendidikanSuami: _pendidikanSuamiController.text.trim(),
+      pendidikanIbu: _selectedPendidikanIbu!,
+      pendidikanSuami: _selectedPendidikanSuami!,
       birthdateIbu: _birthdateIbu!,
       birthdateSuami: _birthdateSuami!,
       idBumil: '',
