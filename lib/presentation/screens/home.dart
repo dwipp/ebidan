@@ -125,7 +125,7 @@ class HomeScreen extends StatelessWidget {
           title: const Text("Data Belum Tersinkron"),
           content: const Text(
             "Ada data yang masih offline dan belum tersinkron ke server. "
-            "Jika logout sekarang, data tersebut bisa hilang.\n\n"
+            "Besar kemungkinan data akan hilang jika anda logout.\n\n"
             "Apakah Anda yakin ingin tetap logout?",
           ),
           actions: [

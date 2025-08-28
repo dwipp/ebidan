@@ -29,7 +29,9 @@ class AddPersalinanCubit extends Cubit<AddPersalinanState> {
           .collection('kehamilan')
           .doc(kehamilanId);
 
-      docRef.update({'persalinan': persalinans.map((e) => e.toMap()).toList()});
+      docRef.update({
+        'persalinan': persalinans.map((e) => e.toFirestore()).toList(),
+      });
 
       List<Riwayat> riwayats = [];
       for (var persalinan in persalinans) {
@@ -74,7 +76,7 @@ class AddPersalinanCubit extends Cubit<AddPersalinanState> {
       ),
       'latest_kehamilan_persalinan': true,
       'latest_kehamilan.persalinan': persalinanList
-          .map((e) => e.toMap())
+          .map((e) => e.toFirestore())
           .toList(),
     });
   }

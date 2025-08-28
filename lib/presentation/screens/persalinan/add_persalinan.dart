@@ -38,9 +38,10 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
   final List<String> _caraLahirList = [
     'Spontan Belakang Kepala',
     'Section Caesarea (SC)',
+    'Lainnya',
   ];
 
-  final List<String> _caraAbortusList = ['Kuretase', 'Mandiri'];
+  final List<String> _caraAbortusList = ['Kuretase', 'Mandiri', 'Lainnya'];
   final List<String> penolongList = [
     'Bidan',
     'Dokter',
@@ -260,22 +261,23 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                             return null;
                           },
                         ),
-                        DropdownField(
-                          label: 'Cara Persalinan',
-                          icon: Icons.pregnant_woman,
-                          items: data.statusBayi != "Abortus"
-                              ? _caraLahirList
-                              : _caraAbortusList,
-                          value: data.cara,
-                          onChanged: (newValue) {
-                            setState(() {
-                              data.cara = newValue ?? '';
-                            });
-                          },
-                          validator: (val) => val == null || val.isEmpty
-                              ? 'Wajib dipilih'
-                              : null,
-                        ),
+                        // DropdownField(
+                        //   label: 'Cara Persalinan',
+                        //   icon: Icons.pregnant_woman,
+                        //   items: data.statusBayi != "Abortus"
+                        //       ? _caraLahirList
+                        //       : _caraAbortusList,
+                        //   value: data.cara,
+                        //   onChanged: (newValue) {
+                        //     setState(() {
+                        //       data.cara = newValue ?? '';
+                        //     });
+                        //   },
+                        //   validator: (val) => val == null || val.isEmpty
+                        //       ? 'Wajib dipilih'
+                        //       : null,
+                        // ),
+                        _buildCaraMelahirkanField(data),
                         _buildPenolongField(data),
                         DropdownField(
                           label: 'Tempat Persalinan',
@@ -394,6 +396,39 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
             label: 'Penolong Lainnya',
             icon: Icons.person_outline,
             onSaved: (val) => data.penolong = val,
+            validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCaraMelahirkanField(Persalinan data) {
+    bool isLainnya = data.cara == 'Lainnya';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownField(
+          label: 'Cara Persalinan',
+          icon: Icons.pregnant_woman,
+          items: data.statusBayi != "Abortus"
+              ? _caraLahirList
+              : _caraAbortusList,
+          value: data.cara,
+          onChanged: (newValue) {
+            setState(() {
+              data.cara = newValue;
+            });
+          },
+          validator: (val) =>
+              val == null || val.isEmpty ? 'Wajib dipilih' : null,
+        ),
+        if (isLainnya) const SizedBox(height: 8),
+        if (isLainnya)
+          CustomTextField(
+            label: 'Cara Persalinan Lainnya',
+            icon: Icons.pregnant_woman,
+            onSaved: (val) => data.cara = val,
             validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
           ),
       ],

@@ -37,7 +37,7 @@ class Persalinan {
     return Persalinan(createdAt: DateTime.now());
   }
 
-  /// convert ke map firestore
+  /// convert ke map
   Map<String, dynamic> toMap() {
     return {
       "berat_lahir": beratLahir,
@@ -51,6 +51,23 @@ class Persalinan {
       "umur_kehamilan": umurKehamilanController.text,
       "tgl_persalinan": tglPersalinan?.toIso8601String(),
       "created_at": createdAt?.toIso8601String(),
+    };
+  }
+
+  /// convert ke firestore
+  Map<String, dynamic> toFirestore() {
+    return {
+      "berat_lahir": beratLahir,
+      "cara": cara,
+      "lingkar_kepala": lingkarKepala,
+      "panjang_badan": panjangBadan,
+      "penolong": penolong,
+      "sex": sex,
+      "status_bayi": statusBayi,
+      "tempat": tempat,
+      "umur_kehamilan": umurKehamilanController.text,
+      "tgl_persalinan": tglPersalinan,
+      "created_at": createdAt,
     };
   }
 
