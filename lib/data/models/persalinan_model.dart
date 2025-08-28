@@ -49,8 +49,8 @@ class Persalinan {
       "status_bayi": statusBayi,
       "tempat": tempat,
       "umur_kehamilan": umurKehamilanController.text,
-      "tgl_persalinan": tglPersalinan,
-      "created_at": createdAt ?? DateTime.now(),
+      "tgl_persalinan": tglPersalinan?.toIso8601String(),
+      "created_at": createdAt?.toIso8601String(),
     };
   }
 

@@ -48,7 +48,11 @@ class AddPersalinanCubit extends Cubit<AddPersalinanState> {
         );
         riwayats.add(riwayat);
       }
-      _tambahRiwayatBumil(bumilId, riwayats);
+      _tambahRiwayatBumil(
+        bumilId,
+        riwayatList: riwayats,
+        persalinanList: persalinans,
+      );
       emit(AddPersalinanSuccess());
     } catch (e) {
       emit(AddPersalinanFailure(e.toString()));
@@ -57,13 +61,22 @@ class AddPersalinanCubit extends Cubit<AddPersalinanState> {
 
   void setInitial() => emit(AddPersalinanInitial());
 
-  void _tambahRiwayatBumil(String bumilId, List<Riwayat> riwayats) {
+  void _tambahRiwayatBumil(
+    String bumilId, {
+    required List<Riwayat> riwayatList,
+    required List<Persalinan> persalinanList,
+  }) {
     final docRef = FirebaseFirestore.instance.collection('bumil').doc(bumilId);
 
-    docRef.set({
-      'riwayat': FieldValue.arrayUnion(riwayats.map((e) => e.toMap()).toList()),
+    docRef.update({
+      'riwayat': FieldValue.arrayUnion(
+        riwayatList.map((e) => e.toMap()).toList(),
+      ),
       'latest_kehamilan_persalinan': true,
-    }, SetOptions(merge: true));
+      'latest_kehamilan.persalinan': persalinanList
+          .map((e) => e.toMap())
+          .toList(),
+    });
   }
 
   String _getStatusKehamilan(int usiaMinggu) {

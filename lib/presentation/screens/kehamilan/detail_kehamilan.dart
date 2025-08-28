@@ -22,9 +22,10 @@ class DetailKehamilanScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('kehamilan: ${kehamilan.toMap()}');
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Data Kehamilan"),
+        title: Text("Kehamilan ${kehamilan.createdAt?.year}"),
         actions: [IconButton(icon: const Icon(Icons.edit), onPressed: () {})],
       ),
       body: SingleChildScrollView(
