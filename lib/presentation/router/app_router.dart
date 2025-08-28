@@ -122,15 +122,7 @@ class AppRouter {
           ),
         );
       case listKehamilan:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => ListKehamilanScreen(
-            latestKehamilan: args['latestKehamilan'],
-            latestStatusKunjungan: args['latestStatusKunjungan'],
-            bidanId: args['bidanId'],
-            bumilId: args['bumilId'],
-          ),
-        );
+        return MaterialPageRoute(builder: (_) => ListKehamilanScreen());
       case listKunjungan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(

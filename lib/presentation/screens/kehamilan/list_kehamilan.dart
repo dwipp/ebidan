@@ -2,23 +2,13 @@ import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/get_kehamilan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListKehamilanScreen extends StatefulWidget {
-  final Kehamilan latestKehamilan;
-  final bool latestStatusKunjungan;
-  final String bumilId;
-  final String bidanId;
-
-  const ListKehamilanScreen({
-    super.key,
-    required this.latestKehamilan,
-    required this.latestStatusKunjungan,
-    required this.bumilId,
-    required this.bidanId,
-  });
+  const ListKehamilanScreen({super.key});
 
   @override
   State<ListKehamilanScreen> createState() => _ListKehamilanScreenState();
@@ -37,6 +27,7 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bumil = context.watch<SelectedBumilCubit>().state;
     return Scaffold(
       appBar: PageHeader(title: "List Kehamilan"),
       body: BlocConsumer<GetKehamilanCubit, GetKehamilanState>(
@@ -69,10 +60,10 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: ListTile(
                   title: Text(
-                    "Tahun ${widget.latestKehamilan.createdAt!.year}",
+                    "Tahun ${bumil?.latestKehamilan?.createdAt!.year}",
                   ),
                   subtitle: Text(
-                    "Status persalinan: ${widget.latestKehamilan.persalinan != null ? 'sudah' : 'belum'}",
+                    "Status persalinan: ${bumil?.latestKehamilan?.persalinan != null ? 'sudah' : 'belum'}",
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
@@ -80,8 +71,8 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                       context,
                       AppRouter.detailKehamilan,
                       arguments: {
-                        'kehamilan': widget.latestKehamilan,
-                        'statusKunjungan': widget.latestStatusKunjungan,
+                        'kehamilan': bumil?.latestKehamilan,
+                        'statusKunjungan': bumil?.latestKehamilanKunjungan,
                       },
                     );
                   },
@@ -110,7 +101,8 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                               AppRouter.detailKehamilan,
                               arguments: {
                                 'kehamilan': kehamilan,
-                                'statusKunjungan': widget.latestStatusKunjungan,
+                                'statusKunjungan':
+                                    bumil?.latestKehamilanKunjungan,
                               },
                             );
                           },
@@ -132,7 +124,7 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                         ? null
                         : () {
                             context.read<GetKehamilanCubit>().getKehamilan(
-                              bumilId: widget.bumilId,
+                              bumilId: bumil!.idBumil,
                             );
                           },
                     child: Padding(
