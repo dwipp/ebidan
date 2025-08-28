@@ -118,20 +118,15 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                     )
               else
                 Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   margin: const EdgeInsets.symmetric(
                     horizontal: 8,
                     vertical: 4,
                   ),
-                  child: ListTile(
-                    leading: const Icon(Icons.history),
-                    title: const Text("Lihat riwayat kehamilan lainnya"),
-                    trailing: _loading
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.expand_more),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
                     onTap: _loading
                         ? null
                         : () {
@@ -139,6 +134,39 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                               bumilId: widget.bumilId,
                             );
                           },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 12,
+                      ),
+                      child: Center(
+                        child: _loading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(Icons.history, color: Colors.grey),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "Lihat kehamilan sebelumnya",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 16,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Icon(Icons.expand_more, color: Colors.grey),
+                                ],
+                              ),
+                      ),
+                    ),
                   ),
                 ),
             ],
