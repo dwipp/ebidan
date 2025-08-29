@@ -22,7 +22,7 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
     super.didChangeDependencies();
 
     // ambil state dari cubit
-    bumil = context.read<SelectedBumilCubit>().state;
+    bumil = context.watch<SelectedBumilCubit>().state;
 
     if (bumil?.riwayat != null) {
       _riwayatList = List.from(bumil!.riwayat!);

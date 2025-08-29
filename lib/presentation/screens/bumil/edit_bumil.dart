@@ -378,7 +378,7 @@ class _EditBumilState extends State<EditBumilScreen> {
                         return Button(
                           isSubmitting: isSubmitting,
                           onPressed: _submitForm,
-                          label: 'perbaharui',
+                          label: 'Perbaharui',
                           loadingLabel: 'Menyimpan...',
                           icon: Icons.check,
                         );

@@ -11,7 +11,7 @@ class DataBumilScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bumil = context.read<SelectedBumilCubit>().state;
+    final bumil = context.watch<SelectedBumilCubit>().state;
     return Scaffold(
       appBar: PageHeader(title: bumil?.namaIbu ?? ''),
       body: Padding(
@@ -47,6 +47,7 @@ class DataBumilScreen extends StatelessWidget {
             MenuButton(
               icon: Icons.pregnant_woman,
               title: 'Data Kehamilan Bumil',
+              enabled: bumil?.latestKehamilan != null,
               onTap: () {
                 Navigator.pushNamed(
                   context,

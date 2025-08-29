@@ -20,12 +20,16 @@ class SubmitBumilCubit extends Cubit<SubmitBumilState> {
       emit(state.copyWith(isSubmitting: false, error: 'User belum login'));
       return;
     }
-    print('bumil.idBumil: ${bumil.idBumil}');
+
     try {
       final bumilId = bumil.idBumil.isNotEmpty
           ? bumil.idBumil
           : FirebaseFirestore.instance.collection('bumil').doc().id;
-      FirebaseFirestore.instance.collection('bumil').doc(bumilId).set({
+      final docRef = FirebaseFirestore.instance
+          .collection('bumil')
+          .doc(bumilId);
+
+      await docRef.set({
         "nama_ibu": bumil.namaIbu,
         "nama_suami": bumil.namaSuami,
         "alamat": bumil.alamat,
@@ -47,7 +51,10 @@ class SubmitBumilCubit extends Cubit<SubmitBumilState> {
         "birthdate_suami": bumil.birthdateSuami,
         "created_at": bumil.createdAt,
       }, SetOptions(merge: true));
-      selectedBumilCubit.selectBumil(bumil);
+
+      final snapshot = await docRef.get(const GetOptions(source: Source.cache));
+      final newBumil = Bumil.fromMap(bumilId, snapshot.data()!);
+      selectedBumilCubit.selectBumil(newBumil);
       emit(
         state.copyWith(isSubmitting: false, isSuccess: true, bumilId: bumilId),
       );
