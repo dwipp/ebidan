@@ -1,20 +1,20 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-part of 'add_kehamilan_cubit.dart';
+part of 'submit_kehamilan_cubit.dart';
 
-abstract class AddKehamilanState extends Equatable {
-  const AddKehamilanState();
+abstract class SubmitKehamilanState extends Equatable {
+  const SubmitKehamilanState();
 
   @override
   List<Object?> get props => [];
 }
 
-final class AddKehamilanInitial extends AddKehamilanState {}
+final class AddKehamilanInitial extends SubmitKehamilanState {}
 
-class AddKehamilanLoading extends AddKehamilanState {}
+class AddKehamilanLoading extends SubmitKehamilanState {}
 
-class AddKehamilanEmpty extends AddKehamilanState {}
+class AddKehamilanEmpty extends SubmitKehamilanState {}
 
-class AddKehamilanSuccess extends AddKehamilanState {
+class AddKehamilanSuccess extends SubmitKehamilanState {
   final String idKehamilan;
   final bool firstTime;
   const AddKehamilanSuccess({
@@ -26,7 +26,7 @@ class AddKehamilanSuccess extends AddKehamilanState {
   List<Object?> get props => [idKehamilan, firstTime];
 }
 
-class AddKehamilanFailure extends AddKehamilanState {
+class AddKehamilanFailure extends SubmitKehamilanState {
   final String message;
 
   const AddKehamilanFailure(this.message);

@@ -2,11 +2,11 @@ import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:ebidan/data/models/kehamilan_model.dart';
 
 class DetailKehamilanScreen extends StatelessWidget {
   const DetailKehamilanScreen({super.key});
@@ -19,8 +19,25 @@ class DetailKehamilanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final kehamilan = context.watch<SelectedKehamilanCubit>().state;
+    final bumil = context.watch<SelectedBumilCubit>().state;
     return Scaffold(
-      appBar: PageHeader(title: "Kehamilan ${kehamilan?.createdAt?.year}"),
+      appBar: PageHeader(
+        title: "Kehamilan ${kehamilan?.createdAt?.year}",
+        actions: (kehamilan?.id == bumil?.latestKehamilanId)
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.editKehamilan,
+                      arguments: {'kehamilan': kehamilan},
+                    );
+                  },
+                ),
+              ]
+            : [],
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

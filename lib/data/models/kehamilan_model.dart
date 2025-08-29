@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/data/models/persalinan_model.dart';
 
 class Kehamilan {
@@ -165,6 +164,32 @@ class Kehamilan {
       'status_tt': statusTt,
       'tb': tb,
       'tgl_periksa_usg': tglPeriksaUsg?.toIso8601String(),
+      'kunjungan': kunjungan,
+      'persalinan': persalinan?.map((e) => e.toMap()).toList(),
+    }..removeWhere((key, value) => value == null);
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'bpjs': bpjs,
+      'created_at': createdAt,
+      'gpa': gpa,
+      'hasil_lab': hasilLab,
+      'hemoglobin': hemoglobin,
+      'hpht': hpht,
+      'htp': htp,
+      'id_bidan': idBidan,
+      'id_bumil': idBumil,
+      'kontrasepsi_sebelum_hamil': kontrasepsiSebelumHamil,
+      'no_kohort_ibu': noKohortIbu,
+      'no_reka_medis': noRekaMedis,
+      'resti': resti,
+      'riwayat_alergi': riwayatAlergi,
+      'riwayat_penyakit': riwayatPenyakit,
+      'status_resti': statusResti,
+      'status_tt': statusTt,
+      'tb': tb,
+      'tgl_periksa_usg': tglPeriksaUsg,
       'kunjungan': kunjungan,
       'persalinan': persalinan?.map((e) => e.toMap()).toList(),
     }..removeWhere((key, value) => value == null);

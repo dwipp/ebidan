@@ -1,3 +1,4 @@
+import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
@@ -6,35 +7,21 @@ import 'package:ebidan/presentation/widgets/gpa_field.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/submit_kehamilan_cubit.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AddKehamilanScreen extends StatefulWidget {
-  final String bumilId;
-  final int age;
-  final int? latestHistoryYear;
-  final int jumlahRiwayat;
-  final int jumlahPara;
-  final int jumlahAbortus;
-  final int jumlahLahirBeratRendah;
-  const AddKehamilanScreen({
-    super.key,
-    required this.bumilId,
-    required this.age,
-    required this.latestHistoryYear,
-    required this.jumlahRiwayat,
-    required this.jumlahPara,
-    required this.jumlahAbortus,
-    required this.jumlahLahirBeratRendah,
-  });
+class EditKehamilanScreen extends StatefulWidget {
+  final Kehamilan kehamilan;
+  const EditKehamilanScreen({super.key, required this.kehamilan});
 
   @override
-  State<AddKehamilanScreen> createState() => _PendataanKehamilanState();
+  State<EditKehamilanScreen> createState() => _EditKehamilanState();
 }
 
-class _PendataanKehamilanState extends State<AddKehamilanScreen> {
+class _EditKehamilanState extends State<EditKehamilanScreen> {
   final _formKey = GlobalKey<FormState>();
   // bool _isSubmitting = false;
 
@@ -55,7 +42,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   DateTime? _hpht;
   DateTime? _htp;
   DateTime? _tglPeriksaUsg;
-  DateTime? _createdAt = DateTime.now();
+  DateTime? _createdAt;
 
   String? _selectedStatusResti;
   final List<String> _statusRestiList = ['Nakes', 'Masyarakat', '-'];
@@ -72,16 +59,42 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   String? _selectedTT;
   final List<String> _ttList = ['TT0', 'TT1', 'TT2', 'TT3', 'TT4', 'TT5'];
 
+  Bumil? bumil;
   @override
   void initState() {
-    context.read<SubmitKehamilanCubit>().setInitial();
     super.initState();
+    context.read<SubmitKehamilanCubit>().setInitial();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _tbController.text = widget.kehamilan.tb ?? '';
+    _hemoglobinController.text = widget.kehamilan.hemoglobin ?? '';
+    _bpjsController.text = widget.kehamilan.bpjs ?? '';
+    _noKohortController.text = widget.kehamilan.noKohortIbu ?? '';
+    _noRekaMedisController.text = widget.kehamilan.noRekaMedis ?? '';
+    _riwayatAlergiController.text = widget.kehamilan.riwayatAlergi ?? '';
+    _riwayatPenyakitController.text = widget.kehamilan.riwayatPenyakit ?? '';
+    _hasilLabController.text = widget.kehamilan.hasilLab ?? '';
+
+    bumil = context.watch<SelectedBumilCubit>().state;
     final jarakTahun =
-        DateTime.now().year - (widget.latestHistoryYear ?? DateTime.now().year);
+        DateTime.now().year - (bumil?.latestHistoryYear ?? DateTime.now().year);
     _jarakKehamilan.text = jarakTahun == 0 ? '-' : '$jarakTahun tahun';
-    _gravidaController.text = '${widget.jumlahRiwayat}';
-    _paraController.text = '${widget.jumlahPara}';
-    _abortusController.text = '${widget.jumlahAbortus}';
+
+    _gravidaController.text = bumil!.statisticRiwayat['gravida']!.toString();
+    _paraController.text = bumil!.statisticRiwayat['para']!.toString();
+    _abortusController.text = bumil!.statisticRiwayat['abortus']!.toString();
+
+    print('hpht: ${widget.kehamilan.hpht}');
+    _hpht = widget.kehamilan.hpht;
+    _htp = widget.kehamilan.htp;
+    _tglPeriksaUsg = widget.kehamilan.tglPeriksaUsg;
+    _createdAt = widget.kehamilan.createdAt;
+    _selectedStatusResti = widget.kehamilan.statusResti;
+    _selectedKB = widget.kehamilan.kontrasepsiSebelumHamil;
+    _selectedTT = widget.kehamilan.statusTt;
   }
 
   Map<String, int> hitungSelisihTahunBulan(DateTime dari, DateTime ke) {
@@ -106,43 +119,6 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
     return {"tahun": tahun, "bulan": bulan};
   }
 
-  List<String> collectingResti() {
-    List<String> resti = [];
-    if (widget.age < 20 && widget.age > 35) {
-      resti.add('Usia ${widget.age} tahun');
-    }
-    if (widget.jumlahRiwayat >= 4) {
-      resti.add('Riwayat kehamilan ${widget.jumlahRiwayat}x');
-    }
-
-    final jarakTahun =
-        DateTime.now().year - (widget.latestHistoryYear ?? DateTime.now().year);
-    if (jarakTahun < 2) {
-      resti.add('Jarak kehamilan terlalu dekat ($jarakTahun tahun)');
-    }
-
-    if (int.parse(_tbController.text) < 145) {
-      resti.add('Risiko panggul sempit (tb: ${_tbController.text} cm)');
-    }
-
-    if (_hemoglobinController.text.isNotEmpty &&
-        int.parse(_hemoglobinController.text) < 11) {
-      resti.add('Anemia (Hb: ${_hemoglobinController.text} g/dL)');
-    }
-
-    if (int.parse(_abortusController.text) > 0) {
-      resti.add('Pernah keguguran ${_abortusController.text}x');
-    }
-
-    if (widget.jumlahLahirBeratRendah > 0) {
-      resti.add(
-        'Pernah melahirkan bayi dengan berat < 2500 gram (${widget.jumlahLahirBeratRendah}x)',
-      );
-    }
-
-    return resti;
-  }
-
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -164,11 +140,50 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
       htp: _htp,
       tglPeriksaUsg: _tglPeriksaUsg,
       createdAt: _createdAt,
-      idBumil: widget.bumilId,
+      idBumil: widget.kehamilan.idBumil,
       resti: collectingResti(),
+      id: widget.kehamilan.id,
     );
 
     context.read<SubmitKehamilanCubit>().submitKehamilan(kehamilan);
+  }
+
+  List<String> collectingResti() {
+    List<String> resti = [];
+    if (bumil!.age < 20 && bumil!.age > 35) {
+      resti.add('Usia ${bumil!.age} tahun');
+    }
+    if (bumil?.riwayat != null && bumil!.riwayat!.length >= 4) {
+      resti.add('Riwayat kehamilan ${bumil!.riwayat!.length}x');
+    }
+
+    final jarakTahun =
+        DateTime.now().year -
+        (bumil?.latestRiwayat?.tahun ?? DateTime.now().year);
+    if (jarakTahun < 2) {
+      resti.add('Jarak kehamilan terlalu dekat ($jarakTahun tahun)');
+    }
+
+    if (int.parse(_tbController.text) < 145) {
+      resti.add('Risiko panggul sempit (tb: ${_tbController.text} cm)');
+    }
+
+    if (_hemoglobinController.text.isNotEmpty &&
+        int.parse(_hemoglobinController.text) < 11) {
+      resti.add('Anemia (Hb: ${_hemoglobinController.text} g/dL)');
+    }
+
+    if (int.parse(_abortusController.text) > 0) {
+      resti.add('Pernah keguguran ${_abortusController.text}x');
+    }
+
+    if (bumil!.statisticRiwayat['beratRendah']! > 0) {
+      resti.add(
+        'Pernah melahirkan bayi dengan berat < 2500 gram (${bumil!.statisticRiwayat['beratRendah']!}x)',
+      );
+    }
+
+    return resti;
   }
 
   DateTime hitungHTP(DateTime hpht) {
@@ -207,7 +222,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: "Data Kehamilan"),
+      appBar: PageHeader(title: "Perbaharui Kehamilan"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -256,6 +271,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 labelText: 'Hari Pertama Haid Terakhir (HPHT)',
                 prefixIcon: Icons.date_range,
                 context: context,
+                initialValue: _hpht,
                 onDateSelected: (date) {
                   setState(() {
                     _hpht = date;
@@ -359,6 +375,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
               DatePickerFormField(
                 labelText: 'Tanggal Periksa USG',
                 prefixIcon: Icons.calendar_today,
+                initialValue: _tglPeriksaUsg,
                 context: context,
                 onDateSelected: (date) {
                   setState(() => _tglPeriksaUsg = date);
@@ -366,10 +383,11 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
               ),
               const SizedBox(height: 12),
               DatePickerFormField(
-                labelText: 'Tanggal Pembuatan Data (Auto)',
+                labelText: 'Tanggal Pembuatan Data',
                 prefixIcon: Icons.calendar_view_day,
                 initialValue: _createdAt,
                 context: context,
+                readOnly: true,
                 onDateSelected: (date) {
                   setState(() => _createdAt = date);
                 },
@@ -385,15 +403,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                         content: 'Data kehamilan berhasil disimpan',
                         isSuccess: true,
                       );
-                      Navigator.pushReplacementNamed(
-                        context,
-                        AppRouter.kunjungan,
-                        arguments: {
-                          'bumilId': widget.bumilId,
-                          'kehamilanId': state.idKehamilan,
-                          'firstTime': state.firstTime,
-                        },
-                      );
+                      Navigator.pop(context);
                     } else if (state is AddKehamilanFailure) {
                       Utils.showSnackBar(
                         context,
@@ -410,7 +420,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                     return Button(
                       isSubmitting: isSubmitting,
                       onPressed: _submitForm,
-                      label: 'Simpan',
+                      label: 'Perbaharui',
                       icon: Icons.check,
                       loadingLabel: 'Menyimpan...',
                     );
