@@ -4,6 +4,7 @@ import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/add_kehamilan_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/get_kehamilan_cubit.dart';
+import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/add_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/get_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/persalinan/cubit/add_persalinan_cubit.dart';
@@ -16,6 +17,9 @@ class BlocProviders {
     return [
       BlocProvider<SelectedBumilCubit>(
         create: (context) => SelectedBumilCubit(),
+      ),
+      BlocProvider<SelectedKehamilanCubit>(
+        create: (context) => SelectedKehamilanCubit(),
       ),
       BlocProvider<ConnectivityCubit>(create: (context) => ConnectivityCubit()),
       BlocProvider<AppVersionCubit>(create: (context) => AppVersionCubit()),

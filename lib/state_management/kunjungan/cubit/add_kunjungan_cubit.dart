@@ -64,7 +64,10 @@ class AddKunjunganCubit extends Cubit<AddKunjunganState> {
               });
         }
         FirebaseFirestore.instance.collection('bumil').doc(data.idBumil).update(
-          {'latest_kehamilan_kunjungan': true},
+          {
+            'latest_kehamilan_kunjungan': true,
+            'latest_kehamilan.kunjungan': true,
+          },
         );
       }
       emit(AddKunjunganSuccess());

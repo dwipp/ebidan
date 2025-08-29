@@ -39,6 +39,7 @@ class AddKehamilanCubit extends Cubit<AddKehamilanState> {
         "created_at": data.createdAt,
         "id_bumil": data.idBumil,
         "resti": data.resti,
+        'kunjungan': false,
       };
       final id = FirebaseFirestore.instance.collection('kehamilan').doc().id;
       FirebaseFirestore.instance.collection('kehamilan').doc(id).set(kehamilan);

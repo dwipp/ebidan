@@ -4,6 +4,7 @@ import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/get_kehamilan_cubit.dart';
+import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -67,14 +68,12 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRouter.detailKehamilan,
-                      arguments: {
-                        'kehamilan': bumil?.latestKehamilan,
-                        'statusKunjungan': bumil?.latestKehamilanKunjungan,
-                      },
-                    );
+                    if (bumil?.latestKehamilan != null) {
+                      context.read<SelectedKehamilanCubit>().selectKehamilan(
+                        bumil!.latestKehamilan!,
+                      );
+                      Navigator.pushNamed(context, AppRouter.detailKehamilan);
+                    }
                   },
                 ),
               ),
@@ -96,14 +95,12 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                           ),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () {
+                            context
+                                .read<SelectedKehamilanCubit>()
+                                .selectKehamilan(kehamilan);
                             Navigator.pushNamed(
                               context,
                               AppRouter.detailKehamilan,
-                              arguments: {
-                                'kehamilan': kehamilan,
-                                'statusKunjungan':
-                                    bumil?.latestKehamilanKunjungan,
-                              },
                             );
                           },
                         ),

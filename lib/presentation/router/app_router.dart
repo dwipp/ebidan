@@ -114,13 +114,7 @@ class AppRouter {
           builder: (_) => DetailRiwayatScreen(riwayat: args['riwayat']),
         );
       case detailKehamilan:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => DetailKehamilanScreen(
-            kehamilan: args['kehamilan'],
-            statusKunjungan: args['statusKunjungan'],
-          ),
-        );
+        return MaterialPageRoute(builder: (_) => DetailKehamilanScreen());
       case listKehamilan:
         return MaterialPageRoute(builder: (_) => ListKehamilanScreen());
       case listKunjungan:

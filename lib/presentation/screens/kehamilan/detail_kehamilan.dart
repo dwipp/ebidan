@@ -2,19 +2,14 @@ import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 
 class DetailKehamilanScreen extends StatelessWidget {
-  final Kehamilan kehamilan;
-  final bool statusKunjungan;
-
-  const DetailKehamilanScreen({
-    super.key,
-    required this.kehamilan,
-    required this.statusKunjungan,
-  });
+  const DetailKehamilanScreen({super.key});
 
   String _formatDate(DateTime? date) {
     if (date == null) return "-";
@@ -23,8 +18,9 @@ class DetailKehamilanScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final kehamilan = context.watch<SelectedKehamilanCubit>().state;
     return Scaffold(
-      appBar: PageHeader(title: "Kehamilan ${kehamilan.createdAt?.year}"),
+      appBar: PageHeader(title: "Kehamilan ${kehamilan?.createdAt?.year}"),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -34,7 +30,7 @@ class DetailKehamilanScreen extends StatelessWidget {
               MenuButton(
                 icon: Icons.calendar_month,
                 title: 'Kunjungan',
-                enabled: statusKunjungan,
+                enabled: kehamilan!.kunjungan,
                 onTap: () {
                   Navigator.pushNamed(
                     context,
