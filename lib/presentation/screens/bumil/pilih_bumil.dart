@@ -105,20 +105,6 @@ class PilihBumilScreen extends StatelessWidget {
                                 Navigator.pushNamed(
                                   context,
                                   AppRouter.pendataanKehamilan,
-                                  arguments: {
-                                    'bumilId': bumil.idBumil,
-                                    'age': bumil.age,
-                                    'latestHistoryYear':
-                                        bumil.latestRiwayat?.tahun,
-                                    'jumlahRiwayat':
-                                        bumil.statisticRiwayat['gravida'],
-                                    'jumlahPara':
-                                        bumil.statisticRiwayat['para'],
-                                    'jumlahAbortus':
-                                        bumil.statisticRiwayat['abortus'],
-                                    'jumlahBeratRendah':
-                                        bumil.statisticRiwayat['beratRendah'],
-                                  },
                                 );
                               } else {
                                 final firstTime =
