@@ -86,11 +86,7 @@ class PilihBumilScreen extends StatelessWidget {
                               bumil,
                             );
                             if (pilihState == 'bumil') {
-                              Navigator.pushNamed(
-                                context,
-                                AppRouter.dataBumil,
-                                arguments: {'bumil': bumil},
-                              );
+                              Navigator.pushNamed(context, AppRouter.dataBumil);
                             } else {
                               // pilihState == kunjungan
                               // final latestKehamilan = await getLatestKehamilan(

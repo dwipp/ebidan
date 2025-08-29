@@ -1,5 +1,4 @@
 import 'package:ebidan/data/models/bumil_model.dart';
-import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
@@ -153,8 +152,8 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
     if (bumil!.age < 20 && bumil!.age > 35) {
       resti.add('Usia ${bumil!.age} tahun');
     }
-    if (bumil?.riwayat != null && bumil!.riwayat!.length >= 4) {
-      resti.add('Riwayat kehamilan ${bumil!.riwayat!.length}x');
+    if (bumil!.statisticRiwayat['gravida']! >= 4) {
+      resti.add('Riwayat kehamilan ${bumil?.statisticRiwayat['gravida']}x');
     }
 
     final jarakTahun =
