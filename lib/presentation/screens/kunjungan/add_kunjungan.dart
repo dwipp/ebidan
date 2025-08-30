@@ -1,3 +1,4 @@
+import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/presentation/widgets/blood_pressure_field.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
@@ -7,20 +8,15 @@ import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class KunjunganScreen extends StatefulWidget {
-  final String bumilId;
-  final String kehamilanId;
   final bool firstTime;
 
-  const KunjunganScreen({
-    super.key,
-    required this.bumilId,
-    required this.kehamilanId,
-    required this.firstTime,
-  });
+  const KunjunganScreen({super.key, required this.firstTime});
 
   @override
   State<KunjunganScreen> createState() => _KunjunganState();
@@ -57,12 +53,20 @@ class _KunjunganState extends State<KunjunganScreen> {
     '-',
   ];
 
+  Bumil? bumil;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    bumil = context.watch<SelectedBumilCubit>().state;
+  }
+
   Future<void> _saveData() async {
     if (!_formKey.currentState!.validate()) return;
 
     final kunjungan = Kunjungan(
-      idBumil: widget.bumilId,
-      idKehamilan: widget.kehamilanId,
+      idBumil: bumil?.idBumil,
+      idKehamilan: bumil?.latestKehamilanId,
       keluhan: keluhanController.text,
       bb: bbController.text,
       lila: lilaController.text,
@@ -85,7 +89,7 @@ class _KunjunganState extends State<KunjunganScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: "Input Kunjungan"),
+      appBar: PageHeader(title: "Kunjungan Baru"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(

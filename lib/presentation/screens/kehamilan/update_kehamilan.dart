@@ -32,11 +32,7 @@ class UpdateKehamilanScreen extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   AppRouter.kunjungan,
-                  arguments: {
-                    'bumilId': bumilId,
-                    'kehamilanId': kehamilanId,
-                    'firstTime': false,
-                  },
+                  arguments: {'firstTime': false},
                 );
               },
             ),

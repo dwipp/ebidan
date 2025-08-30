@@ -69,7 +69,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    bumil = context.read<SelectedBumilCubit>().state;
+    bumil = context.watch<SelectedBumilCubit>().state;
     final jarakTahun =
         DateTime.now().year -
         (bumil?.latestRiwayat?.tahun ?? DateTime.now().year);
@@ -110,11 +110,13 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
       resti.add('Riwayat kehamilan ${bumil?.statisticRiwayat['gravida']}x');
     }
 
-    final jarakTahun =
-        DateTime.now().year -
-        (bumil?.latestRiwayat?.tahun ?? DateTime.now().year);
-    if (jarakTahun < 2) {
-      resti.add('Jarak kehamilan terlalu dekat ($jarakTahun tahun)');
+    if (bumil!.statisticRiwayat['gravida']! > 0) {
+      final jarakTahun =
+          DateTime.now().year -
+          (bumil?.latestRiwayat?.tahun ?? DateTime.now().year);
+      if (jarakTahun < 2) {
+        resti.add('Jarak kehamilan terlalu dekat ($jarakTahun tahun)');
+      }
     }
 
     if (int.parse(_tbController.text) < 145) {
@@ -384,11 +386,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                       Navigator.pushReplacementNamed(
                         context,
                         AppRouter.kunjungan,
-                        arguments: {
-                          'bumilId': bumil?.idBumil,
-                          'kehamilanId': state.idKehamilan,
-                          'firstTime': state.firstTime,
-                        },
+                        arguments: {'firstTime': state.firstTime},
                       );
                     } else if (state is AddKehamilanFailure) {
                       Utils.showSnackBar(
