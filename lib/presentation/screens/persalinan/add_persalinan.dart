@@ -1,3 +1,4 @@
+import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
@@ -6,23 +7,14 @@ import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/data/models/persalinan_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/persalinan/cubit/add_persalinan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:ebidan/presentation/widgets/date_time_picker_field.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddPersalinanScreen extends StatefulWidget {
-  final String kehamilanId;
-  final DateTime? hpht;
-  final String bumilId;
-  final List<String> resti;
-  const AddPersalinanScreen({
-    super.key,
-    required this.bumilId,
-    required this.kehamilanId,
-    required this.resti,
-    this.hpht,
-  });
+  const AddPersalinanScreen({super.key});
 
   @override
   State<AddPersalinanScreen> createState() => _AddPersalinanState();
@@ -56,11 +48,19 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
   ];
   final List<String> sexList = ['Laki-laki', 'Perempuan'];
 
+  Bumil? bumil;
+
   @override
   void initState() {
     super.initState();
     context.read<AddPersalinanCubit>().setInitial();
     _addPersalinan();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    bumil = context.watch<SelectedBumilCubit>().state;
   }
 
   void _addPersalinan() {
@@ -87,7 +87,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
     }
   }
 
-  static int hitungUsiaKehamilan({
+  String hitungUsiaKehamilan({
     required DateTime hpht,
     DateTime? tanggalPersalinan,
   }) {
@@ -100,14 +100,11 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
 
     final duration = tanggalPersalinan.difference(hpht);
     final minggu = duration.inDays ~/ 7;
-    // final hari = duration.inDays % 7;
-
-    // return {
-    //   'minggu': minggu,
-    //   'hari': hari,
-    // };
-
-    return minggu;
+    final hari = duration.inDays % 7;
+    if (hari == 0) {
+      return '$minggu minggu';
+    }
+    return '$minggu minggu $hari hari';
   }
 
   Future<void> _submitData() async {
@@ -117,9 +114,9 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
 
     context.read<AddPersalinanCubit>().addPersalinan(
       persalinanList,
-      bumilId: widget.bumilId,
-      kehamilanId: widget.kehamilanId,
-      resti: widget.resti.join(", "),
+      bumilId: bumil!.idBumil,
+      kehamilanId: bumil!.latestKehamilanId!,
+      resti: bumil!.latestKehamilanResti!.join(", "),
     );
   }
 
@@ -150,14 +147,13 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                             data.tglPersalinan = dateTime;
                           },
                           onDateSelected: (dateTime) {
-                            if (widget.hpht != null) {
+                            if (bumil?.latestKehamilanHpht != null) {
                               setState(() {
                                 final usia = hitungUsiaKehamilan(
-                                  hpht: widget.hpht!,
+                                  hpht: bumil!.latestKehamilanHpht!,
                                   tanggalPersalinan: dateTime,
                                 );
-                                data.umurKehamilanController.text = usia
-                                    .toString();
+                                data.umurKehamilanController.text = usia;
                               });
                             }
                           },
@@ -234,7 +230,6 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                           isNumber: true,
                           readOnly: true,
                           controller: data.umurKehamilanController,
-                          suffixText: 'minggu',
                           validator: (val) =>
                               val!.isEmpty ? 'Wajib diisi' : null,
                         ),
@@ -260,22 +255,6 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                             return null;
                           },
                         ),
-                        // DropdownField(
-                        //   label: 'Cara Persalinan',
-                        //   icon: Icons.pregnant_woman,
-                        //   items: data.statusBayi != "Abortus"
-                        //       ? _caraLahirList
-                        //       : _caraAbortusList,
-                        //   value: data.cara,
-                        //   onChanged: (newValue) {
-                        //     setState(() {
-                        //       data.cara = newValue ?? '';
-                        //     });
-                        //   },
-                        //   validator: (val) => val == null || val.isEmpty
-                        //       ? 'Wajib dipilih'
-                        //       : null,
-                        // ),
                         _buildCaraMelahirkanField(data),
                         _buildPenolongField(data),
                         DropdownField(

@@ -11,7 +11,6 @@ import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class KunjunganScreen extends StatefulWidget {
   final bool firstTime;
@@ -36,12 +35,6 @@ class _KunjunganState extends State<KunjunganScreen> {
 
   DateTime? _createdAt = DateTime.now();
 
-  var maskUsiaKandungan = MaskTextInputFormatter(
-    mask: '± ##',
-    filter: {"#": RegExp(r'[0-9]')},
-    type: MaskAutoCompletionType.lazy,
-  );
-
   String? _selectedStatusKunjungan;
   final List<String> _statusKunjunganList = [
     'K1',
@@ -59,6 +52,7 @@ class _KunjunganState extends State<KunjunganScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     bumil = context.watch<SelectedBumilCubit>().state;
+    ukController.text = _hitungUsiaKehamilan(hpht: bumil!.latestKehamilanHpht!);
   }
 
   Future<void> _saveData() async {
@@ -84,6 +78,24 @@ class _KunjunganState extends State<KunjunganScreen> {
       AppRouter.reviewKunjungan,
       arguments: {'data': kunjungan, 'firstTime': widget.firstTime},
     );
+  }
+
+  String _hitungUsiaKehamilan({required DateTime hpht}) {
+    final today = DateTime.now();
+
+    // Hitung selisih hari antara today dan hpht
+    final selisihHari = today.difference(hpht).inDays;
+
+    if (selisihHari < 0) {
+      return '0 minggu';
+    }
+
+    final minggu = selisihHari ~/ 7;
+    final hari = selisihHari % 7;
+    if (hari == 0) {
+      return '$minggu minggu';
+    }
+    return '$minggu minggu $hari hari';
   }
 
   @override
@@ -149,9 +161,8 @@ class _KunjunganState extends State<KunjunganScreen> {
                 controller: ukController,
                 label: "Usia Kandungan",
                 icon: Icons.calendar_today,
-                suffixText: 'minggu',
                 isNumber: true,
-                inputFormatters: [maskUsiaKandungan],
+                readOnly: true,
                 validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
               ),
               const SizedBox(height: 16),

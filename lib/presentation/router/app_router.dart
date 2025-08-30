@@ -117,15 +117,7 @@ class AppRouter {
       case updateKehamilan:
         return MaterialPageRoute(builder: (_) => UpdateKehamilanScreen());
       case addPersalinan:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => AddPersalinanScreen(
-            kehamilanId: args['kehamilanId'],
-            bumilId: args['bumilId'],
-            resti: args['resti'],
-            hpht: args['hpht'],
-          ),
-        );
+        return MaterialPageRoute(builder: (_) => AddPersalinanScreen());
       case detailPersalinan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(

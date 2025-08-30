@@ -79,11 +79,7 @@ class DetailKunjunganScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              Utils.generateRowLabelValue(
-                "Usia Kandungan",
-                '± ${kunjungan.uk}',
-                suffix: 'minggu',
-              ),
+              Utils.generateRowLabelValue("Usia Kandungan", kunjungan.uk),
 
               const SizedBox(height: 16),
               const Text(

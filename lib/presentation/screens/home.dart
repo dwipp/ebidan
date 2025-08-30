@@ -3,6 +3,7 @@ import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +15,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<SelectedBumilCubit>().clear;
+    context.read<SelectedKehamilanCubit>().clear;
     return Scaffold(
       appBar: PageHeader(
         title: 'eBidan',

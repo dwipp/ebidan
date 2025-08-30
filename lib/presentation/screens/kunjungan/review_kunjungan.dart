@@ -85,11 +85,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow(
-                "Usia Kandungan",
-                widget.data.uk ?? '-',
-                suffix: 'minggu',
-              ),
+              _buildRow("Usia Kandungan", widget.data.uk ?? '-'),
               const SizedBox(height: 16),
               const Text(
                 "Planning",

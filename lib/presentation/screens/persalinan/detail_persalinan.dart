@@ -78,7 +78,6 @@ class DetailPersalinanScreen extends StatelessWidget {
               Utils.generateRowLabelValue(
                 "Umur Kehamilan",
                 persalinan.umurKehamilan?.toString() ?? "-",
-                suffix: " minggu",
               ),
               Utils.generateRowLabelValue(
                 "Cara Persalinan",

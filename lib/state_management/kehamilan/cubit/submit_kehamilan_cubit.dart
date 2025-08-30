@@ -65,6 +65,8 @@ class SubmitKehamilanCubit extends Cubit<SubmitKehamilanState> {
         'latest_kehamilan_hpht': data.hpht,
         'latest_kehamilan_resti': data.resti,
         'latest_kehamilan': newKehamilan.toFirestore(),
+        'latest_kehamilan_persalinan': false,
+        'latest_kehamilan_kunjungan': false,
       });
       final snapshotBumil = await docRefBumil.get(
         const GetOptions(source: Source.cache),

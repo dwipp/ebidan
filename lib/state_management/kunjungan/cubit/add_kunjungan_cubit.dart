@@ -30,7 +30,7 @@ class AddKunjunganCubit extends Cubit<AddKunjunganState> {
         'status': data.status,
         'td': data.td,
         'tfu': data.tfu,
-        'uk': data.uk!.replaceAll(RegExp(r'[^0-9]'), ''),
+        'uk': data.uk,
         'id_bidan': user.uid,
         'id_kehamilan': data.idKehamilan,
         'id_bumil': data.idBumil,
