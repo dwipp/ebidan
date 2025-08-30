@@ -120,12 +120,6 @@ class PilihBumilScreen extends StatelessWidget {
                                   Navigator.pushNamed(
                                     context,
                                     AppRouter.updateKehamilan,
-                                    arguments: {
-                                      'kehamilanId': bumil.latestKehamilanId,
-                                      'bumilId': bumil.idBumil,
-                                      'resti': bumil.latestKehamilanResti ?? [],
-                                      'hpht': bumil.latestKehamilanHpht,
-                                    },
                                   );
                                 }
                               }

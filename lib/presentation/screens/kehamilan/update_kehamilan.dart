@@ -1,24 +1,16 @@
 import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UpdateKehamilanScreen extends StatelessWidget {
-  final String kehamilanId;
-  final String bumilId;
-  final List<String> resti;
-  final DateTime? hpht;
-
-  const UpdateKehamilanScreen({
-    super.key,
-    required this.kehamilanId,
-    required this.bumilId,
-    required this.resti,
-    this.hpht,
-  });
+  const UpdateKehamilanScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final bumil = context.read<SelectedBumilCubit>().state;
     return Scaffold(
       appBar: PageHeader(title: 'Update Kehamilan'),
       body: Padding(
@@ -44,10 +36,10 @@ class UpdateKehamilanScreen extends StatelessWidget {
                   context,
                   AppRouter.addPersalinan,
                   arguments: {
-                    'kehamilanId': kehamilanId,
-                    'bumilId': bumilId,
-                    'resti': resti,
-                    'hpht': hpht,
+                    'kehamilanId': bumil?.latestKehamilanId,
+                    'bumilId': bumil?.idBumil,
+                    'resti': bumil?.latestKehamilanResti,
+                    'hpht': bumil?.latestKehamilanHpht,
                   },
                 );
               },
