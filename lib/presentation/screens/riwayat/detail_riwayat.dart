@@ -1,15 +1,15 @@
-import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DetailRiwayatScreen extends StatelessWidget {
-  final Riwayat riwayat;
-
-  const DetailRiwayatScreen({super.key, required this.riwayat});
+  const DetailRiwayatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final riwayat = context.watch<SelectedRiwayatCubit>().state;
     return Scaffold(
       appBar: PageHeader(
         title: "Detail Riwayat",
@@ -35,15 +35,15 @@ class DetailRiwayatScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Utils.generateRowLabelValue(
                 "Berat Bayi",
-                riwayat.beratBayi.toString(),
+                riwayat?.beratBayi.toString(),
                 suffix: 'gram',
               ),
               Utils.generateRowLabelValue(
                 "Panjang Bayi",
-                riwayat.panjangBayi,
+                riwayat?.panjangBayi,
                 suffix: 'cm',
               ),
-              Utils.generateRowLabelValue("Status Bayi", riwayat.statusBayi),
+              Utils.generateRowLabelValue("Status Bayi", riwayat?.statusBayi),
 
               const SizedBox(height: 16),
               const Text(
@@ -51,11 +51,11 @@ class DetailRiwayatScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              Utils.generateRowLabelValue("Status Lahir", riwayat.statusLahir),
-              Utils.generateRowLabelValue("Status Term", riwayat.statusTerm),
-              Utils.generateRowLabelValue("Tempat", riwayat.tempat),
-              Utils.generateRowLabelValue("Penolong", riwayat.penolong),
-              Utils.generateRowLabelValue("Komplikasi", riwayat.komplikasi),
+              Utils.generateRowLabelValue("Status Lahir", riwayat?.statusLahir),
+              Utils.generateRowLabelValue("Status Term", riwayat?.statusTerm),
+              Utils.generateRowLabelValue("Tempat", riwayat?.tempat),
+              Utils.generateRowLabelValue("Penolong", riwayat?.penolong),
+              Utils.generateRowLabelValue("Komplikasi", riwayat?.komplikasi),
             ],
           ),
         ),

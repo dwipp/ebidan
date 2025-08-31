@@ -82,10 +82,7 @@ class AppRouter {
       case listRiwayat:
         return MaterialPageRoute(builder: (_) => ListRiwayatBumilScreen());
       case detailRiwayat:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => DetailRiwayatScreen(riwayat: args['riwayat']),
-        );
+        return MaterialPageRoute(builder: (_) => DetailRiwayatScreen());
       case addKehamilan:
         return MaterialPageRoute(builder: (_) => AddKehamilanScreen());
       case detailKehamilan:

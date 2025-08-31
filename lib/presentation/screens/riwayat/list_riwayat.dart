@@ -3,6 +3,7 @@ import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
+import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,6 +39,7 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<SelectedRiwayatCubit>().clear;
     return Scaffold(
       appBar: PageHeader(
         title: "Riwayat Kehamilan",
@@ -81,6 +83,9 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
                     subtitle: Text(riwayat.statusTerm),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
+                      context.read<SelectedRiwayatCubit>().selectRiwayat(
+                        riwayat,
+                      );
                       Navigator.pushNamed(
                         context,
                         AppRouter.detailRiwayat,
