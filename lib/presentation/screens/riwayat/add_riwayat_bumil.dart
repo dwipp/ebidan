@@ -240,7 +240,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                       } else {
                         Navigator.pushReplacementNamed(
                           context,
-                          AppRouter.pendataanKehamilan,
+                          AppRouter.addKehamilan,
                           arguments: {
                             'bumilId': widget.bumilId,
                             'age': widget.age,
@@ -269,7 +269,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                       } else {
                         Navigator.pushReplacementNamed(
                           context,
-                          AppRouter.pendataanKehamilan,
+                          AppRouter.addKehamilan,
                           arguments: {
                             'bumilId': widget.bumilId,
                             'age': widget.age,

@@ -343,7 +343,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                           );
                           Navigator.pushReplacementNamed(
                             context,
-                            AppRouter.addRiwayatBumil,
+                            AppRouter.addRiwayat,
                             arguments: {
                               'state': 'instantUpdate',
                               'bumilId': state.bumilId,

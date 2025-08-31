@@ -104,7 +104,7 @@ class PilihBumilScreen extends StatelessWidget {
                                   bumil.latestKehamilanPersalinan == true) {
                                 Navigator.pushNamed(
                                   context,
-                                  AppRouter.pendataanKehamilan,
+                                  AppRouter.addKehamilan,
                                 );
                               } else {
                                 final firstTime =

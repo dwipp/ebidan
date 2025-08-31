@@ -47,7 +47,7 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
             onPressed: () async {
               final result = await Navigator.pushNamed(
                 context,
-                AppRouter.addRiwayatBumil,
+                AppRouter.addRiwayat,
                 arguments: {
                   'state': 'lateUpdate',
                   'bumilId': bumil?.idBumil,

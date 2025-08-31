@@ -29,10 +29,10 @@ class AppRouter {
   static const String login = '/login';
   static const String register = '/register';
   static const String addBumil = '/addbumil';
-  static const String addRiwayatBumil = '/addriwayatbumil';
+  static const String addRiwayat = '/addriwayat';
   static const String pilihBumil = '/pilihbumil';
   static const String editBumil = '/editbumil';
-  static const String pendataanKehamilan = '/pendataankehamilan';
+  static const String addKehamilan = '/addkehamilan';
   static const String editKehamilan = '/editkehamilan';
   static const String kunjungan = '/kunjungan';
   static const String reviewKunjungan = '/reviewkunjungan';
@@ -58,14 +58,23 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => LoginScreen());
       case register:
         return MaterialPageRoute(builder: (_) => RegisterScreen());
-      case addBumil:
-        return MaterialPageRoute(builder: (_) => AddBumilScreen());
       case pilihBumil:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => PilihBumilScreen(pilihState: args['state']),
         );
-      case addRiwayatBumil:
+      case addBumil:
+        return MaterialPageRoute(builder: (_) => AddBumilScreen());
+      case dataBumil:
+        return MaterialPageRoute(builder: (_) => DataBumilScreen());
+      case detailBumil:
+        return MaterialPageRoute(builder: (_) => DetailBumilScreen());
+      case editBumil:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => EditBumilScreen(bumil: args['bumil']),
+        );
+      case addRiwayat:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => AddRiwayatBumilScreen(
@@ -74,8 +83,26 @@ class AppRouter {
             state: args['state'],
           ),
         );
-      case pendataanKehamilan:
+      case listRiwayat:
+        return MaterialPageRoute(builder: (_) => ListRiwayatBumilScreen());
+      case detailRiwayat:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => DetailRiwayatScreen(riwayat: args['riwayat']),
+        );
+      case addKehamilan:
         return MaterialPageRoute(builder: (_) => AddKehamilanScreen());
+      case detailKehamilan:
+        return MaterialPageRoute(builder: (_) => DetailKehamilanScreen());
+      case listKehamilan:
+        return MaterialPageRoute(builder: (_) => ListKehamilanScreen());
+      case updateKehamilan:
+        return MaterialPageRoute(builder: (_) => UpdateKehamilanScreen());
+      case editKehamilan:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => EditKehamilanScreen(kehamilan: args['kehamilan']),
+        );
       case kunjungan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
@@ -89,21 +116,6 @@ class AppRouter {
             firstTime: args['firstTime'],
           ),
         );
-      case dataBumil:
-        return MaterialPageRoute(builder: (_) => DataBumilScreen());
-      case detailBumil:
-        return MaterialPageRoute(builder: (_) => DetailBumilScreen());
-      case listRiwayat:
-        return MaterialPageRoute(builder: (_) => ListRiwayatBumilScreen());
-      case detailRiwayat:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => DetailRiwayatScreen(riwayat: args['riwayat']),
-        );
-      case detailKehamilan:
-        return MaterialPageRoute(builder: (_) => DetailKehamilanScreen());
-      case listKehamilan:
-        return MaterialPageRoute(builder: (_) => ListKehamilanScreen());
       case listKunjungan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
@@ -114,8 +126,6 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => DetailKunjunganScreen(kunjungan: args['kunjungan']),
         );
-      case updateKehamilan:
-        return MaterialPageRoute(builder: (_) => UpdateKehamilanScreen());
       case addPersalinan:
         return MaterialPageRoute(builder: (_) => AddPersalinanScreen());
       case detailPersalinan:
@@ -129,16 +139,6 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) =>
               ListPersalinanScreen(persalinans: args['persalinans']),
-        );
-      case editBumil:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => EditBumilScreen(bumil: args['bumil']),
-        );
-      case editKehamilan:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => EditKehamilanScreen(kehamilan: args['kehamilan']),
         );
       default:
         throw const RouteException('Route not found!');

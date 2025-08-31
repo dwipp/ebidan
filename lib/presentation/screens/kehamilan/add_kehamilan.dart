@@ -205,7 +205,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: "Data Kehamilan"),
+      appBar: PageHeader(title: "Kehamilan Baru"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
