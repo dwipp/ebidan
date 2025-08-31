@@ -21,26 +21,14 @@ class DataBumilScreen extends StatelessWidget {
               icon: Icons.person,
               title: 'Detail Bumil',
               onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  AppRouter.detailBumil,
-                  arguments: {'bumil': bumil},
-                );
+                Navigator.pushNamed(context, AppRouter.detailBumil);
               },
             ),
             MenuButton(
               icon: Icons.history,
               title: 'Riwayat Bumil',
               onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  AppRouter.listRiwayat,
-                  arguments: {
-                    'riwayatList': bumil?.riwayat ?? [],
-                    'idBumil': bumil?.idBumil,
-                    'birthdayIbu': bumil?.birthdateIbu,
-                  },
-                );
+                Navigator.pushNamed(context, AppRouter.listRiwayat);
               },
             ),
             MenuButton(
@@ -48,16 +36,7 @@ class DataBumilScreen extends StatelessWidget {
               title: 'Data Kehamilan Bumil',
               enabled: bumil?.latestKehamilan != null,
               onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  AppRouter.listKehamilan,
-                  arguments: {
-                    'latestKehamilan': bumil?.latestKehamilan,
-                    'latestStatusKunjungan': bumil?.latestKehamilanKunjungan,
-                    'bidanId': bumil?.idBidan,
-                    'bumilId': bumil?.idBumil,
-                  },
-                );
+                Navigator.pushNamed(context, AppRouter.listKehamilan);
               },
             ),
           ],

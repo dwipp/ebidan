@@ -48,13 +48,7 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
               final result = await Navigator.pushNamed(
                 context,
                 AppRouter.addRiwayat,
-                arguments: {
-                  'state': 'lateUpdate',
-                  'bumilId': bumil?.idBumil,
-                  'age': (bumil?.birthdateIbu != null
-                      ? DateTime.now().year - bumil!.birthdateIbu!.year
-                      : 0),
-                },
+                arguments: {'state': 'lateUpdate'},
               );
 
               if (result != null && result is List<Riwayat>) {

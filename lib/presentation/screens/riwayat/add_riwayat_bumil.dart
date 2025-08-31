@@ -1,8 +1,10 @@
+import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/presentation/widgets/year_picker_field.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/add_riwayat_cubit.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -11,14 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddRiwayatBumilScreen extends StatefulWidget {
   final String state;
-  final String bumilId;
-  final int age;
-  const AddRiwayatBumilScreen({
-    super.key,
-    required this.bumilId,
-    required this.age,
-    required this.state,
-  });
+  const AddRiwayatBumilScreen({super.key, required this.state});
 
   @override
   State<AddRiwayatBumilScreen> createState() => _AddRiwayatBumilState();
@@ -52,10 +47,18 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     'Section Caesarea (SC)',
   ];
 
+  Bumil? bumil;
+
   @override
   void initState() {
     context.read<AddRiwayatCubit>().setInitial();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    bumil = context.watch<SelectedBumilCubit>().state;
   }
 
   void _addRiwayat() {
@@ -241,15 +244,6 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                         Navigator.pushReplacementNamed(
                           context,
                           AppRouter.addKehamilan,
-                          arguments: {
-                            'bumilId': widget.bumilId,
-                            'age': widget.age,
-                            'latestHistoryYear': state.latestYear,
-                            'jumlahRiwayat': state.jumlahRiwayat,
-                            'jumlahPara': state.jumlahPara,
-                            'jumlahAbortus': state.jumlahAbortus,
-                            'jumlahBeratRendah': state.jumlahBeratRendah,
-                          },
                         );
                       }
                     } else if (state is AddRiwayatFailure) {
@@ -270,15 +264,6 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                         Navigator.pushReplacementNamed(
                           context,
                           AppRouter.addKehamilan,
-                          arguments: {
-                            'bumilId': widget.bumilId,
-                            'age': widget.age,
-                            'latestHistoryYear': null,
-                            'jumlahRiwayat': 0,
-                            'jumlahPara': 0,
-                            'jumlahAbortus': 0,
-                            'jumlahBeratRendah': 0,
-                          },
                         );
                       }
                     }
@@ -298,7 +283,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                         _formKey.currentState!.save();
 
                         context.read<AddRiwayatCubit>().addRiwayat(
-                          bumilId: widget.bumilId,
+                          bumilId: bumil!.idBumil,
                           riwayatList: riwayatList,
                         );
                       },

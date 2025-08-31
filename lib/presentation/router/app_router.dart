@@ -77,11 +77,7 @@ class AppRouter {
       case addRiwayat:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => AddRiwayatBumilScreen(
-            bumilId: args['bumilId'],
-            age: args['age'],
-            state: args['state'],
-          ),
+          builder: (_) => AddRiwayatBumilScreen(state: args['state']),
         );
       case listRiwayat:
         return MaterialPageRoute(builder: (_) => ListRiwayatBumilScreen());
