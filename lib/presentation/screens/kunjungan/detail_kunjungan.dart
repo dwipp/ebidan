@@ -1,18 +1,18 @@
-import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DetailKunjunganScreen extends StatelessWidget {
-  final Kunjungan kunjungan;
-
-  const DetailKunjunganScreen({super.key, required this.kunjungan});
+  const DetailKunjunganScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final kunjungan = context.watch<SelectedKunjunganCubit>().state;
     return Scaffold(
       appBar: PageHeader(
-        title: Utils.formattedDate(kunjungan.createdAt),
+        title: Utils.formattedDate(kunjungan?.createdAt),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -28,10 +28,10 @@ class DetailKunjunganScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (kunjungan.status != '-')
+              if (kunjungan?.status != '-')
                 Center(
                   child: Text(
-                    "${kunjungan.status}",
+                    "${kunjungan?.status}",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                 )
@@ -42,7 +42,7 @@ class DetailKunjunganScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              Utils.generateRowLabelValue("Keluhan", kunjungan.keluhan),
+              Utils.generateRowLabelValue("Keluhan", kunjungan?.keluhan),
               const SizedBox(height: 16),
               const Text(
                 "Objective",
@@ -50,27 +50,27 @@ class DetailKunjunganScreen extends StatelessWidget {
               ),
               Utils.generateRowLabelValue(
                 "Berat Badan",
-                kunjungan.bb,
+                kunjungan?.bb,
                 suffix: 'kg',
               ),
               Utils.generateRowLabelValue(
                 "Lingkar Lengan Atas (LILA)",
-                kunjungan.lila,
+                kunjungan?.lila,
                 suffix: 'cm',
               ),
               Utils.generateRowLabelValue(
                 "Lingkar Perut",
-                kunjungan.lp,
+                kunjungan?.lp,
                 suffix: 'cm',
               ),
               Utils.generateRowLabelValue(
                 "Tekanan Darah",
-                kunjungan.td,
+                kunjungan?.td,
                 suffix: 'mmHg',
               ),
               Utils.generateRowLabelValue(
                 "Tinggi Fundus Uteri (TFU)",
-                kunjungan.tfu,
+                kunjungan?.tfu,
               ),
 
               const SizedBox(height: 16),
@@ -79,7 +79,7 @@ class DetailKunjunganScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              Utils.generateRowLabelValue("Usia Kandungan", kunjungan.uk),
+              Utils.generateRowLabelValue("Usia Kandungan", kunjungan?.uk),
 
               const SizedBox(height: 16),
               const Text(
@@ -87,7 +87,7 @@ class DetailKunjunganScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              Utils.generateRowLabelValue("Planning", kunjungan.planning),
+              Utils.generateRowLabelValue("Planning", kunjungan?.planning),
             ],
           ),
         ),

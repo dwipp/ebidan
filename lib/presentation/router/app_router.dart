@@ -115,10 +115,7 @@ class AppRouter {
           builder: (_) => ListKunjunganScreen(docId: args['docId']),
         );
       case detailKunjungan:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => DetailKunjunganScreen(kunjungan: args['kunjungan']),
-        );
+        return MaterialPageRoute(builder: (_) => DetailKunjunganScreen());
       case addPersalinan:
         return MaterialPageRoute(builder: (_) => AddPersalinanScreen());
       case detailPersalinan:

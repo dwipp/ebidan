@@ -3,6 +3,7 @@ import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/get_kunjungan_cubit.dart';
+import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,6 +39,7 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<SelectedKunjunganCubit>().clear;
     return Scaffold(
       appBar: PageHeader(
         title: "Kunjungan",
@@ -83,11 +85,10 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
                       : Text('status: ${kunjungan.status}'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRouter.detailKunjungan,
-                      arguments: {'kunjungan': kunjungan},
+                    context.read<SelectedKunjunganCubit>().selectKunjungan(
+                      kunjungan,
                     );
+                    Navigator.pushNamed(context, AppRouter.detailKunjungan);
                   },
                 ),
               );
