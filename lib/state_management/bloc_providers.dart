@@ -9,6 +9,7 @@ import 'package:ebidan/state_management/kunjungan/cubit/add_kunjungan_cubit.dart
 import 'package:ebidan/state_management/kunjungan/cubit/get_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/persalinan/cubit/add_persalinan_cubit.dart';
+import 'package:ebidan/state_management/persalinan/cubit/selected_persalinan_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/add_riwayat_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,6 +29,9 @@ class BlocProviders {
       ),
       BlocProvider<SelectedKunjunganCubit>(
         create: (context) => SelectedKunjunganCubit(),
+      ),
+      BlocProvider<SelectedPersalinanCubit>(
+        create: (context) => SelectedPersalinanCubit(),
       ),
       BlocProvider<ConnectivityCubit>(create: (context) => ConnectivityCubit()),
       BlocProvider<AppVersionCubit>(create: (context) => AppVersionCubit()),

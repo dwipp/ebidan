@@ -119,11 +119,7 @@ class AppRouter {
       case addPersalinan:
         return MaterialPageRoute(builder: (_) => AddPersalinanScreen());
       case detailPersalinan:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) =>
-              DetailPersalinanScreen(persalinan: args['persalinan']),
-        );
+        return MaterialPageRoute(builder: (_) => DetailPersalinanScreen());
       case listPersalinan:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(

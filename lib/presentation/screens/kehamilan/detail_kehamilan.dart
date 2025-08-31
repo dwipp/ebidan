@@ -1,9 +1,11 @@
+import 'package:ebidan/data/models/persalinan_model.dart';
 import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit.dart';
+import 'package:ebidan/state_management/persalinan/cubit/selected_persalinan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +20,7 @@ class DetailKehamilanScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.read<SelectedPersalinanCubit>().clear;
     final kehamilan = context.watch<SelectedKehamilanCubit>().state;
     final bumil = context.watch<SelectedBumilCubit>().state;
     return Scaffold(
@@ -68,11 +71,10 @@ class DetailKehamilanScreen extends StatelessWidget {
                       arguments: {'persalinans': kehamilan.persalinan!},
                     );
                   } else {
-                    Navigator.pushNamed(
-                      context,
-                      AppRouter.detailPersalinan,
-                      arguments: {'persalinan': kehamilan.persalinan![0]},
+                    context.read<SelectedPersalinanCubit>().selectPersalinan(
+                      kehamilan.persalinan![0],
                     );
+                    Navigator.pushNamed(context, AppRouter.detailPersalinan);
                   }
                 },
               ),

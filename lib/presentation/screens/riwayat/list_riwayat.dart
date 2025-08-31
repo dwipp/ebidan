@@ -86,11 +86,7 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
                       context.read<SelectedRiwayatCubit>().selectRiwayat(
                         riwayat,
                       );
-                      Navigator.pushNamed(
-                        context,
-                        AppRouter.detailRiwayat,
-                        arguments: {'riwayat': riwayat},
-                      );
+                      Navigator.pushNamed(context, AppRouter.detailRiwayat);
                     },
                   ),
                 );
