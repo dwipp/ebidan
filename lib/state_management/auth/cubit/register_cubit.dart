@@ -19,22 +19,32 @@ class RegisterCubit extends Cubit<RegisterState> {
       return;
     }
 
+    // pecah query ke kata per kata (bukan n-grams)
     final kataKunci = query
         .toLowerCase()
-        .split(' ')
-        .where((kata) => kata.trim().isNotEmpty)
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((k) => k.isNotEmpty)
         .toList();
 
     try {
+      // ambil kandidat: cocok salah satu kata
       final snapshot = await FirebaseFirestore.instance
           .collection('puskesmas')
           .where('keywords', arrayContainsAny: kataKunci)
           .get();
 
-      _puskesmasList = snapshot.docs.map((doc) {
+      // mapping hasil
+      final allData = snapshot.docs.map((doc) {
         final data = doc.data();
         data['ref'] = doc.reference;
         return data;
+      }).toList();
+
+      // filter: harus mengandung semua kata query
+      _puskesmasList = allData.where((data) {
+        final keywords = List<String>.from(data['keywords'] ?? []);
+        return kataKunci.every((k) => keywords.contains(k));
       }).toList();
 
       emit(RegisterSearchLoaded(_puskesmasList));
