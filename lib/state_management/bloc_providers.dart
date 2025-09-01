@@ -1,3 +1,4 @@
+import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/submit_bumil_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/search_bumil_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
@@ -54,6 +55,7 @@ class BlocProviders {
       ),
       BlocProvider<GetKehamilanCubit>(create: (context) => GetKehamilanCubit()),
       BlocProvider<GetKunjunganCubit>(create: (context) => GetKunjunganCubit()),
+      BlocProvider<LoginCubit>(create: (context) => LoginCubit()),
     ];
   }
 }
