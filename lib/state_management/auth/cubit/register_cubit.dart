@@ -60,7 +60,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       final snapshot = await FirebaseFirestore.instance
           .collection('puskesmas')
           .where('keywords', arrayContainsAny: kataKunci)
-          .limit(10)
+          .limit(200)
           .get();
 
       final allData = snapshot.docs.map((doc) {

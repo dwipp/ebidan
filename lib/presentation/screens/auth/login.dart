@@ -12,7 +12,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const PageHeader(title: 'Login with Google'),
+      appBar: const PageHeader(title: 'Login eBidan', hideBackButton: true),
       body: BlocConsumer<LoginCubit, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {

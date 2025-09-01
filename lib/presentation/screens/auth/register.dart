@@ -81,6 +81,7 @@ class _RegisterState extends State<RegisterScreen> {
     return Scaffold(
       appBar: PageHeader(
         title: "Registrasi",
+        hideBackButton: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -193,7 +194,8 @@ class _RegisterState extends State<RegisterScreen> {
                   const SizedBox(height: 16),
                   _buildSectionTitle('Puskesmas'),
                   Autocomplete<Map<String, dynamic>>(
-                    displayStringForOption: (option) => option['nama'],
+                    displayStringForOption: (option) =>
+                        option['nama'], // tetap simpan nama saja untuk hasil pilihan
                     optionsBuilder: (textEditingValue) async {
                       await cubit.searchPuskesmas(textEditingValue.text);
                       return cubit.puskesmasList;
@@ -207,7 +209,6 @@ class _RegisterState extends State<RegisterScreen> {
                     fieldViewBuilder: (context, controller, focusNode, _) {
                       focusNode.addListener(() {
                         if (focusNode.hasFocus) {
-                          // Scroll supaya textfield ini naik ke atas
                           Future.delayed(Duration(milliseconds: 300), () {
                             Scrollable.ensureVisible(
                               focusNode.context!,
@@ -229,6 +230,36 @@ class _RegisterState extends State<RegisterScreen> {
                         validator: (_) => _selectedPuskesmas == null
                             ? 'Pilih puskesmas'
                             : null,
+                      );
+                    },
+                    optionsViewBuilder: (context, onSelected, options) {
+                      return Align(
+                        alignment: Alignment.topLeft,
+                        child: Material(
+                          elevation: 4,
+                          child: SizedBox(
+                            height: 200,
+                            child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              itemCount: options.length,
+                              itemBuilder: (context, index) {
+                                final option = options.elementAt(index);
+                                return ListTile(
+                                  title: Text(
+                                    option['nama'],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    '${option['kecamatan'] ?? ''}, ${option['kabupaten'] ?? ''}, ${option['provinsi'] ?? ''}',
+                                  ),
+                                  onTap: () => onSelected(option),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
                       );
                     },
                   ),
