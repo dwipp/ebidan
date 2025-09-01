@@ -1,8 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
-import 'package:flutter/material.dart';
+import 'package:ebidan/presentation/widgets/textfield.dart';
+import 'package:ebidan/state_management/auth/cubit/register_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -13,27 +16,20 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _firestore = FirebaseFirestore.instance;
-  User? user = FirebaseAuth.instance.currentUser;
-
-  // Controllers
   final _namaController = TextEditingController();
   final _nipController = TextEditingController();
   final _noHpController = TextEditingController();
   final _emailController = TextEditingController();
   final _desaController = TextEditingController();
 
-  // Dropdown & Autocomplete
   String _role = 'bidan';
   Map<String, dynamic>? _selectedPuskesmas;
 
-  bool _isSubmitting = false;
+  User? user = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
     super.initState();
-
-    // Prefill dari user Google
     if (user != null) {
       _namaController.text = user!.displayName ?? '';
       _noHpController.text = user!.phoneNumber ?? '';
@@ -41,75 +37,32 @@ class _RegisterState extends State<RegisterScreen> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> _searchPuskesmas(String query) async {
-    if (query.isEmpty) return [];
-    final kataKunci = query
-        .toLowerCase()
-        .split(' ')
-        .where((kata) => kata.trim().isNotEmpty)
-        .toList();
-    // print("query: $kataKunci");
-    final snapshot = await FirebaseFirestore.instance
-        .collection('puskesmas')
-        .where('keywords', arrayContainsAny: kataKunci)
-        .get();
-    // print('result: ${snapshot.docs}');
-    return snapshot.docs.map((doc) {
-      final data = doc.data(); // semua field
-      data['ref'] = doc.reference; // tambahkan reference juga jika perlu
-      return data;
-    }).toList();
-  }
-
-  Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate() || _selectedPuskesmas == null) {
-      return;
-    }
-    if (user == null) {
-      return;
-    }
-    setState(() => _isSubmitting = true);
-
-    await _firestore.collection('bidan').doc(user!.uid).set({
-      'nama': _namaController.text,
-      'nip': _nipController.text,
-      'no_hp': _noHpController.text,
-      'email': _emailController.text,
-      'role': _role,
-      'created_at': FieldValue.serverTimestamp(),
-      'puskesmas': _selectedPuskesmas?['nama'],
-      'id_puskesmas': _selectedPuskesmas?['ref'],
-      'active': true,
-      'premium': false,
-      'desa': _desaController.text,
-    });
-
-    setState(() => _isSubmitting = false);
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Sukses'),
-        content: const Text('Bidan berhasil diregistrasi'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pushReplacementNamed(AppRouter.homepage);
-            },
-            child: const Text('OK'),
-          ),
-        ],
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Container(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
+  void _submitForm(BuildContext context) {
+    if (!_formKey.currentState!.validate() || _selectedPuskesmas == null) {
+      return;
+    }
+
+    context.read<RegisterCubit>().submitForm(
+      nama: _namaController.text,
+      nip: _nipController.text,
+      noHp: _noHpController.text,
+      email: _emailController.text,
+      role: _role,
+      desa: _desaController.text,
+      selectedPuskesmas: _selectedPuskesmas!,
     );
   }
 
@@ -123,7 +76,6 @@ class _RegisterState extends State<RegisterScreen> {
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              // Kembali ke login screen
               if (context.mounted) {
                 Navigator.pushReplacementNamed(context, '/login');
               }
@@ -131,50 +83,66 @@ class _RegisterState extends State<RegisterScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (user?.photoURL != null)
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage: NetworkImage(user!.photoURL!),
+      body: BlocConsumer<RegisterCubit, RegisterState>(
+        listener: (context, state) {
+          if (state is RegisterSuccess) {
+            showDialog(
+              context: context,
+              builder: (_) => AlertDialog(
+                title: const Text('Sukses'),
+                content: const Text('Bidan berhasil diregistrasi'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(
+                        context,
+                      ).pushReplacementNamed(AppRouter.homepage);
+                    },
+                    child: const Text('OK'),
                   ),
-                const SizedBox(height: 12),
-              ],
-            ),
-            Form(
+                ],
+              ),
+            );
+          } else if (state is RegisterFailure) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
+          }
+        },
+        builder: (context, state) {
+          final isSubmitting = state is RegisterSubmitting;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Form(
               key: _formKey,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle('Data Pribadi'),
-                  TextFormField(
-                    controller: _namaController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nama Lengkap',
-                      prefixIcon: Icon(Icons.person),
+                  if (user?.photoURL != null)
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage(user!.photoURL!),
                     ),
+                  const SizedBox(height: 12),
+                  _buildSectionTitle('Data Pribadi'),
+                  CustomTextField(
+                    label: 'Nama Lengkap',
+                    icon: Icons.person,
+                    controller: _namaController,
+                    textCapitalization: TextCapitalization.words,
                     validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'NIP',
+                    icon: Icons.badge,
                     controller: _nipController,
-                    decoration: const InputDecoration(
-                      labelText: 'NIP',
-                      prefixIcon: Icon(Icons.badge),
-                    ),
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'No HP',
+                    icon: Icons.phone,
                     controller: _noHpController,
-                    decoration: const InputDecoration(
-                      labelText: 'No HP',
-                      prefixIcon: Icon(Icons.phone),
-                    ),
                     keyboardType: TextInputType.phone,
                     validator: (val) {
                       final hp = val?.trim();
@@ -188,12 +156,11 @@ class _RegisterState extends State<RegisterScreen> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'Email',
+                    icon: Icons.email,
                     controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email),
-                    ),
+                    textCapitalization: TextCapitalization.none,
                     keyboardType: TextInputType.emailAddress,
                     readOnly: true,
                   ),
@@ -216,7 +183,9 @@ class _RegisterState extends State<RegisterScreen> {
                   Autocomplete<Map<String, dynamic>>(
                     displayStringForOption: (option) => option['nama'],
                     optionsBuilder: (textEditingValue) async {
-                      return await _searchPuskesmas(textEditingValue.text);
+                      return await context
+                          .read<RegisterCubit>()
+                          .searchPuskesmas(textEditingValue.text);
                     },
                     onSelected: (option) {
                       setState(() {
@@ -227,6 +196,7 @@ class _RegisterState extends State<RegisterScreen> {
                       return TextFormField(
                         controller: controller,
                         focusNode: focusNode,
+                        textCapitalization: TextCapitalization.characters,
                         decoration: const InputDecoration(
                           labelText: 'Cari Puskesmas',
                           prefixIcon: Icon(Icons.local_hospital),
@@ -239,18 +209,20 @@ class _RegisterState extends State<RegisterScreen> {
                   ),
 
                   const SizedBox(height: 12),
-                  // _buildSectionTitle('Wilayah'),
-                  TextFormField(
+                  CustomTextField(
+                    label: 'Desa',
+                    icon: Icons.house,
                     controller: _desaController,
-                    decoration: const InputDecoration(labelText: 'Desa'),
                   ),
 
                   const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: _isSubmitting ? null : _submitForm,
-                      icon: _isSubmitting
+                      onPressed: isSubmitting
+                          ? null
+                          : () => _submitForm(context),
+                      icon: isSubmitting
                           ? const SizedBox(
                               width: 18,
                               height: 18,
@@ -258,7 +230,7 @@ class _RegisterState extends State<RegisterScreen> {
                             )
                           : const Icon(Icons.check),
                       label: Text(
-                        _isSubmitting ? 'Menyimpan...' : 'Daftarkan Bidan',
+                        isSubmitting ? 'Menyimpan...' : 'Daftarkan Bidan',
                       ),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -269,8 +241,8 @@ class _RegisterState extends State<RegisterScreen> {
                 ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
