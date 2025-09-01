@@ -21,3 +21,13 @@ class RegisterFailure extends RegisterState {
   @override
   List<Object?> get props => [message];
 }
+
+/// Tambahan state untuk pencarian puskesmas
+class RegisterSearchLoaded extends RegisterState {
+  final List<Map<String, dynamic>> list;
+
+  const RegisterSearchLoaded(this.list);
+
+  @override
+  List<Object?> get props => [list];
+}

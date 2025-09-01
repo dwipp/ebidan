@@ -1,5 +1,5 @@
 import 'package:ebidan/presentation/router/app_router.dart';
-import 'package:ebidan/presentation/widgets/dropdown_field.dart';
+import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/state_management/auth/cubit/register_cubit.dart';
@@ -21,6 +21,9 @@ class _RegisterState extends State<RegisterScreen> {
   final _noHpController = TextEditingController();
   final _emailController = TextEditingController();
   final _desaController = TextEditingController();
+  final _puskesmasTextController = TextEditingController();
+
+  final _scrollController = ScrollController();
 
   String _role = 'bidan';
   Map<String, dynamic>? _selectedPuskesmas;
@@ -35,6 +38,13 @@ class _RegisterState extends State<RegisterScreen> {
       _noHpController.text = user!.phoneNumber ?? '';
       _emailController.text = user!.email ?? '';
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _puskesmasTextController.dispose();
+    super.dispose();
   }
 
   Widget _buildSectionTitle(String title) {
@@ -110,9 +120,11 @@ class _RegisterState extends State<RegisterScreen> {
           }
         },
         builder: (context, state) {
+          final cubit = context.read<RegisterCubit>();
           final isSubmitting = state is RegisterSubmitting;
 
           return SingleChildScrollView(
+            controller: _scrollController,
             padding: const EdgeInsets.all(16),
             child: Form(
               key: _formKey,
@@ -183,16 +195,29 @@ class _RegisterState extends State<RegisterScreen> {
                   Autocomplete<Map<String, dynamic>>(
                     displayStringForOption: (option) => option['nama'],
                     optionsBuilder: (textEditingValue) async {
-                      return await context
-                          .read<RegisterCubit>()
-                          .searchPuskesmas(textEditingValue.text);
+                      await cubit.searchPuskesmas(textEditingValue.text);
+                      return cubit.puskesmasList;
                     },
                     onSelected: (option) {
                       setState(() {
                         _selectedPuskesmas = option;
+                        _puskesmasTextController.text = option['nama'];
                       });
                     },
                     fieldViewBuilder: (context, controller, focusNode, _) {
+                      focusNode.addListener(() {
+                        if (focusNode.hasFocus) {
+                          // Scroll supaya textfield ini naik ke atas
+                          Future.delayed(Duration(milliseconds: 300), () {
+                            Scrollable.ensureVisible(
+                              focusNode.context!,
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeInOut,
+                            );
+                          });
+                        }
+                      });
+                      _puskesmasTextController.value = controller.value;
                       return TextFormField(
                         controller: controller,
                         focusNode: focusNode,
@@ -207,8 +232,6 @@ class _RegisterState extends State<RegisterScreen> {
                       );
                     },
                   ),
-
-                  const SizedBox(height: 12),
                   CustomTextField(
                     label: 'Desa',
                     icon: Icons.house,
@@ -218,24 +241,12 @@ class _RegisterState extends State<RegisterScreen> {
                   const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: isSubmitting
-                          ? null
-                          : () => _submitForm(context),
-                      icon: isSubmitting
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.check),
-                      label: Text(
-                        isSubmitting ? 'Menyimpan...' : 'Daftarkan Bidan',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        textStyle: const TextStyle(fontSize: 16),
-                      ),
+                    child: Button(
+                      isSubmitting: isSubmitting,
+                      onPressed: () => _submitForm(context),
+                      label: 'Simpan',
+                      loadingLabel: 'Menyimpan...',
+                      icon: Icons.check,
                     ),
                   ),
                 ],

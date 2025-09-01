@@ -8,26 +8,42 @@ part 'register_state.dart';
 class RegisterCubit extends Cubit<RegisterState> {
   RegisterCubit() : super(RegisterInitial());
 
-  Future<List<Map<String, dynamic>>> searchPuskesmas(String query) async {
-    if (query.isEmpty) return [];
+  List<Map<String, dynamic>> _puskesmasList = [];
+  List<Map<String, dynamic>> get puskesmasList => _puskesmasList;
+
+  /// Pencarian Puskesmas
+  Future<void> searchPuskesmas(String query) async {
+    if (query.isEmpty) {
+      _puskesmasList = [];
+      emit(RegisterSearchLoaded(_puskesmasList));
+      return;
+    }
+
     final kataKunci = query
         .toLowerCase()
         .split(' ')
         .where((kata) => kata.trim().isNotEmpty)
         .toList();
 
-    final snapshot = await FirebaseFirestore.instance
-        .collection('puskesmas')
-        .where('keywords', arrayContainsAny: kataKunci)
-        .get();
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('puskesmas')
+          .where('keywords', arrayContainsAny: kataKunci)
+          .get();
 
-    return snapshot.docs.map((doc) {
-      final data = doc.data();
-      data['ref'] = doc.reference;
-      return data;
-    }).toList();
+      _puskesmasList = snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['ref'] = doc.reference;
+        return data;
+      }).toList();
+
+      emit(RegisterSearchLoaded(_puskesmasList));
+    } catch (e) {
+      emit(RegisterFailure('Gagal cari puskesmas: $e'));
+    }
   }
 
+  /// Submit form register
   Future<void> submitForm({
     required String nama,
     required String nip,
@@ -52,12 +68,12 @@ class RegisterCubit extends Cubit<RegisterState> {
         'no_hp': noHp,
         'email': email,
         'role': role,
+        'desa': desa,
         'created_at': FieldValue.serverTimestamp(),
         'puskesmas': selectedPuskesmas['nama'],
         'id_puskesmas': selectedPuskesmas['ref'],
         'active': true,
         'premium': false,
-        'desa': desa,
       });
 
       emit(RegisterSuccess());
