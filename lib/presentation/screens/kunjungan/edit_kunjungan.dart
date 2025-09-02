@@ -9,19 +9,18 @@ import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
+import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class KunjunganScreen extends StatefulWidget {
-  final bool firstTime;
-
-  const KunjunganScreen({super.key, required this.firstTime});
+class EditKunjunganScreen extends StatefulWidget {
+  const EditKunjunganScreen({super.key});
 
   @override
-  State<KunjunganScreen> createState() => _KunjunganState();
+  State<EditKunjunganScreen> createState() => _EditKunjunganState();
 }
 
-class _KunjunganState extends State<KunjunganScreen> {
+class _EditKunjunganState extends State<EditKunjunganScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController bbController = TextEditingController();
@@ -46,20 +45,31 @@ class _KunjunganState extends State<KunjunganScreen> {
     '-',
   ];
 
+  Kunjungan? kunjungan;
   Bumil? bumil;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     bumil = context.watch<SelectedBumilCubit>().state;
-    ukController.text = _hitungUsiaKehamilan(hpht: bumil!.latestKehamilanHpht!);
+    kunjungan = context.watch<SelectedKunjunganCubit>().state;
+    bbController.text = kunjungan!.bb!;
+    keluhanController.text = kunjungan!.keluhan!;
+    lilaController.text = kunjungan!.lila!;
+    lpController.text = kunjungan!.lp!;
+    planningController.text = kunjungan!.planning!;
+    tdController.text = kunjungan!.td!;
+    tfuController.text = kunjungan?.tfu ?? '';
+    ukController.text = kunjungan!.uk!;
+    _selectedStatusKunjungan = kunjungan?.status ?? '';
+    _createdAt = kunjungan!.createdAt!;
   }
 
   Future<void> _saveData() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final kunjungan = Kunjungan(
-      id: '',
+    final data = Kunjungan(
+      id: kunjungan!.id,
       idBumil: bumil?.idBumil,
       idKehamilan: bumil?.latestKehamilanId,
       keluhan: keluhanController.text,
@@ -77,32 +87,14 @@ class _KunjunganState extends State<KunjunganScreen> {
     Navigator.pushNamed(
       context,
       AppRouter.reviewKunjungan,
-      arguments: {'data': kunjungan, 'firstTime': widget.firstTime},
+      arguments: {'data': data, 'firstTime': false},
     );
-  }
-
-  String _hitungUsiaKehamilan({required DateTime hpht}) {
-    final today = DateTime.now();
-
-    // Hitung selisih hari antara today dan hpht
-    final selisihHari = today.difference(hpht).inDays;
-
-    if (selisihHari < 0) {
-      return '0 minggu';
-    }
-
-    final minggu = selisihHari ~/ 7;
-    final hari = selisihHari % 7;
-    if (hari == 0) {
-      return '$minggu minggu';
-    }
-    return '$minggu minggu $hari hari';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: "Kunjungan Baru"),
+      appBar: PageHeader(title: "Perbaharui Kunjungan"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -190,10 +182,11 @@ class _KunjunganState extends State<KunjunganScreen> {
               ),
               const SizedBox(height: 12),
               DatePickerFormField(
-                labelText: 'Tanggal Pembuatan Data (Auto)',
+                labelText: 'Tanggal Kunjungan',
                 prefixIcon: Icons.calendar_view_day,
                 initialValue: _createdAt,
                 context: context,
+                readOnly: true,
                 onDateSelected: (date) {
                   setState(() => _createdAt = date);
                 },

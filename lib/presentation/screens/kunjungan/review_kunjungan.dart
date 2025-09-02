@@ -3,7 +3,7 @@ import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
-import 'package:ebidan/state_management/kunjungan/cubit/add_kunjungan_cubit.dart';
+import 'package:ebidan/state_management/kunjungan/cubit/submit_kunjungan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -51,7 +51,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: "Hasil Kunjungan"),
+      appBar: PageHeader(title: "Review Kunjungan"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -97,7 +97,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                child: BlocConsumer<AddKunjunganCubit, AddKunjunganState>(
+                child: BlocConsumer<SubmitKunjunganCubit, SubmitKunjunganState>(
                   listener: (context, state) {
                     if (state is AddKunjunganSuccess) {
                       Utils.showSnackBar(
@@ -105,11 +105,16 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                         content: 'Data berhasil disimpan',
                         isSuccess: true,
                       );
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        AppRouter.homepage,
-                        (route) => false,
-                      );
+                      if (widget.data.id.isNotEmpty) {
+                        int count = 0;
+                        Navigator.popUntil(context, (route) => count++ >= 2);
+                      } else {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          AppRouter.homepage,
+                          (route) => false,
+                        );
+                      }
                     } else if (state is AddKunjunganFailure) {
                       Utils.showSnackBar(
                         context,
@@ -120,13 +125,13 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                   },
                   builder: (context, state) {
                     var isSubmitting = false;
-                    if (state is AddKunjunganCubit) {
+                    if (state is SubmitKunjunganCubit) {
                       isSubmitting = true;
                     }
                     return Button(
                       isSubmitting: isSubmitting,
                       onPressed: () =>
-                          context.read<AddKunjunganCubit>().addKunjungan(
+                          context.read<SubmitKunjunganCubit>().submitKunjungan(
                             widget.data,
                             firstTime: widget.firstTime,
                           ),

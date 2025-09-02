@@ -26,7 +26,7 @@ class GetKunjunganCubit extends Cubit<GetKunjunganState> {
           .get();
 
       final kunjunganList = snapshot.docs
-          .map((e) => Kunjungan.fromFirestore(e.data()))
+          .map((e) => Kunjungan.fromFirestore(e.data(), id: e.id))
           .toList();
       emit(GetKunjunganSuccess(kunjungans: kunjunganList));
     } catch (e) {

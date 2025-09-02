@@ -5,6 +5,7 @@ import 'package:ebidan/presentation/screens/bumil/detail_bumil.dart';
 import 'package:ebidan/presentation/screens/kehamilan/edit_kehamilan.dart';
 import 'package:ebidan/presentation/screens/kehamilan/update_kehamilan.dart';
 import 'package:ebidan/presentation/screens/kunjungan/detail_kunjungan.dart';
+import 'package:ebidan/presentation/screens/kunjungan/edit_kunjungan.dart';
 import 'package:ebidan/presentation/screens/persalinan/add_persalinan.dart';
 import 'package:ebidan/presentation/screens/persalinan/detail_persalinan.dart';
 import 'package:ebidan/presentation/screens/persalinan/list_persalinan.dart';
@@ -35,6 +36,7 @@ class AppRouter {
   static const String addKehamilan = '/addkehamilan';
   static const String editKehamilan = '/editkehamilan';
   static const String kunjungan = '/kunjungan';
+  static const String editKunjungan = '/editkunjungan';
   static const String reviewKunjungan = '/reviewkunjungan';
   static const String dataBumil = '/databumil';
   static const String detailBumil = '/detailbumil';
@@ -126,6 +128,8 @@ class AppRouter {
           builder: (_) =>
               ListPersalinanScreen(persalinans: args['persalinans']),
         );
+      case editKunjungan:
+        return MaterialPageRoute(builder: (_) => EditKunjunganScreen());
       default:
         throw const RouteException('Route not found!');
     }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Kunjungan {
+  final String id;
   final String? bb;
   final DateTime? createdAt;
   final String? keluhan;
@@ -16,6 +17,7 @@ class Kunjungan {
   final String? idBumil;
 
   Kunjungan({
+    required this.id,
     this.bb,
     this.createdAt,
     this.keluhan,
@@ -32,8 +34,12 @@ class Kunjungan {
   });
 
   /// ✅ Dari Firestore (pakai Timestamp)
-  factory Kunjungan.fromFirestore(Map<String, dynamic> json) {
+  factory Kunjungan.fromFirestore(
+    Map<String, dynamic> json, {
+    required String id,
+  }) {
     return Kunjungan(
+      id: id,
       bb: json['bb'],
       createdAt: (json['created_at'] as Timestamp?)?.toDate(),
       keluhan: json['keluhan'],
@@ -51,8 +57,9 @@ class Kunjungan {
   }
 
   /// ✅ Dari Map/JSON biasa (pakai string date)
-  factory Kunjungan.fromMap(Map<String, dynamic> map) {
+  factory Kunjungan.fromMap(String id, Map<String, dynamic> map) {
     return Kunjungan(
+      id: id,
       bb: map['bb'],
       createdAt: map['created_at'] != null
           ? DateTime.parse(map['created_at'])
