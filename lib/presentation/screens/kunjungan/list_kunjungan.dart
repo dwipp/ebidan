@@ -88,7 +88,14 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
                     context.read<SelectedKunjunganCubit>().selectKunjungan(
                       kunjungan,
                     );
-                    Navigator.pushNamed(context, AppRouter.detailKunjungan);
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.detailKunjungan,
+                    ).then((value) {
+                      context.read<GetKunjunganCubit>().getKunjungan(
+                        kehamilanId: widget.docId,
+                      );
+                    });
                   },
                 ),
               );

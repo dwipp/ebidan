@@ -30,7 +30,11 @@ class PilihBumilScreen extends StatelessWidget {
               ? IconButton(
                   icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
                   onPressed: () {
-                    Navigator.of(context).pushNamed(AppRouter.addBumil);
+                    Navigator.of(context).pushNamed(AppRouter.addBumil).then((
+                      value,
+                    ) {
+                      _refresh(context);
+                    });
                   },
                 )
               : const SizedBox(),
@@ -86,7 +90,12 @@ class PilihBumilScreen extends StatelessWidget {
                               bumil,
                             );
                             if (pilihState == 'bumil') {
-                              Navigator.pushNamed(context, AppRouter.dataBumil);
+                              Navigator.pushNamed(
+                                context,
+                                AppRouter.dataBumil,
+                              ).then((value) {
+                                _refresh(context);
+                              });
                             } else {
                               // pilihState == kunjungan
                               // final latestKehamilan = await getLatestKehamilan(
@@ -105,7 +114,9 @@ class PilihBumilScreen extends StatelessWidget {
                                 Navigator.pushNamed(
                                   context,
                                   AppRouter.addKehamilan,
-                                );
+                                ).then((value) {
+                                  _refresh(context);
+                                });
                               } else {
                                 final firstTime =
                                     !bumil.latestKehamilanKunjungan;
@@ -115,12 +126,16 @@ class PilihBumilScreen extends StatelessWidget {
                                     context,
                                     AppRouter.kunjungan,
                                     arguments: {'firstTime': true},
-                                  );
+                                  ).then((value) {
+                                    _refresh(context);
+                                  });
                                 } else {
                                   Navigator.pushNamed(
                                     context,
                                     AppRouter.updateKehamilan,
-                                  );
+                                  ).then((value) {
+                                    _refresh(context);
+                                  });
                                 }
                               }
                             }
