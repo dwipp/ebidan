@@ -108,8 +108,10 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
 
   void _submitForm() {
     if (!_formKey.currentState!.validate()) return;
+    if (riwayat == null && bumil == null) return;
 
-    final riwayat = Riwayat(
+    final newRiwayat = Riwayat(
+      id: riwayat!.id,
       tahun: int.parse(_tahunController.text.trim()),
       beratBayi: int.parse(_beratBayiController.text.trim()),
       komplikasi: _komplikasiController.text.trim(),
@@ -123,7 +125,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
       tempat: _tempat ?? '',
     );
 
-    // context.read<SubmitRiwayatCubit>().editRiwayat(bumilId: bumilId, index: index, updatedData: updatedData)
+    context.read<SubmitRiwayatCubit>().editRiwayat(updatedRiwayat: newRiwayat);
   }
 
   @override

@@ -1,13 +1,21 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
+import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
 import 'package:equatable/equatable.dart';
 import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uuid/uuid.dart';
 
 part 'submit_riwayat_state.dart';
 
 class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
-  SubmitRiwayatCubit() : super(SubmitRiwayatInitial());
+  final SelectedBumilCubit selectedBumilCubit;
+  final SelectedRiwayatCubit selectedRiwayatCubit;
+  SubmitRiwayatCubit({
+    required this.selectedBumilCubit,
+    required this.selectedRiwayatCubit,
+  }) : super(SubmitRiwayatInitial());
 
   Future<void> addRiwayat({
     required String bumilId,
@@ -51,6 +59,7 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
 
           riwayatListFinal.add(
             Riwayat(
+              id: Uuid().v4(),
               tahun: tahun,
               beratBayi: beratBayi,
               komplikasi: item['komplikasi'],
@@ -97,11 +106,7 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
     }
   }
 
-  Future<void> editRiwayat({
-    required String bumilId,
-    required int index,
-    required Map<String, dynamic> updatedData,
-  }) async {
+  Future<void> editRiwayat({required Riwayat updatedRiwayat}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       emit(SubmitRiwayatFailure('User belum login'));
@@ -109,69 +114,47 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
     }
     emit(SubmitRiwayatLoading());
 
+    var currentBumil = selectedBumilCubit.state;
+    if (currentBumil == null) return;
+
+    // ambil riwayat lama
+    final List<Riwayat> oldRiwayats = currentBumil.riwayat ?? [];
+
+    // update sesuai id
+    final List<Riwayat> newRiwayats = oldRiwayats.map((r) {
+      if (r.id == updatedRiwayat.id) {
+        return updatedRiwayat;
+      }
+      return r;
+    }).toList();
+
     try {
-      final docRef = FirebaseFirestore.instance
+      // simpan ke Firestore
+      await FirebaseFirestore.instance
           .collection('bumil')
-          .doc(bumilId);
+          .doc(currentBumil.idBumil)
+          .update({
+            'riwayat': newRiwayats.map((riwayat) => riwayat.toMap()).toList(),
+          });
 
-      final snapshot = await docRef.get();
-      if (!snapshot.exists) {
-        emit(SubmitRiwayatFailure('Data bumil tidak ditemukan'));
-        return;
-      }
+      // update cubit state biar langsung sinkron
+      currentBumil.riwayat = newRiwayats;
+      selectedBumilCubit.selectBumil(currentBumil);
+      selectedRiwayatCubit.selectRiwayat(updatedRiwayat);
 
-      final data = snapshot.data() as Map<String, dynamic>;
-      final List<dynamic> riwayat = List.from(data['riwayat'] ?? []);
-
-      if (index < 0 || index >= riwayat.length) {
-        emit(SubmitRiwayatFailure('Index tidak valid'));
-        return;
-      }
-
-      // Replace data di index tertentu
-      riwayat[index] = {...riwayat[index], ...updatedData};
-
-      await docRef.update({'riwayat': riwayat});
-
-      // Hitung ulang summary
-      int hidup = 0;
-      int mati = 0;
-      int abortus = 0;
-      int beratRendah = 0;
-      int? latestYear;
-
-      List<Riwayat> riwayatListFinal = [];
-
-      for (var item in riwayat) {
-        final tahun = int.tryParse(item['tahun'].toString());
-        if (tahun == null) continue;
-
-        if (item['status_bayi'] == 'Hidup') {
-          hidup++;
-        } else if (item['status_bayi'] == 'Mati') {
-          mati++;
-        } else if (item['status_bayi'] == 'Abortus') {
-          abortus++;
-        }
-
-        final beratBayi = int.tryParse(item['berat_bayi'].toString()) ?? 0;
-        if (beratBayi < 2500) beratRendah++;
-
-        riwayatListFinal.add(Riwayat.fromMap(Map<String, dynamic>.from(item)));
-
-        if (latestYear == null || tahun > latestYear) {
-          latestYear = tahun;
-        }
-      }
+      // hitung summary
+      int? latestYear = newRiwayats.isNotEmpty
+          ? newRiwayats.map((e) => e.tahun).reduce((a, b) => a > b ? a : b)
+          : null;
 
       emit(
         SubmitRiwayatSuccess(
           latestYear: latestYear,
-          jumlahRiwayat: riwayatListFinal.length,
-          jumlahPara: hidup + mati,
-          jumlahAbortus: abortus,
-          jumlahBeratRendah: beratRendah,
-          listRiwayat: riwayatListFinal,
+          jumlahRiwayat: currentBumil.statisticRiwayat['gravida']!,
+          jumlahPara: currentBumil.statisticRiwayat['para']!,
+          jumlahAbortus: currentBumil.statisticRiwayat['abortus']!,
+          jumlahBeratRendah: currentBumil.statisticRiwayat['beratRendah']!,
+          listRiwayat: newRiwayats,
         ),
       );
     } catch (e) {

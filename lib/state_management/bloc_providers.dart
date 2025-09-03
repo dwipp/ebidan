@@ -44,7 +44,10 @@ class BlocProviders {
         ),
       ),
       BlocProvider<SubmitRiwayatCubit>(
-        create: (context) => SubmitRiwayatCubit(),
+        create: (context) => SubmitRiwayatCubit(
+          selectedBumilCubit: context.read<SelectedBumilCubit>(),
+          selectedRiwayatCubit: context.read<SelectedRiwayatCubit>(),
+        ),
       ),
       BlocProvider<SubmitKehamilanCubit>(
         create: (context) => SubmitKehamilanCubit(

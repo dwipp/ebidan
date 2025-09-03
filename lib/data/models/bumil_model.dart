@@ -32,7 +32,7 @@ class Bumil {
   final String pendidikanSuami;
 
   final DateTime? createdAt;
-  final List<Riwayat>? riwayat;
+  List<Riwayat>? riwayat;
 
   final String? latestKehamilanId;
   final DateTime? latestKehamilanHpht;

@@ -1,4 +1,5 @@
 class Riwayat {
+  final String id;
   final int tahun;
   final int beratBayi;
   final String komplikasi;
@@ -10,6 +11,7 @@ class Riwayat {
   final String tempat;
 
   Riwayat({
+    required this.id,
     required this.tahun,
     required this.beratBayi,
     required this.komplikasi,
@@ -23,6 +25,7 @@ class Riwayat {
 
   factory Riwayat.fromMap(Map<String, dynamic> map) {
     return Riwayat(
+      id: map['id'] ?? '',
       tahun: map['tahun'] is int
           ? map['tahun']
           : int.tryParse(map['tahun']?.toString() ?? '') ?? 0,
@@ -39,6 +42,7 @@ class Riwayat {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'tahun': tahun,
       'berat_bayi': beratBayi,
       'komplikasi': komplikasi,

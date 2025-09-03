@@ -4,6 +4,7 @@ import 'package:ebidan/data/models/persalinan_model.dart';
 import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uuid/uuid.dart';
 
 part 'add_persalinan_state.dart';
 
@@ -16,7 +17,6 @@ class AddPersalinanCubit extends Cubit<AddPersalinanState> {
     required String kehamilanId,
     required String resti,
   }) async {
-    print('nyangkut');
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       emit(AddPersalinanFailure('User belum login'));
@@ -36,6 +36,7 @@ class AddPersalinanCubit extends Cubit<AddPersalinanState> {
       List<Riwayat> riwayats = [];
       for (var persalinan in persalinans) {
         final riwayat = Riwayat(
+          id: Uuid().v4(),
           tahun: persalinan.tglPersalinan?.year ?? 0,
           beratBayi: int.tryParse(persalinan.beratLahir ?? '0') ?? 0,
           komplikasi: resti,
