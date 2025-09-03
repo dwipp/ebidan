@@ -87,7 +87,10 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: 'Riwayat Kehamilan'),
+      appBar: PageHeader(
+        title: 'Riwayat Kehamilan',
+        hideBackButton: widget.state == 'instantUpdate',
+      ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
