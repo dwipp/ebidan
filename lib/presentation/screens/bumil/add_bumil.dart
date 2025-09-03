@@ -128,6 +128,21 @@ class _AddBumilState extends State<AddBumilScreen> {
   }
 
   @override
+  void dispose() {
+    _namaIbuController.dispose();
+    _namaSuamiController.dispose();
+    _alamatController.dispose();
+    _noHpController.dispose();
+    _jobIbuController.dispose();
+    _jobSuamiController.dispose();
+    _nikIbuController.dispose();
+    _nikSuamiController.dispose();
+    _kkIbuController.dispose();
+    _kkSuamiController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PageHeader(title: 'Tambah Data Bumil'),

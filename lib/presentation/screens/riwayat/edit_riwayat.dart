@@ -183,7 +183,6 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
               const SizedBox(height: 16),
               _buildSectionTitle('Kelahiran'),
               YearPickerField(
-                contextField: context,
                 label: 'Tahun Lahir',
                 icon: Icons.calendar_today,
                 initialYear: _tahunController.text,

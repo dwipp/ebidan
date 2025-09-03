@@ -203,6 +203,23 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   }
 
   @override
+  void dispose() {
+    _tbController.dispose();
+    _hemoglobinController.dispose();
+    _bpjsController.dispose();
+    _noKohortController.dispose();
+    _noRekaMedisController.dispose();
+    _riwayatAlergiController.dispose();
+    _riwayatPenyakitController.dispose();
+    _hasilLabController.dispose();
+    _jarakKehamilan.dispose();
+    _gravidaController.dispose();
+    _paraController.dispose();
+    _abortusController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PageHeader(title: "Kehamilan Baru"),

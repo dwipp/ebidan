@@ -104,7 +104,6 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                     child: Column(
                       children: [
                         YearPickerField(
-                          contextField: context,
                           label: 'Tahun',
                           icon: Icons.calendar_today,
                           initialYear: data['tahun'],

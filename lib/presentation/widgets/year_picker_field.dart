@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-class YearPickerField extends StatelessWidget {
-  final BuildContext contextField;
+class YearPickerField extends StatefulWidget {
   final String label;
   final IconData icon;
   final String initialYear;
@@ -9,7 +8,6 @@ class YearPickerField extends StatelessWidget {
 
   const YearPickerField({
     Key? key,
-    required this.contextField,
     required this.label,
     required this.icon,
     required this.initialYear,
@@ -17,23 +15,41 @@ class YearPickerField extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final controller = TextEditingController(text: initialYear);
+  State<YearPickerField> createState() => _YearPickerFieldState();
+}
 
+class _YearPickerFieldState extends State<YearPickerField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialYear);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
+      controller: _controller,
+      decoration: InputDecoration(
+        labelText: widget.label,
+        prefixIcon: Icon(widget.icon),
+      ),
       readOnly: true,
       validator: (val) => val == null || val.isEmpty ? 'Wajib diisi' : null,
       onTap: () async {
         final currentYear = DateTime.now().year;
         const minYear = 1900;
-        int tempSelectedYear = initialYear.isNotEmpty
-            ? int.tryParse(initialYear) ?? currentYear
-            : currentYear;
+        int tempSelectedYear = int.tryParse(_controller.text) ?? currentYear;
 
         await showDialog(
-          context: contextField,
+          context: context,
           builder: (context) {
             return StatefulBuilder(
               builder: (context, setStateDialog) {
@@ -86,8 +102,8 @@ class YearPickerField extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        controller.text = tempSelectedYear.toString();
-                        onSaved(tempSelectedYear.toString());
+                        _controller.text = tempSelectedYear.toString();
+                        widget.onSaved(tempSelectedYear.toString());
                       },
                       child: const Text('Pilih'),
                     ),

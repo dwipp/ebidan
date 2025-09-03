@@ -100,6 +100,19 @@ class _KunjunganState extends State<KunjunganScreen> {
   }
 
   @override
+  void dispose() {
+    bbController.dispose();
+    keluhanController.dispose();
+    lilaController.dispose();
+    lpController.dispose();
+    planningController.dispose();
+    tdController.dispose();
+    tfuController.dispose();
+    ukController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PageHeader(title: "Kunjungan Baru"),

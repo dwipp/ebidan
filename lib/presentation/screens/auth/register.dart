@@ -44,6 +44,11 @@ class _RegisterState extends State<RegisterScreen> {
   void dispose() {
     _scrollController.dispose();
     _puskesmasTextController.dispose();
+    _desaController.dispose();
+    _emailController.dispose();
+    _noHpController.dispose();
+    _nipController.dispose();
+    _namaController.dispose();
     super.dispose();
   }
 

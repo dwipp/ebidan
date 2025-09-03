@@ -92,6 +92,19 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
   }
 
   @override
+  void dispose() {
+    bbController.dispose();
+    keluhanController.dispose();
+    lilaController.dispose();
+    lpController.dispose();
+    planningController.dispose();
+    tdController.dispose();
+    tfuController.dispose();
+    ukController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PageHeader(title: "Perbaharui Kunjungan"),
