@@ -1,19 +1,19 @@
-part of 'add_riwayat_cubit.dart';
+part of 'submit_riwayat_cubit.dart';
 
-abstract class AddRiwayatState extends Equatable {
-  const AddRiwayatState();
+abstract class SubmitiwayatState extends Equatable {
+  const SubmitiwayatState();
 
   @override
   List<Object?> get props => [];
 }
 
-class AddRiwayatInitial extends AddRiwayatState {}
+class SubmitRiwayatInitial extends SubmitiwayatState {}
 
-class AddRiwayatLoading extends AddRiwayatState {}
+class SubmitRiwayatLoading extends SubmitiwayatState {}
 
-class AddRiwayatEmpty extends AddRiwayatState {}
+class AddRiwayatEmpty extends SubmitiwayatState {}
 
-class AddRiwayatSuccess extends AddRiwayatState {
+class SubmitRiwayatSuccess extends SubmitiwayatState {
   final int? latestYear;
   final int jumlahRiwayat;
   final int jumlahPara;
@@ -21,7 +21,7 @@ class AddRiwayatSuccess extends AddRiwayatState {
   final int jumlahBeratRendah;
   final List<Riwayat> listRiwayat;
 
-  const AddRiwayatSuccess({
+  const SubmitRiwayatSuccess({
     required this.latestYear,
     required this.jumlahRiwayat,
     required this.jumlahPara,
@@ -41,10 +41,10 @@ class AddRiwayatSuccess extends AddRiwayatState {
   ];
 }
 
-class AddRiwayatFailure extends AddRiwayatState {
+class SubmitRiwayatFailure extends SubmitiwayatState {
   final String message;
 
-  const AddRiwayatFailure(this.message);
+  const SubmitRiwayatFailure(this.message);
 
   @override
   List<Object?> get props => [message];

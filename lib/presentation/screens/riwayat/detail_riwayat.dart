@@ -1,4 +1,5 @@
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,11 @@ class DetailRiwayatScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
-              print('edit');
+              Navigator.pushNamed(
+                context,
+                AppRouter.editRiwayat,
+                arguments: {'state': 'lateUpdate'},
+              );
             },
           ),
         ],
@@ -51,8 +56,15 @@ class DetailRiwayatScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
+              Utils.generateRowLabelValue(
+                "Tahun Lahir",
+                riwayat?.tahun.toString(),
+              ),
               Utils.generateRowLabelValue("Status Lahir", riwayat?.statusLahir),
-              Utils.generateRowLabelValue("Status Term", riwayat?.statusTerm),
+              Utils.generateRowLabelValue(
+                "Status Kehamilan",
+                riwayat?.statusTerm,
+              ),
               Utils.generateRowLabelValue("Tempat", riwayat?.tempat),
               Utils.generateRowLabelValue("Penolong", riwayat?.penolong),
               Utils.generateRowLabelValue("Komplikasi", riwayat?.komplikasi),

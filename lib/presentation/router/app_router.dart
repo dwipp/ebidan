@@ -12,6 +12,7 @@ import 'package:ebidan/presentation/screens/persalinan/list_persalinan.dart';
 import 'package:ebidan/presentation/screens/riwayat/detail_riwayat.dart';
 import 'package:ebidan/presentation/screens/kehamilan/list_kehamilan.dart';
 import 'package:ebidan/presentation/screens/kunjungan/list_kunjungan.dart';
+import 'package:ebidan/presentation/screens/riwayat/edit_riwayat.dart';
 import 'package:ebidan/presentation/screens/riwayat/list_riwayat.dart';
 import 'package:ebidan/presentation/screens/kehamilan/add_kehamilan.dart';
 import 'package:ebidan/presentation/screens/riwayat/add_riwayat_bumil.dart';
@@ -30,23 +31,24 @@ class AppRouter {
   static const String login = '/login';
   static const String register = '/register';
   static const String addBumil = '/addbumil';
-  static const String addRiwayat = '/addriwayat';
   static const String pilihBumil = '/pilihbumil';
   static const String editBumil = '/editbumil';
+  static const String dataBumil = '/databumil';
+  static const String detailBumil = '/detailbumil';
   static const String addKehamilan = '/addkehamilan';
   static const String editKehamilan = '/editkehamilan';
+  static const String detailKehamilan = '/detailkehamilan';
+  static const String listKehamilan = '/listkehamilan';
+  static const String updateKehamilan = '/updatekehamilan';
   static const String kunjungan = '/kunjungan';
   static const String editKunjungan = '/editkunjungan';
   static const String reviewKunjungan = '/reviewkunjungan';
-  static const String dataBumil = '/databumil';
-  static const String detailBumil = '/detailbumil';
-  static const String listRiwayat = '/listriwayat';
-  static const String detailRiwayat = '/detailriwayat';
-  static const String detailKehamilan = '/detailkehamilan';
-  static const String listKehamilan = '/listkehamilan';
   static const String listKunjungan = '/listkunjungan';
   static const String detailKunjungan = '/detailkunjungan';
-  static const String updateKehamilan = '/updatekehamilan';
+  static const String addRiwayat = '/addriwayat';
+  static const String listRiwayat = '/listriwayat';
+  static const String detailRiwayat = '/detailriwayat';
+  static const String editRiwayat = '/editriwayat';
   static const String addPersalinan = '/addpersalinan';
   static const String detailPersalinan = '/detailpersalinan';
   static const String listPersalinan = '/listpersalinan';
@@ -85,6 +87,11 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => ListRiwayatBumilScreen());
       case detailRiwayat:
         return MaterialPageRoute(builder: (_) => DetailRiwayatScreen());
+      case editRiwayat:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => EditRiwayatBumilScreen(state: args['state']),
+        );
       case addKehamilan:
         return MaterialPageRoute(builder: (_) => AddKehamilanScreen());
       case detailKehamilan:

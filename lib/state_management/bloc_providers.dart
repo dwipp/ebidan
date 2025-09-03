@@ -12,7 +12,7 @@ import 'package:ebidan/state_management/kunjungan/cubit/get_kunjungan_cubit.dart
 import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/persalinan/cubit/add_persalinan_cubit.dart';
 import 'package:ebidan/state_management/persalinan/cubit/selected_persalinan_cubit.dart';
-import 'package:ebidan/state_management/riwayat/cubit/add_riwayat_cubit.dart';
+import 'package:ebidan/state_management/riwayat/cubit/submit_riwayat_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ebidan/state_management/general/cubit/app_version_cubit.dart';
@@ -43,7 +43,9 @@ class BlocProviders {
           selectedBumilCubit: context.read<SelectedBumilCubit>(),
         ),
       ),
-      BlocProvider<AddRiwayatCubit>(create: (context) => AddRiwayatCubit()),
+      BlocProvider<SubmitRiwayatCubit>(
+        create: (context) => SubmitRiwayatCubit(),
+      ),
       BlocProvider<SubmitKehamilanCubit>(
         create: (context) => SubmitKehamilanCubit(
           selectedKehamilanCubit: context.read<SelectedKehamilanCubit>(),

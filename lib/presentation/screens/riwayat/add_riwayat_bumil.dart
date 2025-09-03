@@ -5,7 +5,7 @@ import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/presentation/widgets/year_picker_field.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
-import 'package:ebidan/state_management/riwayat/cubit/add_riwayat_cubit.dart';
+import 'package:ebidan/state_management/riwayat/cubit/submit_riwayat_cubit.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +51,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
 
   @override
   void initState() {
-    context.read<AddRiwayatCubit>().setInitial();
+    context.read<SubmitRiwayatCubit>().setInitial();
     super.initState();
   }
 
@@ -229,9 +229,9 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                child: BlocConsumer<AddRiwayatCubit, AddRiwayatState>(
+                child: BlocConsumer<SubmitRiwayatCubit, SubmitiwayatState>(
                   listener: (context, state) {
-                    if (state is AddRiwayatSuccess) {
+                    if (state is SubmitRiwayatSuccess) {
                       Utils.showSnackBar(
                         context,
                         content: 'Riwayat berhasil disimpan',
@@ -246,7 +246,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           AppRouter.addKehamilan,
                         );
                       }
-                    } else if (state is AddRiwayatFailure) {
+                    } else if (state is SubmitRiwayatFailure) {
                       Utils.showSnackBar(
                         context,
                         content: 'Gagal: ${state.message}',
@@ -270,7 +270,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                   },
                   builder: (context, state) {
                     var isSubmitting = false;
-                    if (state is AddRiwayatLoading) {
+                    if (state is SubmitRiwayatLoading) {
                       isSubmitting = true;
                     }
                     return Button(
@@ -282,7 +282,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                         if (!_formKey.currentState!.validate()) return;
                         _formKey.currentState!.save();
 
-                        context.read<AddRiwayatCubit>().addRiwayat(
+                        context.read<SubmitRiwayatCubit>().addRiwayat(
                           bumilId: bumil!.idBumil,
                           riwayatList: riwayatList,
                         );
