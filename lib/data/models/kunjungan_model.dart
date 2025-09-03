@@ -12,6 +12,7 @@ class Kunjungan {
   final String? td;
   final String? tfu;
   final String? uk;
+  final String? terapi;
   final String? idKehamilan;
   final String? idBidan;
   final String? idBumil;
@@ -28,6 +29,7 @@ class Kunjungan {
     this.td,
     this.tfu,
     this.uk,
+    this.terapi,
     this.idBidan,
     this.idBumil,
     this.idKehamilan,
@@ -50,6 +52,7 @@ class Kunjungan {
       td: json['td'],
       tfu: json['tfu'],
       uk: json['uk'],
+      terapi: json['terapi'],
       idBidan: json['id_bidan'],
       idBumil: json['id_bumil'],
       idKehamilan: json['id_kehamilan'],
@@ -72,6 +75,7 @@ class Kunjungan {
       td: map['td'],
       tfu: map['tfu'],
       uk: map['uk'],
+      terapi: map['terapi'],
       idBidan: map['id_bidan'],
       idBumil: map['id_bumil'],
       idKehamilan: map['id_kehamilan'],
@@ -91,6 +95,7 @@ class Kunjungan {
       'td': td,
       'tfu': tfu,
       'uk': uk,
+      'terapi': terapi,
       'id_bidan': idBidan,
       'id_bumil': idBumil,
       'id_kehamilan': idKehamilan,

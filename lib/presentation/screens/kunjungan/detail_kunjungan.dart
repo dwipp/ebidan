@@ -89,6 +89,7 @@ class DetailKunjunganScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Utils.generateRowLabelValue("Planning", kunjungan?.planning),
+              Utils.generateRowLabelValue("Terapi", kunjungan?.terapi ?? '-'),
             ],
           ),
         ),

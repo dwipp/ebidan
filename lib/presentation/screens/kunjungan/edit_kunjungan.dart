@@ -31,6 +31,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
   final TextEditingController tdController = TextEditingController();
   final TextEditingController tfuController = TextEditingController();
   final TextEditingController ukController = TextEditingController();
+  final TextEditingController terapiController = TextEditingController();
 
   DateTime? _createdAt = DateTime.now();
 
@@ -61,6 +62,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
     tdController.text = kunjungan!.td!;
     tfuController.text = kunjungan?.tfu ?? '';
     ukController.text = kunjungan!.uk!;
+    terapiController.text = kunjungan!.terapi ?? '';
     _selectedStatusKunjungan = kunjungan?.status ?? '';
     _createdAt = kunjungan!.createdAt!;
   }
@@ -79,6 +81,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
       td: tdController.text,
       tfu: tfuController.text,
       uk: ukController.text,
+      terapi: terapiController.text,
       planning: planningController.text,
       status: _selectedStatusKunjungan ?? '-',
       createdAt: _createdAt,
@@ -101,6 +104,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
     tdController.dispose();
     tfuController.dispose();
     ukController.dispose();
+    terapiController.dispose();
     super.dispose();
   }
 
@@ -180,6 +184,13 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
                 icon: Icons.assignment,
                 isMultiline: true,
                 validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+              ),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: terapiController,
+                label: "Terapi",
+                icon: Icons.healing,
+                isMultiline: true,
               ),
               const SizedBox(height: 12),
               DropdownField(

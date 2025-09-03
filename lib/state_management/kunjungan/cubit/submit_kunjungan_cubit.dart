@@ -45,6 +45,7 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
         'td': data.td,
         'tfu': data.tfu,
         'uk': data.uk,
+        'terapi': data.terapi,
         'id_bidan': user.uid,
         'id_kehamilan': data.idKehamilan,
         'id_bumil': data.idBumil,

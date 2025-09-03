@@ -93,6 +93,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
               ),
               const SizedBox(height: 8),
               _buildRow("Planning", widget.data.planning ?? '-'),
+              _buildRow("Terapi", widget.data.terapi ?? '-'),
               _buildRow("Status Kunjungan", widget.data.status ?? '-'),
               const SizedBox(height: 20),
               SizedBox(

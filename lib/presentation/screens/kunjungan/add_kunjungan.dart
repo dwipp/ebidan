@@ -32,6 +32,7 @@ class _KunjunganState extends State<KunjunganScreen> {
   final TextEditingController tdController = TextEditingController();
   final TextEditingController tfuController = TextEditingController();
   final TextEditingController ukController = TextEditingController();
+  final TextEditingController terapiController = TextEditingController();
 
   DateTime? _createdAt = DateTime.now();
 
@@ -69,6 +70,7 @@ class _KunjunganState extends State<KunjunganScreen> {
       td: tdController.text,
       tfu: tfuController.text,
       uk: ukController.text,
+      terapi: terapiController.text,
       planning: planningController.text,
       status: _selectedStatusKunjungan ?? '-',
       createdAt: _createdAt,
@@ -109,6 +111,7 @@ class _KunjunganState extends State<KunjunganScreen> {
     tdController.dispose();
     tfuController.dispose();
     ukController.dispose();
+    terapiController.dispose();
     super.dispose();
   }
 
@@ -188,6 +191,13 @@ class _KunjunganState extends State<KunjunganScreen> {
                 icon: Icons.assignment,
                 isMultiline: true,
                 validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+              ),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: terapiController,
+                label: "Terapi",
+                icon: Icons.healing,
+                isMultiline: true,
               ),
               const SizedBox(height: 12),
               DropdownField(
