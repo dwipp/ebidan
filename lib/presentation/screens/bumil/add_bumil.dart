@@ -49,6 +49,7 @@ class _AddBumilState extends State<AddBumilScreen> {
     'SD',
     'SMP',
     'SMA',
+    'D3',
     'S1',
     'S2',
     'S3',
