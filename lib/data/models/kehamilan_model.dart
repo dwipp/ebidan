@@ -23,7 +23,7 @@ class Kehamilan {
   final String? tb;
   final DateTime? tglPeriksaUsg;
   final bool kunjungan;
-  final List<Persalinan>? persalinan;
+  List<Persalinan>? persalinan;
 
   Kehamilan({
     this.id,

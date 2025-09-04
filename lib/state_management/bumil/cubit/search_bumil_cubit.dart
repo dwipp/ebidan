@@ -41,7 +41,7 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
       final list = snapshot.docs
           .map((doc) => Bumil.fromMap(doc.id, doc.data()))
           .toList();
-
+      print('bumil: ${list}');
       emit(state.copyWith(bumilList: list, filteredList: list));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));

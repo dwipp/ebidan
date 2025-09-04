@@ -1,3 +1,4 @@
+import 'package:ebidan/common/Utils.dart';
 import 'package:flutter/material.dart';
 
 class DatePickerFormField extends FormField<DateTime> {
@@ -42,7 +43,7 @@ class DatePickerFormField extends FormField<DateTime> {
                child: Text(
                  field.value == null
                      ? 'Pilih Tanggal'
-                     : '${field.value!.day}/${field.value!.month}/${field.value!.year}',
+                     : Utils.formattedDate(field.value),
                  style: TextStyle(
                    fontSize: 16,
                    color: field.value == null

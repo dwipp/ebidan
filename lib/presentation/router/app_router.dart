@@ -8,6 +8,7 @@ import 'package:ebidan/presentation/screens/kunjungan/detail_kunjungan.dart';
 import 'package:ebidan/presentation/screens/kunjungan/edit_kunjungan.dart';
 import 'package:ebidan/presentation/screens/persalinan/add_persalinan.dart';
 import 'package:ebidan/presentation/screens/persalinan/detail_persalinan.dart';
+import 'package:ebidan/presentation/screens/persalinan/edit_persalinan.dart';
 import 'package:ebidan/presentation/screens/persalinan/list_persalinan.dart';
 import 'package:ebidan/presentation/screens/riwayat/detail_riwayat.dart';
 import 'package:ebidan/presentation/screens/kehamilan/list_kehamilan.dart';
@@ -52,6 +53,7 @@ class AppRouter {
   static const String addPersalinan = '/addpersalinan';
   static const String detailPersalinan = '/detailpersalinan';
   static const String listPersalinan = '/listpersalinan';
+  static const String editPersalinan = '/editpersalinan';
 
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
@@ -125,6 +127,8 @@ class AppRouter {
         );
       case detailKunjungan:
         return MaterialPageRoute(builder: (_) => DetailKunjunganScreen());
+      case editKunjungan:
+        return MaterialPageRoute(builder: (_) => EditKunjunganScreen());
       case addPersalinan:
         return MaterialPageRoute(builder: (_) => AddPersalinanScreen());
       case detailPersalinan:
@@ -135,8 +139,8 @@ class AppRouter {
           builder: (_) =>
               ListPersalinanScreen(persalinans: args['persalinans']),
         );
-      case editKunjungan:
-        return MaterialPageRoute(builder: (_) => EditKunjunganScreen());
+      case editPersalinan:
+        return MaterialPageRoute(builder: (_) => EditPersalinanScreen());
       default:
         throw const RouteException('Route not found!');
     }

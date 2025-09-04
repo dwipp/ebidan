@@ -181,7 +181,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                     val == null || val.isEmpty ? 'Wajib dipilih' : null,
               ),
               const SizedBox(height: 16),
-              _buildSectionTitle('Kelahiran'),
+              _buildSectionTitle('Persalinan'),
               YearPickerField(
                 label: 'Tahun Lahir',
                 icon: Icons.calendar_today,
@@ -286,7 +286,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                     }
                     return Button(
                       isSubmitting: isSubmitting,
-                      label: 'Simpan',
+                      label: 'Perhabarui',
                       loadingLabel: 'Menyimpan...',
                       icon: Icons.save,
                       onPressed: _submitForm,

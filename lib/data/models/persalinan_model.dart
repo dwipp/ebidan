@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class Persalinan {
+  String id;
   String? beratLahir;
   String? cara;
   String? lingkarKepala;
@@ -15,6 +17,7 @@ class Persalinan {
   final TextEditingController umurKehamilanController = TextEditingController();
 
   Persalinan({
+    required this.id,
     this.beratLahir,
     this.cara,
     this.lingkarKepala,
@@ -34,12 +37,13 @@ class Persalinan {
 
   /// constructor kosong untuk form
   factory Persalinan.empty() {
-    return Persalinan(createdAt: DateTime.now());
+    return Persalinan(createdAt: DateTime.now(), id: Uuid().v4());
   }
 
   /// convert ke map
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       "berat_lahir": beratLahir,
       "cara": cara,
       "lingkar_kepala": lingkarKepala,
@@ -57,6 +61,7 @@ class Persalinan {
   /// convert ke firestore
   Map<String, dynamic> toFirestore() {
     return {
+      'id': id,
       "berat_lahir": beratLahir,
       "cara": cara,
       "lingkar_kepala": lingkarKepala,
@@ -74,6 +79,7 @@ class Persalinan {
   /// convert dari firestore ke model
   factory Persalinan.fromMap(Map<String, dynamic> map) {
     return Persalinan(
+      id: map['id'],
       beratLahir: map['berat_lahir']?.toString(),
       cara: map['cara'],
       lingkarKepala: map['lingkar_kepala']?.toString(),

@@ -10,7 +10,7 @@ import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit
 import 'package:ebidan/state_management/kunjungan/cubit/submit_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/get_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit.dart';
-import 'package:ebidan/state_management/persalinan/cubit/add_persalinan_cubit.dart';
+import 'package:ebidan/state_management/persalinan/cubit/submit_persalinan_cubit.dart';
 import 'package:ebidan/state_management/persalinan/cubit/selected_persalinan_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/submit_riwayat_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
@@ -61,8 +61,12 @@ class BlocProviders {
           selectedKunjunganCubit: context.read<SelectedKunjunganCubit>(),
         ),
       ),
-      BlocProvider<AddPersalinanCubit>(
-        create: (context) => AddPersalinanCubit(),
+      BlocProvider<SubmitPersalinanCubit>(
+        create: (context) => SubmitPersalinanCubit(
+          selectedBumilCubit: context.read<SelectedBumilCubit>(),
+          selectedKehamilanCubit: context.read<SelectedKehamilanCubit>(),
+          selectedPersalinanCubit: context.read<SelectedPersalinanCubit>(),
+        ),
       ),
       BlocProvider<GetKehamilanCubit>(create: (context) => GetKehamilanCubit()),
       BlocProvider<GetKunjunganCubit>(create: (context) => GetKunjunganCubit()),

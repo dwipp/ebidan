@@ -1,5 +1,5 @@
+import 'package:ebidan/common/Utils.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class DateTimePickerField extends FormField<DateTime> {
   DateTimePickerField({
@@ -63,7 +63,7 @@ class DateTimePickerField extends FormField<DateTime> {
                child: Text(
                  field.value == null
                      ? labelText
-                     : DateFormat('dd MMMM yyyy, HH:mm').format(field.value!),
+                     : Utils.formattedDateTime(field.value),
                  style: TextStyle(
                    color: field.value == null
                        ? Theme.of(context).hintColor

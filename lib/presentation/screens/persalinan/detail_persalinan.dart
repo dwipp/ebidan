@@ -1,4 +1,5 @@
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/persalinan/cubit/selected_persalinan_cubit.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class DetailPersalinanScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
-              print('edit persalinan');
+              Navigator.pushNamed(context, AppRouter.editPersalinan);
             },
           ),
         ],

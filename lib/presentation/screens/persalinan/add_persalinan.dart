@@ -8,7 +8,7 @@ import 'package:ebidan/data/models/persalinan_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
-import 'package:ebidan/state_management/persalinan/cubit/add_persalinan_cubit.dart';
+import 'package:ebidan/state_management/persalinan/cubit/submit_persalinan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:ebidan/presentation/widgets/date_time_picker_field.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,7 +53,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<AddPersalinanCubit>().setInitial();
+    context.read<SubmitPersalinanCubit>().setInitial();
     _addPersalinan();
   }
 
@@ -112,7 +112,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
 
-    context.read<AddPersalinanCubit>().addPersalinan(
+    context.read<SubmitPersalinanCubit>().addPersalinan(
       persalinanList,
       bumilId: bumil!.idBumil,
       kehamilanId: bumil!.latestKehamilanId!,
@@ -139,7 +139,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       children: [
-                        Utils.sectionTitle('Detail Kelahiran'),
+                        Utils.sectionTitle('Detail Persalinan'),
                         DateTimePickerField(
                           labelText: 'Tanggal Persalinan',
                           prefixIcon: Icons.calendar_today,
@@ -234,7 +234,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                               val!.isEmpty ? 'Wajib diisi' : null,
                         ),
                         const SizedBox(height: 16),
-                        Utils.sectionTitle('Kondisi Kelahiran'),
+                        Utils.sectionTitle('Kondisi Persalinan'),
                         DropdownField(
                           label: 'Jenis Kelamin',
                           icon: Icons.transgender,
@@ -305,41 +305,42 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                child: BlocConsumer<AddPersalinanCubit, AddPersalinanState>(
-                  listener: (context, state) {
-                    if (state is AddPersalinanSuccess) {
-                      Utils.showSnackBar(
-                        context,
-                        content: 'Data persalinan berhasil disimpan',
-                        isSuccess: true,
-                      );
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        AppRouter.homepage,
-                        (route) => false,
-                      );
-                    } else if (state is AddPersalinanFailure) {
-                      Utils.showSnackBar(
-                        context,
-                        content: 'Gagal: ${state.message}',
-                        isSuccess: true,
-                      );
-                    }
-                  },
-                  builder: (context, state) {
-                    var isSubmitting = false;
-                    if (state is AddPersalinanLoading) {
-                      isSubmitting = true;
-                    }
-                    return Button(
-                      isSubmitting: isSubmitting,
-                      onPressed: _submitData,
-                      label: 'Simpan',
-                      icon: Icons.save,
-                      loadingLabel: 'Menyimpan...',
-                    );
-                  },
-                ),
+                child:
+                    BlocConsumer<SubmitPersalinanCubit, SubmitPersalinanState>(
+                      listener: (context, state) {
+                        if (state is AddPersalinanSuccess) {
+                          Utils.showSnackBar(
+                            context,
+                            content: 'Data persalinan berhasil disimpan',
+                            isSuccess: true,
+                          );
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            AppRouter.homepage,
+                            (route) => false,
+                          );
+                        } else if (state is AddPersalinanFailure) {
+                          Utils.showSnackBar(
+                            context,
+                            content: 'Gagal: ${state.message}',
+                            isSuccess: true,
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        var isSubmitting = false;
+                        if (state is AddPersalinanLoading) {
+                          isSubmitting = true;
+                        }
+                        return Button(
+                          isSubmitting: isSubmitting,
+                          onPressed: _submitData,
+                          label: 'Simpan',
+                          icon: Icons.save,
+                          loadingLabel: 'Menyimpan...',
+                        );
+                      },
+                    ),
               ),
             ],
           ),
