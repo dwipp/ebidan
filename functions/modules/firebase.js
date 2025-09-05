@@ -1,10 +1,7 @@
-// firebase.js
 import admin from "firebase-admin";
-import { getFirestore } from "firebase-admin/firestore";
 
 if (!admin.apps.length) {
   admin.initializeApp();
 }
 
-const db = getFirestore();
-export { db };
+export const db = admin.firestore();

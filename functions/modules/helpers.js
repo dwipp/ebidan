@@ -1,7 +1,11 @@
-// helpers.js
-// Fungsi pembantu
-function getMonthString(date) {
+export function getMonthString(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
 
-export { getMonthString };
+// Ambil usia kehamilan dalam minggu dari format "X minggu Y hari"
+export function parseUK(ukString) {
+  const match = ukString.match(/(\d+)\s*minggu\s*(\d+)?\s*hari?/i);
+  if (!match) return 0;
+  const minggu = parseInt(match[1] || 0);
+  return minggu;
+}

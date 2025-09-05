@@ -1,7 +1,6 @@
-// decrement.js
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
-import { getMonthString } from "./helpers.js";
-import { db } from "./firebase.js";
+import { getMonthString } from "../helpers.js";
+import { db } from "../firebase.js";
 
 const REGION = "asia-southeast2";
 
@@ -20,27 +19,20 @@ export const decrementBumilCount = onDocumentDeleted(
       if (!doc.exists) return;
 
       const data = doc.data();
-
-      // Ambil map bumil dan by_month
       const bumil = data.bumil || { bumil_total: 0, bumil_this_month: 0 };
       const byMonth = data.by_month || {};
 
-      // Reset jika bulan baru
-      let bumilThisMonth = (data.last_updated_month === currentMonth ? bumil.bumil_this_month : 0);
+      const bumilThisMonth = data.last_updated_month === currentMonth ? bumil.bumil_this_month : 0;
 
-      // Update by_month untuk bulan ini
-      if (byMonth[currentMonth] && byMonth[currentMonth].bumil) {
-        byMonth[currentMonth].bumil = Math.max(byMonth[currentMonth].bumil - 1, 0);
-      }
+      if (!byMonth[currentMonth]) byMonth[currentMonth] = { bumil: 0 };
+      byMonth[currentMonth].bumil = Math.max(byMonth[currentMonth].bumil - 1, 0);
 
-      t.update(statsRef, {
-        bumil: {
-          bumil_total: Math.max(bumil.bumil_total - 1, 0),
-          bumil_this_month: Math.max(bumilThisMonth - 1, 0)
-        },
+      t.set(statsRef, {
+        ...data,
+        bumil: { bumil_total: Math.max(bumil.bumil_total - 1, 0), bumil_this_month: Math.max(bumilThisMonth - 1, 0) },
         last_updated_month: currentMonth,
         by_month: byMonth
-      });
+      }, { merge: true });
     });
   }
 );
