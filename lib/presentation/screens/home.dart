@@ -1,4 +1,5 @@
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/data/models/statistic_model.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
@@ -18,7 +19,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<StatisticCubit>().fetchStatistics();
+    context.read<StatisticCubit>().fetchStatistic();
     context.read<SelectedPersalinanCubit>().clear;
     context.read<SelectedKunjunganCubit>().clear;
     context.read<SelectedRiwayatCubit>().clear;
@@ -48,103 +49,95 @@ class HomeScreen extends StatelessWidget {
       ),
       body: BlocBuilder<StatisticCubit, StatisticState>(
         builder: (context, state) {
-          if (state is StatisticLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is StatisticFailure) {
+          Statistic? statistic;
+          if (state is StatisticSuccess) {
+            statistic = state.statistic;
+          }
+          if (state is StatisticFailure) {
             return Center(child: Text("Error: ${state.message}"));
-          } else if (state is StatisticSuccess) {
-            final statistic = state.statistic;
-            return StaggeredGrid.count(
-              crossAxisCount: 4,
-              mainAxisSpacing: 6,
-              crossAxisSpacing: 4,
-              children: [
-                StaggeredGridTile.count(
-                  crossAxisCellCount: 2,
-                  mainAxisCellCount: 2,
-                  child: Container(
-                    color: Colors.teal[200],
-                    child: Text(
-                      "Bumil bulan ini: ${statistic?.bumil.bumilThisMonth}",
-                    ),
+          }
+          return StaggeredGrid.count(
+            crossAxisCount: 4,
+            mainAxisSpacing: 6,
+            crossAxisSpacing: 4,
+            children: [
+              StaggeredGridTile.count(
+                crossAxisCellCount: 2,
+                mainAxisCellCount: 2,
+                child: Container(
+                  color: Colors.teal[200],
+                  child: Text(
+                    "Bumil bulan ini: ${statistic?.bumil.bumilThisMonth}",
                   ),
                 ),
-                StaggeredGridTile.count(
-                  crossAxisCellCount: 2,
-                  mainAxisCellCount: 1,
-                  child: InkWell(
-                    child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
-                      builder: (context, state) {
-                        return Container(
-                          color: state.connected
-                              ? Colors.lime[200]
-                              : Colors.red[300],
-                          child: Text("sync"),
-                        );
-                      },
-                    ),
-                    onTap: () {},
-                  ),
-                ),
-                StaggeredGridTile.count(
-                  crossAxisCellCount: 2,
-                  mainAxisCellCount: 1,
-                  child: InkWell(
-                    child: Container(
-                      color: Colors.pink[200],
-                      child: Text(
-                        "Total bumil: ${statistic?.bumil.bumilTotal}",
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.of(context).pushNamed(
-                        AppRouter.pilihBumil,
-                        arguments: {'state': 'bumil'},
+              ),
+              StaggeredGridTile.count(
+                crossAxisCellCount: 2,
+                mainAxisCellCount: 1,
+                child: InkWell(
+                  child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
+                    builder: (context, state) {
+                      return Container(
+                        color: state.connected
+                            ? Colors.lime[200]
+                            : Colors.red[300],
+                        child: Text("sync"),
                       );
                     },
                   ),
+                  onTap: () {},
                 ),
-                StaggeredGridTile.count(
-                  crossAxisCellCount: 4,
-                  mainAxisCellCount: 2,
+              ),
+              StaggeredGridTile.count(
+                crossAxisCellCount: 2,
+                mainAxisCellCount: 1,
+                child: InkWell(
                   child: Container(
-                    color: Colors.teal[200],
-                    child: Text("Total Customer"),
+                    color: Colors.pink[200],
+                    child: Text("Total bumil: ${statistic?.bumil.bumilTotal}"),
                   ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(
+                      AppRouter.pilihBumil,
+                      arguments: {'state': 'bumil'},
+                    );
+                  },
                 ),
-                StaggeredGridTile.count(
-                  crossAxisCellCount: 2,
-                  mainAxisCellCount: 1,
-                  child: Container(
-                    color: Colors.teal[200],
-                    child: Text(
-                      "K1 Murni: ${statistic?.lastMonthData?.k1Murni}",
-                    ),
-                  ),
+              ),
+              StaggeredGridTile.count(
+                crossAxisCellCount: 4,
+                mainAxisCellCount: 2,
+                child: Container(
+                  color: Colors.teal[200],
+                  child: Text("Total Customer"),
                 ),
-                StaggeredGridTile.count(
-                  crossAxisCellCount: 2,
-                  mainAxisCellCount: 2,
-                  child: Container(
-                    color: Colors.teal[200],
-                    child: Text("K1: ${statistic?.lastMonthData?.k1}"),
-                  ),
+              ),
+              StaggeredGridTile.count(
+                crossAxisCellCount: 2,
+                mainAxisCellCount: 1,
+                child: Container(
+                  color: Colors.teal[200],
+                  child: Text("K1 Murni: ${statistic?.lastMonthData?.k1Murni}"),
                 ),
-                StaggeredGridTile.count(
-                  crossAxisCellCount: 2,
-                  mainAxisCellCount: 1,
-                  child: Container(
-                    color: Colors.teal[200],
-                    child: Text(
-                      "K1 Akses: ${statistic?.lastMonthData?.k1Akses}",
-                    ),
-                  ),
+              ),
+              StaggeredGridTile.count(
+                crossAxisCellCount: 2,
+                mainAxisCellCount: 2,
+                child: Container(
+                  color: Colors.teal[200],
+                  child: Text("K1: ${statistic?.lastMonthData?.k1}"),
                 ),
-              ],
-            );
-          }
-          // default kalau masih initial
-          return const SizedBox.shrink();
+              ),
+              StaggeredGridTile.count(
+                crossAxisCellCount: 2,
+                mainAxisCellCount: 1,
+                child: Container(
+                  color: Colors.teal[200],
+                  child: Text("K1 Akses: ${statistic?.lastMonthData?.k1Akses}"),
+                ),
+              ),
+            ],
+          );
         },
       ),
     );

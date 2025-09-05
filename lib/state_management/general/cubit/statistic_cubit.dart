@@ -9,7 +9,7 @@ part 'statistic_state.dart';
 class StatisticCubit extends Cubit<StatisticState> {
   StatisticCubit() : super(StatisticInitial());
 
-  Future<void> fetchStatistics() async {
+  Future<void> fetchStatistic() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       emit(StatisticFailure('User belum login'));

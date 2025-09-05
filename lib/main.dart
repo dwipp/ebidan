@@ -3,6 +3,7 @@ import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/state_management/app_bloc_observer.dart';
 import 'package:ebidan/state_management/bloc_providers.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/state_management/general/cubit/statistic_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,6 +33,9 @@ void main() async {
   // check koneksi internet
   final connectivityCubit = ConnectivityCubit();
   connectivityCubit.checkNow();
+
+  final statisticCubit = StatisticCubit();
+  statisticCubit.fetchStatistic();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
