@@ -21,10 +21,10 @@ export const decrementBumilCount = onDocumentDeleted(
       if (!doc.exists) return;
 
       const data = doc.data();
-      let bumilThisMonth = data.bumilThisMonth || 0;
-      let bumilByMonth = data.bumilByMonth || {};
+      let bumilThisMonth = data.bumil_this_month || 0;
+      let bumilByMonth = data.bumil_by_month || {};
 
-      if (data.lastUpdatedMonth !== currentMonth) {
+      if (data.last_updated_month !== currentMonth) {
         bumilThisMonth = 0;
       }
 
@@ -33,10 +33,10 @@ export const decrementBumilCount = onDocumentDeleted(
       }
 
       t.update(statsRef, {
-        bumilTotal: Math.max((data.bumilTotal || 1) - 1, 0),
-        bumilThisMonth: Math.max(bumilThisMonth - 1, 0),
-        lastUpdatedMonth: currentMonth,
-        bumilByMonth: bumilByMonth
+        bumil_total: Math.max((data.bumil_total || 1) - 1, 0),
+        bumil_this_month: Math.max(bumilThisMonth - 1, 0),
+        last_updated_month: currentMonth,
+        bumil_by_month: bumilByMonth
       });
     });
   }

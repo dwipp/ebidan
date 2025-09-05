@@ -33,14 +33,14 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
     const currentMonth = getMonthString(new Date());
 
     for (const [idBidan, stats] of Object.entries(statsByBidan)) {
-      const bumilThisMonth = stats.bumilByMonth[currentMonth] || 0;
+      const bumil_this_month = stats.bumilByMonth[currentMonth] || 0;
       const ref = db.doc(`statistics/${idBidan}`);
 
       batch.set(ref, {
-        bumilTotal: stats.bumilTotal,
-        bumilThisMonth,
-        lastUpdatedMonth: currentMonth,
-        bumilByMonth: stats.bumilByMonth
+        bumil_total: stats.bumilTotal,
+        bumil_this_month,
+        last_updated_month: currentMonth,
+        bumil_by_month: stats.bumilByMonth
       });
     }
 

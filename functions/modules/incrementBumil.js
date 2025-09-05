@@ -21,29 +21,29 @@ export const incrementBumilCount = onDocumentCreated(
 
       if (!doc.exists) {
         t.set(statsRef, {
-          bumilTotal: 1,
-          bumilThisMonth: 1,
-          lastUpdatedMonth: currentMonth,
-          bumilByMonth: { [currentMonth]: 1 }
+          bumil_total: 1,
+          bumil_this_month: 1,
+          last_updated_month: currentMonth,
+          bumil_by_month: { [currentMonth]: 1 }
         });
         return;
       }
 
       const data = doc.data();
-      let bumilThisMonth = data.bumilThisMonth || 0;
-      let bumilByMonth = data.bumilByMonth || {};
+      let bumilThisMonth = data.bumil_this_month || 0;
+      let bumilByMonth = data.bumil_by_month || {};
 
-      if (data.lastUpdatedMonth !== currentMonth) {
+      if (data.last_updated_month !== currentMonth) {
         bumilThisMonth = 0;
       }
 
       bumilByMonth[currentMonth] = (bumilByMonth[currentMonth] || 0) + 1;
 
       t.update(statsRef, {
-        bumilTotal: (data.bumilTotal || 0) + 1,
-        bumilThisMonth: bumilThisMonth + 1,
-        lastUpdatedMonth: currentMonth,
-        bumilByMonth: bumilByMonth
+        bumil_total: (data.bumil_total || 0) + 1,
+        bumil_this_month: bumilThisMonth + 1,
+        last_updated_month: currentMonth,
+        bumil_by_month: bumilByMonth
       });
     });
   }
