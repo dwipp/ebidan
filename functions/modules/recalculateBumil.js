@@ -1,6 +1,5 @@
 // recalculate.js
 import { onRequest } from "firebase-functions/v2/https";
-import { getFirestore } from "firebase-admin/firestore";
 import { getMonthString } from "./helpers.js";
 import { db } from "./firebase.js";
 
@@ -18,29 +17,37 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
 
       const idBidan = data.id_bidan;
       if (!statsByBidan[idBidan]) {
-        statsByBidan[idBidan] = { bumilTotal: 0, bumilByMonth: {} };
+        statsByBidan[idBidan] = { bumil: { bumil_total: 0 }, by_month: {} };
       }
 
-      statsByBidan[idBidan].bumilTotal++;
+      // Increment total
+      statsByBidan[idBidan].bumil.bumil_total++;
+
+      // Tentukan bulan
       const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
       const monthKey = getMonthString(createdAt);
 
-      statsByBidan[idBidan].bumilByMonth[monthKey] =
-        (statsByBidan[idBidan].bumilByMonth[monthKey] || 0) + 1;
+      // Increment per bulan
+      if (!statsByBidan[idBidan].by_month[monthKey]) {
+        statsByBidan[idBidan].by_month[monthKey] = { bumil: 0 };
+      }
+      statsByBidan[idBidan].by_month[monthKey].bumil++;
     });
 
     const batch = db.batch();
     const currentMonth = getMonthString(new Date());
 
     for (const [idBidan, stats] of Object.entries(statsByBidan)) {
-      const bumil_this_month = stats.bumilByMonth[currentMonth] || 0;
+      const bumil_this_month = stats.by_month[currentMonth]?.bumil || 0;
       const ref = db.doc(`statistics/${idBidan}`);
 
       batch.set(ref, {
-        bumil_total: stats.bumilTotal,
-        bumil_this_month,
+        bumil: {
+          bumil_total: stats.bumil.bumil_total,
+          bumil_this_month
+        },
         last_updated_month: currentMonth,
-        bumil_by_month: stats.bumilByMonth
+        by_month: stats.by_month
       });
     }
 

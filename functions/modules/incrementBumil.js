@@ -1,6 +1,5 @@
 // increment.js
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
-import { getFirestore } from "firebase-admin/firestore";
 import { getMonthString } from "./helpers.js";
 import { db } from "./firebase.js";
 
@@ -21,29 +20,38 @@ export const incrementBumilCount = onDocumentCreated(
 
       if (!doc.exists) {
         t.set(statsRef, {
-          bumil_total: 1,
-          bumil_this_month: 1,
+          bumil: {
+            bumil_total: 1,
+            bumil_this_month: 1
+          },
           last_updated_month: currentMonth,
-          bumil_by_month: { [currentMonth]: 1 }
+          by_month: {
+            [currentMonth]: { bumil: 1 }
+          }
         });
         return;
       }
 
       const data = doc.data();
-      let bumilThisMonth = data.bumil_this_month || 0;
-      let bumilByMonth = data.bumil_by_month || {};
+      const bumil = data.bumil || { bumil_total: 0, bumil_this_month: 0 };
+      const byMonth = data.by_month || {};
 
-      if (data.last_updated_month !== currentMonth) {
-        bumilThisMonth = 0;
+      // Reset bulan baru
+      let bumilThisMonth = (data.last_updated_month === currentMonth ? bumil.bumil_this_month : 0);
+
+      // Increment by_month
+      if (!byMonth[currentMonth]) {
+        byMonth[currentMonth] = { bumil: 0 };
       }
-
-      bumilByMonth[currentMonth] = (bumilByMonth[currentMonth] || 0) + 1;
+      byMonth[currentMonth].bumil++;
 
       t.update(statsRef, {
-        bumil_total: (data.bumil_total || 0) + 1,
-        bumil_this_month: bumilThisMonth + 1,
+        bumil: {
+          bumil_total: bumil.bumil_total + 1,
+          bumil_this_month: bumilThisMonth + 1
+        },
         last_updated_month: currentMonth,
-        bumil_by_month: bumilByMonth
+        by_month: byMonth
       });
     });
   }
