@@ -4,6 +4,7 @@ import 'package:ebidan/state_management/bumil/cubit/submit_bumil_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/search_bumil_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
+import 'package:ebidan/state_management/general/cubit/statistic_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/submit_kehamilan_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/get_kehamilan_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit.dart';
@@ -72,6 +73,7 @@ class BlocProviders {
       BlocProvider<GetKunjunganCubit>(create: (context) => GetKunjunganCubit()),
       BlocProvider<LoginCubit>(create: (context) => LoginCubit()),
       BlocProvider<RegisterCubit>(create: (context) => RegisterCubit()),
+      BlocProvider<StatisticCubit>(create: (context) => StatisticCubit()),
     ];
   }
 }
