@@ -54,6 +54,9 @@ class _KunjunganState extends State<KunjunganScreen> {
     super.didChangeDependencies();
     bumil = context.watch<SelectedBumilCubit>().state;
     ukController.text = _hitungUsiaKehamilan(hpht: bumil!.latestKehamilanHpht!);
+    if (widget.firstTime) {
+      _selectedStatusKunjungan = 'K1';
+    }
   }
 
   Future<void> _saveData() async {
