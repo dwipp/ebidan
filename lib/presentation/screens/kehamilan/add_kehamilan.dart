@@ -58,6 +58,9 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   String? _selectedTT;
   final List<String> _ttList = ['TT0', 'TT1', 'TT2', 'TT3', 'TT4', 'TT5'];
 
+  bool? _selectedKontrolDokter;
+  final List<String> _kontrolDokterList = ['Ya', 'Tidak'];
+
   Bumil? bumil;
 
   @override
@@ -161,6 +164,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
       hpht: _hpht,
       htp: _htp,
       tglPeriksaUsg: _tglPeriksaUsg,
+      kontrolDokter: _selectedKontrolDokter ?? false,
       createdAt: _createdAt,
       idBumil: bumil?.idBumil,
       resti: collectingResti(),
@@ -378,6 +382,21 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 onDateSelected: (date) {
                   setState(() => _tglPeriksaUsg = date);
                 },
+              ),
+              const SizedBox(height: 12),
+              DropdownField(
+                label: 'Kontrol Dokter',
+                icon: Icons.health_and_safety,
+                items: _kontrolDokterList,
+                value: _selectedKontrolDokter == null
+                    ? null
+                    : (_selectedKontrolDokter! ? 'Ya' : 'Tidak'),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedKontrolDokter = newValue?.toLowerCase() == "ya";
+                  });
+                },
+                validator: (val) => val == null ? 'Wajib dipilih' : null,
               ),
               const SizedBox(height: 12),
               DatePickerFormField(

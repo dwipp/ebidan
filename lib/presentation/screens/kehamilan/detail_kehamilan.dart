@@ -114,6 +114,10 @@ class DetailKehamilanScreen extends StatelessWidget {
                 _formatDate(kehamilan.tglPeriksaUsg),
               ),
               Utils.generateRowLabelValue(
+                "Kontrol Dokter",
+                kehamilan.kontrolDokter ? 'Ya' : 'Tidak',
+              ),
+              Utils.generateRowLabelValue(
                 "Riwayat Penyakit",
                 kehamilan.riwayatPenyakit,
               ),

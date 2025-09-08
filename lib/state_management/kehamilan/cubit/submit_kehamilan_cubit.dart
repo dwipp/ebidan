@@ -47,6 +47,7 @@ class SubmitKehamilanCubit extends Cubit<SubmitKehamilanState> {
         "hpht": data.hpht,
         "htp": data.htp,
         "tgl_periksa_usg": data.tglPeriksaUsg,
+        'kontrol_dokter': data.kontrolDokter,
         "id_bidan": user.uid,
         "created_at": data.createdAt,
         "id_bumil": data.idBumil,

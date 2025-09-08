@@ -22,6 +22,7 @@ class Kehamilan {
   final String? statusTt;
   final String? tb;
   final DateTime? tglPeriksaUsg;
+  final bool kontrolDokter;
   final bool kunjungan;
   List<Persalinan>? persalinan;
 
@@ -46,6 +47,7 @@ class Kehamilan {
     this.statusTt,
     this.tb,
     this.tglPeriksaUsg,
+    this.kontrolDokter = false,
     this.kunjungan = false,
     this.persalinan,
   });
@@ -73,6 +75,7 @@ class Kehamilan {
       statusTt: json['status_tt'],
       tb: json['tb'],
       tglPeriksaUsg: (json['tgl_periksa_usg'] as Timestamp?)?.toDate(),
+      kontrolDokter: json['kontrol_dokter'] ?? false,
       kunjungan: json['kunjungan'] ?? false,
       persalinan: (json['persalinan'] as List?)
           ?.map((e) => Persalinan.fromMap(e as Map<String, dynamic>))
@@ -107,6 +110,7 @@ class Kehamilan {
       tglPeriksaUsg: json['tgl_periksa_usg'] != null
           ? DateTime.parse(json['tgl_periksa_usg'])
           : null,
+      kontrolDokter: json['kontrol_dokter'] ?? false,
       kunjungan: json['kunjungan'] ?? false,
       persalinan: (json['persalinan'] as List?)
           ?.map((e) => Persalinan.fromMap(e as Map<String, dynamic>))
@@ -136,6 +140,7 @@ class Kehamilan {
       'status_tt': statusTt,
       'tb': tb,
       'tgl_periksa_usg': tglPeriksaUsg?.toIso8601String(),
+      'kontrol_dokter': kontrolDokter,
       'kunjungan': kunjungan,
       'persalinan': persalinan?.map((e) => e.toMap()).toList(),
     }..removeWhere((key, value) => value == null);
@@ -164,6 +169,7 @@ class Kehamilan {
       'status_tt': statusTt,
       'tb': tb,
       'tgl_periksa_usg': tglPeriksaUsg?.toIso8601String(),
+      'kontrol_dokter': kontrolDokter,
       'kunjungan': kunjungan,
       'persalinan': persalinan?.map((e) => e.toMap()).toList(),
     }..removeWhere((key, value) => value == null);
@@ -190,8 +196,9 @@ class Kehamilan {
       'status_tt': statusTt,
       'tb': tb,
       'tgl_periksa_usg': tglPeriksaUsg,
+      'kontrol_dokter': kontrolDokter,
       'kunjungan': kunjungan,
-      'persalinan': persalinan?.map((e) => e.toMap()).toList(),
+      'persalinan': persalinan?.map((e) => e.toFirestore()).toList(),
     }..removeWhere((key, value) => value == null);
   }
 }

@@ -100,7 +100,7 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
           .doc(currentKehamilan.id)
           .update({
             'persalinan': newPersalinans
-                .map((persalinan) => persalinan.toMap())
+                .map((persalinan) => persalinan.toFirestore())
                 .toList(),
           });
 
@@ -183,7 +183,7 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
       'riwayat': riwayatList.map((e) => e.toMap()).toList(),
       'latest_kehamilan_persalinan': true,
       'latest_kehamilan.persalinan': persalinanList
-          .map((e) => e.toFirestore())
+          .map((persalinan) => persalinan.toFirestore())
           .toList(),
     });
   }
