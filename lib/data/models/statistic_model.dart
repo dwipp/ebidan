@@ -39,25 +39,53 @@ class Statistic {
 }
 
 class BumilStats {
-  final int bumilThisMonth;
-  final int bumilTotal;
+  final int allBumilCount;
 
-  BumilStats({required this.bumilThisMonth, required this.bumilTotal});
+  BumilStats({required this.allBumilCount});
 
   factory BumilStats.fromMap(Map<String, dynamic> map) {
-    return BumilStats(
-      bumilThisMonth: map['bumil_this_month'] ?? 0,
-      bumilTotal: map['bumil_total'] ?? 0,
-    );
+    return BumilStats(allBumilCount: map['all_bumil_count'] ?? 0);
   }
 
   Map<String, dynamic> toMap() {
-    return {'bumil_this_month': bumilThisMonth, 'bumil_total': bumilTotal};
+    return {'all_bumil_count': allBumilCount};
   }
 }
 
 class ByMonthStats {
-  final int bumil;
+  final BumilByMonth bumil;
+  final KunjunganByMonth kunjungan;
+
+  ByMonthStats({required this.bumil, required this.kunjungan});
+
+  factory ByMonthStats.fromMap(Map<String, dynamic> map) {
+    return ByMonthStats(
+      bumil: BumilByMonth.fromMap(map['bumil']),
+      kunjungan: KunjunganByMonth.fromMap(map['kunjungan']),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'bumil': bumil.toMap(), 'kunjungan': kunjungan.toMap()};
+  }
+}
+
+class BumilByMonth {
+  final int total;
+
+  BumilByMonth({required this.total});
+
+  factory BumilByMonth.fromMap(Map<String, dynamic>? map) {
+    if (map == null) return BumilByMonth(total: 0);
+    return BumilByMonth(total: map['total'] ?? 0);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'total': total};
+  }
+}
+
+class KunjunganByMonth {
   final int k1;
   final int k1Akses;
   final int k1Murni;
@@ -65,8 +93,7 @@ class ByMonthStats {
   final int k5;
   final int k6;
 
-  ByMonthStats({
-    required this.bumil,
+  KunjunganByMonth({
     required this.k1,
     required this.k1Akses,
     required this.k1Murni,
@@ -75,9 +102,18 @@ class ByMonthStats {
     required this.k6,
   });
 
-  factory ByMonthStats.fromMap(Map<String, dynamic> map) {
-    return ByMonthStats(
-      bumil: map['bumil'] ?? 0,
+  factory KunjunganByMonth.fromMap(Map<String, dynamic>? map) {
+    if (map == null) {
+      return KunjunganByMonth(
+        k1: 0,
+        k1Akses: 0,
+        k1Murni: 0,
+        k4: 0,
+        k5: 0,
+        k6: 0,
+      );
+    }
+    return KunjunganByMonth(
       k1: map['k1'] ?? 0,
       k1Akses: map['k1_akses'] ?? 0,
       k1Murni: map['k1_murni'] ?? 0,
@@ -89,7 +125,6 @@ class ByMonthStats {
 
   Map<String, dynamic> toMap() {
     return {
-      'bumil': bumil,
       'k1': k1,
       'k1_akses': k1Akses,
       'k1_murni': k1Murni,

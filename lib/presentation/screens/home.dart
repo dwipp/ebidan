@@ -67,7 +67,7 @@ class HomeScreen extends StatelessWidget {
                 child: Container(
                   color: Colors.teal[200],
                   child: Text(
-                    "Bumil bulan ini: ${statistic?.bumil.bumilThisMonth}",
+                    "Bumil bulan ini: ${statistic?.lastMonthData?.bumil.total}",
                   ),
                 ),
               ),
@@ -94,7 +94,9 @@ class HomeScreen extends StatelessWidget {
                 child: InkWell(
                   child: Container(
                     color: Colors.pink[200],
-                    child: Text("Total bumil: ${statistic?.bumil.bumilTotal}"),
+                    child: Text(
+                      "Total semua bumil: ${statistic?.bumil.allBumilCount}",
+                    ),
                   ),
                   onTap: () {
                     Navigator.of(context).pushNamed(
@@ -117,7 +119,9 @@ class HomeScreen extends StatelessWidget {
                 mainAxisCellCount: 1,
                 child: Container(
                   color: Colors.teal[200],
-                  child: Text("K1 Murni: ${statistic?.lastMonthData?.k1Murni}"),
+                  child: Text(
+                    "K1 Murni: ${statistic?.lastMonthData?.kunjungan.k1Murni}",
+                  ),
                 ),
               ),
               StaggeredGridTile.count(
@@ -125,7 +129,7 @@ class HomeScreen extends StatelessWidget {
                 mainAxisCellCount: 2,
                 child: Container(
                   color: Colors.teal[200],
-                  child: Text("K1: ${statistic?.lastMonthData?.k1}"),
+                  child: Text("K1: ${statistic?.lastMonthData?.kunjungan.k1}"),
                 ),
               ),
               StaggeredGridTile.count(
@@ -133,7 +137,9 @@ class HomeScreen extends StatelessWidget {
                 mainAxisCellCount: 1,
                 child: Container(
                   color: Colors.teal[200],
-                  child: Text("K1 Akses: ${statistic?.lastMonthData?.k1Akses}"),
+                  child: Text(
+                    "K1 Akses: ${statistic?.lastMonthData?.kunjungan.k1Akses}",
+                  ),
                 ),
               ),
             ],
