@@ -23,18 +23,22 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
       const monthKey = getMonthString(createdAt);
 
       if (!statsByBidan[idBidan].by_month[monthKey]) {
-        statsByBidan[idBidan].by_month[monthKey] = { k1:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0 };
+        statsByBidan[idBidan].by_month[monthKey] = { 
+          kunjungan: { k1:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0 } 
+        };
       }
+
+      const kunjungan = statsByBidan[idBidan].by_month[monthKey].kunjungan;
 
       // Hitung sesuai status
       if (status === "k1") {
-        statsByBidan[idBidan].by_month[monthKey].k1++;
-        if (uk <= 12) statsByBidan[idBidan].by_month[monthKey].k1_murni++;
-        else statsByBidan[idBidan].by_month[monthKey].k1_akses++;
+        kunjungan.k1++;
+        if (uk <= 12) kunjungan.k1_murni++;
+        else kunjungan.k1_akses++;
       }
-      if (status === "k4") statsByBidan[idBidan].by_month[monthKey].k4++;
-      if (status === "k5") statsByBidan[idBidan].by_month[monthKey].k5++;
-      if (status === "k6") statsByBidan[idBidan].by_month[monthKey].k6++;
+      if (status === "k4") kunjungan.k4++;
+      if (status === "k5") kunjungan.k5++;
+      if (status === "k6") kunjungan.k6++;
     });
 
     const batch = db.batch();
@@ -47,13 +51,19 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
       const byMonth = existing.by_month || {};
 
       for (const [month, counts] of Object.entries(stats.by_month)) {
-        if (!byMonth[month]) byMonth[month] = {};
-        byMonth[month] = { ...byMonth[month], ...counts };
+        if (!byMonth[month]) byMonth[month] = { kunjungan: { k1:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0 } };
+
+        // gabungkan hasil baru
+        byMonth[month].kunjungan = {
+          ...byMonth[month].kunjungan,
+          ...counts.kunjungan
+        };
       }
 
       batch.set(ref, { 
         ...existing, 
-        by_month: byMonth 
+        by_month: byMonth,
+        last_updated_month: currentMonth,
       }, { merge: true });
     }
 

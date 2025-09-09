@@ -24,19 +24,35 @@ export const decrementKunjunganCount = onDocumentDeleted(
       const existing = doc.data();
       const byMonth = existing.by_month || {};
 
-      if (!byMonth[currentMonth]) byMonth[currentMonth] = { k1:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0 };
-
-      // Update sesuai status
-      if (status === "k1") {
-        byMonth[currentMonth].k1 = Math.max(byMonth[currentMonth].k1 - 1, 0);
-        if (uk <= 12) byMonth[currentMonth].k1_murni = Math.max(byMonth[currentMonth].k1_murni - 1, 0);
-        else byMonth[currentMonth].k1_akses = Math.max(byMonth[currentMonth].k1_akses - 1, 0);
+      // pastikan bulan dan objek kunjungan ada
+      if (!byMonth[currentMonth]) {
+        byMonth[currentMonth] = { 
+          kunjungan: { k1:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0 } 
+        };
+      } else if (!byMonth[currentMonth].kunjungan) {
+        byMonth[currentMonth].kunjungan = { k1:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0 };
       }
-      if (status === "k4") byMonth[currentMonth].k4 = Math.max(byMonth[currentMonth].k4 - 1, 0);
-      if (status === "k5") byMonth[currentMonth].k5 = Math.max(byMonth[currentMonth].k5 - 1, 0);
-      if (status === "k6") byMonth[currentMonth].k6 = Math.max(byMonth[currentMonth].k6 - 1, 0);
 
-      t.set(statsRef, { ...existing, by_month: byMonth }, { merge: true });
+      const kunjungan = byMonth[currentMonth].kunjungan;
+
+      // Update sesuai status dengan proteksi agar tidak minus
+      if (status === "k1") {
+        kunjungan.k1 = Math.max(kunjungan.k1 - 1, 0);
+        if (uk <= 12) {
+          kunjungan.k1_murni = Math.max(kunjungan.k1_murni - 1, 0);
+        } else {
+          kunjungan.k1_akses = Math.max(kunjungan.k1_akses - 1, 0);
+        }
+      }
+      if (status === "k4") kunjungan.k4 = Math.max(kunjungan.k4 - 1, 0);
+      if (status === "k5") kunjungan.k5 = Math.max(kunjungan.k5 - 1, 0);
+      if (status === "k6") kunjungan.k6 = Math.max(kunjungan.k6 - 1, 0);
+
+      t.set(statsRef, { 
+        ...existing, 
+        by_month: byMonth,
+        last_updated_month: currentMonth
+      }, { merge: true });
     });
   }
 );
