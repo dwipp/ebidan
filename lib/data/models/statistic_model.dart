@@ -86,6 +86,7 @@ class BumilByMonth {
 }
 
 class KunjunganByMonth {
+  final int total;
   final int k1;
   final int k1Akses;
   final int k1Murni;
@@ -94,6 +95,7 @@ class KunjunganByMonth {
   final int k6;
 
   KunjunganByMonth({
+    required this.total,
     required this.k1,
     required this.k1Akses,
     required this.k1Murni,
@@ -105,6 +107,7 @@ class KunjunganByMonth {
   factory KunjunganByMonth.fromMap(Map<String, dynamic>? map) {
     if (map == null) {
       return KunjunganByMonth(
+        total: 0,
         k1: 0,
         k1Akses: 0,
         k1Murni: 0,
@@ -114,6 +117,7 @@ class KunjunganByMonth {
       );
     }
     return KunjunganByMonth(
+      total: map['total'] ?? 0,
       k1: map['k1'] ?? 0,
       k1Akses: map['k1_akses'] ?? 0,
       k1Murni: map['k1_murni'] ?? 0,
@@ -125,6 +129,7 @@ class KunjunganByMonth {
 
   Map<String, dynamic> toMap() {
     return {
+      'total': total,
       'k1': k1,
       'k1_akses': k1Akses,
       'k1_murni': k1Murni,

@@ -7,15 +7,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 part 'statistic_state.dart';
 
 class StatisticCubit extends Cubit<StatisticState> {
-  StatisticCubit() : super(StatisticInitial());
+  StatisticCubit() : super(StatisticInitial(statistic: null));
 
   Future<void> fetchStatistic() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      emit(StatisticFailure('User belum login'));
+      emit(StatisticFailure(message: 'User belum login', statistic: null));
       return;
     }
-    emit(StatisticLoading());
+    emit(StatisticLoading(statistic: null));
 
     try {
       final doc = await FirebaseFirestore.instance
@@ -30,7 +30,7 @@ class StatisticCubit extends Cubit<StatisticState> {
         emit(StatisticSuccess(statistic: null));
       }
     } catch (e) {
-      emit(StatisticFailure(e.toString()));
+      emit(StatisticFailure(message: e.toString(), statistic: null));
     }
   }
 }

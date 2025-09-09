@@ -64,11 +64,16 @@ class HomeScreen extends StatelessWidget {
               StaggeredGridTile.count(
                 crossAxisCellCount: 2,
                 mainAxisCellCount: 2,
-                child: Container(
-                  color: Colors.teal[200],
-                  child: Text(
-                    "Bumil bulan ini: ${statistic?.lastMonthData?.bumil.total}",
+                child: InkWell(
+                  child: Container(
+                    color: Colors.teal[200],
+                    child: Text(
+                      "Bumil bulan ini: ${statistic?.lastMonthData?.bumil.total}",
+                    ),
                   ),
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRouter.statistics);
+                  },
                 ),
               ),
               StaggeredGridTile.count(

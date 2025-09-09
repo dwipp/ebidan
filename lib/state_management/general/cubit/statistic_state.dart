@@ -1,21 +1,27 @@
 part of 'statistic_cubit.dart';
 
 sealed class StatisticState extends Equatable {
-  const StatisticState();
+  final Statistic? statistic;
+  const StatisticState({required this.statistic});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [statistic];
 }
 
-final class StatisticInitial extends StatisticState {}
+final class StatisticInitial extends StatisticState {
+  const StatisticInitial({required super.statistic});
+}
 
-class StatisticLoading extends StatisticState {}
+class StatisticLoading extends StatisticState {
+  const StatisticLoading({required super.statistic});
+}
 
-class StatisticEmpty extends StatisticState {}
+class StatisticEmpty extends StatisticState {
+  const StatisticEmpty({required super.statistic});
+}
 
 class StatisticSuccess extends StatisticState {
-  final Statistic? statistic;
-  const StatisticSuccess({required this.statistic});
+  const StatisticSuccess({required super.statistic});
 
   @override
   List<Object?> get props => [statistic];
@@ -24,7 +30,7 @@ class StatisticSuccess extends StatisticState {
 class StatisticFailure extends StatisticState {
   final String message;
 
-  const StatisticFailure(this.message);
+  const StatisticFailure({required this.message, required super.statistic});
 
   @override
   List<Object?> get props => [message];

@@ -45,6 +45,16 @@ class Utils {
     return DateFormat("d MMMM yyyy, HH:mm", "id_ID").format(date);
   }
 
+  static String formattedYearMonth(String key) {
+    try {
+      // key format: yyyy-MM
+      final date = DateFormat('yyyy-MM').parse(key);
+      return DateFormat('MMMM yyyy', 'id_ID').format(date);
+    } catch (e) {
+      return key; // fallback kalau parsing gagal
+    }
+  }
+
   static Widget generateRowLabelValue(
     String label,
     String? value, {

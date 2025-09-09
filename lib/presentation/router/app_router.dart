@@ -23,6 +23,8 @@ import 'package:ebidan/presentation/screens/bumil/pilih_bumil.dart';
 import 'package:ebidan/presentation/screens/kunjungan/review_kunjungan.dart';
 import 'package:ebidan/presentation/screens/auth/login.dart';
 import 'package:ebidan/presentation/screens/auth/register.dart';
+import 'package:ebidan/presentation/screens/statistics/kunjungan_stats.dart';
+import 'package:ebidan/presentation/screens/statistics/statistics.dart';
 import 'package:flutter/material.dart';
 import 'package:ebidan/common/exceptions/route_exception.dart';
 import 'package:ebidan/presentation/screens/bumil/add_bumil.dart';
@@ -31,29 +33,37 @@ class AppRouter {
   static const String homepage = '/';
   static const String login = '/login';
   static const String register = '/register';
+
   static const String addBumil = '/addbumil';
   static const String pilihBumil = '/pilihbumil';
   static const String editBumil = '/editbumil';
   static const String dataBumil = '/databumil';
   static const String detailBumil = '/detailbumil';
+
   static const String addKehamilan = '/addkehamilan';
   static const String editKehamilan = '/editkehamilan';
   static const String detailKehamilan = '/detailkehamilan';
   static const String listKehamilan = '/listkehamilan';
   static const String updateKehamilan = '/updatekehamilan';
+
   static const String kunjungan = '/kunjungan';
   static const String editKunjungan = '/editkunjungan';
   static const String reviewKunjungan = '/reviewkunjungan';
   static const String listKunjungan = '/listkunjungan';
   static const String detailKunjungan = '/detailkunjungan';
+
   static const String addRiwayat = '/addriwayat';
   static const String listRiwayat = '/listriwayat';
   static const String detailRiwayat = '/detailriwayat';
   static const String editRiwayat = '/editriwayat';
+
   static const String addPersalinan = '/addpersalinan';
   static const String detailPersalinan = '/detailpersalinan';
   static const String listPersalinan = '/listpersalinan';
   static const String editPersalinan = '/editpersalinan';
+
+  static const String statistics = '/statistics';
+  static const String kunjunganStats = '/kunjunganstats';
 
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
@@ -141,6 +151,10 @@ class AppRouter {
         );
       case editPersalinan:
         return MaterialPageRoute(builder: (_) => EditPersalinanScreen());
+      case statistics:
+        return MaterialPageRoute(builder: (_) => StatisticsScreen());
+      case kunjunganStats:
+        return MaterialPageRoute(builder: (_) => KunjunganStatsScreen());
       default:
         throw const RouteException('Route not found!');
     }
