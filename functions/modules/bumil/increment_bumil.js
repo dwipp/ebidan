@@ -19,25 +19,35 @@ export const incrementBumilCount = onDocumentCreated(
 
       if (!doc.exists) {
         t.set(statsRef, {
-          bumil: { bumil_total: 1, bumil_this_month: 1 },
+          bumil: { 
+            all_bumil_count: 1
+          },
           last_updated_month: currentMonth,
-          by_month: { [currentMonth]: { bumil: 1 } }
-        }, { merge: true });
+          by_month: { 
+            [currentMonth]: { 
+              bumil: { total: 1 } 
+            } 
+          }
+        });
         return;
       }
 
       const data = doc.data();
-      const bumil = data.bumil || { bumil_total: 0, bumil_this_month: 0 };
+      const bumil = data.bumil || { all_bumil_count: 0 };
       const byMonth = data.by_month || {};
 
-      const bumilThisMonth = data.last_updated_month === currentMonth ? bumil.bumil_this_month : 0;
+      if (!byMonth[currentMonth]) {
+        byMonth[currentMonth] = { bumil: { total: 0 } };
+      }
+      byMonth[currentMonth].bumil.total++;
 
-      if (!byMonth[currentMonth]) byMonth[currentMonth] = { bumil: 0 };
-      byMonth[currentMonth].bumil++;
+      const newAllCount = (bumil.all_bumil_count || 0) + 1;
 
       t.set(statsRef, {
         ...data,
-        bumil: { bumil_total: bumil.bumil_total + 1, bumil_this_month: bumilThisMonth + 1 },
+        bumil: { 
+          all_bumil_count: newAllCount
+        },
         last_updated_month: currentMonth,
         by_month: byMonth
       }, { merge: true });

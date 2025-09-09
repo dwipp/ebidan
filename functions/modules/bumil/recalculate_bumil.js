@@ -14,15 +14,26 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       if (!data.id_bidan) return;
 
       const idBidan = data.id_bidan;
-      if (!statsByBidan[idBidan]) statsByBidan[idBidan] = { bumil: { bumil_total: 0 }, by_month: {} };
+      if (!statsByBidan[idBidan]) {
+        statsByBidan[idBidan] = { 
+          bumil: { all_bumil_count: 0 }, 
+          by_month: {} 
+        };
+      }
 
-      statsByBidan[idBidan].bumil.bumil_total++;
+      // increment total semua bumil
+      statsByBidan[idBidan].bumil.all_bumil_count++;
 
       const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
       const monthKey = getMonthString(createdAt);
 
-      if (!statsByBidan[idBidan].by_month[monthKey]) statsByBidan[idBidan].by_month[monthKey] = { bumil: 0 };
-      statsByBidan[idBidan].by_month[monthKey].bumil++;
+      // inisialisasi by_month[monthKey] dengan object
+      if (!statsByBidan[idBidan].by_month[monthKey]) {
+        statsByBidan[idBidan].by_month[monthKey] = { bumil: { total: 0 } };
+      }
+
+      // increment total per bulan
+      statsByBidan[idBidan].by_month[monthKey].bumil.total++;
     });
 
     const batch = db.batch();
@@ -35,15 +46,15 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       const byMonth = existing.by_month || {};
 
       for (const [month, counts] of Object.entries(stats.by_month)) {
-        if (!byMonth[month]) byMonth[month] = { bumil: 0 };
-        byMonth[month].bumil = counts.bumil;
+        if (!byMonth[month]) byMonth[month] = { bumil: { total: 0 } };
+        byMonth[month].bumil.total = counts.bumil.total;
       }
-
-      const bumil_this_month = byMonth[currentMonth]?.bumil || 0;
 
       batch.set(ref, {
         ...existing,
-        bumil: { bumil_total: stats.bumil.bumil_total, bumil_this_month },
+        bumil: { 
+          all_bumil_count: stats.bumil.all_bumil_count
+        },
         last_updated_month: currentMonth,
         by_month: byMonth
       }, { merge: true });
