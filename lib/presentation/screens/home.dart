@@ -136,24 +136,29 @@ class HomeScreen extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  _buildStatItem(
-                                    icon: Icons.groups,
-                                    iconColor: Colors.white,
-                                    label: "Total Ibu Hamil",
-                                    value:
-                                        "${statistic?.bumil.allBumilCount ?? 0}",
-                                    bgColor: Colors.pink.shade400.withOpacity(
-                                      0.3,
+                                  Expanded(
+                                    child: _buildStatItem(
+                                      icon: Icons.groups,
+                                      iconColor: Colors.white,
+                                      label: "Total Ibu Hamil",
+                                      value:
+                                          "${statistic?.bumil.allBumilCount ?? 0}",
+                                      bgColor: Colors.pink.shade400.withOpacity(
+                                        0.3,
+                                      ),
                                     ),
                                   ),
-                                  _buildStatItem(
-                                    icon: Icons.pregnant_woman,
-                                    iconColor: Colors.white,
-                                    label: "Bulan Ini",
-                                    value:
-                                        "${statistic?.lastMonthData?.bumil.total ?? 0}",
-                                    bgColor: Colors.teal.shade400.withOpacity(
-                                      0.3,
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: _buildStatItem(
+                                      icon: Icons.pregnant_woman,
+                                      iconColor: Colors.white,
+                                      label: "Bulan Ini",
+                                      value:
+                                          "${statistic?.lastMonthData?.bumil.total ?? 0}",
+                                      bgColor: Colors.teal.shade400.withOpacity(
+                                        0.3,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -200,7 +205,7 @@ class HomeScreen extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: const [
                                   Text(
-                                    "Statistik Kunjungan",
+                                    "Statistik",
                                     style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,
@@ -214,7 +219,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 20),
                               K1Chart(
                                 k1Murni:
                                     statistic
@@ -254,7 +259,6 @@ class HomeScreen extends StatelessWidget {
     required Color bgColor,
   }) {
     return Container(
-      width: 120,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: bgColor,
