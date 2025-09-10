@@ -27,7 +27,7 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
       const monthKey = getMonthString(createdAt);
 
-      // inisialisasi by_month[monthKey] dengan object
+      // pastikan by_month[monthKey] ada
       if (!statsByBidan[idBidan].by_month[monthKey]) {
         statsByBidan[idBidan].by_month[monthKey] = { bumil: { total: 0 } };
       }
@@ -46,7 +46,10 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       const byMonth = existing.by_month || {};
 
       for (const [month, counts] of Object.entries(stats.by_month)) {
-        if (!byMonth[month]) byMonth[month] = { bumil: { total: 0 } };
+        // pastikan struktur byMonth[month] dan bumil selalu ada
+        if (!byMonth[month]) byMonth[month] = {};
+        if (!byMonth[month].bumil) byMonth[month].bumil = { total: 0 };
+
         byMonth[month].bumil.total = counts.bumil.total;
       }
 

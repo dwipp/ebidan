@@ -22,10 +22,12 @@ export const decrementBumilCount = onDocumentDeleted(
       const bumil = data.bumil || { all_bumil_count: 0 };
       const byMonth = data.by_month || {};
 
-      if (!byMonth[currentMonth]) {
-        byMonth[currentMonth] = { bumil: { total: 0 } };
-      }
-      byMonth[currentMonth].bumil.total = Math.max(byMonth[currentMonth].bumil.total - 1, 0);
+      // pastikan struktur ada
+      if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
+      if (!byMonth[currentMonth].bumil) byMonth[currentMonth].bumil = { total: 0 };
+
+      // decrement, tapi tidak boleh negatif
+      byMonth[currentMonth].bumil.total = Math.max((byMonth[currentMonth].bumil.total || 0) - 1, 0);
 
       const newAllCount = Math.max((bumil.all_bumil_count || 0) - 1, 0);
 
