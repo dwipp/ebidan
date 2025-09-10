@@ -1,6 +1,6 @@
-import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
 import 'package:ebidan/presentation/widgets/k1_chart.dart';
+import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
@@ -11,7 +11,6 @@ import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit
 import 'package:ebidan/state_management/persalinan/cubit/selected_persalinan_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -32,11 +31,23 @@ class HomeScreen extends StatelessWidget {
         title: 'eBidan',
         hideBackButton: true,
         actions: [
+          BlocBuilder<ConnectivityCubit, ConnectivityState>(
+            builder: (context, state) {
+              final connected = state.connected;
+              return Row(
+                children: [
+                  Icon(
+                    connected ? Icons.wifi : Icons.wifi_off,
+                    color: connected ? Colors.green : Colors.red,
+                  ),
+                  const SizedBox(width: 12),
+                ],
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await _onLogoutPressed(context);
-            },
+            onPressed: () => LogoutHandler.handleLogout(context),
           ),
         ],
       ),
@@ -66,52 +77,102 @@ class HomeScreen extends StatelessWidget {
 
                 return StaggeredGrid.count(
                   crossAxisCount: 4,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  // pakai .fit untuk tile yang butuh tinggi dinamis
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
                   children: [
-                    StaggeredGridTile.fit(
-                      crossAxisCellCount: 3,
-                      child: _buildInfoTile(
-                        title: "Bumil Bulan Ini",
-                        value: "${statistic?.lastMonthData?.bumil.total ?? 0}",
-                        color: Colors.teal[200]!,
-                        icon: Icons.pregnant_woman,
-                      ),
-                    ),
-                    StaggeredGridTile.fit(
-                      crossAxisCellCount: 1,
-                      child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
-                        builder: (context, state) {
-                          return _buildInfoTile(
-                            title: state.connected ? "Online" : "Offline",
-                            value: "",
-                            color: state.connected
-                                ? Colors.green[300]!
-                                : Colors.red[300]!,
-                            icon: Icons.wifi,
-                          );
-                        },
-                      ),
-                    ),
-
-                    StaggeredGridTile.fit(
-                      crossAxisCellCount: 3,
-                      child: _buildInfoTile(
-                        title: "Total Bumil",
-                        value: "${statistic?.bumil.allBumilCount ?? 0}",
-                        color: Colors.pink[200]!,
-                        icon: Icons.groups,
-                      ),
-                    ),
-
-                    // Menu 'Pilih Bumil' - clickable, jelas terlihat
+                    // Card Bumil (Total + Bulan Ini)
                     StaggeredGridTile.fit(
                       crossAxisCellCount: 4,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: () => Navigator.of(context).pushNamed(
+                          AppRouter.pilihBumil,
+                          arguments: {'state': 'bumil'},
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.pink.shade200,
+                                Colors.pink.shade100,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.pink.shade100.withOpacity(0.4),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Bumil",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  _buildStatItem(
+                                    icon: Icons.groups,
+                                    iconColor: Colors.white,
+                                    label: "Total Bumil",
+                                    value:
+                                        "${statistic?.bumil.allBumilCount ?? 0}",
+                                    bgColor: Colors.pink.shade400.withOpacity(
+                                      0.3,
+                                    ),
+                                  ),
+                                  _buildStatItem(
+                                    icon: Icons.pregnant_woman,
+                                    iconColor: Colors.white,
+                                    label: "Bumil Bulan Ini",
+                                    value:
+                                        "${statistic?.lastMonthData?.bumil.total ?? 0}",
+                                    bgColor: Colors.teal.shade400.withOpacity(
+                                      0.3,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Statistik Menu
+                    StaggeredGridTile.fit(
+                      crossAxisCellCount: 2,
+                      child: _buildMenuTile(
+                        title: "Statistik",
+                        subtitle: "Lihat Detail",
+                        color: Colors.blue.shade200,
+                        icon: Icons.bar_chart,
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRouter.statistics),
+                      ),
+                    ),
+
+                    // Pilih Bumil Menu
+                    StaggeredGridTile.fit(
+                      crossAxisCellCount: 2,
                       child: _buildMenuTile(
                         title: "Pilih Bumil",
                         subtitle: "Lihat Data",
-                        color: Colors.purple[200]!,
+                        color: Colors.purple.shade200,
                         icon: Icons.assignment_ind,
                         onTap: () => Navigator.of(context).pushNamed(
                           AppRouter.pilihBumil,
@@ -120,26 +181,21 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // Statistik sebagai full row menu
+                    // K1 Chart
                     StaggeredGridTile.fit(
                       crossAxisCellCount: 4,
-                      child: _buildMenuTile(
-                        title: "Statistik",
-                        subtitle: "Lihat Detail",
-                        color: Colors.blue[200]!,
-                        icon: Icons.bar_chart,
-                        onTap: () =>
-                            Navigator.pushNamed(context, AppRouter.statistics),
-                      ),
-                    ),
-
-                    StaggeredGridTile.fit(
-                      crossAxisCellCount: 4, // full row biar lega
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        elevation: 4,
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: K1Chart(
@@ -163,36 +219,40 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  /// Info tile tetap non-clickable (height mengikuti konten)
-  Widget _buildInfoTile({
-    required String title,
-    required String value,
-    required Color color,
+  // Helper untuk stat item (icon + value + label)
+  Widget _buildStatItem({
     required IconData icon,
+    required Color iconColor,
+    required String label,
+    required String value,
+    required Color bgColor,
   }) {
-    return Material(
-      color: color,
-      elevation: 2,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // penting supaya height mengikuti isi
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 32, color: Colors.black87),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+    return Container(
+      width: 120,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: iconColor, size: 28),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, color: Colors.white70),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -254,44 +314,5 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<void> _onLogoutPressed(BuildContext context) async {
-    final hasPending = await Utils.hasAnyPendingWrites();
-    if (hasPending) {
-      final shouldLogout = await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text("Data Belum Tersinkron"),
-          content: const Text(
-            "Ada data yang masih offline dan belum tersinkron ke server. "
-            "Besar kemungkinan data akan hilang jika anda logout.\n\n"
-            "Apakah Anda yakin ingin tetap logout?",
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text("Batal"),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text("Ya"),
-            ),
-          ],
-        ),
-      );
-
-      if (shouldLogout == true) {
-        await FirebaseAuth.instance.signOut();
-        if (context.mounted) {
-          Navigator.pushReplacementNamed(context, '/login');
-        }
-      }
-    } else {
-      await FirebaseAuth.instance.signOut();
-      if (context.mounted) {
-        Navigator.pushReplacementNamed(context, '/login');
-      }
-    }
   }
 }
