@@ -7,6 +7,7 @@ import { decrementKunjunganCount } from "./modules/kunjungan/decrement_kunjungan
 import { incrementKunjunganCount } from "./modules/kunjungan/increment_kunjungan.js";
 import { decrementKehamilanCount } from "./modules/kehamilan/decrement_kehamilan.js";
 import { incrementKehamilanCount } from "./modules/kehamilan/increment_kehamilan.js";
+import { updateKehamilanStats } from "./modules/kehamilan/update_kehamilan.js";
 
 export { 
     incrementPasienCount, 
@@ -16,5 +17,6 @@ export {
     decrementKunjunganCount, 
     incrementKunjunganCount, 
     decrementKehamilanCount,
-    incrementKehamilanCount
+    incrementKehamilanCount,
+    updateKehamilanStats
 };
