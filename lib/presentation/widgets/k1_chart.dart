@@ -41,7 +41,7 @@ class K1Chart extends StatelessWidget {
                       value: k1Akses.toDouble(),
                       color: Colors.orangeAccent.shade700,
                       radius: 50,
-                      title: '${((k1Murni / total) * 100).toStringAsFixed(1)}%',
+                      title: '${((k1Akses / total) * 100).toStringAsFixed(1)}%',
                     ),
                   ],
                 ),
@@ -98,7 +98,13 @@ class K1Chart extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 6),
-        Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black54,
+          ),
+        ),
       ],
     );
   }
