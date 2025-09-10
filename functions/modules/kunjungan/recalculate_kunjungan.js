@@ -9,6 +9,9 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
     const snapshot = await db.collection("kunjungan").get();
     const statsByBidan = {};
 
+    // Track latest month per bidan
+    const latestMonthByBidan = {};
+
     snapshot.forEach(doc => {
       const data = doc.data();
       if (!data.id_bidan || !data.status) return;
@@ -19,21 +22,20 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
 
       if (!statsByBidan[idBidan]) statsByBidan[idBidan] = { by_month: {} };
 
-      const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
+      // Ambil bulan dari createdAt dokumen
+      const createdAt = data.created_at?.toDate ? data.created_at.toDate() : new Date();
       const monthKey = getMonthString(createdAt);
+
+      // update latest month per bidan
+      if (!latestMonthByBidan[idBidan] || monthKey > latestMonthByBidan[idBidan]) {
+        latestMonthByBidan[idBidan] = monthKey;
+      }
 
       if (!statsByBidan[idBidan].by_month[monthKey]) {
         statsByBidan[idBidan].by_month[monthKey] = { 
           kunjungan: { 
-            total:0, 
-            k1:0, 
-            k2:0, 
-            k3:0, 
-            k4:0, 
-            k5:0, 
-            k6:0, 
-            k1_murni:0, 
-            k1_akses:0 
+            total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0, 
+            k1_murni:0, k1_akses:0 
           } 
         };
       }
@@ -55,7 +57,6 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
     });
 
     const batch = db.batch();
-    const currentMonth = getMonthString(new Date());
 
     for (const [idBidan, stats] of Object.entries(statsByBidan)) {
       const ref = db.doc(`statistics/${idBidan}`);
@@ -64,19 +65,14 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
       const byMonth = existing.by_month || {};
 
       for (const [month, counts] of Object.entries(stats.by_month)) {
-        if (!byMonth[month]) byMonth[month] = { 
-          kunjungan: { 
-            total:0, 
-            k1:0, 
-            k2:0, 
-            k3:0, 
-            k4:0, 
-            k5:0, 
-            k6:0, 
-            k1_murni:0, 
-            k1_akses:0 
-          } 
-        };
+        if (!byMonth[month]) {
+          byMonth[month] = { 
+            kunjungan: { 
+              total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0, 
+              k1_murni:0, k1_akses:0 
+            } 
+          };
+        }
 
         // gabungkan hasil baru
         byMonth[month].kunjungan = {
@@ -85,15 +81,19 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
         };
       }
 
+      // gunakan latestMonthByBidan untuk last_updated_month
+      const lastUpdatedMonth = latestMonthByBidan[idBidan] || getMonthString(new Date());
+
       batch.set(ref, { 
         ...existing, 
         by_month: byMonth,
-        last_updated_month: currentMonth,
+        last_updated_month: lastUpdatedMonth,
       }, { merge: true });
     }
 
     await batch.commit();
     res.status(200).send({ message: "Kunjungan recalculation complete", statsByBidan });
+
   } catch (error) {
     console.error("Recalculation error:", error);
     res.status(500).send({ error: error.message });

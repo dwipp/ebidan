@@ -12,7 +12,17 @@ export const incrementKehamilanCount = onDocumentCreated(
 
     const idBidan = kehamilanData.id_bidan;
     const statsRef = db.doc(`statistics/${idBidan}`);
-    const currentMonth = getMonthString(new Date());
+
+    // ambil tanggal dari field created_at di dokumen kehamilan
+    let currentMonth = null;
+    if (kehamilanData.created_at?.toDate) {
+      currentMonth = getMonthString(kehamilanData.created_at.toDate());
+    } else if (kehamilanData.created_at) {
+      currentMonth = getMonthString(new Date(kehamilanData.created_at));
+    } else {
+      // fallback jika tidak ada created_at
+      currentMonth = getMonthString(new Date());
+    }
 
     await db.runTransaction(async (t) => {
       const doc = await t.get(statsRef);

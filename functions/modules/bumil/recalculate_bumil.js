@@ -16,39 +16,50 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       const idBidan = data.id_bidan;
       if (!statsByBidan[idBidan]) {
         statsByBidan[idBidan] = { 
-          kehamilan: { all_bumil_count: 0 }, // hanya yang hamil
-          pasien: { all_pasien_count: 0 },   // semua bumil
-          by_month: {} 
+          kehamilan: { all_bumil_count: 0 },
+          pasien: { all_pasien_count: 0 },
+          by_month: {},
+          latestMonth: null
         };
       }
 
-      // Month key untuk pasien (semua bumil)
-      const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
+      // Month key pasien (semua bumil)
+      const createdAt = data.created_at?.toDate ? data.created_at.toDate() : new Date();
       const pasienMonthKey = getMonthString(createdAt);
 
-      // Month key untuk kehamilan (jika ada latest_kehamilan)
-      let kehamilanMonthKey = pasienMonthKey; // default
+      // Month key kehamilan (jika ada latest_kehamilan)
+      let kehamilanMonthKey = pasienMonthKey;
       if (data.latest_kehamilan?.created_at?.toDate) {
         kehamilanMonthKey = getMonthString(data.latest_kehamilan.created_at.toDate());
       } else if (data.latest_kehamilan?.created_at) {
         kehamilanMonthKey = getMonthString(new Date(data.latest_kehamilan.created_at));
       }
 
+      // update latestMonth
+      const updateLatest = (monthKey) => {
+        if (!statsByBidan[idBidan].latestMonth) {
+          statsByBidan[idBidan].latestMonth = monthKey;
+        } else {
+          if (monthKey > statsByBidan[idBidan].latestMonth) {
+            statsByBidan[idBidan].latestMonth = monthKey;
+          }
+        }
+      };
+      updateLatest(pasienMonthKey);
+      if (data.is_hamil) updateLatest(kehamilanMonthKey);
+
       // hitung semua pasien
       statsByBidan[idBidan].pasien.all_pasien_count++;
 
-      // pastikan by_month pasien ada
       if (!statsByBidan[idBidan].by_month[pasienMonthKey]) {
         statsByBidan[idBidan].by_month[pasienMonthKey] = {
           kehamilan: { total: 0 },
           pasien: { total: 0 }
         };
       }
-
-      // increment total pasien per bulan
       statsByBidan[idBidan].by_month[pasienMonthKey].pasien.total++;
 
-      // jika hamil, pastikan by_month kehamilan ada
+      // jika hamil
       if (data.is_hamil) {
         statsByBidan[idBidan].kehamilan.all_bumil_count++;
 
@@ -58,14 +69,11 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
             pasien: { total: 0 }
           };
         }
-
-        // increment total bumil hamil per bulan
         statsByBidan[idBidan].by_month[kehamilanMonthKey].kehamilan.total++;
       }
     });
 
     const batch = db.batch();
-    const currentMonth = getMonthString(new Date());
 
     for (const [idBidan, stats] of Object.entries(statsByBidan)) {
       const ref = db.doc(`statistics/${idBidan}`);
@@ -86,7 +94,7 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
         ...existing,
         kehamilan: { all_bumil_count: stats.kehamilan.all_bumil_count ?? 0 },
         pasien: { all_pasien_count: stats.pasien.all_pasien_count ?? 0 },
-        last_updated_month: currentMonth,
+        last_updated_month: stats.latestMonth ?? getMonthString(new Date()),
         by_month: byMonth
       }, { merge: true });
     }

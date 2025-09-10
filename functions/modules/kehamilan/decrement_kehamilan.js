@@ -1,4 +1,4 @@
-import { onDocumentCreated, onDocumentDeleted } from "firebase-functions/v2/firestore";
+import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { db } from "../firebase.js";
 import { getMonthString } from "../helpers.js";
 
@@ -12,7 +12,16 @@ export const decrementKehamilanCount = onDocumentDeleted(
 
     const idBidan = kehamilanData.id_bidan;
     const statsRef = db.doc(`statistics/${idBidan}`);
-    const currentMonth = getMonthString(new Date());
+
+    // ambil bulan dari created_at kehamilan
+    let currentMonth;
+    if (kehamilanData.created_at?.toDate) {
+      currentMonth = getMonthString(kehamilanData.created_at.toDate());
+    } else if (kehamilanData.created_at) {
+      currentMonth = getMonthString(new Date(kehamilanData.created_at));
+    } else {
+      currentMonth = getMonthString(new Date()); // fallback
+    }
 
     await db.runTransaction(async (t) => {
       const doc = await t.get(statsRef);
