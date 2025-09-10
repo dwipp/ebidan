@@ -1,3 +1,5 @@
+import 'package:ebidan/data/models/persalinan_model.dart';
+
 class Statistic {
   final KehamilanStats kehamilan;
   final PasienStats pasien;
@@ -74,11 +76,13 @@ class ByMonthStats {
   final KehamilanByMonth kehamilan;
   final PasienByMonth pasien;
   final KunjunganByMonth kunjungan;
+  final PersalinanByMonth persalinan;
 
   ByMonthStats({
     required this.kehamilan,
     required this.pasien,
     required this.kunjungan,
+    required this.persalinan,
   });
 
   factory ByMonthStats.fromMap(Map<String, dynamic> map) {
@@ -86,6 +90,7 @@ class ByMonthStats {
       kehamilan: KehamilanByMonth.fromMap(map['kehamilan']),
       pasien: PasienByMonth.fromMap(map['pasien']),
       kunjungan: KunjunganByMonth.fromMap(map['kunjungan']),
+      persalinan: PersalinanByMonth.fromMap(map['persalinan']),
     );
   }
 
@@ -106,6 +111,21 @@ class KehamilanByMonth {
   factory KehamilanByMonth.fromMap(Map<String, dynamic>? map) {
     if (map == null) return KehamilanByMonth(total: 0);
     return KehamilanByMonth(total: map['total'] ?? 0);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'total': total};
+  }
+}
+
+class PersalinanByMonth {
+  final int total;
+
+  PersalinanByMonth({required this.total});
+
+  factory PersalinanByMonth.fromMap(Map<String, dynamic>? map) {
+    if (map == null) return PersalinanByMonth(total: 0);
+    return PersalinanByMonth(total: map['total'] ?? 0);
   }
 
   Map<String, dynamic> toMap() {
