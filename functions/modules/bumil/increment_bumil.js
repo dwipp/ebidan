@@ -22,7 +22,7 @@ export const incrementBumilCount = onDocumentCreated(
           last_updated_month: currentMonth,
           by_month: { 
             [currentMonth]: { 
-              bumil: { total: 1 } 
+              pasien: { total: 1 } 
             } 
           }
         });
@@ -34,9 +34,9 @@ export const incrementBumilCount = onDocumentCreated(
 
       // pastikan struktur ada
       if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
-      if (!byMonth[currentMonth].bumil) byMonth[currentMonth].bumil = { total: 0 };
+      if (!byMonth[currentMonth].pasien) byMonth[currentMonth].pasien = { total: 0 };
 
-      byMonth[currentMonth].bumil.total++;
+      byMonth[currentMonth].pasien.total++;
 
       t.set(statsRef, {
         ...data,

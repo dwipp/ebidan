@@ -16,25 +16,33 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       const idBidan = data.id_bidan;
       if (!statsByBidan[idBidan]) {
         statsByBidan[idBidan] = { 
-          bumil: { all_bumil_count: 0 }, 
+          kehamilan: { all_bumil_count: 0 }, // hanya yang hamil
+          pasien: { all_pasien_count: 0 },   // semua bumil
           by_month: {} 
         };
       }
 
-      // hanya hitung bumil yang sedang hamil
+      // hitung semua pasien
+      statsByBidan[idBidan].pasien.all_pasien_count++;
+
+      const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
+      const monthKey = getMonthString(createdAt);
+
+      // pastikan by_month[monthKey] ada
+      if (!statsByBidan[idBidan].by_month[monthKey]) {
+        statsByBidan[idBidan].by_month[monthKey] = {
+          kehamilan: { total: 0 },
+          pasien: { total: 0 }
+        };
+      }
+
+      // increment total pasien per bulan (semua bumil)
+      statsByBidan[idBidan].by_month[monthKey].pasien.total++;
+
+      // increment total bumil hamil per bulan
       if (data.is_hamil) {
-        statsByBidan[idBidan].bumil.all_bumil_count++;
-
-        const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
-        const monthKey = getMonthString(createdAt);
-
-        // pastikan by_month[monthKey] ada
-        if (!statsByBidan[idBidan].by_month[monthKey]) {
-          statsByBidan[idBidan].by_month[monthKey] = { bumil: { total: 0 } };
-        }
-
-        // increment total per bulan
-        statsByBidan[idBidan].by_month[monthKey].bumil.total++;
+        statsByBidan[idBidan].kehamilan.all_bumil_count++;
+        statsByBidan[idBidan].by_month[monthKey].kehamilan.total++;
       }
     });
 
@@ -48,18 +56,18 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       const byMonth = existing.by_month || {};
 
       for (const [month, counts] of Object.entries(stats.by_month)) {
-        // pastikan struktur byMonth[month] dan bumil selalu ada
         if (!byMonth[month]) byMonth[month] = {};
-        if (!byMonth[month].bumil) byMonth[month].bumil = { total: 0 };
+        if (!byMonth[month].kehamilan) byMonth[month].kehamilan = { total: 0 };
+        if (!byMonth[month].pasien) byMonth[month].pasien = { total: 0 };
 
-        byMonth[month].bumil.total = counts.bumil.total;
+        byMonth[month].kehamilan.total = counts.kehamilan.total ?? 0;
+        byMonth[month].pasien.total = counts.pasien.total ?? 0;
       }
 
       batch.set(ref, {
         ...existing,
-        bumil: { 
-          all_bumil_count: stats.bumil.all_bumil_count
-        },
+        kehamilan: { all_bumil_count: stats.kehamilan.all_bumil_count ?? 0 },
+        pasien: { all_pasien_count: stats.pasien.all_pasien_count ?? 0 },
         last_updated_month: currentMonth,
         by_month: byMonth
       }, { merge: true });

@@ -1,5 +1,6 @@
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { db } from "../firebase.js";
+import { getMonthString } from "../helpers.js";
 
 const REGION = "asia-southeast2";
 
