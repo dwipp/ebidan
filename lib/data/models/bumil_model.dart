@@ -34,6 +34,7 @@ class Bumil {
   final DateTime? createdAt;
   List<Riwayat>? riwayat;
 
+  final bool isHamil;
   final String? latestKehamilanId;
   final DateTime? latestKehamilanHpht;
   final List<String>? latestKehamilanResti;
@@ -64,6 +65,7 @@ class Bumil {
     required this.pendidikanSuami,
     required this.createdAt,
     this.riwayat,
+    this.isHamil = false,
     this.latestKehamilanHpht,
     this.latestKehamilanId,
     this.latestKehamilanResti,
@@ -103,6 +105,7 @@ class Bumil {
       pendidikanSuami: map['pendidikan_suami'] ?? '',
       createdAt: _toDateTime(map['created_at']),
       riwayat: riwayat,
+      isHamil: map['is_hamil'] ?? false,
       latestKehamilanId: map['latest_kehamilan_id'],
       latestKehamilanHpht: _toDateTime(map['latest_kehamilan_hpht']),
       latestKehamilanKunjungan: map['latest_kehamilan_kunjungan'] ?? false,
@@ -143,6 +146,7 @@ class Bumil {
       'pendidikan_suami': pendidikanSuami,
       'created_at': createdAt?.toIso8601String(),
       'riwayat': riwayat?.map((r) => r.toMap()).toList(),
+      'is_hamil': isHamil,
       'latest_kehamilan_id': latestKehamilanId,
       'latest_kehamilan_hpht': latestKehamilanHpht?.toIso8601String(),
       'latest_kehamilan_kunjungan': latestKehamilanKunjungan,
@@ -187,6 +191,7 @@ class Bumil {
                 .map((e) => Riwayat.fromMap(Map<String, dynamic>.from(e)))
                 .toList()
           : null,
+      isHamil: json['is_hamil'] ?? false,
       latestKehamilanId: json['latest_kehamilan_id'],
       latestKehamilanHpht: json['latest_kehamilan_hpht'] != null
           ? DateTime.parse(json['latest_kehamilan_hpht'])
@@ -228,6 +233,7 @@ class Bumil {
       'pendidikan_suami': pendidikanSuami,
       'created_at': createdAt?.toIso8601String(),
       'riwayat': riwayat?.map((r) => r.toMap()).toList(),
+      'is_hamil': isHamil,
       'latest_kehamilan_id': latestKehamilanId,
       'latest_kehamilan_hpht': latestKehamilanHpht?.toIso8601String(),
       'latest_kehamilan_kunjungan': latestKehamilanKunjungan,

@@ -169,6 +169,7 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
       'latest_kehamilan.persalinan': persalinanList
           .map((e) => e.toFirestore())
           .toList(),
+      'is_hamil': false,
     });
   }
 
@@ -185,6 +186,7 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
       'latest_kehamilan.persalinan': persalinanList
           .map((persalinan) => persalinan.toFirestore())
           .toList(),
+      'is_hamil': false,
     });
   }
 

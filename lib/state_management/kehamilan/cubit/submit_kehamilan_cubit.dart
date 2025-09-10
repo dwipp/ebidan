@@ -62,6 +62,7 @@ class SubmitKehamilanCubit extends Cubit<SubmitKehamilanState> {
           .collection('bumil')
           .doc(newKehamilan.idBumil);
       await docRefBumil.update({
+        'is_hamil': true,
         'latest_kehamilan_id': id,
         'latest_kehamilan_hpht': data.hpht,
         'latest_kehamilan_resti': data.resti,
