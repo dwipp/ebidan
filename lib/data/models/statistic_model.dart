@@ -1,10 +1,12 @@
 class Statistic {
-  final BumilStats bumil;
+  final KehamilanStats kehamilan;
+  final PasienStats pasien;
   final String lastUpdatedMonth;
   final Map<String, ByMonthStats> byMonth;
 
   Statistic({
-    required this.bumil,
+    required this.kehamilan,
+    required this.pasien,
     required this.lastUpdatedMonth,
     required this.byMonth,
   });
@@ -18,7 +20,8 @@ class Statistic {
     }
 
     return Statistic(
-      bumil: BumilStats.fromMap(map['bumil'] ?? {}),
+      kehamilan: KehamilanStats.fromMap(map['kehamilan'] ?? {}),
+      pasien: PasienStats.fromMap(map['pasien'] ?? {}),
       lastUpdatedMonth: map['last_updated_month'] ?? '',
       byMonth: byMonthData,
     );
@@ -26,7 +29,8 @@ class Statistic {
 
   Map<String, dynamic> toMap() {
     return {
-      'bumil': bumil.toMap(),
+      'kehamilan': kehamilan.toMap(),
+      'pasien': pasien.toMap(),
       'last_updated_month': lastUpdatedMonth,
       'by_month': byMonth.map((key, value) => MapEntry(key, value.toMap())),
     };
@@ -38,13 +42,13 @@ class Statistic {
   }
 }
 
-class BumilStats {
+class KehamilanStats {
   final int allBumilCount;
 
-  BumilStats({required this.allBumilCount});
+  KehamilanStats({required this.allBumilCount});
 
-  factory BumilStats.fromMap(Map<String, dynamic> map) {
-    return BumilStats(allBumilCount: map['all_bumil_count'] ?? 0);
+  factory KehamilanStats.fromMap(Map<String, dynamic> map) {
+    return KehamilanStats(allBumilCount: map['all_bumil_count'] ?? 0);
   }
 
   Map<String, dynamic> toMap() {
@@ -52,32 +56,71 @@ class BumilStats {
   }
 }
 
+class PasienStats {
+  final int allPasienCount;
+
+  PasienStats({required this.allPasienCount});
+
+  factory PasienStats.fromMap(Map<String, dynamic> map) {
+    return PasienStats(allPasienCount: map['all_pasien_count'] ?? 0);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'all_pasien_count': allPasienCount};
+  }
+}
+
 class ByMonthStats {
-  final BumilByMonth bumil;
+  final KehamilanByMonth kehamilan;
+  final PasienByMonth pasien;
   final KunjunganByMonth kunjungan;
 
-  ByMonthStats({required this.bumil, required this.kunjungan});
+  ByMonthStats({
+    required this.kehamilan,
+    required this.pasien,
+    required this.kunjungan,
+  });
 
   factory ByMonthStats.fromMap(Map<String, dynamic> map) {
     return ByMonthStats(
-      bumil: BumilByMonth.fromMap(map['bumil']),
+      kehamilan: KehamilanByMonth.fromMap(map['kehamilan']),
+      pasien: PasienByMonth.fromMap(map['pasien']),
       kunjungan: KunjunganByMonth.fromMap(map['kunjungan']),
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {'bumil': bumil.toMap(), 'kunjungan': kunjungan.toMap()};
+    return {
+      'kehamilan': kehamilan.toMap(),
+      'pasien': pasien.toMap(),
+      'kunjungan': kunjungan.toMap(),
+    };
   }
 }
 
-class BumilByMonth {
+class KehamilanByMonth {
   final int total;
 
-  BumilByMonth({required this.total});
+  KehamilanByMonth({required this.total});
 
-  factory BumilByMonth.fromMap(Map<String, dynamic>? map) {
-    if (map == null) return BumilByMonth(total: 0);
-    return BumilByMonth(total: map['total'] ?? 0);
+  factory KehamilanByMonth.fromMap(Map<String, dynamic>? map) {
+    if (map == null) return KehamilanByMonth(total: 0);
+    return KehamilanByMonth(total: map['total'] ?? 0);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'total': total};
+  }
+}
+
+class PasienByMonth {
+  final int total;
+
+  PasienByMonth({required this.total});
+
+  factory PasienByMonth.fromMap(Map<String, dynamic>? map) {
+    if (map == null) return PasienByMonth(total: 0);
+    return PasienByMonth(total: map['total'] ?? 0);
   }
 
   Map<String, dynamic> toMap() {

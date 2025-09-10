@@ -142,7 +142,7 @@ class HomeScreen extends StatelessWidget {
                                       iconColor: Colors.white,
                                       label: "Total Ibu Hamil",
                                       value:
-                                          "${statistic?.bumil.allBumilCount ?? 0}",
+                                          "${statistic?.kehamilan.allBumilCount ?? 0}",
                                       bgColor: Colors.pink.shade400.withOpacity(
                                         0.3,
                                       ),
@@ -155,7 +155,7 @@ class HomeScreen extends StatelessWidget {
                                       iconColor: Colors.white,
                                       label: "Bulan Ini",
                                       value:
-                                          "${statistic?.lastMonthData?.bumil.total ?? 0}",
+                                          "${statistic?.lastMonthData?.kehamilan.total ?? 0}",
                                       bgColor: Colors.teal.shade400.withOpacity(
                                         0.3,
                                       ),
