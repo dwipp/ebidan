@@ -27,15 +27,36 @@ export const decrementKunjunganCount = onDocumentDeleted(
       // pastikan bulan dan objek kunjungan ada
       if (!byMonth[currentMonth]) {
         byMonth[currentMonth] = { 
-          kunjungan: { k1:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0 } 
+          kunjungan: { 
+            total:0, 
+            k1:0, 
+            k2:0, 
+            k3:0, 
+            k4:0, 
+            k5:0, 
+            k6:0, 
+            k1_murni:0, 
+            k1_akses:0 
+          } 
         };
       } else if (!byMonth[currentMonth].kunjungan) {
-        byMonth[currentMonth].kunjungan = { k1:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0 };
+        byMonth[currentMonth].kunjungan = { 
+          total:0, 
+          k1:0, 
+          k2:0, 
+          k3:0, 
+          k4:0, 
+          k5:0, 
+          k6:0, 
+          k1_murni:0, 
+          k1_akses:0 
+        };
       }
 
       const kunjungan = byMonth[currentMonth].kunjungan;
 
       // Update sesuai status dengan proteksi agar tidak minus
+      kunjungan.total = Math.max(kunjungan.total - 1, 0);
       if (status === "k1") {
         kunjungan.k1 = Math.max(kunjungan.k1 - 1, 0);
         if (uk <= 12) {
@@ -44,6 +65,8 @@ export const decrementKunjunganCount = onDocumentDeleted(
           kunjungan.k1_akses = Math.max(kunjungan.k1_akses - 1, 0);
         }
       }
+      if (status === "k2") kunjungan.k2 = Math.max(kunjungan.k2 - 1, 0);
+      if (status === "k3") kunjungan.k3 = Math.max(kunjungan.k3 - 1, 0);
       if (status === "k4") kunjungan.k4 = Math.max(kunjungan.k4 - 1, 0);
       if (status === "k5") kunjungan.k5 = Math.max(kunjungan.k5 - 1, 0);
       if (status === "k6") kunjungan.k6 = Math.max(kunjungan.k6 - 1, 0);

@@ -24,19 +24,44 @@ export const incrementKunjunganCount = onDocumentCreated(
 
       // pastikan bulan dan objek kunjungan sudah ada
       if (!byMonth[currentMonth]) {
-        byMonth[currentMonth] = { kunjungan: { k1:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0 } };
+        byMonth[currentMonth] = { 
+          kunjungan: { 
+            total:0, 
+            k1:0, 
+            k2:0, 
+            k3:0, 
+            k4:0, 
+            k5:0, 
+            k6:0, 
+            k1_murni:0, 
+            k1_akses:0 
+          } 
+        };
       } else if (!byMonth[currentMonth].kunjungan) {
-        byMonth[currentMonth].kunjungan = { k1:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0 };
+        byMonth[currentMonth].kunjungan = { 
+          total:0, 
+          k1:0, 
+          k2:0, 
+          k3:0, 
+          k4:0, 
+          k5:0, 
+          k6:0, 
+          k1_murni:0, 
+          k1_akses:0 
+        };
       }
 
       const kunjungan = byMonth[currentMonth].kunjungan;
 
       // Update sesuai status
+      kunjungan.total++;
       if (status === "k1") {
         kunjungan.k1++;
         if (uk <= 12) kunjungan.k1_murni++;
         else kunjungan.k1_akses++;
       }
+      if (status === "k2") kunjungan.k2++;
+      if (status === "k3") kunjungan.k3++;
       if (status === "k4") kunjungan.k4++;
       if (status === "k5") kunjungan.k5++;
       if (status === "k6") kunjungan.k6++;
