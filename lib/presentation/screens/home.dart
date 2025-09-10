@@ -165,22 +165,30 @@ class HomeScreen extends StatelessWidget {
                     ),
 
                     // K1 Chart
+                    // Statistik Card
                     StaggeredGridTile.fit(
                       crossAxisCellCount: 4,
                       child: InkWell(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(24),
                         onTap: () =>
                             Navigator.pushNamed(context, AppRouter.statistics),
                         child: Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(24),
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.blue.shade300,
+                                Colors.blue.shade100,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
+                                color: Colors.blue.shade100.withOpacity(0.4),
+                                blurRadius: 10,
+                                offset: const Offset(0, 6),
                               ),
                             ],
                           ),
@@ -190,39 +198,37 @@ class HomeScreen extends StatelessWidget {
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Statistik",
+                                children: const [
+                                  Text(
+                                    "Statistik Kunjungan",
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 22,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
-                                  const Icon(
+                                  Icon(
                                     Icons.chevron_right,
                                     size: 28,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 16),
-                              Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: K1Chart(
-                                  k1Murni:
-                                      statistic
-                                          ?.lastMonthData
-                                          ?.kunjungan
-                                          .k1Murni ??
-                                      0,
-                                  k1Akses:
-                                      statistic
-                                          ?.lastMonthData
-                                          ?.kunjungan
-                                          .k1Akses ??
-                                      0,
-                                ),
+                              K1Chart(
+                                k1Murni:
+                                    statistic
+                                        ?.lastMonthData
+                                        ?.kunjungan
+                                        .k1Murni ??
+                                    0,
+                                k1Akses:
+                                    statistic
+                                        ?.lastMonthData
+                                        ?.kunjungan
+                                        .k1Akses ??
+                                    0,
+                                showCenterValue: true,
                               ),
                             ],
                           ),
