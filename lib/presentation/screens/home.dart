@@ -112,13 +112,24 @@ class HomeScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                "Bumil",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "Kehamilan",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.chevron_right,
+                                    size: 28,
+                                    color: Colors.white,
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 16),
                               Row(
@@ -128,7 +139,7 @@ class HomeScreen extends StatelessWidget {
                                   _buildStatItem(
                                     icon: Icons.groups,
                                     iconColor: Colors.white,
-                                    label: "Total Bumil",
+                                    label: "Total Ibu Hamil",
                                     value:
                                         "${statistic?.bumil.allBumilCount ?? 0}",
                                     bgColor: Colors.pink.shade400.withOpacity(
@@ -138,7 +149,7 @@ class HomeScreen extends StatelessWidget {
                                   _buildStatItem(
                                     icon: Icons.pregnant_woman,
                                     iconColor: Colors.white,
-                                    label: "Bumil Bulan Ini",
+                                    label: "Bulan Ini",
                                     value:
                                         "${statistic?.lastMonthData?.bumil.total ?? 0}",
                                     bgColor: Colors.teal.shade400.withOpacity(
@@ -153,58 +164,67 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // Statistik Menu
-                    StaggeredGridTile.fit(
-                      crossAxisCellCount: 2,
-                      child: _buildMenuTile(
-                        title: "Statistik",
-                        subtitle: "Lihat Detail",
-                        color: Colors.blue.shade200,
-                        icon: Icons.bar_chart,
-                        onTap: () =>
-                            Navigator.pushNamed(context, AppRouter.statistics),
-                      ),
-                    ),
-
-                    // Pilih Bumil Menu
-                    StaggeredGridTile.fit(
-                      crossAxisCellCount: 2,
-                      child: _buildMenuTile(
-                        title: "Pilih Bumil",
-                        subtitle: "Lihat Data",
-                        color: Colors.purple.shade200,
-                        icon: Icons.assignment_ind,
-                        onTap: () => Navigator.of(context).pushNamed(
-                          AppRouter.pilihBumil,
-                          arguments: {'state': 'bumil'},
-                        ),
-                      ),
-                    ),
-
                     // K1 Chart
                     StaggeredGridTile.fit(
                       crossAxisCellCount: 4,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: K1Chart(
-                            k1Murni:
-                                statistic?.lastMonthData?.kunjungan.k1Murni ??
-                                0,
-                            k1Akses:
-                                statistic?.lastMonthData?.kunjungan.k1Akses ??
-                                0,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRouter.statistics),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "Statistik",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.chevron_right,
+                                    size: 28,
+                                    color: Colors.black,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: K1Chart(
+                                  k1Murni:
+                                      statistic
+                                          ?.lastMonthData
+                                          ?.kunjungan
+                                          .k1Murni ??
+                                      0,
+                                  k1Akses:
+                                      statistic
+                                          ?.lastMonthData
+                                          ?.kunjungan
+                                          .k1Akses ??
+                                      0,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
