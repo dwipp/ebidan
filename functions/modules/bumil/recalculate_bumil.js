@@ -22,27 +22,45 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
         };
       }
 
+      // Month key untuk pasien (semua bumil)
+      const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
+      const pasienMonthKey = getMonthString(createdAt);
+
+      // Month key untuk kehamilan (jika ada latest_kehamilan)
+      let kehamilanMonthKey = pasienMonthKey; // default
+      if (data.latest_kehamilan?.created_at?.toDate) {
+        kehamilanMonthKey = getMonthString(data.latest_kehamilan.created_at.toDate());
+      } else if (data.latest_kehamilan?.created_at) {
+        kehamilanMonthKey = getMonthString(new Date(data.latest_kehamilan.created_at));
+      }
+
       // hitung semua pasien
       statsByBidan[idBidan].pasien.all_pasien_count++;
 
-      const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
-      const monthKey = getMonthString(createdAt);
-
-      // pastikan by_month[monthKey] ada
-      if (!statsByBidan[idBidan].by_month[monthKey]) {
-        statsByBidan[idBidan].by_month[monthKey] = {
+      // pastikan by_month pasien ada
+      if (!statsByBidan[idBidan].by_month[pasienMonthKey]) {
+        statsByBidan[idBidan].by_month[pasienMonthKey] = {
           kehamilan: { total: 0 },
           pasien: { total: 0 }
         };
       }
 
-      // increment total pasien per bulan (semua bumil)
-      statsByBidan[idBidan].by_month[monthKey].pasien.total++;
+      // increment total pasien per bulan
+      statsByBidan[idBidan].by_month[pasienMonthKey].pasien.total++;
 
-      // increment total bumil hamil per bulan
+      // jika hamil, pastikan by_month kehamilan ada
       if (data.is_hamil) {
         statsByBidan[idBidan].kehamilan.all_bumil_count++;
-        statsByBidan[idBidan].by_month[monthKey].kehamilan.total++;
+
+        if (!statsByBidan[idBidan].by_month[kehamilanMonthKey]) {
+          statsByBidan[idBidan].by_month[kehamilanMonthKey] = {
+            kehamilan: { total: 0 },
+            pasien: { total: 0 }
+          };
+        }
+
+        // increment total bumil hamil per bulan
+        statsByBidan[idBidan].by_month[kehamilanMonthKey].kehamilan.total++;
       }
     });
 
