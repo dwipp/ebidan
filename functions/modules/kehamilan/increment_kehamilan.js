@@ -19,7 +19,7 @@ export const incrementKehamilanCount = onDocumentCreated(
 
       if (!doc.exists) {
         t.set(statsRef, {
-          bumil: { all_bumil_count: 1 },
+          kehamilan: { all_bumil_count: 1 },
           last_updated_month: currentMonth,
           by_month: {
             [currentMonth]: { kehamilan: { total: 1 } }
@@ -29,7 +29,7 @@ export const incrementKehamilanCount = onDocumentCreated(
       }
 
       const data = doc.data();
-      const bumil = data.bumil || { all_bumil_count: 0 };
+      const kehamilan = data.kehamilan || { all_bumil_count: 0 };
       const byMonth = data.by_month || {};
 
       // pastikan struktur by_month ada
@@ -41,7 +41,7 @@ export const incrementKehamilanCount = onDocumentCreated(
 
       t.set(statsRef, {
         ...data,
-        bumil: { all_bumil_count: (bumil.all_bumil_count || 0) + 1 },
+        kehamilan: { all_bumil_count: (kehamilan.all_bumil_count || 0) + 1 },
         last_updated_month: currentMonth,
         by_month: byMonth
       }, { merge: true });
