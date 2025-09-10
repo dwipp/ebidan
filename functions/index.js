@@ -1,6 +1,6 @@
 // index.js
-import { incrementBumilCount } from "./modules/bumil/increment_bumil.js";
-import { decrementBumilCount } from "./modules/bumil/decrement_bumil.js";
+import { incrementPasienCount } from "./modules/pasien/increment_pasien.js";
+import { decrementPasienCount } from "./modules/pasien/decrement_pasien.js";
 import { recalculateBumilStats } from "./modules/bumil/recalculate_bumil.js";
 import { recalculateKunjunganStats } from "./modules/kunjungan/recalculate_kunjungan.js";
 import { decrementKunjunganCount } from "./modules/kunjungan/decrement_kunjungan.js";
@@ -9,8 +9,8 @@ import { decrementKehamilanCount } from "./modules/kehamilan/decrement_kehamilan
 import { incrementKehamilanCount } from "./modules/kehamilan/increment_kehamilan.js";
 
 export { 
-    incrementBumilCount, 
-    decrementBumilCount, 
+    incrementPasienCount, 
+    decrementPasienCount, 
     recalculateBumilStats, 
     recalculateKunjunganStats, 
     decrementKunjunganCount, 

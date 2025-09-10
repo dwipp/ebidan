@@ -1,10 +1,10 @@
-import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { getMonthString } from "../helpers.js";
 import { db } from "../firebase.js";
 
 const REGION = "asia-southeast2";
 
-export const incrementBumilCount = onDocumentCreated(
+export const decrementPasienCount = onDocumentDeleted(
   { document: "bumil/{bumilId}", region: REGION },
   async (event) => {
     const bumilData = event.data?.data();
@@ -16,18 +16,7 @@ export const incrementBumilCount = onDocumentCreated(
 
     await db.runTransaction(async (t) => {
       const doc = await t.get(statsRef);
-
-      if (!doc.exists) {
-        t.set(statsRef, {
-          last_updated_month: currentMonth,
-          by_month: { 
-            [currentMonth]: { 
-              pasien: { total: 1 } 
-            } 
-          }
-        });
-        return;
-      }
+      if (!doc.exists) return;
 
       const data = doc.data();
       const byMonth = data.by_month || {};
@@ -36,7 +25,8 @@ export const incrementBumilCount = onDocumentCreated(
       if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
       if (!byMonth[currentMonth].pasien) byMonth[currentMonth].pasien = { total: 0 };
 
-      byMonth[currentMonth].pasien.total++;
+      // decrement, tapi tidak boleh negatif
+      byMonth[currentMonth].pasien.total = Math.max((byMonth[currentMonth].pasien.total || 0) - 1, 0);
 
       t.set(statsRef, {
         ...data,
