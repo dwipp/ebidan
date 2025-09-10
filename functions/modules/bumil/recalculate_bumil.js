@@ -21,19 +21,21 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
         };
       }
 
-      // increment total semua bumil
-      statsByBidan[idBidan].bumil.all_bumil_count++;
+      // hanya hitung bumil yang sedang hamil
+      if (data.is_hamil) {
+        statsByBidan[idBidan].bumil.all_bumil_count++;
 
-      const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
-      const monthKey = getMonthString(createdAt);
+        const createdAt = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
+        const monthKey = getMonthString(createdAt);
 
-      // pastikan by_month[monthKey] ada
-      if (!statsByBidan[idBidan].by_month[monthKey]) {
-        statsByBidan[idBidan].by_month[monthKey] = { bumil: { total: 0 } };
+        // pastikan by_month[monthKey] ada
+        if (!statsByBidan[idBidan].by_month[monthKey]) {
+          statsByBidan[idBidan].by_month[monthKey] = { bumil: { total: 0 } };
+        }
+
+        // increment total per bulan
+        statsByBidan[idBidan].by_month[monthKey].bumil.total++;
       }
-
-      // increment total per bulan
-      statsByBidan[idBidan].by_month[monthKey].bumil.total++;
     });
 
     const batch = db.batch();

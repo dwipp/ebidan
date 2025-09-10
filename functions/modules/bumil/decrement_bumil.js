@@ -19,7 +19,6 @@ export const decrementBumilCount = onDocumentDeleted(
       if (!doc.exists) return;
 
       const data = doc.data();
-      const bumil = data.bumil || { all_bumil_count: 0 };
       const byMonth = data.by_month || {};
 
       // pastikan struktur ada
@@ -29,13 +28,8 @@ export const decrementBumilCount = onDocumentDeleted(
       // decrement, tapi tidak boleh negatif
       byMonth[currentMonth].bumil.total = Math.max((byMonth[currentMonth].bumil.total || 0) - 1, 0);
 
-      const newAllCount = Math.max((bumil.all_bumil_count || 0) - 1, 0);
-
       t.set(statsRef, {
         ...data,
-        bumil: { 
-          all_bumil_count: newAllCount
-        },
         last_updated_month: currentMonth,
         by_month: byMonth
       }, { merge: true });

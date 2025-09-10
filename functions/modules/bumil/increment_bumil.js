@@ -19,9 +19,6 @@ export const incrementBumilCount = onDocumentCreated(
 
       if (!doc.exists) {
         t.set(statsRef, {
-          bumil: { 
-            all_bumil_count: 1
-          },
           last_updated_month: currentMonth,
           by_month: { 
             [currentMonth]: { 
@@ -33,7 +30,6 @@ export const incrementBumilCount = onDocumentCreated(
       }
 
       const data = doc.data();
-      const bumil = data.bumil || { all_bumil_count: 0 };
       const byMonth = data.by_month || {};
 
       // pastikan struktur ada
@@ -42,13 +38,8 @@ export const incrementBumilCount = onDocumentCreated(
 
       byMonth[currentMonth].bumil.total++;
 
-      const newAllCount = (bumil.all_bumil_count || 0) + 1;
-
       t.set(statsRef, {
         ...data,
-        bumil: { 
-          all_bumil_count: newAllCount
-        },
         last_updated_month: currentMonth,
         by_month: byMonth
       }, { merge: true });
