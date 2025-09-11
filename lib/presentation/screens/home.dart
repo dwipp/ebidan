@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
     context.read<SelectedRiwayatCubit>().clear;
     context.read<SelectedBumilCubit>().clear;
     context.read<SelectedKehamilanCubit>().clear;
-    final user = context.read<UserCubit>().state;
+    final user = context.watch<UserCubit>().state;
 
     return Scaffold(
       appBar: PageHeader(
@@ -179,7 +179,7 @@ class HomeScreen extends StatelessWidget {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(24),
                         onTap: () {
-                          if (user?.premiumType == PremiumType.none) {
+                          if (!user!.premiumStatus.isPremium) {
                             // User bukan premium
                             showDialog(
                               context: context,
@@ -208,9 +208,6 @@ class HomeScreen extends StatelessWidget {
                               ),
                             );
                           } else {
-                            // print(
-                            //   "type: ${user?.premiumType.name} dan expired pada ${user?.expiryDate}",
-                            // );
                             Navigator.pushNamed(context, AppRouter.statistics);
                           }
                         },
