@@ -1,4 +1,3 @@
-import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
 import 'package:ebidan/presentation/widgets/k1_chart.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';

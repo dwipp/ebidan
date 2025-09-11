@@ -1,5 +1,6 @@
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/premium_warning_banner.dart';
 import 'package:ebidan/state_management/general/cubit/statistic_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,8 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class KunjunganStatsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final stats = context.read<StatisticCubit>().state.statistic;
+    final stats = context.watch<StatisticCubit>().state.statistic;
     final lastMonth = stats?.lastMonthData?.kunjungan;
+    final warningBanner = PremiumWarningBanner.fromContext(context);
     return Scaffold(
       appBar: PageHeader(title: 'Statistik Kunjungan'),
       body: Padding(
@@ -17,6 +19,7 @@ class KunjunganStatsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (warningBanner != null) warningBanner,
               Text(
                 Utils.formattedYearMonth(stats?.lastUpdatedMonth ?? ''),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
