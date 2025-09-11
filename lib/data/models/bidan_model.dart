@@ -1,4 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+
+enum PremiumType { none, trial, subscription }
+
+class PremiumStatus {
+  final bool isPremium;
+  final PremiumType premiumType;
+  final DateTime? expiryDate;
+
+  PremiumStatus({
+    required this.isPremium,
+    required this.premiumType,
+    this.expiryDate,
+  });
+}
 
 class Bidan {
   final bool active;
@@ -64,6 +79,40 @@ class Bidan {
       'trial': trial.toJson(),
     };
   }
+
+  /// Utility untuk status premium
+  PremiumStatus get premiumStatus {
+    final now = DateTime.now();
+
+    if (trial.expiryDate.isAfter(now)) {
+      return PremiumStatus(
+        isPremium: true,
+        premiumType: PremiumType.trial,
+        expiryDate: trial.expiryDate,
+      );
+    }
+
+    if (subscription != null &&
+        subscription!.status == 'active' &&
+        subscription!.expiryDate != null &&
+        subscription!.expiryDate!.isAfter(now)) {
+      return PremiumStatus(
+        isPremium: true,
+        premiumType: PremiumType.subscription,
+        expiryDate: subscription!.expiryDate,
+      );
+    }
+
+    return PremiumStatus(
+      isPremium: false,
+      premiumType: PremiumType.none,
+      expiryDate: null,
+    );
+  }
+
+  /// Shortcut agar bisa langsung akses
+  PremiumType get premiumType => premiumStatus.premiumType;
+  DateTime? get expiryDate => premiumStatus.expiryDate;
 }
 
 class Subscription {

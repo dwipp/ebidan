@@ -1,7 +1,9 @@
+import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
 import 'package:ebidan/presentation/widgets/k1_chart.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -25,6 +27,7 @@ class HomeScreen extends StatelessWidget {
     context.read<SelectedRiwayatCubit>().clear;
     context.read<SelectedBumilCubit>().clear;
     context.read<SelectedKehamilanCubit>().clear;
+    final user = context.read<UserCubit>().state;
 
     return Scaffold(
       appBar: PageHeader(
@@ -175,8 +178,42 @@ class HomeScreen extends StatelessWidget {
                       crossAxisCellCount: 4,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(24),
-                        onTap: () =>
-                            Navigator.pushNamed(context, AppRouter.statistics),
+                        onTap: () {
+                          if (user?.premiumType == PremiumType.none) {
+                            // User bukan premium
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text("Akses Premium"),
+                                content: const Text(
+                                  "Fitur statistik hanya tersedia untuk pengguna premium. "
+                                  "Upgrade sekarang untuk membuka akses penuh.",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx),
+                                    child: const Text("Batal"),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(ctx); // tutup dialog
+                                      // Navigator.pushNamed(
+                                      //   context,
+                                      //   AppRouter.subscribe,
+                                      // ); // arahkan ke halaman subscribe
+                                    },
+                                    child: const Text("Upgrade"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            // print(
+                            //   "type: ${user?.premiumType.name} dan expired pada ${user?.expiryDate}",
+                            // );
+                            Navigator.pushNamed(context, AppRouter.statistics);
+                          }
+                        },
                         child: Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
