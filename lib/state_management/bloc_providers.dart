@@ -1,5 +1,6 @@
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/register_cubit.dart';
+import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/submit_bumil_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/search_bumil_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
@@ -21,6 +22,7 @@ import 'package:ebidan/state_management/general/cubit/app_version_cubit.dart';
 class BlocProviders {
   List<BlocProvider> providers() {
     return [
+      BlocProvider<UserCubit>(create: (context) => UserCubit()),
       BlocProvider<SelectedBumilCubit>(
         create: (context) => SelectedBumilCubit(),
       ),
@@ -71,8 +73,12 @@ class BlocProviders {
       ),
       BlocProvider<GetKehamilanCubit>(create: (context) => GetKehamilanCubit()),
       BlocProvider<GetKunjunganCubit>(create: (context) => GetKunjunganCubit()),
-      BlocProvider<LoginCubit>(create: (context) => LoginCubit()),
-      BlocProvider<RegisterCubit>(create: (context) => RegisterCubit()),
+      BlocProvider<LoginCubit>(
+        create: (context) => LoginCubit(user: context.read<UserCubit>()),
+      ),
+      BlocProvider<RegisterCubit>(
+        create: (context) => RegisterCubit(user: context.read<UserCubit>()),
+      ),
       BlocProvider<StatisticCubit>(create: (context) => StatisticCubit()),
     ];
   }

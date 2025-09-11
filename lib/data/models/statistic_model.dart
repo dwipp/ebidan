@@ -1,5 +1,3 @@
-import 'package:ebidan/data/models/persalinan_model.dart';
-
 class Statistic {
   final KehamilanStats kehamilan;
   final PasienStats pasien;

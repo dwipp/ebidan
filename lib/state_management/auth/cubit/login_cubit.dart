@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/data/models/bidan_model.dart';
+import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -7,13 +9,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
+  final UserCubit user;
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   bool _initialized = false;
 
-  LoginCubit() : super(LoginInitial());
+  LoginCubit({required this.user}) : super(LoginInitial());
 
   Future<void> initGoogleSignIn() async {
     if (_initialized) return;
@@ -41,17 +44,22 @@ class LoginCubit extends Cubit<LoginState> {
       );
 
       final userCred = await _auth.signInWithCredential(credential);
-      final user = userCred.user;
-      if (user == null) {
+      final auth = userCred.user;
+      if (auth == null) {
         emit(const LoginFailure('User not found'));
         return;
       }
 
       // cek apakah bidan sudah terdaftar
-      final doc = await _firestore.collection('bidan').doc(user.uid).get();
+      final doc = await _firestore.collection('bidan').doc(auth.uid).get();
       final isReg = doc.exists;
 
-      emit(LoginSuccess(user, isReg));
+      // set user yang login di cubit
+      if (isReg) {
+        user.loggedInUser(Bidan.fromJson(doc.data()!));
+      }
+
+      emit(LoginSuccess(auth, isReg));
     } on GoogleSignInException catch (e) {
       emit(LoginFailure('${e.code.name} - ${e.description}'));
     } catch (e) {
@@ -62,6 +70,7 @@ class LoginCubit extends Cubit<LoginState> {
   Future<void> signOut() async {
     await _auth.signOut();
     await _googleSignIn.signOut();
+    user.clear();
     emit(LogoutSuccess());
   }
 }

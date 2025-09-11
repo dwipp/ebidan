@@ -1,4 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:ebidan/data/models/bidan_model.dart';
+import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:equatable/equatable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,7 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 part 'register_state.dart';
 
 class RegisterCubit extends Cubit<RegisterState> {
-  RegisterCubit() : super(RegisterInitial());
+  final UserCubit user;
+  RegisterCubit({required this.user}) : super(RegisterInitial());
 
   List<Map<String, dynamic>> _puskesmasList = [];
   List<Map<String, dynamic>> get puskesmasList => _puskesmasList;
@@ -95,8 +98,8 @@ class RegisterCubit extends Cubit<RegisterState> {
     required String desa,
     required Map<String, dynamic> selectedPuskesmas,
   }) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
+    final auth = FirebaseAuth.instance.currentUser;
+    if (auth == null) {
       emit(const RegisterFailure('User tidak ditemukan'));
       return;
     }
@@ -104,19 +107,29 @@ class RegisterCubit extends Cubit<RegisterState> {
     emit(RegisterSubmitting());
 
     try {
-      await FirebaseFirestore.instance.collection('bidan').doc(user.uid).set({
-        'nama': nama,
-        'nip': nip,
-        'no_hp': noHp,
-        'email': email,
-        'role': role,
-        'desa': desa,
-        'created_at': FieldValue.serverTimestamp(),
-        'puskesmas': selectedPuskesmas['nama'],
-        'id_puskesmas': selectedPuskesmas['ref'],
-        'active': true,
-        'premium': false,
-      });
+      final bidan = Bidan(
+        active: true,
+        createdAt: DateTime.now(),
+        desa: desa,
+        email: email,
+        idPuskesmas: selectedPuskesmas['ref'] as DocumentReference,
+        nama: nama,
+        nip: nip,
+        noHp: noHp,
+        puskesmas: selectedPuskesmas['nama'],
+        role: role,
+        subscription: Subscription(),
+        trial: Trial(
+          expiryDate: DateTime.now().add(const Duration(days: 30)),
+          startDate: DateTime.now(),
+          used: true,
+        ),
+      );
+      await FirebaseFirestore.instance
+          .collection('bidan')
+          .doc(auth.uid)
+          .set(bidan.toJson());
+      user.loggedInUser(bidan);
 
       emit(RegisterSuccess());
     } catch (e) {
@@ -124,3 +137,5 @@ class RegisterCubit extends Cubit<RegisterState> {
     }
   }
 }
+
+class requried {}

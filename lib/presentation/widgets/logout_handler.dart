@@ -1,6 +1,7 @@
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LogoutHandler {
   /// Menangani proses logout dengan pengecekan pending writes.
@@ -45,7 +46,7 @@ class LogoutHandler {
 
   /// Proses logout
   static Future<void> _logout(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
+    context.read<LoginCubit>().signOut();
     if (context.mounted) {
       Navigator.pushReplacementNamed(context, '/login');
     }
