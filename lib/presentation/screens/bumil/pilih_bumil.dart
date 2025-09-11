@@ -26,18 +26,17 @@ class PilihBumilScreen extends StatelessWidget {
       appBar: PageHeader(
         title: 'Pilih Bumil',
         actions: [
-          pilihState == 'kunjungan'
-              ? IconButton(
-                  icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(AppRouter.addBumil).then((
-                      value,
-                    ) {
-                      _refresh(context);
-                    });
-                  },
-                )
-              : const SizedBox(),
+          if (pilihState == 'kunjungan')
+            IconButton(
+              icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
+              onPressed: () {
+                Navigator.of(context).pushNamed(AppRouter.addBumil).then((
+                  value,
+                ) {
+                  _refresh(context);
+                });
+              },
+            ),
         ],
       ),
       body: Column(

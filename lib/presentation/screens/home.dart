@@ -33,20 +33,6 @@ class HomeScreen extends StatelessWidget {
         title: 'eBidan',
         hideBackButton: true,
         actions: [
-          BlocBuilder<ConnectivityCubit, ConnectivityState>(
-            builder: (context, state) {
-              final connected = state.connected;
-              return Row(
-                children: [
-                  Icon(
-                    connected ? Icons.wifi : Icons.wifi_off,
-                    color: connected ? Colors.green : Colors.red,
-                  ),
-                  const SizedBox(width: 12),
-                ],
-              );
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => LogoutHandler.handleLogout(context),

@@ -1,15 +1,19 @@
+import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PageHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final bool hideBackButton;
+  final bool hideNetworkStatus;
 
   const PageHeader({
     Key? key,
     required this.title,
     this.actions,
     this.hideBackButton = false,
+    this.hideNetworkStatus = false,
   }) : super(key: key);
 
   @override
@@ -30,8 +34,29 @@ class PageHeader extends StatelessWidget implements PreferredSizeWidget {
               child: const Icon(Icons.arrow_back),
             ),
       title: Text(title),
-      // centerTitle: centerTitle,
-      actions: actions,
+      actions: [
+        if (!(hideNetworkStatus))
+          // indikator network
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
+              builder: (context, state) {
+                final connected = state.connected;
+                final onlyNetwork = actions == null || actions!.isEmpty;
+                return Row(
+                  children: [
+                    Icon(
+                      connected ? Icons.wifi : Icons.wifi_off,
+                      color: connected ? Colors.green : Colors.red,
+                    ),
+                    if (onlyNetwork) const SizedBox(width: 12),
+                  ],
+                );
+              },
+            ),
+          ),
+        ...?actions,
+      ],
       automaticallyImplyLeading: !hideBackButton,
     );
   }
