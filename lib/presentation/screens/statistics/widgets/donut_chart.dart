@@ -91,17 +91,21 @@ class _DonutChartState extends State<DonutChart> {
     super.dispose();
   }
 
-  // generate warna pastel cerah merata
+  // generate warna cerah merata
   List<Color> _generateBrightColors(int count) {
-  final List<Color> colors = [];
-  for (int i = 0; i < count; i++) {
-    final hue = (360 / count) * i; // sebar di spektrum
-    final saturation = 0.8 + 0.2 * (i % count) / count; // 0.8 - 1.0
-    final value = 0.85 + 0.15 * ((i + 1) % count) / count; // 0.85 - 1.0
-    colors.add(HSVColor.fromAHSV(1, hue, saturation, value).toColor());
+    final List<Color> colors = [];
+    for (int i = 0; i < count; i++) {
+      final hue = (360 / count) * i;
+      final saturation = 0.8 + 0.2 * (i % count) / count; // 0.8 - 1.0
+      final value = 0.85 + 0.15 * ((i + 1) % count) / count; // 0.85 - 1.0
+      colors.add(HSVColor.fromAHSV(1, hue, saturation, value).toColor());
+    }
+    return colors;
   }
-  return colors;
-}
+
+  String _formatValue(num value) {
+    return value % 1 == 0 ? value.toInt().toString() : value.toString();
+  }
 
 
   @override
@@ -116,7 +120,7 @@ class _DonutChartState extends State<DonutChart> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            widget.centerLabelTop ?? '$total',
+            widget.centerLabelTop ?? _formatValue(total),
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
