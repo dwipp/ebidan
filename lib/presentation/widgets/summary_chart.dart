@@ -107,7 +107,7 @@ class _SummaryChartState extends State<SummaryChart> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
-            "Jumlah Bulan Ini",
+            "Ringkasan Bulan Ini",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -151,25 +151,25 @@ class _SummaryChartState extends State<SummaryChart> {
                               index: 0,
                               value: widget.pasien.toDouble(),
                               color: Colors.orange,
-                              label: "pasien\n${widget.pasien}",
+                              label: "Pasien Baru\n${widget.pasien}",
                             ),
                             _buildSection(
                               index: 1,
                               value: widget.kehamilan.toDouble(),
                               color: Colors.pink,
-                              label: "kehamilan\n${widget.kehamilan}",
+                              label: "Ibu Hamil\n${widget.kehamilan}",
                             ),
                             _buildSection(
                               index: 2,
                               value: widget.kunjungan.toDouble(),
                               color: Colors.blue,
-                              label: "kunjungan\n${widget.kunjungan}",
+                              label: "Kunjungan\n${widget.kunjungan}",
                             ),
                             _buildSection(
                               index: 3,
                               value: widget.persalinan.toDouble(),
                               color: Colors.green,
-                              label: "persalinan\n${widget.persalinan}",
+                              label: "Persalinan\n${widget.persalinan}",
                             ),
                           ],
                           centerSpaceRadius: 60,
