@@ -14,6 +14,27 @@ class KunjunganStatsScreen extends StatelessWidget {
     final lastMonth = stats?.lastMonthData?.kunjungan;
     final warningBanner = PremiumWarningBanner.fromContext(context);
 
+    // Alternating colors untuk card kategori
+    final List<Color> cardColors = [
+      Colors.blue.shade50,
+      Colors.green.shade50,
+      Colors.orange.shade50
+    ];
+
+    // Daftar kategori
+    final List<Map<String, dynamic>> kategori = [
+      {"label": "K1", "value": lastMonth?.k1},
+      {"label": "K1 Akses", "value": lastMonth?.k1Akses},
+      {"label": "K1 Murni", "value": lastMonth?.k1Murni},
+      {"label": "K1 USG", "value": lastMonth?.k1Usg},
+      {"label": "K1 Kontrol Dokter", "value": lastMonth?.k1Dokter},
+      {"label": "K2", "value": lastMonth?.k2},
+      {"label": "K3", "value": lastMonth?.k3},
+      {"label": "K4", "value": lastMonth?.k4},
+      {"label": "K5", "value": lastMonth?.k5},
+      {"label": "K6", "value": lastMonth?.k6}
+    ];
+
     return Scaffold(
       appBar: PageHeader(title: 'Statistik Kunjungan'),
       body: Padding(
@@ -31,31 +52,35 @@ class KunjunganStatsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // TOTAL KUNJUNGAN
-              _buildDataCard("Total Kunjungan", lastMonth?.total, isTotal: true),
+              // --- TOTAL KUNJUNGAN ---
+              _buildDataCard(
+                "Total Kunjungan",
+                lastMonth?.total,
+                isTotal: true,
+                icon: Icons.bar_chart,
+              ),
 
               const SizedBox(height: 16),
 
-              // --- DATA UTAMA ---
-              GridView.count(
-                crossAxisCount: 3,
+              // --- GRID KATEGORI ---
+              GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.2,
-                children: [
-                  _buildDataCard("K1", lastMonth?.k1),
-                  _buildDataCard("K1 Akses", lastMonth?.k1Akses),
-                  _buildDataCard("K1 Murni", lastMonth?.k1Murni),
-                  _buildDataCard("K1 USG", lastMonth?.k1Usg),
-                  _buildDataCard("K1 Kontrol Dokter", lastMonth?.k1Dokter),
-                  _buildDataCard("K2", lastMonth?.k2),
-                  _buildDataCard("K3", lastMonth?.k3),
-                  _buildDataCard("K4", lastMonth?.k4),
-                  _buildDataCard("K5", lastMonth?.k5),
-                  _buildDataCard("K6", lastMonth?.k6),
-                ],
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 1.2,
+                ),
+                itemCount: kategori.length,
+                itemBuilder: (context, index) {
+                  final item = kategori[index];
+                  return _buildDataCard(
+                    item["label"],
+                    item["value"],
+                    backgroundColor: cardColors[index % cardColors.length],
+                  );
+                },
               ),
 
               const SizedBox(height: 32),
@@ -147,48 +172,47 @@ class KunjunganStatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDataCard(String label, int? value, {bool isTotal = false}) {
-  return Card(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    color: isTotal ? Colors.blue.shade50 : null,
-    elevation: isTotal ? 4 : 2,
-    child: Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: isTotal ? Colors.blue : Colors.grey,
-                fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+  Widget _buildDataCard(String label, int? value,
+      {bool isTotal = false, Color? backgroundColor, IconData? icon}) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: backgroundColor ?? (isTotal ? Colors.blue.shade100 : Colors.white),
+      elevation: isTotal ? 3 : 1,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (icon != null) Icon(icon, size: 20, color: Colors.grey[700]),
+            if (icon != null) const SizedBox(height: 4),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isTotal ? Colors.blue : Colors.grey[700],
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-          const SizedBox(height: 4),
-          Center(
-            child: Text(
+            const SizedBox(height: 8),
+            Text(
               (value ?? 0).toString(),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: isTotal ? Colors.blue : Colors.black,
+                color: isTotal ? Colors.blue : Colors.black87,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
-
-
+    );
+  }
 }
 
 /// --- PAGE RIWAYAT ---
