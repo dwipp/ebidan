@@ -23,23 +23,17 @@ class KunjunganStatsScreen extends StatelessWidget {
         selectedMonth?.kunjungan ?? stats?.lastMonthData?.kunjungan;
     final warningBanner = PremiumWarningBanner.fromContext(context);
 
-    final cardColors = [
-      Colors.blue.shade50,
-      Colors.green.shade50,
-      Colors.orange.shade50,
-    ];
-
     final List<Map<String, dynamic>> kategori = [
-      {"label": "K1", "value": selectedKunjungan?.k1},
-      {"label": "K1 Akses", "value": selectedKunjungan?.k1Akses},
-      {"label": "K1 Murni", "value": selectedKunjungan?.k1Murni},
-      {"label": "K1 USG", "value": selectedKunjungan?.k1Usg},
-      {"label": "K1 Kontrol Dokter", "value": selectedKunjungan?.k1Dokter},
-      {"label": "K2", "value": selectedKunjungan?.k2},
-      {"label": "K3", "value": selectedKunjungan?.k3},
-      {"label": "K4", "value": selectedKunjungan?.k4},
-      {"label": "K5", "value": selectedKunjungan?.k5},
-      {"label": "K6", "value": selectedKunjungan?.k6},
+      {"label": "K1", "value": selectedKunjungan?.k1, 'color':Colors.lightBlue.shade50},
+      {"label": "K1 Akses", "value": selectedKunjungan?.k1Akses, 'color':Colors.blue.shade50},
+      {"label": "K1 Murni", "value": selectedKunjungan?.k1Murni, 'color':Colors.blue.shade50},
+      {"label": "K1 USG", "value": selectedKunjungan?.k1Usg, 'color':Colors.blue.shade50},
+      {"label": "K1 Kontrol Dokter", "value": selectedKunjungan?.k1Dokter, 'color':Colors.blue.shade50},
+      {"label": "K2", "value": selectedKunjungan?.k2, 'color':Colors.green.shade50},
+      {"label": "K3", "value": selectedKunjungan?.k3, 'color':Colors.yellow.shade50},
+      {"label": "K4", "value": selectedKunjungan?.k4, 'color':Colors.orange.shade50},
+      {"label": "K5", "value": selectedKunjungan?.k5, 'color':Colors.pink.shade50},
+      {"label": "K6", "value": selectedKunjungan?.k6, 'color':Colors.red.shade100},
     ];
 
     return Scaffold(
@@ -84,7 +78,7 @@ class KunjunganStatsScreen extends StatelessWidget {
                   return AnimatedDataCard(
                     label: item["label"],
                     value: item["value"] ?? 0,
-                    backgroundColor: cardColors[index % cardColors.length],
+                    backgroundColor: item["color"],
                   );
                 },
               ),
@@ -309,7 +303,7 @@ class _AnimatedDataCardState extends State<AnimatedDataCard>
                   fontSize: 12,
                   color: widget.isTotal ? Colors.blue : Colors.grey[700],
                   fontWeight:
-                      widget.isTotal ? FontWeight.bold : FontWeight.normal,
+                      widget.isTotal ? FontWeight.bold : FontWeight.w500,
                 ),
               ),
             ),
