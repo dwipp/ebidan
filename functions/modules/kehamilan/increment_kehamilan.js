@@ -35,6 +35,7 @@ export const incrementKehamilanCount = onDocumentCreated(
             [currentMonth]: { kehamilan: { total: 1 } }
           }
         });
+        console.log(`Created new statistics for bidan: ${idBidan}, month: ${currentMonth}`);
         return;
       }
 
@@ -49,12 +50,22 @@ export const incrementKehamilanCount = onDocumentCreated(
       // increment total kehamilan
       byMonth[currentMonth].kehamilan.total++;
 
+      // --- LOGIC BATAS 13 BULAN ---
+      const months = Object.keys(byMonth).sort(); // YYYY-MM format -> urut ascending
+      if (months.length > 13) {
+        const oldestMonth = months[0];
+        delete byMonth[oldestMonth];
+        console.log(`Month limit exceeded. Deleted oldest month: ${oldestMonth} for bidan: ${idBidan}`);
+      }
+
       t.set(statsRef, {
         ...data,
         kehamilan: { all_bumil_count: (kehamilan.all_bumil_count || 0) + 1 },
         last_updated_month: currentMonth,
         by_month: byMonth
       }, { merge: true });
+
+      console.log(`Incremented kehamilan count for month: ${currentMonth}, bidan: ${idBidan}`);
     });
   }
 );
