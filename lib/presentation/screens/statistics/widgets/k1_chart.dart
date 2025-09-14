@@ -16,8 +16,9 @@ class K1Chart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final total = k1Murni + k1Akses;
-    if (total == 0)
+    if (total == 0) {
       return const SizedBox(height: 150); // prevent divide by zero
+    }
 
     return Column(
       children: [
@@ -53,14 +54,14 @@ class K1Chart extends StatelessWidget {
                     Text(
                       "$total",
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black87,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const Text(
                       "Total K1",
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                      style: TextStyle(color: Colors.black54, fontSize: 12),
                     ),
                   ],
                 ),
