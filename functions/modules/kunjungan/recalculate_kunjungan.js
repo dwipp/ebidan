@@ -19,6 +19,8 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
       const idBidan = data.id_bidan;
       const status = data.status.toLowerCase();
       const uk = data.uk ? parseUK(data.uk) : 0;
+      const isUsg = data.tgl_periksa_usg ? true : false;
+      const kontrolDokter = data.kontrol_dokter;
 
       if (!statsByBidan[idBidan]) statsByBidan[idBidan] = { by_month: {} };
 
@@ -34,8 +36,17 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
       if (!statsByBidan[idBidan].by_month[monthKey]) {
         statsByBidan[idBidan].by_month[monthKey] = { 
           kunjungan: { 
-            total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0, 
-            k1_murni:0, k1_akses:0 
+            total:0, 
+            k1:0, 
+            k2:0, 
+            k3:0, 
+            k4:0, 
+            k5:0, 
+            k6:0, 
+            k1_murni:0, 
+            k1_akses:0, 
+            k1_usg:0, 
+            k1_dokter:0 
           } 
         };
       }
@@ -48,6 +59,8 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
         kunjungan.k1++;
         if (uk <= 12) kunjungan.k1_murni++;
         else kunjungan.k1_akses++;
+        if (isUsg) kunjungan.k1_usg++;
+        if (kontrolDokter) kunjungan.k1_dokter++;
       }
       if (status === "k2") kunjungan.k2++;
       if (status === "k3") kunjungan.k3++;
@@ -68,8 +81,17 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
         if (!byMonth[month]) {
           byMonth[month] = { 
             kunjungan: { 
-              total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0, 
-              k1_murni:0, k1_akses:0 
+              total:0, 
+              k1:0, 
+              k2:0, 
+              k3:0, 
+              k4:0, 
+              k5:0, 
+              k6:0, 
+              k1_murni:0, 
+              k1_akses:0, 
+              k1_usg:0, 
+              k1_dokter:0 
             } 
           };
         }

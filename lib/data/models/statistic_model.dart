@@ -151,6 +151,8 @@ class KunjunganByMonth {
   final int k1;
   final int k1Akses;
   final int k1Murni;
+  final int k1Usg;
+  final int k1Dokter;
   final int k2;
   final int k3;
   final int k4;
@@ -162,6 +164,8 @@ class KunjunganByMonth {
     required this.k1,
     required this.k1Akses,
     required this.k1Murni,
+    required this.k1Usg,
+    required this.k1Dokter,
     required this.k2,
     required this.k3,
     required this.k4,
@@ -176,6 +180,8 @@ class KunjunganByMonth {
         k1: 0,
         k1Akses: 0,
         k1Murni: 0,
+        k1Usg: 0,
+        k1Dokter: 0,
         k2: 0,
         k3: 0,
         k4: 0,
@@ -188,6 +194,8 @@ class KunjunganByMonth {
       k1: map['k1'] ?? 0,
       k1Akses: map['k1_akses'] ?? 0,
       k1Murni: map['k1_murni'] ?? 0,
+      k1Usg: map['k1_usg'] ?? 0,
+      k1Dokter: map['k1_dokter'] ?? 0,
       k2: map['k2'] ?? 0,
       k3: map['k3'] ?? 0,
       k4: map['k4'] ?? 0,
@@ -202,6 +210,8 @@ class KunjunganByMonth {
       'k1': k1,
       'k1_akses': k1Akses,
       'k1_murni': k1Murni,
+      'k1_usg': k1Usg,
+      'k1_dokter': k1Dokter,
       'k2': k2,
       'k3': k3,
       'k4': k4,

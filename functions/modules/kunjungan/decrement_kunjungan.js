@@ -13,6 +13,8 @@ export const decrementKunjunganCount = onDocumentDeleted(
     const idBidan = dataKunjungan.id_bidan;
     const status = dataKunjungan.status.toLowerCase();
     const uk = dataKunjungan.uk ? parseUK(dataKunjungan.uk) : 0;
+    const isUsg = data.tgl_periksa_usg ? true : false;
+    const kontrolDokter = data.kontrol_dokter;
 
     // ambil bulan dari created_at dokumen kunjungan
     let currentMonth;
@@ -45,7 +47,9 @@ export const decrementKunjunganCount = onDocumentDeleted(
             k5: 0, 
             k6: 0, 
             k1_murni: 0, 
-            k1_akses: 0 
+            k1_akses: 0, 
+            k1_usg:0, 
+            k1_dokter:0 
           } 
         };
       } else if (!byMonth[currentMonth].kunjungan) {
@@ -58,7 +62,9 @@ export const decrementKunjunganCount = onDocumentDeleted(
           k5: 0, 
           k6: 0, 
           k1_murni: 0, 
-          k1_akses: 0 
+          k1_akses: 0, 
+          k1_usg:0, 
+          k1_dokter:0 
         };
       }
 
@@ -70,6 +76,8 @@ export const decrementKunjunganCount = onDocumentDeleted(
         kunjungan.k1 = Math.max(kunjungan.k1 - 1, 0);
         if (uk <= 12) kunjungan.k1_murni = Math.max(kunjungan.k1_murni - 1, 0);
         else kunjungan.k1_akses = Math.max(kunjungan.k1_akses - 1, 0);
+        if (isUsg) kunjungan.k1_usg = Math.max(kunjungan.k1_usg - 1, 0);
+        if (kontrolDokter) kunjungan.k1_dokter = Math.max(kunjungan.k1_dokter - 1, 0);
       } else if (status === "k2") kunjungan.k2 = Math.max(kunjungan.k2 - 1, 0);
       else if (status === "k3") kunjungan.k3 = Math.max(kunjungan.k3 - 1, 0);
       else if (status === "k4") kunjungan.k4 = Math.max(kunjungan.k4 - 1, 0);

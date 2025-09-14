@@ -50,6 +50,13 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
         'id_kehamilan': data.idKehamilan,
         'id_bumil': data.idBumil,
       };
+
+
+      if (firstTime) {
+        kunjungan['tgl_periksa_usg'] = selectedBumilCubit.state?.latestKehamilan?.tglPeriksaUsg;//tglPeriksaUsg;
+        kunjungan['kontrol_dokter'] = selectedBumilCubit.state?.latestKehamilan?.kontrolDokter;
+      }
+
       await docRef.set(kunjungan, SetOptions(merge: true));
       final snapshot = await docRef.get(const GetOptions(source: Source.cache));
       final newKunjungan = Kunjungan.fromFirestore(snapshot.data()!, id: id);

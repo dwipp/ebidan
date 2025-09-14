@@ -13,6 +13,8 @@ export const incrementKunjunganCount = onDocumentCreated(
     const idBidan = dataKunjungan.id_bidan;
     const status = dataKunjungan.status.toLowerCase();
     const uk = dataKunjungan.uk ? parseUK(dataKunjungan.uk) : 0;
+    const isUsg = data.tgl_periksa_usg ? true : false;
+    const kontrolDokter = data.kontrol_dokter;
 
     // ambil bulan dari created_at dokumen kunjungan
     let currentMonth;
@@ -43,7 +45,9 @@ export const incrementKunjunganCount = onDocumentCreated(
             k5: 0, 
             k6: 0, 
             k1_murni: 0, 
-            k1_akses: 0 
+            k1_akses: 0, 
+            k1_usg:0, 
+            k1_dokter:0 
           } 
         };
       } else if (!byMonth[currentMonth].kunjungan) {
@@ -56,7 +60,9 @@ export const incrementKunjunganCount = onDocumentCreated(
           k5: 0, 
           k6: 0, 
           k1_murni: 0, 
-          k1_akses: 0 
+          k1_akses: 0, 
+          k1_usg:0, 
+          k1_dokter:0 
         };
       }
 
@@ -68,6 +74,8 @@ export const incrementKunjunganCount = onDocumentCreated(
         kunjungan.k1++;
         if (uk <= 12) kunjungan.k1_murni++;
         else kunjungan.k1_akses++;
+        if (isUsg) kunjungan.k1_usg++;
+        if (kontrolDokter) kunjungan.k1_dokter++;
       } else if (status === "k2") kunjungan.k2++;
       else if (status === "k3") kunjungan.k3++;
       else if (status === "k4") kunjungan.k4++;
