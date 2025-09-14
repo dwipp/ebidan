@@ -1,4 +1,5 @@
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/donut_chart.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/k1_chart.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
@@ -10,12 +11,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class KunjunganStatsScreen extends StatelessWidget {
+  final String? monthKey;
+  const KunjunganStatsScreen({super.key, this.monthKey});
+
+
   @override
   Widget build(BuildContext context) {
-    final stats = context.watch<StatisticCubit>().state.statistic;
-    final lastMonth = stats?.lastMonthData?.kunjungan;
+    final stats = context.read<StatisticCubit>().state.statistic;
+    final selectedMonth = stats?.byMonth[monthKey];
+    // final lastMonth = stats?.lastMonthData?.kunjungan;
+    final selectedKunjungan = selectedMonth?.kunjungan ?? stats?.lastMonthData?.kunjungan;
     final warningBanner = PremiumWarningBanner.fromContext(context);
-
+    
     // Alternating colors untuk card kategori
     final List<Color> cardColors = [
       Colors.blue.shade50,
@@ -24,16 +31,16 @@ class KunjunganStatsScreen extends StatelessWidget {
     ];
 
     final List<Map<String, dynamic>> kategori = [
-      {"label": "K1", "value": lastMonth?.k1},
-      {"label": "K1 Akses", "value": lastMonth?.k1Akses},
-      {"label": "K1 Murni", "value": lastMonth?.k1Murni},
-      {"label": "K1 USG", "value": lastMonth?.k1Usg},
-      {"label": "K1 Kontrol Dokter", "value": lastMonth?.k1Dokter},
-      {"label": "K2", "value": lastMonth?.k2},
-      {"label": "K3", "value": lastMonth?.k3},
-      {"label": "K4", "value": lastMonth?.k4},
-      {"label": "K5", "value": lastMonth?.k5},
-      {"label": "K6", "value": lastMonth?.k6},
+      {"label": "K1", "value": selectedKunjungan?.k1},
+      {"label": "K1 Akses", "value": selectedKunjungan?.k1Akses},
+      {"label": "K1 Murni", "value": selectedKunjungan?.k1Murni},
+      {"label": "K1 USG", "value": selectedKunjungan?.k1Usg},
+      {"label": "K1 Kontrol Dokter", "value": selectedKunjungan?.k1Dokter},
+      {"label": "K2", "value": selectedKunjungan?.k2},
+      {"label": "K3", "value": selectedKunjungan?.k3},
+      {"label": "K4", "value": selectedKunjungan?.k4},
+      {"label": "K5", "value": selectedKunjungan?.k5},
+      {"label": "K6", "value": selectedKunjungan?.k6},
     ];
 
     return Scaffold(
@@ -46,7 +53,7 @@ class KunjunganStatsScreen extends StatelessWidget {
             children: [
               if (warningBanner != null) warningBanner,
               Text(
-                "Laporan Bulan ${Utils.formattedYearMonth(stats?.lastUpdatedMonth ?? '')}",
+                "Laporan Bulan ${Utils.formattedYearMonth(monthKey ?? stats?.lastUpdatedMonth ?? '')}",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -56,7 +63,7 @@ class KunjunganStatsScreen extends StatelessWidget {
               // --- TOTAL KUNJUNGAN ---
               AnimatedDataCard(
                 label: "Total Kunjungan",
-                value: lastMonth?.total ?? 0,
+                value: selectedKunjungan?.total ?? 0,
                 isTotal: true,
                 icon: Icons.bar_chart,
               ),
@@ -109,15 +116,15 @@ class KunjunganStatsScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       DonutChart(
                         data: [
-                          PieChartDataItem(label: 'K1', value: (lastMonth?.k1 ?? 0).toDouble()),
-                          PieChartDataItem(label: 'K2', value: (lastMonth?.k2 ?? 0).toDouble()),
-                          PieChartDataItem(label: 'K3', value: (lastMonth?.k3 ?? 0).toDouble()),
-                          PieChartDataItem(label: 'K4', value: (lastMonth?.k4 ?? 0).toDouble()),
-                          PieChartDataItem(label: 'K5', value: (lastMonth?.k5 ?? 0).toDouble()),
-                          PieChartDataItem(label: 'K6', value: (lastMonth?.k6 ?? 0).toDouble()),
+                          PieChartDataItem(label: 'K1', value: (selectedKunjungan?.k1 ?? 0).toDouble()),
+                          PieChartDataItem(label: 'K2', value: (selectedKunjungan?.k2 ?? 0).toDouble()),
+                          PieChartDataItem(label: 'K3', value: (selectedKunjungan?.k3 ?? 0).toDouble()),
+                          PieChartDataItem(label: 'K4', value: (selectedKunjungan?.k4 ?? 0).toDouble()),
+                          PieChartDataItem(label: 'K5', value: (selectedKunjungan?.k5 ?? 0).toDouble()),
+                          PieChartDataItem(label: 'K6', value: (selectedKunjungan?.k6 ?? 0).toDouble()),
                         ],
                         showCenterValue: true,
-                        centerLabelTop: '${lastMonth?.total ?? 0}',
+                        centerLabelTop: '${selectedKunjungan?.total ?? 0}',
                         centerLabelBottom: 'Kunjungan',
                       ),
 
@@ -139,10 +146,10 @@ class KunjunganStatsScreen extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodyLarge),
                       const SizedBox(height: 12),
                       K1Chart(
-                        k1Murni: lastMonth?.k1Murni ?? 0,
-                        k1Akses: lastMonth?.k1Akses ?? 0,
-                        k1USG: lastMonth?.k1Usg ?? 0,
-                        k1KontrolDokter: lastMonth?.k1Dokter ?? 0,
+                        k1Murni: selectedKunjungan?.k1Murni ?? 0,
+                        k1Akses: selectedKunjungan?.k1Akses ?? 0,
+                        k1USG: selectedKunjungan?.k1Usg ?? 0,
+                        k1KontrolDokter: selectedKunjungan?.k1Dokter ?? 0,
                         showCenterValue: true,
                       ),
                     ],
@@ -153,16 +160,12 @@ class KunjunganStatsScreen extends StatelessWidget {
               const SizedBox(height: 32),
 
               // --- HISTORY BUTTON ---
+              if (monthKey == null)
               SizedBox(
                 width: double.infinity,
                 child: Button(isSubmitting: false, onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const KunjunganHistoryScreen(),
-                        ),
-                      );
-                    }, label: "Lihat Riwayat Bulanan", icon: Icons.history),
+                      Navigator.pushNamed(context, AppRouter.listKunjunganStats);
+                    }, label: "Lihat Riwayat Bulanan", icon: Icons.history, ),
               ),
             ],
           ),
@@ -277,36 +280,6 @@ class _AnimatedDataCardState extends State<AnimatedDataCard>
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// --- PAGE RIWAYAT ---
-class KunjunganHistoryScreen extends StatelessWidget {
-  const KunjunganHistoryScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> history = [
-      {"bulan": "Agustus 2025", "total": 120},
-      {"bulan": "Juli 2025", "total": 98},
-      {"bulan": "Juni 2025", "total": 110},
-    ];
-
-    return Scaffold(
-      appBar: PageHeader(title: "Riwayat Kunjungan"),
-      body: ListView.separated(
-        itemCount: history.length,
-        separatorBuilder: (_, __) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final item = history[index];
-          return ListTile(
-            leading: const Icon(Icons.calendar_month),
-            title: Text(item["bulan"]),
-            subtitle: Text("Total kunjungan: ${item["total"]}"),
-          );
-        },
       ),
     );
   }

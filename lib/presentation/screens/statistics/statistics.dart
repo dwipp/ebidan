@@ -22,7 +22,7 @@ class StatisticsScreen extends StatelessWidget {
               icon: Icons.history,
               title: 'Kunjungan',
               onTap: () {
-                Navigator.pushNamed(context, AppRouter.kunjunganStats);
+                Navigator.pushNamed(context, AppRouter.kunjunganStats, arguments: {'monthKey':null});
               },
             ),
           ],
