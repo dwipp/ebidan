@@ -4,20 +4,24 @@ import 'package:flutter/material.dart';
 class K1Chart extends StatelessWidget {
   final int k1Murni;
   final int k1Akses;
+  final int k1USG;
+  final int k1KontrolDokter;
   final bool showCenterValue;
 
   const K1Chart({
     super.key,
     required this.k1Murni,
     required this.k1Akses,
+    required this.k1USG,
+    required this.k1KontrolDokter,
     this.showCenterValue = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final total = k1Murni + k1Akses;
+    final total = k1Murni + k1Akses + k1USG + k1KontrolDokter;
     if (total == 0) {
-      return const SizedBox(height: 150); // prevent divide by zero
+      return const SizedBox(height: 180); // prevent divide by zero
     }
 
     return Column(
@@ -44,6 +48,18 @@ class K1Chart extends StatelessWidget {
                       radius: 50,
                       title: '${((k1Akses / total) * 100).toStringAsFixed(1)}%',
                     ),
+                    PieChartSectionData(
+                      value: k1USG.toDouble(),
+                      color: Colors.blueAccent.shade700,
+                      radius: 50,
+                      title: '${((k1USG / total) * 100).toStringAsFixed(1)}%',
+                    ),
+                    PieChartSectionData(
+                      value: k1KontrolDokter.toDouble(),
+                      color: Colors.purpleAccent.shade700,
+                      radius: 50,
+                      title: '${((k1KontrolDokter / total) * 100).toStringAsFixed(1)}%',
+                    ),
                   ],
                 ),
               ),
@@ -54,14 +70,14 @@ class K1Chart extends StatelessWidget {
                     Text(
                       "$total",
                       style: const TextStyle(
-                        color: Colors.black87,
+                        color: Colors.black54,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const Text(
                       "Total K1",
-                      style: TextStyle(color: Colors.black54, fontSize: 12),
+                      style: TextStyle(color: Colors.black45, fontSize: 12),
                     ),
                   ],
                 ),
@@ -69,18 +85,15 @@ class K1Chart extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 16,
+          runSpacing: 8,
           children: [
-            _buildLegend(
-              color: Colors.greenAccent.shade700,
-              text: "K1 Murni ($k1Murni)",
-            ),
-            const SizedBox(width: 16),
-            _buildLegend(
-              color: Colors.orangeAccent.shade700,
-              text: "K1 Akses ($k1Akses)",
-            ),
+            _buildLegend(color: Colors.greenAccent.shade700, text: "K1 Murni ($k1Murni)"),
+            _buildLegend(color: Colors.orangeAccent.shade700, text: "K1 Akses ($k1Akses)"),
+            _buildLegend(color: Colors.blueAccent.shade700, text: "K1 USG ($k1USG)"),
+            _buildLegend(color: Colors.purpleAccent.shade700, text: "K1 Kontrol Dokter ($k1KontrolDokter)"),
           ],
         ),
       ],
@@ -89,6 +102,7 @@ class K1Chart extends StatelessWidget {
 
   Widget _buildLegend({required Color color, required String text}) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 14,

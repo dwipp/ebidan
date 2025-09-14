@@ -141,6 +141,8 @@ class KunjunganStatsScreen extends StatelessWidget {
                       K1Chart(
                         k1Murni: lastMonth?.k1Murni ?? 0,
                         k1Akses: lastMonth?.k1Akses ?? 0,
+                        k1USG: lastMonth?.k1Usg ?? 0,
+                        k1KontrolDokter: lastMonth?.k1Dokter ?? 0,
                         showCenterValue: true,
                       ),
                     ],
