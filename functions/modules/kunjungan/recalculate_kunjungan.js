@@ -8,8 +8,6 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
   try {
     const snapshot = await db.collection("kunjungan").get();
     const statsByBidan = {};
-
-    // Track latest month per bidan
     const latestMonthByBidan = {};
 
     snapshot.forEach(doc => {
@@ -28,7 +26,7 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
       const createdAt = data.created_at?.toDate ? data.created_at.toDate() : new Date();
       const monthKey = getMonthString(createdAt);
 
-      // update latest month per bidan
+      // Update latest month per bidan
       if (!latestMonthByBidan[idBidan] || monthKey > latestMonthByBidan[idBidan]) {
         latestMonthByBidan[idBidan] = monthKey;
       }
@@ -36,17 +34,8 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
       if (!statsByBidan[idBidan].by_month[monthKey]) {
         statsByBidan[idBidan].by_month[monthKey] = { 
           kunjungan: { 
-            total:0, 
-            k1:0, 
-            k2:0, 
-            k3:0, 
-            k4:0, 
-            k5:0, 
-            k6:0, 
-            k1_murni:0, 
-            k1_akses:0, 
-            k1_usg:0, 
-            k1_dokter:0 
+            total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0,
+            k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0
           } 
         };
       }
@@ -71,46 +60,50 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
 
     const batch = db.batch();
 
+    // Tentukan bulan awal 13 bulan terakhir
+    const now = new Date();
+    // StartMonthDate = 12 bulan sebelum bulan ini, termasuk bulan ini
+    const startMonthDate = new Date(now.getFullYear(), now.getMonth() - 12, 1); 
+    const startMonthKey = getMonthString(startMonthDate);
+
     for (const [idBidan, stats] of Object.entries(statsByBidan)) {
       const ref = db.doc(`statistics/${idBidan}`);
       const doc = await ref.get();
       const existing = doc.exists ? doc.data() : {};
-      const byMonth = existing.by_month || {};
+      let byMonth = existing.by_month || {};
+      const skippedMonths = [];
 
+      // Filter existing.by_month agar tetap dalam 13 bulan terakhir
+      byMonth = Object.entries(byMonth)
+        .filter(([month]) => month >= startMonthKey)
+        .reduce((acc, [month, counts]) => {
+          acc[month] = counts;
+          return acc;
+        }, {});
+      skippedMonths.push(...Object.keys(existing.by_month).filter(month => month < startMonthKey));
+
+      // Merge data baru dari stats
       for (const [month, counts] of Object.entries(stats.by_month)) {
-        if (!byMonth[month]) {
-          byMonth[month] = { 
-            kunjungan: { 
-              total:0, 
-              k1:0, 
-              k2:0, 
-              k3:0, 
-              k4:0, 
-              k5:0, 
-              k6:0, 
-              k1_murni:0, 
-              k1_akses:0, 
-              k1_usg:0, 
-              k1_dokter:0 
-            } 
-          };
+        if (month < startMonthKey) {
+          skippedMonths.push(month);
+          continue;
         }
-
-        // gabungkan hasil baru
-        byMonth[month].kunjungan = {
-          ...byMonth[month].kunjungan,
-          ...counts.kunjungan
-        };
+        if (!byMonth[month]) byMonth[month] = { kunjungan: { total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0 } };
+        byMonth[month].kunjungan = { ...byMonth[month].kunjungan, ...counts.kunjungan };
       }
 
-      // gunakan latestMonthByBidan untuk last_updated_month
-      const lastUpdatedMonth = latestMonthByBidan[idBidan] || getMonthString(new Date());
+      // Urutkan bulan ascending sebelum disimpan
+      byMonth = Object.fromEntries(
+        Object.entries(byMonth).sort(([a], [b]) => a.localeCompare(b))
+      );
 
       batch.set(ref, { 
         ...existing, 
         by_month: byMonth,
-        last_updated_month: lastUpdatedMonth,
+        last_updated_month: latestMonthByBidan[idBidan] || getMonthString(new Date()),
       }, { merge: true });
+
+      console.log(`Bidan: ${idBidan} | Total bulan tersimpan: ${Object.keys(byMonth).length} | Bulan terbaru: ${latestMonthByBidan[idBidan]} | Bulan di-skip: ${skippedMonths.join(", ")}`);
     }
 
     await batch.commit();

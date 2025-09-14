@@ -13,10 +13,10 @@ export const incrementKunjunganCount = onDocumentCreated(
     const idBidan = dataKunjungan.id_bidan;
     const status = dataKunjungan.status.toLowerCase();
     const uk = dataKunjungan.uk ? parseUK(dataKunjungan.uk) : 0;
-    const isUsg = data.tgl_periksa_usg ? true : false;
-    const kontrolDokter = data.kontrol_dokter;
+    const isUsg = dataKunjungan.tgl_periksa_usg ? true : false;
+    const kontrolDokter = dataKunjungan.kontrol_dokter;
 
-    // ambil bulan dari created_at dokumen kunjungan
+    // Ambil bulan dari created_at dokumen kunjungan
     let currentMonth;
     if (dataKunjungan.created_at?.toDate) {
       currentMonth = getMonthString(dataKunjungan.created_at.toDate());
@@ -33,42 +33,24 @@ export const incrementKunjunganCount = onDocumentCreated(
       const existing = doc.exists ? doc.data() : {};
       const byMonth = existing.by_month || {};
 
-      // pastikan bulan dan objek kunjungan sudah ada
+      // --- Pastikan bulan dan objek kunjungan sudah ada ---
       if (!byMonth[currentMonth]) {
         byMonth[currentMonth] = { 
           kunjungan: { 
-            total: 0, 
-            k1: 0, 
-            k2: 0, 
-            k3: 0, 
-            k4: 0, 
-            k5: 0, 
-            k6: 0, 
-            k1_murni: 0, 
-            k1_akses: 0, 
-            k1_usg:0, 
-            k1_dokter:0 
+            total: 0, k1: 0, k2: 0, k3: 0, k4: 0, k5: 0, k6: 0,
+            k1_murni: 0, k1_akses: 0, k1_usg: 0, k1_dokter: 0
           } 
         };
       } else if (!byMonth[currentMonth].kunjungan) {
         byMonth[currentMonth].kunjungan = { 
-          total: 0, 
-          k1: 0, 
-          k2: 0, 
-          k3: 0, 
-          k4: 0, 
-          k5: 0, 
-          k6: 0, 
-          k1_murni: 0, 
-          k1_akses: 0, 
-          k1_usg:0, 
-          k1_dokter:0 
+          total: 0, k1: 0, k2: 0, k3: 0, k4: 0, k5: 0, k6: 0,
+          k1_murni: 0, k1_akses: 0, k1_usg: 0, k1_dokter: 0
         };
       }
 
       const kunjungan = byMonth[currentMonth].kunjungan;
 
-      // Update sesuai status
+      // --- Update counts sesuai status ---
       kunjungan.total++;
       if (status === "k1") {
         kunjungan.k1++;
@@ -82,11 +64,22 @@ export const incrementKunjunganCount = onDocumentCreated(
       else if (status === "k5") kunjungan.k5++;
       else if (status === "k6") kunjungan.k6++;
 
+      // --- LOGIC BATAS 13 BULAN ---
+      const months = Object.keys(byMonth).sort(); // YYYY-MM format -> urut ascending
+      if (months.length > 13) {
+        const oldestMonth = months[0];
+        delete byMonth[oldestMonth];
+        console.log(`Month limit exceeded. Deleted oldest month: ${oldestMonth} for bidan: ${idBidan}`);
+      }
+
+      // --- Simpan ke Firestore ---
       t.set(statsRef, { 
         ...existing, 
         by_month: byMonth,
         last_updated_month: currentMonth
       }, { merge: true });
+
+      console.log(`Incremented kunjungan count for month: ${currentMonth}, bidan: ${idBidan}`);
     });
   }
 );

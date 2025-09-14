@@ -13,8 +13,8 @@ export const decrementKunjunganCount = onDocumentDeleted(
     const idBidan = dataKunjungan.id_bidan;
     const status = dataKunjungan.status.toLowerCase();
     const uk = dataKunjungan.uk ? parseUK(dataKunjungan.uk) : 0;
-    const isUsg = data.tgl_periksa_usg ? true : false;
-    const kontrolDokter = data.kontrol_dokter;
+    const isUsg = dataKunjungan.tgl_periksa_usg ? true : false;
+    const kontrolDokter = dataKunjungan.kontrol_dokter;
 
     // ambil bulan dari created_at dokumen kunjungan
     let currentMonth;
