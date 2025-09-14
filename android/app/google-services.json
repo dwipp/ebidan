@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "347784301575-kle0s79nu944stvig67lpf6065h1ru63.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.ebidan.aos",
+            "certificate_hash": "c290edb4e4f9432ba1c06ecb1e918d667b4f9b96"
+          }
+        },
+        {
           "client_id": "347784301575-5p4da7ubhuho5avn8cad4if895debbut.apps.googleusercontent.com",
           "client_type": 3
         }
