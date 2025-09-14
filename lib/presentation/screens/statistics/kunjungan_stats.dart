@@ -31,19 +31,27 @@ class KunjunganStatsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
+              // TOTAL KUNJUNGAN
+              _buildDataCard("Total Kunjungan", lastMonth?.total, isTotal: true),
+
+              const SizedBox(height: 16),
+
               // --- DATA UTAMA ---
               GridView.count(
-                crossAxisCount: 2,
+                crossAxisCount: 3,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 1.6,
+                childAspectRatio: 1.2,
                 children: [
-                  _buildDataCard("Total Kunjungan", lastMonth?.total),
                   _buildDataCard("K1", lastMonth?.k1),
                   _buildDataCard("K1 Akses", lastMonth?.k1Akses),
                   _buildDataCard("K1 Murni", lastMonth?.k1Murni),
+                  _buildDataCard("K1 USG", lastMonth?.k1Usg),
+                  _buildDataCard("K1 Kontrol Dokter", lastMonth?.k1Dokter),
+                  _buildDataCard("K2", lastMonth?.k2),
+                  _buildDataCard("K3", lastMonth?.k3),
                   _buildDataCard("K4", lastMonth?.k4),
                   _buildDataCard("K5", lastMonth?.k5),
                   _buildDataCard("K6", lastMonth?.k6),
@@ -139,34 +147,48 @@ class KunjunganStatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDataCard(String label, int? value) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                )),
-            const SizedBox(height: 4),
-            Text(
+  Widget _buildDataCard(String label, int? value, {bool isTotal = false}) {
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    color: isTotal ? Colors.blue.shade50 : null,
+    elevation: isTotal ? 4 : 2,
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: isTotal ? Colors.blue : Colors.grey,
+                fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Center(
+            child: Text(
               (value ?? 0).toString(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: isTotal ? Colors.blue : Colors.black,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+
 }
 
 /// --- PAGE RIWAYAT ---
