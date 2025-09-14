@@ -36,29 +36,29 @@ class K1Chart extends StatelessWidget {
                   sectionsSpace: 4,
                   centerSpaceRadius: 50,
                   sections: [
-                    PieChartSectionData(
+                    _buildSection(
                       value: k1Murni.toDouble(),
                       color: Colors.greenAccent.shade700,
-                      radius: 50,
-                      title: '${((k1Murni / total) * 100).toStringAsFixed(1)}%',
+                      label: k1Murni,
+                      total: total,
                     ),
-                    PieChartSectionData(
+                    _buildSection(
                       value: k1Akses.toDouble(),
                       color: Colors.orangeAccent.shade700,
-                      radius: 50,
-                      title: '${((k1Akses / total) * 100).toStringAsFixed(1)}%',
+                      label: k1Akses,
+                      total: total,
                     ),
-                    PieChartSectionData(
+                    _buildSection(
                       value: k1USG.toDouble(),
                       color: Colors.blueAccent.shade700,
-                      radius: 50,
-                      title: '${((k1USG / total) * 100).toStringAsFixed(1)}%',
+                      label: k1USG,
+                      total: total,
                     ),
-                    PieChartSectionData(
+                    _buildSection(
                       value: k1KontrolDokter.toDouble(),
                       color: Colors.purpleAccent.shade700,
-                      radius: 50,
-                      title: '${((k1KontrolDokter / total) * 100).toStringAsFixed(1)}%',
+                      label: k1KontrolDokter,
+                      total: total,
                     ),
                   ],
                 ),
@@ -90,13 +90,49 @@ class K1Chart extends StatelessWidget {
           spacing: 16,
           runSpacing: 8,
           children: [
-            _buildLegend(color: Colors.greenAccent.shade700, text: "K1 Murni ($k1Murni)"),
-            _buildLegend(color: Colors.orangeAccent.shade700, text: "K1 Akses ($k1Akses)"),
-            _buildLegend(color: Colors.blueAccent.shade700, text: "K1 USG ($k1USG)"),
-            _buildLegend(color: Colors.purpleAccent.shade700, text: "K1 Kontrol Dokter ($k1KontrolDokter)"),
+            _buildLegend(color: Colors.greenAccent.shade700, text: "K1 Murni"),
+            _buildLegend(color: Colors.orangeAccent.shade700, text: "K1 Akses"),
+            _buildLegend(color: Colors.blueAccent.shade700, text: "K1 USG"),
+            _buildLegend(color: Colors.purpleAccent.shade700, text: "K1 Kontrol Dokter"),
           ],
         ),
       ],
+    );
+  }
+
+  PieChartSectionData _buildSection({
+    required double value,
+    required Color color,
+    required int label,
+    required int total,
+  }) {
+    return PieChartSectionData(
+      value: value,
+      showTitle: false,
+      color: color,
+      radius: 50,
+      badgeWidget: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '${((value / total) * 100).toStringAsFixed(1)}%',
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          Text(
+            '$label',
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.normal,
+              color: Colors.white70,
+            ),
+          ),
+        ],
+      ),
+      titlePositionPercentageOffset: 0.6, // sesuaikan posisi text di tengah
     );
   }
 
