@@ -187,7 +187,7 @@ class KunjunganStatsScreen extends StatelessWidget {
               const SizedBox(height: 32),
 
               // --- HISTORY BUTTON ---
-              if (monthKey == null)
+              if (monthKey == null) ...[
                 SizedBox(
                   width: double.infinity,
                   child: Button(
@@ -199,6 +199,46 @@ class KunjunganStatsScreen extends StatelessWidget {
                     icon: Icons.history,
                   ),
                 ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: Button(
+                    isSubmitting: false,
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRouter.trenKunjunganStats, arguments: {'monthKeys':['2025-07', '2025-08', '2025-09']});
+                    },
+                    label: "Tren 3 Bulan Terakhir",
+                    icon: Icons.trending_up,
+                    secondaryButton: true,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: Button(
+                    isSubmitting: false,
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRouter.listKunjunganStats);
+                    },
+                    label: "Tren 6 Bulan Terakhir",
+                    icon: Icons.show_chart,
+                    secondaryButton: true,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: Button(
+                    isSubmitting: false,
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRouter.listKunjunganStats);
+                    },
+                    label: "Tren 1 Tahun Terakhir",
+                    icon: Icons.insert_chart_outlined,
+                    secondaryButton: true,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
