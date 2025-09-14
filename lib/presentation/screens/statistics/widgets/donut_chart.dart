@@ -6,12 +6,14 @@ class DonutChart extends StatelessWidget {
   final Map<String, num> data;
   final String? centerName;
   final num? centerValue;
+  final bool showLegend;
 
   const DonutChart({
     super.key,
     required this.data,
     this.centerName,
     this.centerValue,
+    this.showLegend = true,
   });
 
   Color _getRandomColor() {
@@ -32,37 +34,47 @@ class DonutChart extends StatelessWidget {
     data.forEach((name, value) {
       final color = _getRandomColor();
 
+      // Judul section
+      String sectionTitle;
+      if (showLegend) {
+        sectionTitle = value.toStringAsFixed(0);
+      } else {
+        sectionTitle = "$name\n${value.toStringAsFixed(0)}";
+      }
+
       sections.add(
         PieChartSectionData(
           value: value.toDouble(),
           color: color,
-          title: value.toStringAsFixed(0), // angka di chart
+          title: sectionTitle,
           radius: 70,
           titleStyle: const TextStyle(
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
       );
 
-      legends.add(
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 16,
-              height: 16,
-              margin: const EdgeInsets.only(right: 6),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: color,
+      if (showLegend) {
+        legends.add(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 16,
+                height: 16,
+                margin: const EdgeInsets.only(right: 6),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: color,
+                ),
               ),
-            ),
-            Text(name),
-          ],
-        ),
-      );
+              Text(name),
+            ],
+          ),
+        );
+      }
     });
 
     return Column(
@@ -105,12 +117,14 @@ class DonutChart extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 16),
-        Wrap(
-          spacing: 12,
-          runSpacing: 8,
-          children: legends,
-        ),
+        if (showLegend) ...[
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            children: legends,
+          ),
+        ],
       ],
     );
   }

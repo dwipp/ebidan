@@ -1,11 +1,13 @@
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/donut_chart.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/k1_chart.dart';
+import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/premium_warning_banner.dart';
 import 'package:ebidan/state_management/general/cubit/statistic_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class KunjunganStatsScreen extends StatelessWidget {
   @override
@@ -21,7 +23,6 @@ class KunjunganStatsScreen extends StatelessWidget {
       Colors.orange.shade50
     ];
 
-    // Daftar kategori
     final List<Map<String, dynamic>> kategori = [
       {"label": "K1", "value": lastMonth?.k1},
       {"label": "K1 Akses", "value": lastMonth?.k1Akses},
@@ -32,7 +33,7 @@ class KunjunganStatsScreen extends StatelessWidget {
       {"label": "K3", "value": lastMonth?.k3},
       {"label": "K4", "value": lastMonth?.k4},
       {"label": "K5", "value": lastMonth?.k5},
-      {"label": "K6", "value": lastMonth?.k6}
+      {"label": "K6", "value": lastMonth?.k6},
     ];
 
     return Scaffold(
@@ -53,9 +54,9 @@ class KunjunganStatsScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               // --- TOTAL KUNJUNGAN ---
-              _buildDataCard(
-                "Total Kunjungan",
-                lastMonth?.total,
+              AnimatedDataCard(
+                label: "Total Kunjungan",
+                value: lastMonth?.total ?? 0,
                 isTotal: true,
                 icon: Icons.bar_chart,
               ),
@@ -75,9 +76,9 @@ class KunjunganStatsScreen extends StatelessWidget {
                 itemCount: kategori.length,
                 itemBuilder: (context, index) {
                   final item = kategori[index];
-                  return _buildDataCard(
-                    item["label"],
-                    item["value"],
+                  return AnimatedDataCard(
+                    label: item["label"],
+                    value: item["value"] ?? 0,
                     backgroundColor: cardColors[index % cardColors.length],
                   );
                 },
@@ -93,6 +94,37 @@ class KunjunganStatsScreen extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 16),
+              
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Text("Perbandingan Kunjungan",
+                          style: Theme.of(context).textTheme.bodyLarge),
+                      const SizedBox(height: 12),
+                      DonutChart(
+                        data: {
+                          "K1": (lastMonth?.k1 ?? 0).toDouble(),
+                          "K2": (lastMonth?.k2 ?? 0).toDouble(),
+                          "K3": (lastMonth?.k3 ?? 0).toDouble(),
+                          "K4": (lastMonth?.k4 ?? 0).toDouble(),
+                          "K5": (lastMonth?.k5 ?? 0).toDouble(),
+                          "K6": (lastMonth?.k6 ?? 0).toDouble(),
+                        },
+                        centerName: "Kunjungan",
+                        centerValue: (lastMonth?.total ?? 0).toDouble(),
+                        showLegend: false,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
               Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -114,56 +146,20 @@ class KunjunganStatsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Text("Perbandingan Kunjungan",
-                          style: Theme.of(context).textTheme.bodyLarge),
-                      const SizedBox(height: 12),
-                      DonutChart(
-                        data: {
-                          "K1": (lastMonth?.k1 ?? 0).toDouble(),
-                          "K4": (lastMonth?.k4 ?? 0).toDouble(),
-                          "K5": (lastMonth?.k5 ?? 0).toDouble(),
-                          "K6": (lastMonth?.k6 ?? 0).toDouble(),
-                        },
-                        centerName: "Kunjungan",
-                        centerValue: (lastMonth?.total ?? 0).toDouble(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
 
               const SizedBox(height: 32),
 
               // --- HISTORY BUTTON ---
-              Center(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const KunjunganHistoryScreen(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.history),
-                  label: const Text("Lihat Riwayat Bulanan"),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
+              SizedBox(
+                width: double.infinity,
+                child: Button(isSubmitting: false, onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const KunjunganHistoryScreen(),
+                        ),
+                      );
+                    }, label: "Lihat Riwayat Bulanan", icon: Icons.history),
               ),
             ],
           ),
@@ -171,41 +167,109 @@ class KunjunganStatsScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildDataCard(String label, int? value,
-      {bool isTotal = false, Color? backgroundColor, IconData? icon}) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: backgroundColor ?? (isTotal ? Colors.blue.shade100 : Colors.white),
-      elevation: isTotal ? 3 : 1,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+/// --- Animated Data Card ---
+class AnimatedDataCard extends StatefulWidget {
+  final String label;
+  final int value;
+  final bool isTotal;
+  final Color? backgroundColor;
+  final IconData? icon;
+
+  const AnimatedDataCard({
+    super.key,
+    required this.label,
+    required this.value,
+    this.isTotal = false,
+    this.backgroundColor,
+    this.icon,
+  });
+
+  @override
+  State<AnimatedDataCard> createState() => _AnimatedDataCardState();
+}
+
+class _AnimatedDataCardState extends State<AnimatedDataCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<int> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 800));
+    _animation = IntTween(begin: 0, end: widget.value).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeOut))
+      ..addListener(() {
+        setState(() {});
+      });
+    _controller.forward();
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedDataCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      _animation = IntTween(begin: 0, end: widget.value).animate(
+          CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+      _controller.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _controller.forward(from: 0),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        decoration: BoxDecoration(
+          color: widget.backgroundColor ??
+              (widget.isTotal ? Colors.blue.shade100 : Colors.white),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: widget.isTotal ? 8 : 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (icon != null) Icon(icon, size: 20, color: Colors.grey[700]),
-            if (icon != null) const SizedBox(height: 4),
+            if (widget.icon != null)
+              Icon(widget.icon, size: 20, color: Colors.grey[700]),
+            if (widget.icon != null) const SizedBox(height: 4),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                label,
+                widget.label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: isTotal ? Colors.blue : Colors.grey[700],
-                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                  color: widget.isTotal ? Colors.blue : Colors.grey[700],
+                  fontWeight:
+                      widget.isTotal ? FontWeight.bold : FontWeight.normal,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              (value ?? 0).toString(),
+              NumberFormat.compact().format(_animation.value),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: isTotal ? Colors.blue : Colors.black87,
+                color: widget.isTotal ? Colors.blue : Colors.black87,
               ),
             ),
           ],
@@ -221,7 +285,6 @@ class KunjunganHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data sementara, bisa diganti dengan data dari StatisticCubit
     final List<Map<String, dynamic>> history = [
       {"bulan": "Agustus 2025", "total": 120},
       {"bulan": "Juli 2025", "total": 98},
