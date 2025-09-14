@@ -16,33 +16,34 @@ export const incrementPasienCount = onDocumentCreated(
 
     await db.runTransaction(async (t) => {
       const doc = await t.get(statsRef);
+      const existing = doc.exists ? doc.data() : {};
+      const byMonth = existing.by_month || {};
+      const skippedMonths = [];
 
-      if (!doc.exists) {
-        t.set(statsRef, {
-          last_updated_month: currentMonth,
-          by_month: { 
-            [currentMonth]: { 
-              pasien: { total: 1 } 
-            } 
-          }
-        });
-        return;
-      }
+      // --- Pastikan struktur by_month ada ---
+      if (!byMonth[currentMonth]) byMonth[currentMonth] = { pasien: { total: 0 } };
+      else if (!byMonth[currentMonth].pasien) byMonth[currentMonth].pasien = { total: 0 };
 
-      const data = doc.data();
-      const byMonth = data.by_month || {};
-
-      // pastikan struktur ada
-      if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
-      if (!byMonth[currentMonth].pasien) byMonth[currentMonth].pasien = { total: 0 };
-
+      // --- Increment total pasien ---
       byMonth[currentMonth].pasien.total++;
 
+      // --- LOGIC BATAS 13 BULAN ---
+      const months = Object.keys(byMonth).sort(); // YYYY-MM format -> urut ascending
+      if (months.length > 13) {
+        const oldestMonth = months[0];
+        delete byMonth[oldestMonth];
+        skippedMonths.push(oldestMonth);
+        console.log(`Month limit exceeded. Deleted oldest month: ${oldestMonth} for bidan: ${idBidan}`);
+      }
+
+      // --- Simpan ke Firestore ---
       t.set(statsRef, {
-        ...data,
+        ...existing,
         last_updated_month: currentMonth,
         by_month: byMonth
       }, { merge: true });
+
+      console.log(`Incremented pasien count for month: ${currentMonth}, bidan: ${idBidan}. Total bulan tersimpan: ${Object.keys(byMonth).length}, skipped: ${skippedMonths.join(", ")}`);
     });
   }
 );
