@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -43,6 +44,17 @@ class _DonutChartState extends State<DonutChart> {
   static const Duration _rotationTick = Duration(milliseconds: 16);
   static const double _baseDegPerTick = 0.2;
   bool _isClockwise = true;
+  List<PieChartDataItem> filteredData = [];
+  num total = 0;
+  List<Color> colors = [];
+
+  @override
+  void initState() {
+    filteredData = widget.data.where((item) => item.value != 0).toList();
+    total = filteredData.fold<num>(0, (prev, item) => prev + item.value);
+    colors = _generateBrightColors(filteredData.length);
+    super.initState();
+  }
 
   void _startRotation() {
     _rotationTimer?.cancel();
@@ -94,13 +106,20 @@ class _DonutChartState extends State<DonutChart> {
   // generate warna cerah merata
   List<Color> _generateBrightColors(int count) {
     final List<Color> colors = [];
-    for (int i = 0; i < count; i++) {
-      final hue = (360 / count) * i;
-      final saturation = 0.8 + 0.2 * (i % count) / count; // 0.8 - 1.0
-      final value = 0.85 + 0.15 * ((i + 1) % count) / count; // 0.85 - 1.0
-      colors.add(HSVColor.fromAHSV(1, hue, saturation, value).toColor());
-    }
-    return colors;
+  final random = Random();
+
+  for (int i = 0; i < count; i++) {
+    // Hue acak sekitar distribusi normal
+    final hue = (360 / count) * i + random.nextDouble() * (360 / count);
+    final saturation = 0.6 + 0.2 * random.nextDouble(); // 0.6 - 0.8
+    final value = 0.9 + 0.1 * random.nextDouble();      // 0.9 - 1.0
+    colors.add(HSVColor.fromAHSV(1, hue % 360, saturation, value).toColor());
+  }
+
+  // Optional: acak urutan warna agar tidak predictable
+  colors.shuffle(random);
+
+  return colors;
   }
 
   String _formatValue(num value) {
@@ -110,9 +129,6 @@ class _DonutChartState extends State<DonutChart> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredData = widget.data.where((item) => item.value != 0).toList();
-    final total = filteredData.fold<num>(0, (prev, item) => prev + item.value);
-    final colors = _generateBrightColors(filteredData.length);
 
     Widget? centerContent;
     if (widget.showCenterValue) {

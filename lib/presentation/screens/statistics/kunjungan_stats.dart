@@ -12,22 +12,21 @@ import 'package:intl/intl.dart';
 
 class KunjunganStatsScreen extends StatelessWidget {
   final String? monthKey;
-  const KunjunganStatsScreen({super.key, this.monthKey});
 
+  const KunjunganStatsScreen({super.key, this.monthKey});
 
   @override
   Widget build(BuildContext context) {
     final stats = context.read<StatisticCubit>().state.statistic;
     final selectedMonth = stats?.byMonth[monthKey];
-    // final lastMonth = stats?.lastMonthData?.kunjungan;
-    final selectedKunjungan = selectedMonth?.kunjungan ?? stats?.lastMonthData?.kunjungan;
+    final selectedKunjungan =
+        selectedMonth?.kunjungan ?? stats?.lastMonthData?.kunjungan;
     final warningBanner = PremiumWarningBanner.fromContext(context);
-    
-    // Alternating colors untuk card kategori
-    final List<Color> cardColors = [
+
+    final cardColors = [
       Colors.blue.shade50,
       Colors.green.shade50,
-      Colors.orange.shade50
+      Colors.orange.shade50,
     ];
 
     final List<Map<String, dynamic>> kategori = [
@@ -67,7 +66,6 @@ class KunjunganStatsScreen extends StatelessWidget {
                 isTotal: true,
                 icon: Icons.bar_chart,
               ),
-
               const SizedBox(height: 16),
 
               // --- GRID KATEGORI ---
@@ -90,7 +88,6 @@ class KunjunganStatsScreen extends StatelessWidget {
                   );
                 },
               ),
-
               const SizedBox(height: 32),
 
               // --- CHART AREA ---
@@ -101,72 +98,113 @@ class KunjunganStatsScreen extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 16),
-              
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Text("Perbandingan Kunjungan",
-                          style: Theme.of(context).textTheme.bodyLarge),
-                      const SizedBox(height: 12),
-                      DonutChart(
-                        data: [
-                          PieChartDataItem(label: 'K1', value: (selectedKunjungan?.k1 ?? 0).toDouble()),
-                          PieChartDataItem(label: 'K2', value: (selectedKunjungan?.k2 ?? 0).toDouble()),
-                          PieChartDataItem(label: 'K3', value: (selectedKunjungan?.k3 ?? 0).toDouble()),
-                          PieChartDataItem(label: 'K4', value: (selectedKunjungan?.k4 ?? 0).toDouble()),
-                          PieChartDataItem(label: 'K5', value: (selectedKunjungan?.k5 ?? 0).toDouble()),
-                          PieChartDataItem(label: 'K6', value: (selectedKunjungan?.k6 ?? 0).toDouble()),
-                        ],
-                        showCenterValue: true,
-                        centerLabelTop: '${selectedKunjungan?.total ?? 0}',
-                        centerLabelBottom: 'Kunjungan',
-                      ),
 
+              // --- Donut Chart Card ---
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.blue.shade300.withOpacity(0.5),
+                      Colors.blue.shade100.withOpacity(0.3),
                     ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.shade100.withOpacity(0.4),
+                      blurRadius: 10,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      "Perbandingan Kunjungan",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 12),
+                    DonutChart(
+                      data: [
+                        PieChartDataItem(
+                            label: 'K1', value: (selectedKunjungan?.k1 ?? 0).toDouble()),
+                        PieChartDataItem(
+                            label: 'K2', value: (selectedKunjungan?.k2 ?? 0).toDouble()),
+                        PieChartDataItem(
+                            label: 'K3', value: (selectedKunjungan?.k3 ?? 0).toDouble()),
+                        PieChartDataItem(
+                            label: 'K4', value: (selectedKunjungan?.k4 ?? 0).toDouble()),
+                        PieChartDataItem(
+                            label: 'K5', value: (selectedKunjungan?.k5 ?? 0).toDouble()),
+                        PieChartDataItem(
+                            label: 'K6', value: (selectedKunjungan?.k6 ?? 0).toDouble()),
+                      ],
+                      showCenterValue: true,
+                      centerLabelTop: '${selectedKunjungan?.total ?? 0}',
+                      centerLabelBottom: 'Kunjungan',
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Text("Distribusi K1",
-                          style: Theme.of(context).textTheme.bodyLarge),
-                      const SizedBox(height: 12),
-                      K1Chart(
-                        k1Murni: selectedKunjungan?.k1Murni ?? 0,
-                        k1Akses: selectedKunjungan?.k1Akses ?? 0,
-                        k1USG: selectedKunjungan?.k1Usg ?? 0,
-                        k1KontrolDokter: selectedKunjungan?.k1Dokter ?? 0,
-                        showCenterValue: true,
-                      ),
+              // --- K1 Chart Card ---
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.orange.shade300.withOpacity(0.5),
+                      Colors.orange.shade100.withOpacity(0.3),
                     ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.orange.shade100.withOpacity(0.4),
+                      blurRadius: 10,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      "Distribusi K1",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 12),
+                    K1Chart(
+                      k1Murni: selectedKunjungan?.k1Murni ?? 0,
+                      k1Akses: selectedKunjungan?.k1Akses ?? 0,
+                      k1USG: selectedKunjungan?.k1Usg ?? 0,
+                      k1KontrolDokter: selectedKunjungan?.k1Dokter ?? 0,
+                      showCenterValue: true,
+                    ),
+                  ],
                 ),
               ),
+
 
               const SizedBox(height: 32),
 
               // --- HISTORY BUTTON ---
               if (monthKey == null)
-              SizedBox(
-                width: double.infinity,
-                child: Button(isSubmitting: false, onPressed: () {
+                SizedBox(
+                  width: double.infinity,
+                  child: Button(
+                    isSubmitting: false,
+                    onPressed: () {
                       Navigator.pushNamed(context, AppRouter.listKunjunganStats);
-                    }, label: "Lihat Riwayat Bulanan", icon: Icons.history, ),
-              ),
+                    },
+                    label: "Lihat Riwayat Bulanan",
+                    icon: Icons.history,
+                  ),
+                ),
             ],
           ),
         ),
@@ -205,12 +243,16 @@ class _AnimatedDataCardState extends State<AnimatedDataCard>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 800));
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+
     _animation = IntTween(begin: 0, end: widget.value).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOut))
-      ..addListener(() {
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    )..addListener(() {
         setState(() {});
       });
+
     _controller.forward();
   }
 
@@ -219,7 +261,8 @@ class _AnimatedDataCardState extends State<AnimatedDataCard>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value != widget.value) {
       _animation = IntTween(begin: 0, end: widget.value).animate(
-          CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+        CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+      );
       _controller.forward(from: 0);
     }
   }
@@ -254,9 +297,10 @@ class _AnimatedDataCardState extends State<AnimatedDataCard>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (widget.icon != null)
+            if (widget.icon != null) ...[
               Icon(widget.icon, size: 20, color: Colors.grey[700]),
-            if (widget.icon != null) const SizedBox(height: 4),
+              const SizedBox(height: 4),
+            ],
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
