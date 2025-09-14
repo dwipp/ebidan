@@ -1,10 +1,9 @@
 import 'package:ebidan/data/models/statistic_model.dart';
-import 'package:ebidan/presentation/widgets/k1_chart.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/summary_chart.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
-import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/general/cubit/statistic_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit.dart';
@@ -164,7 +163,7 @@ class HomeScreen extends StatelessWidget {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(24),
                         onTap: () {
-                          if (!user!.premiumStatus.isPremium) {
+                          if (user != null && !user.premiumStatus.isPremium) {
                             // User bukan premium
                             showDialog(
                               context: context,
@@ -239,21 +238,13 @@ class HomeScreen extends StatelessWidget {
                                 ],
                               ),
                               const SizedBox(height: 20),
-                              K1Chart(
-                                k1Murni:
-                                    statistic
-                                        ?.lastMonthData
-                                        ?.kunjungan
-                                        .k1Murni ??
-                                    0,
-                                k1Akses:
-                                    statistic
-                                        ?.lastMonthData
-                                        ?.kunjungan
-                                        .k1Akses ??
-                                    0,
-                                showCenterValue: true,
-                              ),
+                              SummaryChart(
+  pasien: statistic?.lastMonthData?.pasien.total ?? 0,
+  kehamilan: statistic?.lastMonthData?.kehamilan.total ?? 0,
+  kunjungan: statistic?.lastMonthData?.kunjungan.total ?? 0,
+  persalinan: statistic?.lastMonthData?.persalinan.total ?? 0,
+  showCenterValue: false,
+),
                             ],
                           ),
                         ),
