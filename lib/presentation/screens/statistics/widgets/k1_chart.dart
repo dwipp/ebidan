@@ -4,22 +4,18 @@ import 'package:flutter/material.dart';
 class K1Chart extends StatelessWidget {
   final int k1Murni;
   final int k1Akses;
-  final int k1USG;
-  final int k1KontrolDokter;
   final bool showCenterValue;
 
   const K1Chart({
     super.key,
     required this.k1Murni,
     required this.k1Akses,
-    required this.k1USG,
-    required this.k1KontrolDokter,
     this.showCenterValue = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final total = k1Murni + k1Akses + k1USG + k1KontrolDokter;
+    final total = k1Murni + k1Akses;
     if (total == 0) {
       return const SizedBox(height: 180); // prevent divide by zero
     }
@@ -46,18 +42,6 @@ class K1Chart extends StatelessWidget {
                       value: k1Akses.toDouble(),
                       color: Colors.orangeAccent.shade700,
                       label: k1Akses,
-                      total: total,
-                    ),
-                    _buildSection(
-                      value: k1USG.toDouble(),
-                      color: Colors.blueAccent.shade700,
-                      label: k1USG,
-                      total: total,
-                    ),
-                    _buildSection(
-                      value: k1KontrolDokter.toDouble(),
-                      color: Colors.purpleAccent.shade700,
-                      label: k1KontrolDokter,
                       total: total,
                     ),
                   ],
@@ -92,8 +76,6 @@ class K1Chart extends StatelessWidget {
           children: [
             _buildLegend(color: Colors.greenAccent.shade700, text: "K1 Murni"),
             _buildLegend(color: Colors.orangeAccent.shade700, text: "K1 Akses"),
-            _buildLegend(color: Colors.blueAccent.shade700, text: "K1 USG"),
-            _buildLegend(color: Colors.purpleAccent.shade700, text: "K1 Kontrol Dokter"),
           ],
         ),
       ],

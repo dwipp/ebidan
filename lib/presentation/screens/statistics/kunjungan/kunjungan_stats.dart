@@ -175,8 +175,8 @@ class KunjunganStatsScreen extends StatelessWidget {
                     K1Chart(
                       k1Murni: selectedKunjungan?.k1Murni ?? 0,
                       k1Akses: selectedKunjungan?.k1Akses ?? 0,
-                      k1USG: selectedKunjungan?.k1Usg ?? 0,
-                      k1KontrolDokter: selectedKunjungan?.k1Dokter ?? 0,
+                      // k1USG: selectedKunjungan?.k1Usg ?? 0,
+                      // k1KontrolDokter: selectedKunjungan?.k1Dokter ?? 0,
                       showCenterValue: true,
                     ),
                   ],
