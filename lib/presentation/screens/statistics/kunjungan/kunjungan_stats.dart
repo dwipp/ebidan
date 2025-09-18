@@ -205,7 +205,7 @@ class KunjunganStatsScreen extends StatelessWidget {
                   child: Button(
                     isSubmitting: false,
                     onPressed: () {
-                      Navigator.pushNamed(context, AppRouter.trenKunjunganStats, arguments: {'monthKeys':['2025-07', '2025-08', '2025-09']});
+                      Navigator.pushNamed(context, AppRouter.trenKunjunganStats, arguments: {'monthKeys':getLastMonths(stats!.lastUpdatedMonth, 3)});
                     },
                     label: "Tren 3 Bulan Terakhir",
                     icon: Icons.trending_up,
@@ -218,7 +218,7 @@ class KunjunganStatsScreen extends StatelessWidget {
                   child: Button(
                     isSubmitting: false,
                     onPressed: () {
-                      Navigator.pushNamed(context, AppRouter.listKunjunganStats);
+                      Navigator.pushNamed(context, AppRouter.trenKunjunganStats, arguments: {'monthKeys':getLastMonths(stats!.lastUpdatedMonth, 6)});
                     },
                     label: "Tren 6 Bulan Terakhir",
                     icon: Icons.show_chart,
@@ -231,7 +231,7 @@ class KunjunganStatsScreen extends StatelessWidget {
                   child: Button(
                     isSubmitting: false,
                     onPressed: () {
-                      Navigator.pushNamed(context, AppRouter.listKunjunganStats);
+                      Navigator.pushNamed(context, AppRouter.trenKunjunganStats, arguments: {'monthKeys':getLastMonths(stats!.lastUpdatedMonth, 12)});
                     },
                     label: "Tren 1 Tahun Terakhir",
                     icon: Icons.insert_chart_outlined,
@@ -245,6 +245,22 @@ class KunjunganStatsScreen extends StatelessWidget {
       ),
     );
   }
+
+  List<String> getLastMonths(String latestMonth, int count) {
+  final DateFormat formatter = DateFormat("yyyy-MM");
+
+  // parsing string ke DateTime
+  DateTime date = DateFormat("yyyy-MM").parse(latestMonth);
+
+  List<String> months = [];
+
+  for (int i = 0; i < count; i++) {
+    DateTime target = DateTime(date.year, date.month - i, 1);
+    months.add(formatter.format(target));
+  }
+
+  return months;
+}
 }
 
 /// --- Animated Data Card ---
