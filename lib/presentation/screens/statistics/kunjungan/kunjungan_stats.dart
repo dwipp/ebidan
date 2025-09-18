@@ -70,26 +70,9 @@ class KunjunganStatsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // --- GRID KATEGORI ---
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.2,
-                ),
-                itemCount: kategori.length,
-                itemBuilder: (context, index) {
-                  final item = kategori[index];
-                  return AnimatedDataCard(
-                    label: item["label"],
-                    value: item["value"] ?? 0,
-                    backgroundColor: getKategoriColor(item["label"]),
-                  );
-                },
-              ),
+              // --- EXPANSION TILE KATEGORI ---
+              ...buildKategoriExpansionTiles(kategori),
+
               const SizedBox(height: 32),
 
               // --- CHART AREA ---
@@ -183,14 +166,11 @@ class KunjunganStatsScreen extends StatelessWidget {
                     K1Chart(
                       k1Murni: selectedKunjungan?.k1Murni ?? 0,
                       k1Akses: selectedKunjungan?.k1Akses ?? 0,
-                      // k1USG: selectedKunjungan?.k1Usg ?? 0,
-                      // k1KontrolDokter: selectedKunjungan?.k1Dokter ?? 0,
                       showCenterValue: true,
                     ),
                   ],
                 ),
               ),
-
 
               const SizedBox(height: 32),
 
@@ -213,7 +193,10 @@ class KunjunganStatsScreen extends StatelessWidget {
                   child: Button(
                     isSubmitting: false,
                     onPressed: () {
-                      Navigator.pushNamed(context, AppRouter.trenKunjunganStats, arguments: {'monthKeys':getLastMonths(stats!.lastUpdatedMonth, 3)});
+                      Navigator.pushNamed(context, AppRouter.trenKunjunganStats,
+                          arguments: {
+                            'monthKeys': getLastMonths(stats!.lastUpdatedMonth, 3)
+                          });
                     },
                     label: "Tren 3 Bulan Terakhir",
                     icon: Icons.trending_up,
@@ -226,7 +209,10 @@ class KunjunganStatsScreen extends StatelessWidget {
                   child: Button(
                     isSubmitting: false,
                     onPressed: () {
-                      Navigator.pushNamed(context, AppRouter.trenKunjunganStats, arguments: {'monthKeys':getLastMonths(stats!.lastUpdatedMonth, 6)});
+                      Navigator.pushNamed(context, AppRouter.trenKunjunganStats,
+                          arguments: {
+                            'monthKeys': getLastMonths(stats!.lastUpdatedMonth, 6)
+                          });
                     },
                     label: "Tren 6 Bulan Terakhir",
                     icon: Icons.show_chart,
@@ -239,7 +225,10 @@ class KunjunganStatsScreen extends StatelessWidget {
                   child: Button(
                     isSubmitting: false,
                     onPressed: () {
-                      Navigator.pushNamed(context, AppRouter.trenKunjunganStats, arguments: {'monthKeys':getLastMonths(stats!.lastUpdatedMonth, 12)});
+                      Navigator.pushNamed(context, AppRouter.trenKunjunganStats,
+                          arguments: {
+                            'monthKeys': getLastMonths(stats!.lastUpdatedMonth, 12)
+                          });
                     },
                     label: "Tren 1 Tahun Terakhir",
                     icon: Icons.insert_chart_outlined,
@@ -257,7 +246,6 @@ class KunjunganStatsScreen extends StatelessWidget {
   List<String> getLastMonths(String latestMonth, int count) {
     final DateFormat formatter = DateFormat("yyyy-MM");
 
-    // parsing string ke DateTime
     DateTime date = DateFormat("yyyy-MM").parse(latestMonth);
 
     List<String> months = [];
@@ -270,9 +258,78 @@ class KunjunganStatsScreen extends StatelessWidget {
     return months;
   }
 
-  // Tambahkan fungsi helper di dalam class KunjunganStatsScreen
+  // --- ExpansionTile builder ---
+  List<Widget> buildKategoriExpansionTiles(List<Map<String, dynamic>> kategori) {
+    final Map<String, List<Map<String, dynamic>>> grouped = {};
+
+    for (var item in kategori) {
+      final label = item["label"];
+      String parent;
+
+      if (label.toString().startsWith("K1")) {
+        parent = "K1";
+      } else if (label.toString().startsWith("K2")) {
+        parent = "K2";
+      } else if (label.toString().startsWith("K3")) {
+        parent = "K3";
+      } else if (label.toString().startsWith("K4")) {
+        parent = "K4";
+      } else if (label.toString().startsWith("K5")) {
+        parent = "K5";
+      } else if (label.toString().startsWith("K6")) {
+        parent = "K6";
+      } else {
+        parent = label; // Abortus jadi parent sendiri
+      }
+
+      grouped.putIfAbsent(parent, () => []);
+      grouped[parent]!.add(item);
+    }
+
+    return grouped.entries.map((entry) {
+      final parent = entry.key;
+      final children = entry.value;
+      if (children.length== 1) {
+        return Card(
+        margin: const EdgeInsets.only(bottom: 8),
+          child: ListTile(
+              tileColor: getKategoriColor(children.first["label"]).withOpacity(0.15),
+              title: Text(children.first["label"]),
+              trailing: Text("${children.first["value"] ?? 0}"),
+            ),
+        );
+      }else {
+        final parentItem = children.first; // item inti
+      final subItems = children.skip(1).toList(); // exclude item pertama
+
+        return Card(
+        margin: const EdgeInsets.only(bottom: 8),
+        child: ExpansionTile(
+          title: ListTile(
+            title: Text(parent),
+            trailing: Text(
+              "${parentItem["value"] ?? 0}", 
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          collapsedBackgroundColor: getKategoriColor(parent).withOpacity(0.2),
+          backgroundColor: getKategoriColor(parent).withOpacity(0.1),
+          children: subItems.map((item) {
+            return ListTile(
+              tileColor: getKategoriColor(item["label"]).withOpacity(0.15),
+              title: Text(item["label"]),
+              trailing: Text("${item["value"] ?? 0}"),
+            );
+          }).toList(),
+        ),
+      );
+      }
+      
+    }).toList();
+  }
+
+  // --- Warna kategori ---
   Color getKategoriColor(String label) {
-    // --- kategori inti (pekat) ---
     if (label == "K1") return Colors.blue.shade400;
     if (label == "K1 Murni") return Colors.lightBlue.shade400;
     if (label == "K1 Akses") return Colors.cyan.shade400;
@@ -282,7 +339,6 @@ class KunjunganStatsScreen extends StatelessWidget {
     if (label == "K5") return Colors.pink.shade400;
     if (label == "K6") return Colors.red.shade400;
 
-    // --- turunan (lebih muda) ---
     if (label.startsWith("K1")) return Colors.blue.shade100;
     if (label.startsWith("K1 Murni")) return Colors.lightBlue.shade100;
     if (label.startsWith("K1 Akses")) return Colors.cyan.shade100;
@@ -292,12 +348,10 @@ class KunjunganStatsScreen extends StatelessWidget {
     if (label.startsWith("K5")) return Colors.pink.shade100;
     if (label.startsWith("K6")) return Colors.red.shade100;
 
-    // --- khusus Abortus ---
     if (label.contains("Abortus")) return Colors.purple.shade200;
 
     return Colors.grey.shade100;
   }
-
 }
 
 /// --- Animated Data Card ---
