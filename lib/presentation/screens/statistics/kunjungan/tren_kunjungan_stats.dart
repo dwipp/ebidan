@@ -25,7 +25,7 @@ class TrenKunjunganStatsScreen extends StatelessWidget {
     final indikatorList = [
       ("K1", Colors.blue, dataByMonth.map((m) => m!.kunjungan.k1).toList()),
       ("K2", Colors.green, dataByMonth.map((m) => m!.kunjungan.k2).toList()),
-      ("K3", Colors.yellow.shade500, dataByMonth.map((m) => m!.kunjungan.k3).toList()),
+      ("K3", Colors.yellow.shade600, dataByMonth.map((m) => m!.kunjungan.k3).toList()),
       ("K4", Colors.orange, dataByMonth.map((m) => m!.kunjungan.k4).toList()),
       ("K5", Colors.pink, dataByMonth.map((m) => m!.kunjungan.k5).toList()),
       ("K6", Colors.red, dataByMonth.map((m) => m!.kunjungan.k6).toList()),
@@ -78,14 +78,13 @@ class _IndikatorChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ensure we only draw as many points as we have month labels
     final len = min(values.length, monthKeys.length);
     final visibleValues = values.take(len).toList();
 
     final maxVal =
-        visibleValues.isNotEmpty ? visibleValues.reduce((a, b) => a > b ? a : b) : 0;
+        visibleValues.isNotEmpty ? visibleValues.reduce(max) : 0;
     final minVal =
-        visibleValues.isNotEmpty ? visibleValues.reduce((a, b) => a < b ? a : b) : 0;
+        visibleValues.isNotEmpty ? visibleValues.reduce(min) : 0;
 
     return Container(
       decoration: BoxDecoration(
@@ -97,9 +96,9 @@ class _IndikatorChart extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -117,18 +116,16 @@ class _IndikatorChart extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             SizedBox(
-              height: 200,
+              height: 220,
               child: LineChart(
                 LineChartData(
-                  // tooltip (use getTooltipColor & getTooltipItems)
                   lineTouchData: LineTouchData(
                     enabled: true,
                     touchTooltipData: LineTouchTooltipData(
-                      tooltipRoundedRadius: 8,
-                      tooltipPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      tooltipMargin: 8,
-                      // return color for tooltip bg
-                      getTooltipColor: (touchedSpots) => Colors.black87,
+                      tooltipRoundedRadius: 10,
+                      tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      tooltipMargin: 12,
+                      getTooltipColor: (_) => Colors.black87,
                       getTooltipItems: (touchedSpots) {
                         return touchedSpots.map((spot) {
                           final idx = spot.x.toInt();
@@ -138,11 +135,14 @@ class _IndikatorChart extends StatelessWidget {
                           final val = spot.y.toInt();
                           return LineTooltipItem(
                             "$month\n$val kunjungan",
-                            const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+                            const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
                           );
                         }).toList();
                       },
-                      // ensure tooltip fits inside chart when near edges
                       fitInsideHorizontally: true,
                       fitInsideVertically: true,
                     ),
@@ -158,16 +158,13 @@ class _IndikatorChart extends StatelessWidget {
                   ),
                   borderData: FlBorderData(show: false),
                   titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
+                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
                         interval: 1,
-                        reservedSize: 44,
+                        reservedSize: 40,
                         getTitlesWidget: (double value, TitleMeta meta) {
-                          // show label only for integer indices (avoid duplicates)
                           final index = value.round();
                           if ((value - index).abs() > 1e-6) return const SizedBox.shrink();
                           if (index >= 0 && index < monthKeys.length) {
@@ -176,7 +173,10 @@ class _IndikatorChart extends StatelessWidget {
                               space: 8,
                               child: Text(
                                 _formatMonth(monthKeys[index]),
-                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             );
                           }
@@ -188,23 +188,26 @@ class _IndikatorChart extends StatelessWidget {
                     rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   ),
 
-                  // left/right margin so first/last label stay inside card
                   minX: -0.5,
                   maxX: (len - 1).toDouble() + 0.5,
 
                   lineBarsData: [
                     LineChartBarData(
                       isCurved: true,
-                      // gradient line
                       gradient: LinearGradient(
-                        colors: [color.withOpacity(0.95), color.withOpacity(0.35)],
+                        colors: [
+                          color.withOpacity(0.95),
+                          color.withOpacity(0.55),
+                          color.withOpacity(0.2),
+                        ],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),
                       barWidth: 4,
                       isStrokeCapRound: true,
                       spots: [
-                        for (int i = 0; i < len; i++) FlSpot(i.toDouble(), visibleValues[i].toDouble()),
+                        for (int i = 0; i < len; i++)
+                          FlSpot(i.toDouble(), visibleValues[i].toDouble()),
                       ],
                       dotData: FlDotData(
                         show: true,
@@ -212,9 +215,13 @@ class _IndikatorChart extends StatelessWidget {
                           final isMax = spot.y == maxVal.toDouble();
                           final isMin = spot.y == minVal.toDouble();
                           return FlDotCirclePainter(
-                            radius: isMax || isMin ? 5 : 3,
-                            color: isMax ? Colors.green : isMin ? Colors.red : color,
-                            strokeWidth: 1.4,
+                            radius: isMax || isMin ? 6 : 3.5,
+                            color: isMax
+                                ? Colors.greenAccent
+                                : isMin
+                                    ? Colors.redAccent
+                                    : color,
+                            strokeWidth: 2,
                             strokeColor: Colors.white,
                           );
                         },
@@ -222,7 +229,11 @@ class _IndikatorChart extends StatelessWidget {
                       belowBarData: BarAreaData(
                         show: true,
                         gradient: LinearGradient(
-                          colors: [color.withOpacity(0.18), Colors.transparent],
+                          colors: [
+                            color.withOpacity(0.25),
+                            color.withOpacity(0.05),
+                            Colors.transparent,
+                          ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
@@ -230,9 +241,8 @@ class _IndikatorChart extends StatelessWidget {
                     ),
                   ],
                 ),
-                // use new param names (duration & curve) -> fixes swapAnimationDuration/Curve error
-                duration: const Duration(milliseconds: 800),
-                curve: Curves.easeOutCubic,
+                duration: const Duration(milliseconds: 1000),
+                curve: Curves.easeOutExpo,
               ),
             ),
           ],
