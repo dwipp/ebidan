@@ -147,17 +147,25 @@ class PasienByMonth {
 }
 
 class KunjunganByMonth {
+  final int abortus;
   final int total;
   final int k1;
+  final int k14t;
   final int k1Akses;
+  final int k1AksesUsg;
+  final int k1AksesDokter;
   final int k1Murni;
+  final int k1MurniUsg;
+  final int k1MurniDokter;
   final int k1Usg;
   final int k1Dokter;
   final int k2;
   final int k3;
   final int k4;
   final int k5;
+  final int k5Usg;
   final int k6;
+  final int k6Usg;
 
   KunjunganByMonth({
     required this.total,
@@ -171,6 +179,14 @@ class KunjunganByMonth {
     required this.k4,
     required this.k5,
     required this.k6,
+    required this.abortus,
+    required this.k14t,
+    required this.k1AksesDokter,
+    required this.k1AksesUsg,
+    required this.k1MurniDokter,
+    required this.k1MurniUsg,
+    required this.k5Usg,
+    required this.k6Usg,
   });
 
   factory KunjunganByMonth.fromMap(Map<String, dynamic>? map) {
@@ -187,36 +203,60 @@ class KunjunganByMonth {
         k4: 0,
         k5: 0,
         k6: 0,
+        abortus: 0,
+        k14t: 0,
+        k1AksesDokter: 0,
+        k1AksesUsg: 0,
+        k1MurniDokter: 0,
+        k1MurniUsg: 0,
+        k5Usg: 0,
+        k6Usg: 0,
       );
     }
     return KunjunganByMonth(
+      abortus: map['abortus'] ?? 0,
       total: map['total'] ?? 0,
       k1: map['k1'] ?? 0,
+      k14t: map['k1_4t'] ?? 0,
       k1Akses: map['k1_akses'] ?? 0,
+      k1AksesDokter: map['k1_akses_dokter'] ?? 0,
+      k1AksesUsg: map['k1_akses_usg'] ?? 0,
       k1Murni: map['k1_murni'] ?? 0,
+      k1MurniDokter: map['k1_murni_dokter'] ?? 0,
+      k1MurniUsg: map['k1_murni_usg'] ?? 0,
       k1Usg: map['k1_usg'] ?? 0,
       k1Dokter: map['k1_dokter'] ?? 0,
       k2: map['k2'] ?? 0,
       k3: map['k3'] ?? 0,
       k4: map['k4'] ?? 0,
       k5: map['k5'] ?? 0,
+      k5Usg: map['k5_usg'] ?? 0,
       k6: map['k6'] ?? 0,
+      k6Usg: map['k6_usg'] ?? 0,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
+      'abortus': abortus,
       'total': total,
       'k1': k1,
+      'k1_4t': k14t,
       'k1_akses': k1Akses,
+      'k1_akses_dokter': k1AksesDokter,
+      'k1_akses_usg': k1AksesUsg,
       'k1_murni': k1Murni,
+      'k1_murni_dokter': k1MurniDokter,
+      'k1_murni_usg': k1MurniUsg,
       'k1_usg': k1Usg,
       'k1_dokter': k1Dokter,
       'k2': k2,
       'k3': k3,
       'k4': k4,
       'k5': k5,
+      'k5_usg': k5Usg,
       'k6': k6,
+      'k6_usg': k6Usg,
     };
   }
 }

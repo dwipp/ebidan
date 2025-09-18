@@ -24,16 +24,24 @@ class KunjunganStatsScreen extends StatelessWidget {
     final warningBanner = PremiumWarningBanner.fromContext(context);
 
     final List<Map<String, dynamic>> kategori = [
-      {"label": "K1", "value": selectedKunjungan?.k1, 'color':Colors.lightBlue.shade50},
-      {"label": "K1 Akses", "value": selectedKunjungan?.k1Akses, 'color':Colors.blue.shade50},
-      {"label": "K1 Murni", "value": selectedKunjungan?.k1Murni, 'color':Colors.blue.shade50},
-      {"label": "K1 USG", "value": selectedKunjungan?.k1Usg, 'color':Colors.blue.shade50},
-      {"label": "K1 Kontrol Dokter", "value": selectedKunjungan?.k1Dokter, 'color':Colors.blue.shade50},
-      {"label": "K2", "value": selectedKunjungan?.k2, 'color':Colors.green.shade50},
-      {"label": "K3", "value": selectedKunjungan?.k3, 'color':Colors.yellow.shade50},
-      {"label": "K4", "value": selectedKunjungan?.k4, 'color':Colors.orange.shade50},
-      {"label": "K5", "value": selectedKunjungan?.k5, 'color':Colors.pink.shade50},
-      {"label": "K6", "value": selectedKunjungan?.k6, 'color':Colors.red.shade100},
+      {"label": "K1", "value": selectedKunjungan?.k1},
+      {"label": "K1 USG", "value": selectedKunjungan?.k1Usg},
+      {"label": "K1 Skrining Dokter", "value": selectedKunjungan?.k1Dokter},
+      {"label": "K1 dengan 4T", "value": selectedKunjungan?.k14t},
+      {"label": "K1 Murni", "value": selectedKunjungan?.k1Murni},
+      {"label": "K1 Murni Skrining Dokter", "value": selectedKunjungan?.k1MurniDokter},
+      {"label": "K1 Murni USG", "value": selectedKunjungan?.k1MurniUsg},
+      {"label": "K1 Akses", "value": selectedKunjungan?.k1Akses},
+      {"label": "K1 Akses Skrining Dokter", "value": selectedKunjungan?.k1AksesDokter},
+      {"label": "K1 Akses USG", "value": selectedKunjungan?.k1AksesUsg},
+      {"label": "Abortus", "value": selectedKunjungan?.abortus},
+      {"label": "K2", "value": selectedKunjungan?.k2},
+      {"label": "K3", "value": selectedKunjungan?.k3},
+      {"label": "K4", "value": selectedKunjungan?.k4},
+      {"label": "K5", "value": selectedKunjungan?.k5},
+      {"label": "K5 USG", "value": selectedKunjungan?.k5Usg},
+      {"label": "K6", "value": selectedKunjungan?.k6},
+      {"label": "K6 USG", "value": selectedKunjungan?.k6Usg},
     ];
 
     return Scaffold(
@@ -78,7 +86,7 @@ class KunjunganStatsScreen extends StatelessWidget {
                   return AnimatedDataCard(
                     label: item["label"],
                     value: item["value"] ?? 0,
-                    backgroundColor: item["color"],
+                    backgroundColor: getKategoriColor(item["label"]),
                   );
                 },
               ),
@@ -247,20 +255,49 @@ class KunjunganStatsScreen extends StatelessWidget {
   }
 
   List<String> getLastMonths(String latestMonth, int count) {
-  final DateFormat formatter = DateFormat("yyyy-MM");
+    final DateFormat formatter = DateFormat("yyyy-MM");
 
-  // parsing string ke DateTime
-  DateTime date = DateFormat("yyyy-MM").parse(latestMonth);
+    // parsing string ke DateTime
+    DateTime date = DateFormat("yyyy-MM").parse(latestMonth);
 
-  List<String> months = [];
+    List<String> months = [];
 
-  for (int i = 0; i < count; i++) {
-    DateTime target = DateTime(date.year, date.month - i, 1);
-    months.add(formatter.format(target));
+    for (int i = 0; i < count; i++) {
+      DateTime target = DateTime(date.year, date.month - i, 1);
+      months.add(formatter.format(target));
+    }
+
+    return months;
   }
 
-  return months;
-}
+  // Tambahkan fungsi helper di dalam class KunjunganStatsScreen
+  Color getKategoriColor(String label) {
+    // --- kategori inti (pekat) ---
+    if (label == "K1") return Colors.blue.shade400;
+    if (label == "K1 Murni") return Colors.lightBlue.shade400;
+    if (label == "K1 Akses") return Colors.cyan.shade400;
+    if (label == "K2") return Colors.green.shade400;
+    if (label == "K3") return Colors.yellow.shade400;
+    if (label == "K4") return Colors.orange.shade400;
+    if (label == "K5") return Colors.pink.shade400;
+    if (label == "K6") return Colors.red.shade400;
+
+    // --- turunan (lebih muda) ---
+    if (label.startsWith("K1")) return Colors.blue.shade100;
+    if (label.startsWith("K1 Murni")) return Colors.lightBlue.shade100;
+    if (label.startsWith("K1 Akses")) return Colors.cyan.shade100;
+    if (label.startsWith("K2")) return Colors.green.shade100;
+    if (label.startsWith("K3")) return Colors.yellow.shade100;
+    if (label.startsWith("K4")) return Colors.orange.shade100;
+    if (label.startsWith("K5")) return Colors.pink.shade100;
+    if (label.startsWith("K6")) return Colors.red.shade100;
+
+    // --- khusus Abortus ---
+    if (label.contains("Abortus")) return Colors.purple.shade200;
+
+    return Colors.grey.shade100;
+  }
+
 }
 
 /// --- Animated Data Card ---
