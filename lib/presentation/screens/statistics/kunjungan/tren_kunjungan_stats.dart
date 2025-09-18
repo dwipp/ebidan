@@ -47,6 +47,7 @@ class TrenKunjunganStatsScreen extends StatelessWidget {
             color: color,
             values: values,
             monthKeys: filteredKeys,
+            delay: Duration(milliseconds: 500 * i), // jeda antar chart
           );
         },
       ),
@@ -54,23 +55,48 @@ class TrenKunjunganStatsScreen extends StatelessWidget {
   }
 }
 
-class _IndikatorChart extends StatelessWidget {
+class _IndikatorChart extends StatefulWidget {
   final String label;
   final Color color;
   final List<int> values;
   final List<String> monthKeys;
+  final Duration delay;
 
   const _IndikatorChart({
     required this.label,
     required this.color,
     required this.values,
     required this.monthKeys,
+    this.delay = Duration.zero,
   });
+
+  @override
+  State<_IndikatorChart> createState() => _IndikatorChartState();
+}
+
+class _IndikatorChartState extends State<_IndikatorChart> {
+  late List<int> _currentValues;
+
+  @override
+  void initState() {
+    super.initState();
+    // Awalnya semua 0
+    _currentValues = List<int>.filled(widget.values.length, 0);
+
+    // Jalankan animasi dengan delay sesuai index chart
+    Future.delayed(widget.delay, () {
+      if (mounted) {
+        setState(() {
+          _currentValues = widget.values;
+        });
+      }
+    });
+  }
 
   String _formatMonth(String key) {
     try {
       final date = DateFormat("yyyy-MM").parse(key);
-      return DateFormat("MMM yyyy").format(date); // "Sep 2025"
+      return DateFormat("MMM yyyy").format(date);
     } catch (_) {
       return key;
     }
@@ -78,19 +104,17 @@ class _IndikatorChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final len = min(values.length, monthKeys.length);
-    final visibleValues = values.take(len).toList();
+    final len = min(_currentValues.length, widget.monthKeys.length);
+    final visibleValues = _currentValues.take(len).toList();
 
-    final maxVal =
-        visibleValues.isNotEmpty ? visibleValues.reduce(max) : 0;
-    final minVal =
-        visibleValues.isNotEmpty ? visibleValues.reduce(min) : 0;
+    final maxVal = visibleValues.isNotEmpty ? visibleValues.reduce(max) : 0;
+    final minVal = visibleValues.isNotEmpty ? visibleValues.reduce(min) : 0;
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
-          colors: [Colors.white, color.withOpacity(0.04)],
+          colors: [Colors.white, widget.color.withOpacity(0.04)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -108,10 +132,10 @@ class _IndikatorChart extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              label,
+              widget.label,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: color,
+                    color: widget.color,
                   ),
             ),
             const SizedBox(height: 12),
@@ -123,14 +147,15 @@ class _IndikatorChart extends StatelessWidget {
                     enabled: true,
                     touchTooltipData: LineTouchTooltipData(
                       tooltipRoundedRadius: 10,
-                      tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      tooltipPadding:
+                          const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       tooltipMargin: 12,
                       getTooltipColor: (_) => Colors.black87,
                       getTooltipItems: (touchedSpots) {
                         return touchedSpots.map((spot) {
                           final idx = spot.x.toInt();
-                          final month = (idx >= 0 && idx < monthKeys.length)
-                              ? _formatMonth(monthKeys[idx])
+                          final month = (idx >= 0 && idx < widget.monthKeys.length)
+                              ? _formatMonth(widget.monthKeys[idx])
                               : '';
                           final val = spot.y.toInt();
                           return LineTooltipItem(
@@ -147,7 +172,6 @@ class _IndikatorChart extends StatelessWidget {
                       fitInsideVertically: true,
                     ),
                   ),
-
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
@@ -166,13 +190,15 @@ class _IndikatorChart extends StatelessWidget {
                         reservedSize: 40,
                         getTitlesWidget: (double value, TitleMeta meta) {
                           final index = value.round();
-                          if ((value - index).abs() > 1e-6) return const SizedBox.shrink();
-                          if (index >= 0 && index < monthKeys.length) {
+                          if ((value - index).abs() > 1e-6) {
+                            return const SizedBox.shrink();
+                          }
+                          if (index >= 0 && index < widget.monthKeys.length) {
                             return SideTitleWidget(
                               axisSide: meta.axisSide,
                               space: 8,
                               child: Text(
-                                _formatMonth(monthKeys[index]),
+                                _formatMonth(widget.monthKeys[index]),
                                 style: const TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w500,
@@ -187,18 +213,16 @@ class _IndikatorChart extends StatelessWidget {
                     topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   ),
-
                   minX: -0.5,
                   maxX: (len - 1).toDouble() + 0.5,
-
                   lineBarsData: [
                     LineChartBarData(
                       isCurved: true,
                       gradient: LinearGradient(
                         colors: [
-                          color.withOpacity(0.95),
-                          color.withOpacity(0.55),
-                          color.withOpacity(0.2),
+                          widget.color.withOpacity(0.95),
+                          widget.color.withOpacity(0.55),
+                          widget.color.withOpacity(0.2),
                         ],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
@@ -220,7 +244,7 @@ class _IndikatorChart extends StatelessWidget {
                                 ? Colors.greenAccent
                                 : isMin
                                     ? Colors.redAccent
-                                    : color,
+                                    : widget.color,
                             strokeWidth: 2,
                             strokeColor: Colors.white,
                           );
@@ -230,8 +254,8 @@ class _IndikatorChart extends StatelessWidget {
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            color.withOpacity(0.25),
-                            color.withOpacity(0.05),
+                            widget.color.withOpacity(0.25),
+                            widget.color.withOpacity(0.05),
                             Colors.transparent,
                           ],
                           begin: Alignment.topCenter,
