@@ -47,6 +47,10 @@ class _KunjunganState extends State<KunjunganScreen> {
     '-',
   ];
 
+
+  bool? _selectedPeriksaUsg;
+  final List<String> _periksaUsgList = ['Ya', 'Tidak'];
+
   Bumil? bumil;
 
   @override
@@ -77,6 +81,7 @@ class _KunjunganState extends State<KunjunganScreen> {
       planning: planningController.text,
       status: _selectedStatusKunjungan ?? '-',
       createdAt: _createdAt,
+      periksaUsg: _selectedPeriksaUsg,
     );
 
     Navigator.pushNamed(
@@ -203,17 +208,18 @@ class _KunjunganState extends State<KunjunganScreen> {
                 isMultiline: true,
               ),
               const SizedBox(height: 12),
-              DropdownField(
-                label: 'Status Kunjungan',
-                icon: Icons.info_outline,
-                items: _statusKunjunganList,
-                value: _selectedStatusKunjungan,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedStatusKunjungan = newValue;
-                  });
-                },
-              ),
+              // DropdownField(
+              //   label: 'Status Kunjungan',
+              //   icon: Icons.info_outline,
+              //   items: _statusKunjunganList,
+              //   value: _selectedStatusKunjungan,
+              //   onChanged: (newValue) {
+              //     setState(() {
+              //       _selectedStatusKunjungan = newValue;
+              //     });
+              //   },
+              // ),
+              _buildUsgField(),
               const SizedBox(height: 12),
               DatePickerFormField(
                 labelText: 'Tanggal Pembuatan Data (Auto)',
@@ -238,6 +244,57 @@ class _KunjunganState extends State<KunjunganScreen> {
           ),
         ),
       ),
+    );
+  }
+
+/**
+ DropdownField(
+                label: 'Status Kunjungan',
+                icon: Icons.info_outline,
+                items: _statusKunjunganList,
+                value: _selectedStatusKunjungan,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedStatusKunjungan = newValue;
+                  });
+                },
+              ),
+ */
+
+  Widget _buildUsgField() {
+    bool isUsg = _selectedStatusKunjungan == 'K5' || _selectedStatusKunjungan == 'K6';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownField(
+          label: 'Status Kunjungan',
+          icon: Icons.info_outline,
+          items: _statusKunjunganList,
+          value: _selectedStatusKunjungan,
+          onChanged: (newValue) {
+            setState(() {
+              _selectedStatusKunjungan = newValue;
+            });
+          },
+        ),
+        if (isUsg) const SizedBox(height: 8),
+        if (isUsg)
+          DropdownField(
+            label: 'Periksa USG',
+            icon: Icons.pregnant_woman,
+            items: _periksaUsgList,
+            value: _selectedPeriksaUsg == null
+                      ? null
+                      : (_selectedPeriksaUsg! ? 'Ya' : 'Tidak'),
+            onChanged: (newValue) {
+              setState(() {
+                _selectedPeriksaUsg = newValue?.toLowerCase() == "ya";
+              });
+            },
+            validator: (val) => val == null ? 'Wajib dipilih' : null,
+          ),
+      ],
     );
   }
 }

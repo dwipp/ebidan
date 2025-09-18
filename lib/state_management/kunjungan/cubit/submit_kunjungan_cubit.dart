@@ -49,6 +49,7 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
         'id_bidan': user.uid,
         'id_kehamilan': data.idKehamilan,
         'id_bumil': data.idBumil,
+        'periksa_usg':data.periksaUsg,
       };
 
 
