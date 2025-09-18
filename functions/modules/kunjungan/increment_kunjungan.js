@@ -15,6 +15,8 @@ export const incrementKunjunganCount = onDocumentCreated(
     const uk = dataKunjungan.uk ? parseUK(dataKunjungan.uk) : 0;
     const isUsg = dataKunjungan.tgl_periksa_usg ? true : false;
     const kontrolDokter = dataKunjungan.kontrol_dokter;
+    const isK1_4t = dataKunjungan.k1_4t === true;
+    const periksaUsg = dataKunjungan.periksa_usg === true;
 
     // Ambil bulan dari created_at dokumen kunjungan
     let currentMonth;
@@ -38,13 +40,15 @@ export const incrementKunjunganCount = onDocumentCreated(
         byMonth[currentMonth] = { 
           kunjungan: { 
             total: 0, k1: 0, k2: 0, k3: 0, k4: 0, k5: 0, k6: 0,
-            k1_murni: 0, k1_akses: 0, k1_usg: 0, k1_dokter: 0
+            k1_murni: 0, k1_akses: 0, k1_usg: 0, k1_dokter: 0, k1_4t: 0,
+            k5_usg: 0, k6_usg: 0,
           } 
         };
       } else if (!byMonth[currentMonth].kunjungan) {
         byMonth[currentMonth].kunjungan = { 
           total: 0, k1: 0, k2: 0, k3: 0, k4: 0, k5: 0, k6: 0,
-          k1_murni: 0, k1_akses: 0, k1_usg: 0, k1_dokter: 0
+          k1_murni: 0, k1_akses: 0, k1_usg: 0, k1_dokter: 0, k1_4t: 0,
+          k5_usg: 0, k6_usg: 0,
         };
       }
 
@@ -58,11 +62,20 @@ export const incrementKunjunganCount = onDocumentCreated(
         else kunjungan.k1_akses++;
         if (isUsg) kunjungan.k1_usg++;
         if (kontrolDokter) kunjungan.k1_dokter++;
-      } else if (status === "k2") kunjungan.k2++;
-      else if (status === "k3") kunjungan.k3++;
-      else if (status === "k4") kunjungan.k4++;
-      else if (status === "k5") kunjungan.k5++;
-      else if (status === "k6") kunjungan.k6++;
+        if (isK1_4t) kunjungan.k1_4t++;
+      } else if (status === "k2") {
+        kunjungan.k2++;
+      } else if (status === "k3") {
+        kunjungan.k3++;
+      } else if (status === "k4") {
+        kunjungan.k4++;
+      } else if (status === "k5") {
+        kunjungan.k5++;
+        if (periksaUsg) kunjungan.k5_usg++;
+      } else if (status === "k6") {
+        kunjungan.k6++;
+        if (periksaUsg) kunjungan.k6_usg++;
+      }
 
       // --- LOGIC BATAS 13 BULAN ---
       const months = Object.keys(byMonth).sort(); // YYYY-MM format -> urut ascending
