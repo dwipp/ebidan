@@ -37,14 +37,60 @@ export const incrementPersalinanCount = onDocumentUpdated(
       for (const p of newPersalinan) {
         if (!p.tgl_persalinan) continue;
 
-        const monthKey = getMonthString(p.tgl_persalinan.toDate());
+        let tgl;
+        if (p.tgl_persalinan?.toDate) tgl = p.tgl_persalinan.toDate();
+        else if (p.tgl_persalinan) tgl = new Date(p.tgl_persalinan);
+        if (!tgl || isNaN(tgl)) continue;
 
-        // pastikan struktur bulan & persalinan ada
-        if (!byMonth[monthKey]) byMonth[monthKey] = {};
-        if (!byMonth[monthKey].persalinan) byMonth[monthKey].persalinan = { total: 0 };
+        const monthKey = getMonthString(tgl);
+
+        // pastikan struktur bulan ada
+        if (!byMonth[monthKey]) {
+          byMonth[monthKey] = { 
+            persalinan: { total: 0 },
+            kunjungan: { abortus: 0 },
+          };
+        } else {
+          if (!byMonth[monthKey].persalinan) {
+            byMonth[monthKey].persalinan = { total: 0 };
+          }
+          if (!byMonth[monthKey].kunjungan) {
+            byMonth[monthKey].kunjungan = { abortus: 0 };
+          }
+        }
 
         // increment total persalinan
         byMonth[monthKey].persalinan.total++;
+
+        // cek abortus
+        if (p.status_bayi === "Abortus") {
+          let umurMinggu = null;
+          let lebihDariMinggu = false;
+
+          if (typeof p.umur_kehamilan === "string") {
+            // contoh: "20 minggu" atau "20 minggu 5 hari"
+            const match = p.umur_kehamilan.match(/(\d+)\s*minggu(?:\s+(\d+)\s*hari)?/i);
+            if (match) {
+              umurMinggu = parseInt(match[1], 10);
+              if (match[2]) {
+                const umurHari = parseInt(match[2], 10);
+                if (umurHari > 0) lebihDariMinggu = true;
+              }
+            }
+          } else if (typeof p.umur_kehamilan === "number") {
+            // kalau langsung angka (anggap minggu)
+            umurMinggu = p.umur_kehamilan;
+          }
+
+          if (
+            umurMinggu !== null &&
+            umurMinggu >= 0 &&
+            umurMinggu <= 20 &&
+            !lebihDariMinggu
+          ) {
+            byMonth[monthKey].kunjungan.abortus++;
+          }
+        }
 
         // --- LOGIC BATAS 13 BULAN ---
         const months = Object.keys(byMonth).sort(); // YYYY-MM format -> urut ascending
@@ -58,11 +104,21 @@ export const incrementPersalinanCount = onDocumentUpdated(
       }
 
       // --- Simpan ke Firestore ---
-      t.set(statsRef, {
-        ...existing,
-        by_month: byMonth,
-        last_updated_month: newPersalinan.length ? getMonthString(newPersalinan[newPersalinan.length - 1].tgl_persalinan.toDate()) : getMonthString(new Date())
-      }, { merge: true });
+      t.set(
+        statsRef,
+        {
+          ...existing,
+          by_month: byMonth,
+          last_updated_month: newPersalinan.length
+            ? getMonthString(
+                newPersalinan[newPersalinan.length - 1].tgl_persalinan.toDate
+                  ? newPersalinan[newPersalinan.length - 1].tgl_persalinan.toDate()
+                  : new Date(newPersalinan[newPersalinan.length - 1].tgl_persalinan)
+              )
+            : getMonthString(new Date()),
+        },
+        { merge: true }
+      );
     });
   }
 );
