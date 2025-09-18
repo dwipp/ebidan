@@ -19,7 +19,8 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
       const uk = data.uk ? parseUK(data.uk) : 0;
       const isUsg = data.tgl_periksa_usg ? true : false;
       const kontrolDokter = data.kontrol_dokter;
-      const isK1_4t = data.k1_4t === true; // <-- tambahan
+      const isK1_4t = data.k1_4t === true;
+      const periksaUsg = data.periksa_usg === true;
 
       if (!statsByBidan[idBidan]) statsByBidan[idBidan] = { by_month: {} };
 
@@ -36,8 +37,8 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
         statsByBidan[idBidan].by_month[monthKey] = { 
           kunjungan: { 
             total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0,
-            k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0,
-            k1_4t:0, // <-- tambahan field
+            k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0, k1_4t:0,
+            k5_usg:0, k6_usg:0,
           } 
         };
       }
@@ -52,13 +53,19 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
         else kunjungan.k1_akses++;
         if (isUsg) kunjungan.k1_usg++;
         if (kontrolDokter) kunjungan.k1_dokter++;
-        if (isK1_4t) kunjungan.k1_4t++; // <-- hitung jika true
+        if (isK1_4t) kunjungan.k1_4t++;
       }
       if (status === "k2") kunjungan.k2++;
       if (status === "k3") kunjungan.k3++;
       if (status === "k4") kunjungan.k4++;
-      if (status === "k5") kunjungan.k5++;
-      if (status === "k6") kunjungan.k6++;
+      if (status === "k5") {
+        kunjungan.k5++;
+        if (periksaUsg) kunjungan.k5_usg++;
+      }
+      if (status === "k6") {
+        kunjungan.k6++;
+        if (periksaUsg) kunjungan.k6_usg++;
+      }
     });
 
     const batch = db.batch();
@@ -95,7 +102,8 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
           byMonth[month] = { 
             kunjungan: { 
               total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0,
-              k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0, k1_4t:0 
+              k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0, k1_4t:0,
+              k5_usg:0, k6_usg:0,
             } 
           };
         }
