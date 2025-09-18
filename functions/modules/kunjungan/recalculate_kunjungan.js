@@ -38,7 +38,8 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
           kunjungan: { 
             total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0,
             k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0, k1_4t:0,
-            k5_usg:0, k6_usg:0,
+            k5_usg:0, k6_usg:0, k1_murni_usg:0, k1_akses_usg:0, 
+            k1_akses_dokter:0, k1_murni_dokter:0,
           } 
         };
       }
@@ -49,8 +50,16 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
       kunjungan.total++;
       if (status === "k1") {
         kunjungan.k1++;
-        if (uk <= 12) kunjungan.k1_murni++;
-        else kunjungan.k1_akses++;
+        if (uk <= 12) {
+          kunjungan.k1_murni++;
+          if (kontrolDokter) kunjungan.k1_murni_dokter++;
+          if (isUsg) kunjungan.k1_murni_usg++;
+        }
+        else {
+          kunjungan.k1_akses++;
+          if (kontrolDokter) kunjungan.k1_akses_dokter++;
+          if (isUsg) kunjungan.k1_akses_usg++;
+        }
         if (isUsg) kunjungan.k1_usg++;
         if (kontrolDokter) kunjungan.k1_dokter++;
         if (isK1_4t) kunjungan.k1_4t++;
@@ -103,7 +112,8 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
             kunjungan: { 
               total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0,
               k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0, k1_4t:0,
-              k5_usg:0, k6_usg:0,
+              k5_usg:0, k6_usg:0, k1_murni_usg:0, k1_akses_usg:0, 
+              k1_akses_dokter:0, k1_murni_dokter:0,
             } 
           };
         }

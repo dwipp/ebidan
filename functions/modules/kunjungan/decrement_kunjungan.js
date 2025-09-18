@@ -43,14 +43,16 @@ export const decrementKunjunganCount = onDocumentDeleted(
           kunjungan: { 
             total: 0, k1: 0, k2: 0, k3: 0, k4: 0, k5: 0, k6: 0,
             k1_murni: 0, k1_akses: 0, k1_usg: 0, k1_dokter: 0,
-            k1_4t: 0, k5_usg: 0, k6_usg: 0
+            k1_4t: 0, k5_usg: 0, k6_usg: 0, k1_murni_usg:0, k1_akses_usg:0, 
+            k1_akses_dokter:0, k1_murni_dokter:0,
           } 
         };
       } else if (!byMonth[currentMonth].kunjungan) {
         byMonth[currentMonth].kunjungan = { 
           total: 0, k1: 0, k2: 0, k3: 0, k4: 0, k5: 0, k6: 0,
           k1_murni: 0, k1_akses: 0, k1_usg: 0, k1_dokter: 0,
-          k1_4t: 0, k5_usg: 0, k6_usg: 0
+          k1_4t: 0, k5_usg: 0, k6_usg: 0, k1_murni_usg:0, k1_akses_usg:0, 
+          k1_akses_dokter:0, k1_murni_dokter:0,
         };
       }
 
@@ -63,8 +65,12 @@ export const decrementKunjunganCount = onDocumentDeleted(
         kunjungan.k1 = Math.max(kunjungan.k1 - 1, 0);
         if (uk <= 12) {
           kunjungan.k1_murni = Math.max(kunjungan.k1_murni - 1, 0);
+          if (isUsg) kunjungan.k1_murni_usg = Math.max(kunjungan.k1_murni_usg - 1, 0);
+          if (kontrolDokter) kunjungan.k1_murni_dokter = Math.max(kunjungan.k1_murni_dokter - 1, 0);
         } else {
           kunjungan.k1_akses = Math.max(kunjungan.k1_akses - 1, 0);
+          if (isUsg) kunjungan.k1_akses_usg = Math.max(kunjungan.k1_akses_usg - 1, 0);
+          if (kontrolDokter) kunjungan.k1_akses_dokter = Math.max(kunjungan.k1_akses_dokter - 1, 0);
         }
         if (isUsg) kunjungan.k1_usg = Math.max(kunjungan.k1_usg - 1, 0);
         if (kontrolDokter) kunjungan.k1_dokter = Math.max(kunjungan.k1_dokter - 1, 0);
