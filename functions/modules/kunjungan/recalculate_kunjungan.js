@@ -19,6 +19,7 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
       const uk = data.uk ? parseUK(data.uk) : 0;
       const isUsg = data.tgl_periksa_usg ? true : false;
       const kontrolDokter = data.kontrol_dokter;
+      const isK1_4t = data.k1_4t === true; // <-- tambahan
 
       if (!statsByBidan[idBidan]) statsByBidan[idBidan] = { by_month: {} };
 
@@ -35,7 +36,8 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
         statsByBidan[idBidan].by_month[monthKey] = { 
           kunjungan: { 
             total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0,
-            k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0
+            k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0,
+            k1_4t:0, // <-- tambahan field
           } 
         };
       }
@@ -50,6 +52,7 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
         else kunjungan.k1_akses++;
         if (isUsg) kunjungan.k1_usg++;
         if (kontrolDokter) kunjungan.k1_dokter++;
+        if (isK1_4t) kunjungan.k1_4t++; // <-- hitung jika true
       }
       if (status === "k2") kunjungan.k2++;
       if (status === "k3") kunjungan.k3++;
@@ -88,7 +91,14 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
           skippedMonths.push(month);
           continue;
         }
-        if (!byMonth[month]) byMonth[month] = { kunjungan: { total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0, k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0 } };
+        if (!byMonth[month]) {
+          byMonth[month] = { 
+            kunjungan: { 
+              total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0,
+              k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0, k1_4t:0 
+            } 
+          };
+        }
         byMonth[month].kunjungan = { ...byMonth[month].kunjungan, ...counts.kunjungan };
       }
 
