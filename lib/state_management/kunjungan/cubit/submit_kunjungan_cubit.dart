@@ -55,6 +55,14 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
       if (firstTime) {
         kunjungan['tgl_periksa_usg'] = selectedBumilCubit.state?.latestKehamilan?.tglPeriksaUsg;//tglPeriksaUsg;
         kunjungan['kontrol_dokter'] = selectedBumilCubit.state?.latestKehamilan?.kontrolDokter;
+        
+        var bumil = selectedBumilCubit.state;
+        final ageRisk = bumil!.age < 20 || bumil.age > 35;
+        final gravidaRisk = bumil.statisticRiwayat['gravida']! >= 4;
+        final jarakRisk = (bumil.statisticRiwayat['gravida']! > 0) &&
+            (DateTime.now().year - (bumil.latestRiwayat?.tahun ?? DateTime.now().year) < 2);
+
+        kunjungan['k1_4t'] = ageRisk || gravidaRisk || jarakRisk;
       }
 
       await docRef.set(kunjungan, SetOptions(merge: true));
