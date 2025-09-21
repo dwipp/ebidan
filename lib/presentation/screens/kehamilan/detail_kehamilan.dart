@@ -131,9 +131,16 @@ class DetailKehamilanScreen extends StatelessWidget {
                 kehamilan.hemoglobin,
                 suffix: 'g/dL',
               ),
+
+              const SizedBox(height: 16),
+              const Text(
+                "Lainnya",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
               Utils.generateRowLabelValue(
-                "Dibuat Pada",
-                _formatDate(kehamilan.createdAt),
+                "Menerima buku KIA",
+                Utils.formattedDate(kehamilan.createdAt),
               ),
 
               const SizedBox(height: 16),

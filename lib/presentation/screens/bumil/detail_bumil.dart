@@ -77,17 +77,6 @@ class DetailBumilScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Utils.generateRowLabelValue("No. HP", bumil?.noHp),
               Utils.generateRowLabelValue("Alamat", bumil?.alamat),
-
-              const SizedBox(height: 16),
-              const Text(
-                "Lainnya",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Utils.generateRowLabelValue(
-                "Menerima buku KIA",
-                Utils.formattedDate(bumil?.createdAt),
-              ),
             ],
           ),
         ),
