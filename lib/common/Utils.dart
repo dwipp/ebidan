@@ -55,16 +55,20 @@ class Utils {
     }
   }
 
-  static int hitungJarakTahun(DateTime? tglLahir) {
+  static int hitungJarakTahun({
+    required DateTime? tglLahir,
+    DateTime? tglKehamilanBaru,
+  }) {
     if (tglLahir == null) return 0;
 
-    final now = DateTime.now();
-    int tahun = now.year - tglLahir.year;
+    final tglKehamilan = tglKehamilanBaru ?? DateTime.now();
+    int tahun = tglKehamilan.year - tglLahir.year;
 
     // Kalau bulan sekarang < bulan lahir, atau bulan sama tapi hari sekarang < hari lahir,
     // berarti belum genap setahun → kurangi 1
-    if (now.month < tglLahir.month ||
-        (now.month == tglLahir.month && now.day < tglLahir.day)) {
+    if (tglKehamilan.month < tglLahir.month ||
+        (tglKehamilan.month == tglLahir.month &&
+            tglKehamilan.day < tglLahir.day)) {
       tahun -= 1;
     }
 

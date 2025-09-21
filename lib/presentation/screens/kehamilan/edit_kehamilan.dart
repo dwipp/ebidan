@@ -81,8 +81,10 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
     _hasilLabController.text = widget.kehamilan.hasilLab ?? '';
 
     bumil = context.watch<SelectedBumilCubit>().state;
-    final jarakTahun =
-        DateTime.now().year - (bumil?.latestHistoryYear ?? DateTime.now().year);
+    final jarakTahun = Utils.hitungJarakTahun(
+      tglLahir: bumil?.latestRiwayat?.tglLahir,
+      tglKehamilanBaru: _createdAt,
+    );
     _jarakKehamilan.text = jarakTahun == 0 ? '-' : '$jarakTahun tahun';
 
     _gravidaController.text = bumil!.statisticRiwayat['gravida']!.toString();
@@ -161,7 +163,10 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
       resti.add('Riwayat kehamilan ${bumil?.statisticRiwayat['gravida']}x');
     }
 
-    final jarakTahun = Utils.hitungJarakTahun(bumil?.latestRiwayat?.tglLahir);
+    final jarakTahun = Utils.hitungJarakTahun(
+      tglLahir: bumil?.latestRiwayat?.tglLahir,
+      tglKehamilanBaru: _createdAt,
+    );
     if (jarakTahun < 2) {
       resti.add('Jarak kehamilan terlalu dekat ($jarakTahun tahun)');
     }
@@ -363,6 +368,17 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
                 validator: (val) => val == null ? 'Wajib dipilih' : null,
               ),
               const SizedBox(height: 12),
+              DatePickerFormField(
+                labelText: 'Tanggal Terima Buku KIA',
+                prefixIcon: Icons.calendar_view_day,
+                initialValue: _createdAt,
+                context: context,
+                readOnly: true,
+                onDateSelected: (date) {
+                  setState(() => _createdAt = date);
+                },
+              ),
+              const SizedBox(height: 12),
               GPAField(
                 gravidaController: _gravidaController,
                 paraController: _paraController,
@@ -414,17 +430,6 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
                   });
                 },
                 validator: (val) => val == null ? 'Wajib dipilih' : null,
-              ),
-              const SizedBox(height: 12),
-              DatePickerFormField(
-                labelText: 'Tanggal Pembuatan Data',
-                prefixIcon: Icons.calendar_view_day,
-                initialValue: _createdAt,
-                context: context,
-                readOnly: true,
-                onDateSelected: (date) {
-                  setState(() => _createdAt = date);
-                },
               ),
               const SizedBox(height: 20),
               SizedBox(

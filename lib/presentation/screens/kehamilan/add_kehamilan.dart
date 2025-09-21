@@ -73,7 +73,10 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     bumil = context.watch<SelectedBumilCubit>().state;
-    final jarakTahun = Utils.hitungJarakTahun(bumil?.latestRiwayat?.tglLahir);
+    final jarakTahun = Utils.hitungJarakTahun(
+      tglLahir: bumil?.latestRiwayat?.tglLahir,
+      tglKehamilanBaru: _createdAt,
+    );
     _jarakKehamilan.text = jarakTahun == 0 ? '-' : '$jarakTahun tahun';
     _gravidaController.text =
         '${(bumil?.statisticRiwayat['gravida'] ?? 0) + 1}';
@@ -113,7 +116,10 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
     }
 
     if (bumil!.statisticRiwayat['gravida']! > 0) {
-      final jarakTahun = Utils.hitungJarakTahun(bumil?.latestRiwayat?.tglLahir);
+      final jarakTahun = Utils.hitungJarakTahun(
+        tglLahir: bumil?.latestRiwayat?.tglLahir,
+        tglKehamilanBaru: _createdAt,
+      );
       if (jarakTahun < 2) {
         resti.add('Jarak kehamilan terlalu dekat ($jarakTahun tahun)');
       }
@@ -344,6 +350,23 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 validator: (val) => val == null ? 'Wajib dipilih' : null,
               ),
               const SizedBox(height: 12),
+              DatePickerFormField(
+                labelText: 'Tanggal Terima Buku KIA (Auto)',
+                prefixIcon: Icons.calendar_view_day,
+                initialValue: _createdAt,
+                context: context,
+                onDateSelected: (date) {
+                  setState(() => _createdAt = date);
+                  final jarakTahun = Utils.hitungJarakTahun(
+                    tglLahir: bumil?.latestRiwayat?.tglLahir,
+                    tglKehamilanBaru: date,
+                  );
+                  _jarakKehamilan.text = jarakTahun == 0
+                      ? '-'
+                      : '$jarakTahun tahun';
+                },
+              ),
+              const SizedBox(height: 12),
               GPAField(
                 gravidaController: _gravidaController,
                 paraController: _paraController,
@@ -394,16 +417,6 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                   });
                 },
                 validator: (val) => val == null ? 'Wajib dipilih' : null,
-              ),
-              const SizedBox(height: 12),
-              DatePickerFormField(
-                labelText: 'Tanggal Pembuatan Data (Auto)',
-                prefixIcon: Icons.calendar_view_day,
-                initialValue: _createdAt,
-                context: context,
-                onDateSelected: (date) {
-                  setState(() => _createdAt = date);
-                },
               ),
               const SizedBox(height: 20),
               SizedBox(
