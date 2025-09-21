@@ -235,7 +235,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     labelText: 'Tanggal Lahir Ibu',
                     prefixIcon: Icons.calendar_today,
                     initialValue: _birthdateIbu,
-                    initialDate: DateTime(1990),
+                    initialDate: DateTime(DateTime.now().year - 20),
                     context: context,
                     onDateSelected: (date) {
                       setState(() {
@@ -336,7 +336,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     labelText: 'Tanggal Lahir Suami',
                     prefixIcon: Icons.calendar_today,
                     initialValue: _birthdateSuami,
-                    initialDate: DateTime(1990),
+                    initialDate: DateTime(DateTime.now().year - 20),
                     context: context,
                     onDateSelected: (date) {
                       setState(() {
