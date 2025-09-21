@@ -227,17 +227,6 @@ class _KunjunganState extends State<KunjunganScreen> {
                 isMultiline: true,
               ),
               const SizedBox(height: 12),
-              // DropdownField(
-              //   label: 'Status Kunjungan',
-              //   icon: Icons.info_outline,
-              //   items: _statusKunjunganList,
-              //   value: _selectedStatusKunjungan,
-              //   onChanged: (newValue) {
-              //     setState(() {
-              //       _selectedStatusKunjungan = newValue;
-              //     });
-              //   },
-              // ),
               _buildUsgField(),
               const SizedBox(height: 20),
               SizedBox(
@@ -255,20 +244,6 @@ class _KunjunganState extends State<KunjunganScreen> {
       ),
     );
   }
-
-  /**
- DropdownField(
-                label: 'Status Kunjungan',
-                icon: Icons.info_outline,
-                items: _statusKunjunganList,
-                value: _selectedStatusKunjungan,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedStatusKunjungan = newValue;
-                  });
-                },
-              ),
- */
 
   Widget _buildUsgField() {
     bool isUsg =
