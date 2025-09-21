@@ -89,7 +89,7 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
           }
         }
         if (data.lila != null) {
-          if (int.parse(data.lila!) < 23.5) {
+          if (num.parse(data.lila!) < 23.5) {
             resti.add('Kekurangan Energi Kronis (lila: ${data.lila} cm)');
           }
         }
