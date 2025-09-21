@@ -65,7 +65,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     setState(() {
       riwayatList.add({
         'tgl_lahir': DateTime(DateTime.now().year - 1),
-        'berat_bayi': '',
+        'berat_bayi': '0',
         'komplikasi': '',
         'panjang_bayi': '',
         'penolong': '',
@@ -166,9 +166,14 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               data['status_lahir'] = newValue ?? '';
                             });
                           },
-                          validator: (val) => val == null || val.isEmpty
-                              ? 'Wajib dipilih'
-                              : null,
+                          validator: (val) {
+                            if (data['status_bayi'] != 'Abortus') {
+                              if (val == null || val.isEmpty) {
+                                return 'Wajib dipilih';
+                              }
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 12),
                         DropdownField(
@@ -183,9 +188,14 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               data['status_term'] = newValue ?? '';
                             });
                           },
-                          validator: (val) => val == null || val.isEmpty
-                              ? 'Wajib dipilih'
-                              : null,
+                          validator: (val) {
+                            if (data['status_bayi'] != 'Abortus') {
+                              if (val == null || val.isEmpty) {
+                                return 'Wajib dipilih';
+                              }
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 12),
                         DropdownField(

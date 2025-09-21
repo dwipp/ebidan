@@ -190,6 +190,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _selectedGolIbu = newValue;
                       });
                     },
+                    validator: (val) => val == null ? 'Wajib dipilih' : null,
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
@@ -277,6 +278,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _selectedGolSuami = newValue;
                       });
                     },
+                    validator: (val) => val == null ? 'Wajib dipilih' : null,
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(

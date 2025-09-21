@@ -203,8 +203,14 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                     _statusLahir = newValue;
                   });
                 },
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Wajib dipilih' : null,
+                validator: (val) {
+                  if (_statusBayi != 'Abortus') {
+                    if (val == null || val.isEmpty) {
+                      return 'Wajib dipilih';
+                    }
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
               DropdownField(
@@ -217,8 +223,14 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                     _statusKehamilan = newValue;
                   });
                 },
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Wajib dipilih' : null,
+                validator: (val) {
+                  if (_statusBayi != 'Abortus') {
+                    if (val == null || val.isEmpty) {
+                      return 'Wajib dipilih';
+                    }
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
               DropdownField(

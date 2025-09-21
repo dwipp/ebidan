@@ -58,8 +58,10 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
             abortus++;
           }
 
-          final beratBayi = int.parse(item['berat_bayi']);
-          if (beratBayi < 2500) beratRendah++;
+          final beratBayi = int.parse(
+            item['berat_bayi'] == '' ? '0' : item['berat_bayi'],
+          );
+          if (beratBayi > 0 && beratBayi < 2500) beratRendah++;
 
           riwayatListFinal.add(
             Riwayat(
