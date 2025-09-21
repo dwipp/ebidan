@@ -1,10 +1,10 @@
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/data/models/riwayat_model.dart';
+import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
-import 'package:ebidan/presentation/widgets/year_picker_field.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/submit_riwayat_cubit.dart';
 import 'package:ebidan/common/Utils.dart';
@@ -52,8 +52,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
     'Spontan Belakang Kepala',
     'Section Caesarea (SC)',
   ];
-
-  late TextEditingController _tahunController;
+  DateTime? _tglLahir;
   late TextEditingController _beratBayiController;
   late TextEditingController _komplikasiController;
   late TextEditingController _panjangBayiController;
@@ -84,7 +83,8 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
     bumil = context.watch<SelectedBumilCubit>().state;
     riwayat = context.watch<SelectedRiwayatCubit>().state;
 
-    _tahunController = TextEditingController(text: riwayat?.tahun.toString());
+    _tglLahir = riwayat?.tglLahir;
+
     _beratBayiController = TextEditingController(
       text: riwayat?.beratBayi.toString(),
     );
@@ -112,7 +112,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
 
     final newRiwayat = Riwayat(
       id: riwayat!.id,
-      tahun: int.parse(_tahunController.text.trim()),
+      tglLahir: _tglLahir!,
       beratBayi: int.parse(_beratBayiController.text.trim()),
       komplikasi: _komplikasiController.text.trim(),
       panjangBayi: _panjangBayiController.text.trim(),
@@ -130,7 +130,6 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
 
   @override
   void dispose() {
-    _tahunController.dispose();
     _beratBayiController.dispose();
     _komplikasiController.dispose();
     _panjangBayiController.dispose();
@@ -182,11 +181,17 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
               ),
               const SizedBox(height: 16),
               _buildSectionTitle('Persalinan'),
-              YearPickerField(
-                label: 'Tahun Lahir',
-                icon: Icons.calendar_today,
-                initialYear: _tahunController.text,
-                onSaved: (year) => _tahunController.text = year,
+              DatePickerFormField(
+                labelText: 'Tanggal Lahir',
+                prefixIcon: Icons.calendar_today,
+                initialValue: _tglLahir,
+                initialDate: _tglLahir,
+                context: context,
+                onDateSelected: (date) {
+                  setState(() {
+                    _tglLahir = date;
+                  });
+                },
               ),
               DropdownField(
                 label: 'Status Lahir',

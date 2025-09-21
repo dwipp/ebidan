@@ -1,3 +1,4 @@
+import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -34,7 +35,7 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
   }
 
   void _sortList() {
-    _riwayatList.sort((a, b) => b.tahun.compareTo(a.tahun));
+    _riwayatList.sort((a, b) => b.tglLahir.compareTo(a.tglLahir));
   }
 
   @override
@@ -77,7 +78,7 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
                   ),
                   child: ListTile(
                     title: Text(
-                      "Tahun ${riwayat.tahun}",
+                      Utils.formattedDate(riwayat.tglLahir),
                       style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                     subtitle: Text(riwayat.statusTerm),

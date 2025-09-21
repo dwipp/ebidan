@@ -49,19 +49,23 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
         'id_bidan': user.uid,
         'id_kehamilan': data.idKehamilan,
         'id_bumil': data.idBumil,
-        'periksa_usg':data.periksaUsg,
+        'periksa_usg': data.periksaUsg,
       };
 
-
       if (firstTime) {
-        kunjungan['tgl_periksa_usg'] = selectedBumilCubit.state?.latestKehamilan?.tglPeriksaUsg;//tglPeriksaUsg;
-        kunjungan['kontrol_dokter'] = selectedBumilCubit.state?.latestKehamilan?.kontrolDokter;
-        
+        kunjungan['tgl_periksa_usg'] = selectedBumilCubit
+            .state
+            ?.latestKehamilan
+            ?.tglPeriksaUsg; //tglPeriksaUsg;
+        kunjungan['kontrol_dokter'] =
+            selectedBumilCubit.state?.latestKehamilan?.kontrolDokter;
+
         var bumil = selectedBumilCubit.state;
         final ageRisk = bumil!.age < 20 || bumil.age > 35;
         final gravidaRisk = bumil.statisticRiwayat['gravida']! >= 4;
-        final jarakRisk = (bumil.statisticRiwayat['gravida']! > 0) &&
-            (DateTime.now().year - (bumil.latestRiwayat?.tahun ?? DateTime.now().year) < 2);
+        final jarakRisk =
+            (bumil.statisticRiwayat['gravida']! > 0) &&
+            _cekJarakKehamilan(bumil.latestRiwayat?.tglLahir);
 
         kunjungan['k1_4t'] = ageRisk || gravidaRisk || jarakRisk;
       }
@@ -118,4 +122,23 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
   }
 
   void setInitial() => emit(AddKunjunganInitial());
+
+  bool _cekJarakKehamilan(DateTime? tglLahirAnak) {
+    if (tglLahirAnak == null) return false;
+
+    final sekarang = DateTime.now();
+
+    // Hitung selisih total bulan
+    int selisihBulan =
+        (sekarang.year - tglLahirAnak.year) * 12 +
+        (sekarang.month - tglLahirAnak.month);
+
+    // Koreksi jika tanggal hari sekarang < tanggal lahir anak (belum genap sebulan)
+    if (sekarang.day < tglLahirAnak.day) {
+      selisihBulan -= 1;
+    }
+
+    // risiko jika selisih < 24 bulan
+    return selisihBulan < 24;
+  }
 }

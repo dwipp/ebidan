@@ -46,9 +46,9 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
       List<Riwayat> riwayatListFinal = [];
 
       for (var item in riwayatList) {
-        if (item['tahun'] != '') {
-          final tahun = int.tryParse(item['tahun']);
-          if (tahun == null) continue;
+        if (item['tgl_lahir'] != '') {
+          final tglLahir = item['tgl_lahir'] as DateTime;
+          // if (tglLahir == null) continue;
 
           if (item['status_bayi'] == 'Hidup') {
             hidup++;
@@ -64,7 +64,7 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
           riwayatListFinal.add(
             Riwayat(
               id: Uuid().v4(),
-              tahun: tahun,
+              tglLahir: tglLahir,
               beratBayi: beratBayi,
               komplikasi: item['komplikasi'],
               panjangBayi: item['panjang_bayi'],
@@ -78,8 +78,8 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
             ),
           );
 
-          if (latestYear == null || tahun > latestYear) {
-            latestYear = tahun;
+          if (latestYear == null || tglLahir.year > latestYear) {
+            latestYear = tglLahir.year;
           }
         }
       }
@@ -91,10 +91,10 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
 
       docRef.update({
         'riwayat': FieldValue.arrayUnion(
-          riwayatListFinal.map((riwayat) => riwayat.toMap()).toList(),
+          riwayatListFinal.map((riwayat) => riwayat.toFirestore()).toList(),
         ),
       });
-      
+
       currentBumil.riwayat = riwayatListFinal;
       selectedBumilCubit.selectBumil(currentBumil);
 
@@ -141,7 +141,9 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
           .collection('bumil')
           .doc(currentBumil.idBumil)
           .update({
-            'riwayat': newRiwayats.map((riwayat) => riwayat.toMap()).toList(),
+            'riwayat': newRiwayats
+                .map((riwayat) => riwayat.toFirestore())
+                .toList(),
           });
 
       // update cubit state biar langsung sinkron
@@ -151,7 +153,9 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
 
       // hitung summary
       int? latestYear = newRiwayats.isNotEmpty
-          ? newRiwayats.map((e) => e.tahun).reduce((a, b) => a > b ? a : b)
+          ? newRiwayats
+                .map((e) => e.tglLahir.year)
+                .reduce((a, b) => a > b ? a : b)
           : null;
 
       emit(

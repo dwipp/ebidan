@@ -46,7 +46,7 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
       for (var persalinan in persalinans) {
         final riwayat = Riwayat(
           id: persalinan.id,
-          tahun: persalinan.tglPersalinan?.year ?? 0,
+          tglLahir: persalinan.tglPersalinan ?? DateTime.now(),
           beratBayi: int.tryParse(persalinan.beratLahir ?? '0') ?? 0,
           komplikasi: resti,
           panjangBayi: persalinan.panjangBadan ?? '0',
@@ -119,7 +119,7 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
           // bikin object riwayat baru
           final updatedRiwayat = Riwayat(
             id: updatedPersalinan.id,
-            tahun: updatedPersalinan.tglPersalinan?.year ?? 0,
+            tglLahir: updatedPersalinan.tglPersalinan ?? DateTime.now(),
             beratBayi: int.tryParse(updatedPersalinan.beratLahir ?? '0') ?? 0,
             komplikasi: currentKehamilan.resti!.join(", "),
             panjangBayi: updatedPersalinan.panjangBadan ?? '0',

@@ -161,9 +161,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
       resti.add('Riwayat kehamilan ${bumil?.statisticRiwayat['gravida']}x');
     }
 
-    final jarakTahun =
-        DateTime.now().year -
-        (bumil?.latestRiwayat?.tahun ?? DateTime.now().year);
+    final jarakTahun = Utils.hitungJarakTahun(bumil?.latestRiwayat?.tglLahir);
     if (jarakTahun < 2) {
       resti.add('Jarak kehamilan terlalu dekat ($jarakTahun tahun)');
     }

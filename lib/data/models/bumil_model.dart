@@ -254,11 +254,11 @@ class Bumil {
   /// ====== Getter Utility ======
   Riwayat? get latestRiwayat {
     if (riwayat == null || riwayat!.isEmpty) return null;
-    riwayat!.sort((a, b) => b.tahun.compareTo(a.tahun));
+    riwayat!.sort((a, b) => b.tglLahir.compareTo(a.tglLahir));
     return riwayat!.first;
   }
 
-  int? get latestHistoryYear => latestRiwayat?.tahun;
+  int? get latestHistoryYear => latestRiwayat?.tglLahir.year;
 
   int get age => (DateTime.now().year - (birthdateIbu?.year ?? 0));
 

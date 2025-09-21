@@ -73,11 +73,10 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     bumil = context.watch<SelectedBumilCubit>().state;
-    final jarakTahun =
-        DateTime.now().year -
-        (bumil?.latestRiwayat?.tahun ?? DateTime.now().year);
+    final jarakTahun = Utils.hitungJarakTahun(bumil?.latestRiwayat?.tglLahir);
     _jarakKehamilan.text = jarakTahun == 0 ? '-' : '$jarakTahun tahun';
-    _gravidaController.text = '${(bumil?.statisticRiwayat['gravida'] ?? 0)+1}';
+    _gravidaController.text =
+        '${(bumil?.statisticRiwayat['gravida'] ?? 0) + 1}';
     _paraController.text = '${bumil?.statisticRiwayat['para']}';
     _abortusController.text = '${bumil?.statisticRiwayat['abortus']}';
   }
@@ -114,9 +113,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
     }
 
     if (bumil!.statisticRiwayat['gravida']! > 0) {
-      final jarakTahun =
-          DateTime.now().year -
-          (bumil?.latestRiwayat?.tahun ?? DateTime.now().year);
+      final jarakTahun = Utils.hitungJarakTahun(bumil?.latestRiwayat?.tglLahir);
       if (jarakTahun < 2) {
         resti.add('Jarak kehamilan terlalu dekat ($jarakTahun tahun)');
       }

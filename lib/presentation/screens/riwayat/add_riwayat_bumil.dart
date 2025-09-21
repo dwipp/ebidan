@@ -1,9 +1,9 @@
 import 'package:ebidan/data/models/bumil_model.dart';
+import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
-import 'package:ebidan/presentation/widgets/year_picker_field.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/submit_riwayat_cubit.dart';
 import 'package:ebidan/common/Utils.dart';
@@ -64,7 +64,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
   void _addRiwayat() {
     setState(() {
       riwayatList.add({
-        'tahun': '',
+        'tgl_lahir': DateTime(DateTime.now().year - 1),
         'berat_bayi': '',
         'komplikasi': '',
         'panjang_bayi': '',
@@ -106,11 +106,17 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       children: [
-                        YearPickerField(
-                          label: 'Tahun',
-                          icon: Icons.calendar_today,
-                          initialYear: data['tahun'],
-                          onSaved: (year) => data['tahun'] = year,
+                        DatePickerFormField(
+                          labelText: 'Tanggal Lahir',
+                          prefixIcon: Icons.calendar_today,
+                          initialValue: data['tgl_lahir'],
+                          initialDate: DateTime(DateTime.now().year - 1),
+                          context: context,
+                          onDateSelected: (date) {
+                            setState(() {
+                              data['tgl_lahir'] = date;
+                            });
+                          },
                         ),
                         const SizedBox(height: 12),
                         CustomTextField(

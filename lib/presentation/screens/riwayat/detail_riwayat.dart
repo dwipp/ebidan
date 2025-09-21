@@ -57,8 +57,8 @@ class DetailRiwayatScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Utils.generateRowLabelValue(
-                "Tahun Lahir",
-                riwayat?.tahun.toString(),
+                "Tanggal Lahir",
+                Utils.formattedDate(riwayat?.tglLahir),
               ),
               Utils.generateRowLabelValue("Status Lahir", riwayat?.statusLahir),
               Utils.generateRowLabelValue(

@@ -55,6 +55,22 @@ class Utils {
     }
   }
 
+  static int hitungJarakTahun(DateTime? tglLahir) {
+    if (tglLahir == null) return 0;
+
+    final now = DateTime.now();
+    int tahun = now.year - tglLahir.year;
+
+    // Kalau bulan sekarang < bulan lahir, atau bulan sama tapi hari sekarang < hari lahir,
+    // berarti belum genap setahun → kurangi 1
+    if (now.month < tglLahir.month ||
+        (now.month == tglLahir.month && now.day < tglLahir.day)) {
+      tahun -= 1;
+    }
+
+    return tahun;
+  }
+
   static Widget generateRowLabelValue(
     String label,
     String? value, {

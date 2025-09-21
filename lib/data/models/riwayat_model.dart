@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Riwayat {
   final String id;
-  final int tahun;
+  final DateTime tglLahir;
   final int beratBayi;
   final String komplikasi;
   final String panjangBayi;
@@ -12,7 +14,7 @@ class Riwayat {
 
   Riwayat({
     required this.id,
-    required this.tahun,
+    required this.tglLahir,
     required this.beratBayi,
     required this.komplikasi,
     required this.panjangBayi,
@@ -26,9 +28,7 @@ class Riwayat {
   factory Riwayat.fromMap(Map<String, dynamic> map) {
     return Riwayat(
       id: map['id'] ?? '',
-      tahun: map['tahun'] is int
-          ? map['tahun']
-          : int.tryParse(map['tahun']?.toString() ?? '') ?? 0,
+      tglLahir: (map['tgl_lahir'] as Timestamp?)!.toDate(),
       beratBayi: map['berat_bayi'] ?? 0,
       komplikasi: map['komplikasi'] ?? '',
       panjangBayi: map['panjang_bayi'] ?? '',
@@ -43,7 +43,22 @@ class Riwayat {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'tahun': tahun,
+      'tgl_lahir': tglLahir.toIso8601String(),
+      'berat_bayi': beratBayi,
+      'komplikasi': komplikasi,
+      'panjang_bayi': panjangBayi,
+      'penolong': penolong,
+      'status_bayi': statusBayi,
+      'status_lahir': statusLahir,
+      'status_term': statusTerm,
+      'tempat': tempat,
+    };
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'tgl_lahir': tglLahir,
       'berat_bayi': beratBayi,
       'komplikasi': komplikasi,
       'panjang_bayi': panjangBayi,
