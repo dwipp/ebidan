@@ -163,7 +163,7 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
 
     docRef.update({
       'riwayat': FieldValue.arrayUnion(
-        riwayatList.map((e) => e.toMap()).toList(),
+        riwayatList.map((e) => e.toFirestore()).toList(),
       ),
       'latest_kehamilan_persalinan': true,
       'latest_kehamilan.persalinan': persalinanList
@@ -181,7 +181,7 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
     final docRef = FirebaseFirestore.instance.collection('bumil').doc(bumilId);
 
     docRef.update({
-      'riwayat': riwayatList.map((e) => e.toMap()).toList(),
+      'riwayat': riwayatList.map((e) => e.toFirestore()).toList(),
       'latest_kehamilan_persalinan': true,
       'latest_kehamilan.persalinan': persalinanList
           .map((persalinan) => persalinan.toFirestore())
