@@ -85,6 +85,11 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
+              _buildRow(
+                "Tanggal Kunjungan",
+                Utils.formattedDate(widget.data.createdAt),
+              ),
+              const SizedBox(height: 8),
               _buildRow("Usia Kandungan", widget.data.uk ?? '-'),
               const SizedBox(height: 16),
               const Text(
@@ -120,7 +125,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                       Utils.showSnackBar(
                         context,
                         content: 'Gagal: ${state.message}',
-                        isSuccess: true,
+                        isSuccess: false,
                       );
                     }
                   },

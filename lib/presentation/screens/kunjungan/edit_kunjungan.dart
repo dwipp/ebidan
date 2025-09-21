@@ -167,6 +167,17 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
               const SizedBox(height: 16),
               Utils.sectionTitle('Analysis'),
               const SizedBox(height: 12),
+              DatePickerFormField(
+                labelText: 'Tanggal Kunjungan',
+                prefixIcon: Icons.calendar_view_day,
+                initialValue: _createdAt,
+                context: context,
+                readOnly: true,
+                onDateSelected: (date) {
+                  setState(() => _createdAt = date);
+                },
+              ),
+              const SizedBox(height: 12),
               CustomTextField(
                 controller: ukController,
                 label: "Usia Kandungan",
@@ -202,17 +213,6 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
                   setState(() {
                     _selectedStatusKunjungan = newValue;
                   });
-                },
-              ),
-              const SizedBox(height: 12),
-              DatePickerFormField(
-                labelText: 'Tanggal Kunjungan',
-                prefixIcon: Icons.calendar_view_day,
-                initialValue: _createdAt,
-                context: context,
-                readOnly: true,
-                onDateSelected: (date) {
-                  setState(() => _createdAt = date);
                 },
               ),
               const SizedBox(height: 20),

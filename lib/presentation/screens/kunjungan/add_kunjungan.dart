@@ -47,7 +47,6 @@ class _KunjunganState extends State<KunjunganScreen> {
     '-',
   ];
 
-
   bool? _selectedPeriksaUsg;
   final List<String> _periksaUsgList = ['Ya', 'Tidak'];
 
@@ -57,7 +56,10 @@ class _KunjunganState extends State<KunjunganScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     bumil = context.watch<SelectedBumilCubit>().state;
-    ukController.text = _hitungUsiaKehamilan(hpht: bumil!.latestKehamilanHpht!);
+    ukController.text = _hitungUsiaKehamilan(
+      hpht: bumil!.latestKehamilanHpht!,
+      tglKunjungan: _createdAt,
+    );
     if (widget.firstTime) {
       _selectedStatusKunjungan = 'K1';
     }
@@ -91,8 +93,11 @@ class _KunjunganState extends State<KunjunganScreen> {
     );
   }
 
-  String _hitungUsiaKehamilan({required DateTime hpht}) {
-    final today = DateTime.now();
+  String _hitungUsiaKehamilan({
+    required DateTime hpht,
+    required DateTime? tglKunjungan,
+  }) {
+    final today = tglKunjungan ?? DateTime.now();
 
     // Hitung selisih hari antara today dan hpht
     final selisihHari = today.difference(hpht).inDays;
@@ -182,6 +187,20 @@ class _KunjunganState extends State<KunjunganScreen> {
               const SizedBox(height: 16),
               Utils.sectionTitle('Analysis'),
               const SizedBox(height: 12),
+              DatePickerFormField(
+                labelText: 'Tanggal Kunjungan',
+                prefixIcon: Icons.calendar_view_day,
+                initialValue: _createdAt,
+                context: context,
+                onDateSelected: (date) {
+                  setState(() => _createdAt = date);
+                  ukController.text = _hitungUsiaKehamilan(
+                    hpht: bumil!.latestKehamilanHpht!,
+                    tglKunjungan: date,
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
               CustomTextField(
                 controller: ukController,
                 label: "Usia Kandungan",
@@ -220,16 +239,6 @@ class _KunjunganState extends State<KunjunganScreen> {
               //   },
               // ),
               _buildUsgField(),
-              const SizedBox(height: 12),
-              DatePickerFormField(
-                labelText: 'Tanggal Pembuatan Data (Auto)',
-                prefixIcon: Icons.calendar_view_day,
-                initialValue: _createdAt,
-                context: context,
-                onDateSelected: (date) {
-                  setState(() => _createdAt = date);
-                },
-              ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
@@ -247,7 +256,7 @@ class _KunjunganState extends State<KunjunganScreen> {
     );
   }
 
-/**
+  /**
  DropdownField(
                 label: 'Status Kunjungan',
                 icon: Icons.info_outline,
@@ -262,7 +271,8 @@ class _KunjunganState extends State<KunjunganScreen> {
  */
 
   Widget _buildUsgField() {
-    bool isUsg = _selectedStatusKunjungan == 'K5' || _selectedStatusKunjungan == 'K6';
+    bool isUsg =
+        _selectedStatusKunjungan == 'K5' || _selectedStatusKunjungan == 'K6';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -285,8 +295,8 @@ class _KunjunganState extends State<KunjunganScreen> {
             icon: Icons.pregnant_woman,
             items: _periksaUsgList,
             value: _selectedPeriksaUsg == null
-                      ? null
-                      : (_selectedPeriksaUsg! ? 'Ya' : 'Tidak'),
+                ? null
+                : (_selectedPeriksaUsg! ? 'Ya' : 'Tidak'),
             onChanged: (newValue) {
               setState(() {
                 _selectedPeriksaUsg = newValue?.toLowerCase() == "ya";
