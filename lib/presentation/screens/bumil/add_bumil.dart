@@ -81,7 +81,7 @@ class _AddBumilState extends State<AddBumilScreen> {
   }
 
   String? _validateKK(String? val) {
-    if (val == null || val.isEmpty) return 'Wajib diisi';
+    if (val == null || val.isEmpty) return null;
     if (!RegExp(r'^\d{16}$').hasMatch(val)) return 'Harus 16 digit angka';
     return null;
   }
