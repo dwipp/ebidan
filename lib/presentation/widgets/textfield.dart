@@ -4,16 +4,17 @@ import 'package:flutter/services.dart';
 class CustomTextField extends StatelessWidget {
   final String label;
   final IconData icon;
-  final Function(String)? onSaved; // ✅ opsional
+  final Function(String)? onSaved;
   final bool isNumber;
   final TextInputType? keyboardType;
   final String? suffixText;
+  final Widget? suffixIcon; // ✅ tambahan
   final TextCapitalization textCapitalization;
-  final TextEditingController? controller; // ✅ opsional
-  final bool readOnly; // ✅ tambahkan readOnly
+  final TextEditingController? controller;
+  final bool readOnly;
   final bool disable;
-  final bool isMultiline; // ✅ tambahkan untuk auto grow textfield
-  final FormFieldValidator<String>? validator; // ✅ tambahkan validator
+  final bool isMultiline;
+  final FormFieldValidator<String>? validator;
   final List<TextInputFormatter>? inputFormatters;
   final int? maxLength;
 
@@ -21,16 +22,17 @@ class CustomTextField extends StatelessWidget {
     super.key,
     required this.label,
     required this.icon,
-    this.onSaved, // ✅ tidak wajib
+    this.onSaved,
     this.isNumber = false,
     this.keyboardType,
     this.suffixText,
+    this.suffixIcon, // ✅ tambahan
     this.textCapitalization = TextCapitalization.sentences,
-    this.controller, // ✅ tidak wajib
-    this.readOnly = false, // ✅ default false
+    this.controller,
+    this.readOnly = false,
     this.disable = false,
-    this.isMultiline = false, // ✅ default: single line
-    this.validator, // ✅ opsional
+    this.isMultiline = false,
+    this.validator,
     this.inputFormatters,
     this.maxLength,
   }) : assert(
@@ -43,27 +45,26 @@ class CustomTextField extends StatelessWidget {
     return TextFormField(
       maxLines: isMultiline ? null : 1,
       controller: controller,
-      readOnly: readOnly, // ✅ aktifkan
+      readOnly: readOnly,
       enabled: !disable,
       inputFormatters: inputFormatters,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
         suffixText: suffixText,
-        suffixStyle: TextStyle(color: Colors.black54, fontSize: 16),
+        suffixIcon: suffixIcon, // ✅ aktifkan
+        suffixStyle: const TextStyle(color: Colors.black54, fontSize: 16),
       ),
       maxLength: maxLength,
       keyboardType: isNumber
           ? TextInputType.number
           : keyboardType ??
-                (isMultiline ? TextInputType.multiline : TextInputType.text),
+              (isMultiline ? TextInputType.multiline : TextInputType.text),
       textCapitalization: isNumber
           ? TextCapitalization.none
           : textCapitalization,
-      onSaved: onSaved != null
-          ? (val) => onSaved!(val ?? '')
-          : null, // ✅ hanya dipakai kalau ada
-      validator: validator, // ✅ aktifkan
+      onSaved: onSaved != null ? (val) => onSaved!(val ?? '') : null,
+      validator: validator,
     );
   }
 }

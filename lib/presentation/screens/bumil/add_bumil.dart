@@ -300,6 +300,17 @@ class _AddBumilState extends State<AddBumilScreen> {
                     isNumber: true,
                     maxLength: 16,
                     validator: _validateKK,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.copy),
+                      onPressed: () {
+                        setState(() {
+                          _kkSuamiController.text = _kkIbuController.text;
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('No KK Suami sama dengan No KK Ibu')),
+                        );
+                      },
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
