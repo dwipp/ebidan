@@ -26,6 +26,10 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
       emit(SubmitRiwayatFailure('User belum login'));
       return;
     }
+
+    var currentBumil = selectedBumilCubit.state;
+    if (currentBumil == null) return;
+
     emit(SubmitRiwayatLoading());
 
     try {
@@ -90,6 +94,9 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
           riwayatListFinal.map((riwayat) => riwayat.toMap()).toList(),
         ),
       });
+      
+      currentBumil.riwayat = riwayatListFinal;
+      selectedBumilCubit.selectBumil(currentBumil);
 
       emit(
         SubmitRiwayatSuccess(
