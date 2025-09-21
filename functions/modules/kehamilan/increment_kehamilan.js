@@ -1,5 +1,5 @@
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
-import { db } from "../firebase.js";
+import { db, FieldValue } from "../firebase.js";
 import { getMonthString } from "../helpers.js";
 
 const REGION = "asia-southeast2";
@@ -20,8 +20,7 @@ export const incrementKehamilanCount = onDocumentCreated(
     } else if (kehamilanData.created_at) {
       currentMonth = getMonthString(new Date(kehamilanData.created_at));
     } else {
-      // fallback jika tidak ada created_at
-      currentMonth = getMonthString(new Date());
+      currentMonth = getMonthString(new Date()); // fallback
     }
 
     await db.runTransaction(async (t) => {
@@ -40,29 +39,36 @@ export const incrementKehamilanCount = onDocumentCreated(
       }
 
       const data = doc.data();
-      const kehamilan = data.kehamilan || { all_bumil_count: 0 };
       const byMonth = data.by_month || {};
 
       // pastikan struktur by_month ada
       if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
       if (!byMonth[currentMonth].kehamilan) byMonth[currentMonth].kehamilan = { total: 0 };
 
-      // increment total kehamilan
-      byMonth[currentMonth].kehamilan.total++;
-
       // --- LOGIC BATAS 13 BULAN ---
-      const months = Object.keys(byMonth).sort(); // YYYY-MM format -> urut ascending
+      const months = Object.keys(byMonth).sort(); // YYYY-MM format -> ascending
       if (months.length > 13) {
         const oldestMonth = months[0];
         delete byMonth[oldestMonth];
         console.log(`Month limit exceeded. Deleted oldest month: ${oldestMonth} for bidan: ${idBidan}`);
       }
 
+      // gunakan FieldValue.increment untuk aman di Firestore
       t.set(statsRef, {
-        ...data,
-        kehamilan: { all_bumil_count: (kehamilan.all_bumil_count || 0) + 1 },
         last_updated_month: currentMonth,
-        by_month: byMonth
+        kehamilan: {
+          all_bumil_count: FieldValue.increment(1)
+        },
+        by_month: {
+          ...byMonth,
+          [currentMonth]: {
+            ...byMonth[currentMonth],
+            kehamilan: {
+              ...byMonth[currentMonth].kehamilan,
+              total: FieldValue.increment(1)
+            }
+          }
+        }
       }, { merge: true });
 
       console.log(`Incremented kehamilan count for month: ${currentMonth}, bidan: ${idBidan}`);

@@ -1,6 +1,6 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { db } from "../firebase.js";
-import { getMonthString } from "../helpers.js";
+import { getMonthString, safeIncrement } from "../helpers.js";
 
 const REGION = "asia-southeast2";
 
@@ -47,8 +47,8 @@ export const recalculatePersalinanStats = onRequest(
             }
           }
 
-          // hitung total persalinan
-          statsByBidan[idBidan].by_month[monthKey].persalinan.total++;
+          // hitung total persalinan (pakai safeIncrement)
+          safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "total");
 
           // --- logika abortus (umur_kehamilan <= 20 minggu TANPA tambahan hari) ---
           if (p.status_bayi === "Abortus") {
@@ -76,7 +76,7 @@ export const recalculatePersalinanStats = onRequest(
               umurMinggu <= 20 &&
               !lebihDariMinggu
             ) {
-              statsByBidan[idBidan].by_month[monthKey].kunjungan.abortus++;
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].kunjungan, "abortus");
             }
           }
         }

@@ -1,5 +1,5 @@
 import { onRequest } from "firebase-functions/v2/https";
-import { getMonthString } from "../helpers.js";
+import { getMonthString, safeIncrement } from "../helpers.js";
 import { db } from "../firebase.js";
 
 const REGION = "asia-southeast2";
@@ -44,26 +44,25 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       if (data.is_hamil) updateLatest(kehamilanMonthKey);
 
       // hitung semua pasien
-      statsByBidan[idBidan].pasien.all_pasien_count++;
+      statsByBidan[idBidan].pasien.all_pasien_count = safeIncrement(statsByBidan[idBidan].pasien.all_pasien_count);
       if (!statsByBidan[idBidan].by_month[pasienMonthKey]) {
         statsByBidan[idBidan].by_month[pasienMonthKey] = { kehamilan: { total: 0 }, pasien: { total: 0 } };
       }
-      statsByBidan[idBidan].by_month[pasienMonthKey].pasien.total++;
+      statsByBidan[idBidan].by_month[pasienMonthKey].pasien.total = safeIncrement(statsByBidan[idBidan].by_month[pasienMonthKey].pasien.total);
 
       // jika hamil
       if (data.is_hamil) {
-        statsByBidan[idBidan].kehamilan.all_bumil_count++;
+        statsByBidan[idBidan].kehamilan.all_bumil_count = safeIncrement(statsByBidan[idBidan].kehamilan.all_bumil_count);
         if (!statsByBidan[idBidan].by_month[kehamilanMonthKey]) {
           statsByBidan[idBidan].by_month[kehamilanMonthKey] = { kehamilan: { total: 0 }, pasien: { total: 0 } };
         }
-        statsByBidan[idBidan].by_month[kehamilanMonthKey].kehamilan.total++;
+        statsByBidan[idBidan].by_month[kehamilanMonthKey].kehamilan.total = safeIncrement(statsByBidan[idBidan].by_month[kehamilanMonthKey].kehamilan.total);
       }
     });
 
     // --- Tentukan bulan awal 13 bulan terakhir ---
-    // StartMonthDate = 12 bulan sebelum bulan ini (termasuk bulan ini)
     const now = new Date();
-    const startMonthDate = new Date(now.getFullYear(), now.getMonth() - 12, 1); // Bulan paling awal yang disimpan (YYYY-MM-01)
+    const startMonthDate = new Date(now.getFullYear(), now.getMonth() - 12, 1);
     const startMonthKey = getMonthString(startMonthDate);
 
     const batch = db.batch();
@@ -90,7 +89,7 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       for (const [month, counts] of Object.entries(stats.by_month)) {
         if (month < startMonthKey) {
           skippedMonths.push(month);
-          continue; // skip bulan di luar 13 bulan terakhir
+          continue;
         }
         if (!byMonth[month]) byMonth[month] = {};
         if (!byMonth[month].kehamilan) byMonth[month].kehamilan = { total: 0 };

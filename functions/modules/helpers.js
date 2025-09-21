@@ -9,3 +9,8 @@ export function parseUK(ukString) {
   const minggu = parseInt(match[1] || 0);
   return minggu;
 }
+
+// Helper agar tidak pernah NaN
+export function safeIncrement(obj, key, val = 1) {
+  obj[key] = (typeof obj[key] === "number" ? obj[key] : 0) + val;
+}

@@ -1,6 +1,6 @@
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { getMonthString } from "../helpers.js";
-import { db } from "../firebase.js";
+import { db, FieldValue } from "../firebase.js";
 
 const REGION = "asia-southeast2";
 
@@ -20,30 +20,27 @@ export const incrementPasienCount = onDocumentCreated(
       const byMonth = existing.by_month || {};
       const skippedMonths = [];
 
-      // --- Pastikan struktur by_month ada ---
-      if (!byMonth[currentMonth]) byMonth[currentMonth] = { pasien: { total: 0 } };
-      else if (!byMonth[currentMonth].pasien) byMonth[currentMonth].pasien = { total: 0 };
-
-      // --- Increment total pasien ---
-      byMonth[currentMonth].pasien.total++;
-
       // --- LOGIC BATAS 13 BULAN ---
-      const months = Object.keys(byMonth).sort(); // YYYY-MM format -> urut ascending
-      if (months.length > 13) {
+      const months = Object.keys(byMonth).sort(); // YYYY-MM ascending
+      if (months.length >= 13 && !byMonth[currentMonth]) {
         const oldestMonth = months[0];
         delete byMonth[oldestMonth];
         skippedMonths.push(oldestMonth);
         console.log(`Month limit exceeded. Deleted oldest month: ${oldestMonth} for bidan: ${idBidan}`);
       }
 
-      // --- Simpan ke Firestore ---
-      t.set(statsRef, {
-        ...existing,
+      // --- Simpan ke Firestore dengan increment ---
+      const update = {
+        [`by_month.${currentMonth}.pasien.total`]: FieldValue.increment(1),
         last_updated_month: currentMonth,
-        by_month: byMonth
-      }, { merge: true });
+      };
 
-      console.log(`Incremented pasien count for month: ${currentMonth}, bidan: ${idBidan}. Total bulan tersimpan: ${Object.keys(byMonth).length}, skipped: ${skippedMonths.join(", ")}`);
+      t.set(statsRef, { ...existing, ...update, by_month: byMonth }, { merge: true });
+
+      console.log(
+        `Incremented pasien count for month: ${currentMonth}, bidan: ${idBidan}. ` +
+        `Total bulan tersimpan: ${Object.keys(byMonth).length}, skipped: ${skippedMonths.join(", ")}`
+      );
     });
   }
 );

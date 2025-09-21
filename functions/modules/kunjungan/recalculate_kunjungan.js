@@ -1,5 +1,5 @@
 import { onRequest } from "firebase-functions/v2/https";
-import { getMonthString, parseUK } from "../helpers.js";
+import { getMonthString, parseUK, safeIncrement } from "../helpers.js";
 import { db } from "../firebase.js";
 
 const REGION = "asia-southeast2";
@@ -46,34 +46,35 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
 
       const kunjungan = statsByBidan[idBidan].by_month[monthKey].kunjungan;
 
-      // Hitung sesuai status
-      kunjungan.total++;
+      // Hitung sesuai status (pakai safeIncrement)
+      safeIncrement(kunjungan, "total");
+
       if (status === "k1") {
-        kunjungan.k1++;
+        safeIncrement(kunjungan, "k1");
         if (uk <= 12) {
-          kunjungan.k1_murni++;
-          if (kontrolDokter) kunjungan.k1_murni_dokter++;
-          if (isUsg) kunjungan.k1_murni_usg++;
+          safeIncrement(kunjungan, "k1_murni");
+          if (kontrolDokter) safeIncrement(kunjungan, "k1_murni_dokter");
+          if (isUsg) safeIncrement(kunjungan, "k1_murni_usg");
         }
         else {
-          kunjungan.k1_akses++;
-          if (kontrolDokter) kunjungan.k1_akses_dokter++;
-          if (isUsg) kunjungan.k1_akses_usg++;
+          safeIncrement(kunjungan, "k1_akses");
+          if (kontrolDokter) safeIncrement(kunjungan, "k1_akses_dokter");
+          if (isUsg) safeIncrement(kunjungan, "k1_akses_usg");
         }
-        if (isUsg) kunjungan.k1_usg++;
-        if (kontrolDokter) kunjungan.k1_dokter++;
-        if (isK1_4t) kunjungan.k1_4t++;
+        if (isUsg) safeIncrement(kunjungan, "k1_usg");
+        if (kontrolDokter) safeIncrement(kunjungan, "k1_dokter");
+        if (isK1_4t) safeIncrement(kunjungan, "k1_4t");
       }
-      if (status === "k2") kunjungan.k2++;
-      if (status === "k3") kunjungan.k3++;
-      if (status === "k4") kunjungan.k4++;
+      if (status === "k2") safeIncrement(kunjungan, "k2");
+      if (status === "k3") safeIncrement(kunjungan, "k3");
+      if (status === "k4") safeIncrement(kunjungan, "k4");
       if (status === "k5") {
-        kunjungan.k5++;
-        if (periksaUsg) kunjungan.k5_usg++;
+        safeIncrement(kunjungan, "k5");
+        if (periksaUsg) safeIncrement(kunjungan, "k5_usg");
       }
       if (status === "k6") {
-        kunjungan.k6++;
-        if (periksaUsg) kunjungan.k6_usg++;
+        safeIncrement(kunjungan, "k6");
+        if (periksaUsg) safeIncrement(kunjungan, "k6_usg");
       }
     });
 
@@ -81,7 +82,6 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
 
     // Tentukan bulan awal 13 bulan terakhir
     const now = new Date();
-    // StartMonthDate = 12 bulan sebelum bulan ini, termasuk bulan ini
     const startMonthDate = new Date(now.getFullYear(), now.getMonth() - 12, 1); 
     const startMonthKey = getMonthString(startMonthDate);
 
