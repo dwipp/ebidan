@@ -100,6 +100,11 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
               _buildRow("Planning", widget.data.planning ?? '-'),
               _buildRow("Terapi", widget.data.terapi ?? '-'),
               _buildRow("Status Kunjungan", widget.data.status ?? '-'),
+              if (widget.data.status == 'K5' || widget.data.status == 'K6')
+                _buildRow(
+                  "Periksa USG",
+                  (widget.data.periksaUsg ?? false) ? 'Ya' : 'Tidak',
+                ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
