@@ -276,7 +276,7 @@ class Bumil {
           abortus++;
         }
 
-        if (r.beratBayi < 2500) beratRendah++;
+        if (r.beratBayi > 0 && r.beratBayi < 2500) beratRendah++;
       }
     }
     return {
