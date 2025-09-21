@@ -1,9 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ebidan/state_management/bumil/cubit/check_bumil_cubit.dart';
 import 'package:flutter/material.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CheckBumilScreen extends StatefulWidget {
   const CheckBumilScreen({Key? key}) : super(key: key);
@@ -15,7 +16,6 @@ class CheckBumilScreen extends StatefulWidget {
 class _CheckBumilScreenState extends State<CheckBumilScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nikController = TextEditingController();
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -29,37 +29,9 @@ class _CheckBumilScreenState extends State<CheckBumilScreen> {
     return null;
   }
 
-  Future<void> _checkNIK() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _isLoading = true);
-
-    final userId = FirebaseAuth.instance.currentUser?.uid ?? "";
-    final firestore = FirebaseFirestore.instance;
-
-    try {
-      final snapshot = await firestore
-          .collection('bumil')
-          .where('id_bidan', isEqualTo: userId)
-          .where('nik_ibu', isEqualTo: _nikController.text.trim())
-          .limit(1)
-          .get();
-
-      if (snapshot.docs.isNotEmpty) {
-        // tampilkan nama bumil
-        // beri 1 tombol untuk masuk ke halaman add kehamilan
-        // sudah terdaftar → masuk ke Padd kehamilan
-        Navigator.pushReplacementNamed(context, AppRouter.addKehamilan);
-      } else {
-        // belum terdaftar → masuk ke tambah pasien baru
-        Navigator.pushReplacementNamed(context, AppRouter.addBumil);
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Terjadi kesalahan: $e')),
-      );
-    } finally {
-      setState(() => _isLoading = false);
+  void _onSubmit(BuildContext context) {
+    if (_formKey.currentState!.validate()) {
+      context.read<CheckBumilCubit>().checkNIK(_nikController.text);
     }
   }
 
@@ -88,12 +60,73 @@ class _CheckBumilScreenState extends State<CheckBumilScreen> {
                 validator: _validateNIK,
               ),
               const SizedBox(height: 24),
-              Button(
-                isSubmitting: _isLoading,
-                onPressed: _checkNIK,
-                label: 'Cek Pasien',
-                loadingLabel: 'Memeriksa...',
-                icon: Icons.search,
+              SizedBox(
+                width: double.infinity,
+                child: BlocConsumer<CheckBumilCubit, CheckBumilState>(
+                  listener: (context, state) {
+                    if (state is CheckBumilError) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(state.message)));
+                    }
+
+                    if (state is CheckBumilNotFound) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Silahkan tambah pasien baru...'),
+                        ),
+                      );
+                      Navigator.pushReplacementNamed(
+                        context,
+                        AppRouter.addBumil,
+                        arguments: {'nikIbu': _nikController.text},
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is CheckBumilFound) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Pasien telah terdaftar dengan nama: \n${state.nama}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: Button(
+                              onPressed: () {
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  AppRouter.addKehamilan,
+                                );
+                              },
+                              label: 'Tambah Kehamilan Baru',
+                              icon: Icons.add,
+                              isSubmitting: false,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    var isSubmitting = false;
+                    if (state is CheckBumilLoading) {
+                      isSubmitting = true;
+                    }
+                    // default: initial
+                    return Button(
+                      onPressed: () => _onSubmit(context),
+                      label: 'Cek Pasien',
+                      icon: Icons.search,
+                      isSubmitting: isSubmitting,
+                    );
+                  },
+                ),
               ),
             ],
           ),

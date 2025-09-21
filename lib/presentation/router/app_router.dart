@@ -71,7 +71,6 @@ class AppRouter {
   static const String listKunjunganStats = '/listkunjunganstats';
   static const String trenKunjunganStats = '/trenkunjunganstats';
 
-
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
@@ -87,7 +86,10 @@ class AppRouter {
           builder: (_) => PilihBumilScreen(pilihState: args['state']),
         );
       case addBumil:
-        return MaterialPageRoute(builder: (_) => AddBumilScreen());
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => AddBumilScreen(nikIbu: args['nikIbu']),
+        );
       case dataBumil:
         return MaterialPageRoute(builder: (_) => DataBumilScreen());
       case detailBumil:
@@ -97,7 +99,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => EditBumilScreen(bumil: args['bumil']),
         );
-        case checkDataBumil:
+      case checkDataBumil:
         return MaterialPageRoute(builder: (_) => CheckBumilScreen());
       case addRiwayat:
         final args = routeSettings.arguments as Map<String, dynamic>;
@@ -164,10 +166,15 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => StatisticsScreen());
       case kunjunganStats:
         final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(builder: (_) => KunjunganStatsScreen(monthKey: args['monthKey'],));
+        return MaterialPageRoute(
+          builder: (_) => KunjunganStatsScreen(monthKey: args['monthKey']),
+        );
       case trenKunjunganStats:
         final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(builder: (_) => TrenKunjunganStatsScreen(monthKeys: args['monthKeys'],));
+        return MaterialPageRoute(
+          builder: (_) =>
+              TrenKunjunganStatsScreen(monthKeys: args['monthKeys']),
+        );
       case listKunjunganStats:
         return MaterialPageRoute(builder: (_) => ListKunjunganStatsScreen());
       default:

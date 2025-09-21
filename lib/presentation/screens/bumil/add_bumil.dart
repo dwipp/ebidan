@@ -10,7 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddBumilScreen extends StatefulWidget {
-  const AddBumilScreen({Key? key}) : super(key: key);
+  final String nikIbu;
+  const AddBumilScreen({Key? key, required this.nikIbu}) : super(key: key);
 
   @override
   State<AddBumilScreen> createState() => _AddBumilState();
@@ -95,6 +96,7 @@ class _AddBumilState extends State<AddBumilScreen> {
   @override
   void initState() {
     context.read<SubmitBumilCubit>().setInitial();
+    _nikIbuController.text = widget.nikIbu;
     super.initState();
   }
 
@@ -307,7 +309,9 @@ class _AddBumilState extends State<AddBumilScreen> {
                           _kkSuamiController.text = _kkIbuController.text;
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('No KK Suami sama dengan No KK Ibu')),
+                          const SnackBar(
+                            content: Text('No KK Suami sama dengan No KK Ibu'),
+                          ),
                         );
                       },
                     ),
