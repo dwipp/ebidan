@@ -1,3 +1,4 @@
+import 'package:ebidan/presentation/screens/bumil/check_bumil.dart';
 import 'package:ebidan/presentation/screens/bumil/data_bumil.dart';
 import 'package:ebidan/presentation/screens/bumil/edit_bumil.dart';
 import 'package:ebidan/presentation/screens/kehamilan/detail_kehamilan.dart';
@@ -41,6 +42,7 @@ class AppRouter {
   static const String editBumil = '/editbumil';
   static const String dataBumil = '/databumil';
   static const String detailBumil = '/detailbumil';
+  static const String checkDataBumil = '/checkbumil';
 
   static const String addKehamilan = '/addkehamilan';
   static const String editKehamilan = '/editkehamilan';
@@ -95,6 +97,8 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => EditBumilScreen(bumil: args['bumil']),
         );
+        case checkDataBumil:
+        return MaterialPageRoute(builder: (_) => CheckBumilScreen());
       case addRiwayat:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(

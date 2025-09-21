@@ -30,7 +30,7 @@ class PilihBumilScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
               onPressed: () {
-                Navigator.of(context).pushNamed(AppRouter.addBumil).then((
+                Navigator.of(context).pushNamed(AppRouter.checkDataBumil).then((
                   value,
                 ) {
                   _refresh(context);
