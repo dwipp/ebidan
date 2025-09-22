@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/form_validator.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
@@ -22,7 +23,29 @@ class AddKehamilanScreen extends StatefulWidget {
 
 class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   final _formKey = GlobalKey<FormState>();
-  // bool _isSubmitting = false;
+
+  final Map<String, GlobalKey> _fieldKeys = {
+    'noKohort': GlobalKey(),
+    'statusResti': GlobalKey(),
+    'tb': GlobalKey(),
+    'kb': GlobalKey(),
+    'statusTT': GlobalKey(),
+    'kontrolDokter': GlobalKey(),
+  };
+
+  // Hapus: Map<String, FieldValidator> _validators, karena akan menggunakan wrapValidator
+
+  late FormValidator _formValidator;
+
+  // Validator standar untuk string/text (val.isEmpty)
+  String? _requiredStringValidator(dynamic val) =>
+      val == null || val.isEmpty ? 'Wajib diisi' : null;
+
+  // Validator standar untuk objek/dropdown/datepicker (val == null)
+  String? _requiredObjectValidator(dynamic val) =>
+      val == null ? 'Wajib dipilih' : null;
+
+  // Validator kustom lainnya jika diperlukan...
 
   // Controller untuk setiap field
   final _tbController = TextEditingController();
@@ -66,6 +89,9 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   @override
   void initState() {
     context.read<SubmitKehamilanCubit>().setInitial();
+
+    // Inisialisasi FormValidator hanya dengan fieldKeys
+    _formValidator = FormValidator(fieldKeys: _fieldKeys);
     super.initState();
   }
 
@@ -88,13 +114,11 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
     int tahun = ke.year - dari.year;
     int bulan = ke.month - dari.month;
 
-    // kalau bulan negatif, berarti tahunnya harus dikurangi 1
     if (bulan < 0) {
       tahun--;
       bulan += 12;
     }
 
-    // opsional: kalau harinya belum lewat, bulan dikurangi 1
     if (ke.day < dari.day) {
       bulan--;
       if (bulan < 0) {
@@ -108,7 +132,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
 
   List<String> collectingResti() {
     List<String> resti = [];
-    if (bumil!.age < 20 && bumil!.age > 35) {
+    if (bumil!.age < 20 || bumil!.age > 35) {
       resti.add('Usia ${bumil!.age} tahun');
     }
     if (bumil!.statisticRiwayat['gravida']! >= 4) {
@@ -125,16 +149,22 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
       }
     }
 
-    if (int.parse(_tbController.text) < 145) {
-      resti.add('Risiko panggul sempit (tb: ${_tbController.text} cm)');
+    if (_tbController.text.isNotEmpty) {
+      if (int.tryParse(_tbController.text) != null &&
+          int.parse(_tbController.text) < 145) {
+        resti.add('Risiko panggul sempit (tb: ${_tbController.text} cm)');
+      }
     }
 
-    if (_hemoglobinController.text.isNotEmpty &&
-        int.parse(_hemoglobinController.text) < 11) {
-      resti.add('Anemia (Hb: ${_hemoglobinController.text} g/dL)');
+    if (_hemoglobinController.text.isNotEmpty) {
+      if (double.tryParse(_hemoglobinController.text) != null &&
+          double.parse(_hemoglobinController.text) < 11) {
+        resti.add('Anemia (Hb: ${_hemoglobinController.text} g/dL)');
+      }
     }
 
-    if (int.parse(_abortusController.text) > 0) {
+    if (int.tryParse(_abortusController.text) != null &&
+        int.parse(_abortusController.text) > 0) {
       resti.add('Pernah keguguran ${_abortusController.text}x');
     }
 
@@ -148,7 +178,13 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   }
 
   Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate()) return;
+    _formValidator.reset();
+
+    // **Panggil validateAndScroll**
+    if (!_formValidator.validateAndScroll(_formKey, context)) {
+      // **Hapus: Snackbar manual di sini**, karena sudah ditangani oleh FormValidator
+      return;
+    }
 
     final kehamilan = Kehamilan(
       tb: _tbController.text,
@@ -184,13 +220,11 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
     int bulan = tambahHari.month + 9;
     int tahun = tambahHari.year;
 
-    // Kalau bulan lebih dari 12, adjust tahun & bulan
     if (bulan > 12) {
       bulan -= 12;
       tahun += 1;
     }
 
-    // Pastikan tanggal valid (misalnya Februari tidak ada tgl 30)
     int hari = tambahHari.day;
     int maxHari = DateTime(tahun, bulan + 1, 0).day;
     if (hari > maxHari) {
@@ -239,11 +273,17 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
             children: [
               _buildSectionTitle('Data Umum'),
               CustomTextField(
+                key: _fieldKeys['noKohort'],
                 label: "No. Kohort Ibu",
                 icon: Icons.numbers,
                 controller: _noKohortController,
                 textCapitalization: TextCapitalization.characters,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // **Gunakan wrapValidator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'noKohort',
+                  val,
+                  _requiredStringValidator,
+                ),
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -254,6 +294,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
               ),
               const SizedBox(height: 12),
               DropdownField(
+                key: _fieldKeys['statusResti'],
                 label: 'Status Resti',
                 icon: Icons.person,
                 items: _statusRestiList,
@@ -263,7 +304,12 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                     _selectedStatusResti = newValue;
                   });
                 },
-                validator: (val) => val == null ? 'Wajib dipilih' : null,
+                // **Gunakan wrapValidator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'statusResti',
+                  val,
+                  _requiredObjectValidator,
+                ),
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -304,15 +350,22 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
               ),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['tb'],
                 label: "Tinggi Badan (TB)",
                 icon: Icons.height,
                 controller: _tbController,
                 suffixText: 'cm',
                 isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // **Gunakan wrapValidator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'tb',
+                  val,
+                  _requiredStringValidator,
+                ),
               ),
               const SizedBox(height: 12),
               DropdownField(
+                key: _fieldKeys['kb'],
                 label: 'Penggunaan KB Sebelum Hamil',
                 icon: Icons.medication,
                 items: _kbList,
@@ -322,7 +375,12 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                     _selectedKB = newValue;
                   });
                 },
-                validator: (val) => val == null ? 'Wajib dipilih' : null,
+                // **Gunakan wrapValidator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'kb',
+                  val,
+                  _requiredObjectValidator,
+                ),
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -338,6 +396,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
               ),
               const SizedBox(height: 12),
               DropdownField(
+                key: _fieldKeys['statusTT'],
                 label: 'Status Imunisasi TT',
                 icon: Icons.vaccines,
                 items: _ttList,
@@ -347,7 +406,12 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                     _selectedTT = newValue;
                   });
                 },
-                validator: (val) => val == null ? 'Wajib dipilih' : null,
+                // **Gunakan wrapValidator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'statusTT',
+                  val,
+                  _requiredObjectValidator,
+                ),
               ),
               const SizedBox(height: 12),
               DatePickerFormField(
@@ -405,6 +469,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
               ),
               const SizedBox(height: 12),
               DropdownField(
+                key: _fieldKeys['kontrolDokter'],
                 label: 'Kontrol Dokter',
                 icon: Icons.health_and_safety,
                 items: _kontrolDokterList,
@@ -416,7 +481,12 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                     _selectedKontrolDokter = newValue?.toLowerCase() == "ya";
                   });
                 },
-                validator: (val) => val == null ? 'Wajib dipilih' : null,
+                // **Gunakan wrapValidator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'kontrolDokter',
+                  val,
+                  _requiredObjectValidator,
+                ),
               ),
               const SizedBox(height: 20),
               SizedBox(
