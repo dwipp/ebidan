@@ -10,6 +10,8 @@ import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// Import FormValidator
+import 'package:ebidan/common/utility/form_validator.dart';
 
 class AddRiwayatBumilScreen extends StatefulWidget {
   final String state;
@@ -21,19 +23,25 @@ class AddRiwayatBumilScreen extends StatefulWidget {
 
 class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  // **PERUBAHAN 1: DEFINISI FIELD KEYS DINAMIS**
+  final Map<String, GlobalKey> _fieldKeys = {};
+  late FormValidator _formValidator;
+
+  // Validator standar
+  String? _requiredObjectValidator(dynamic val) =>
+      val == null || (val is String && val.isEmpty) ? 'Wajib dipilih' : null;
+
   List<Map<String, dynamic>> riwayatList = [];
 
   final List<String> statusBayiList = ['Hidup', 'Mati', 'Abortus'];
-
   final List<String> statusKehamilanList = ['Aterm', 'Preterm', 'Postterm'];
-
   final List<String> penolongList = [
     'Bidan',
     'Dokter',
     'Dukun Kampung',
     'Lainnya',
   ];
-
   final List<String> tempatList = [
     'Rumah Sakit',
     'Poskesdes',
@@ -41,7 +49,6 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     'Rumah',
     'Jalan',
   ];
-
   final List<String> statusLahirList = [
     'Spontan Belakang Kepala',
     'Section Caesarea (SC)',
@@ -52,7 +59,11 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
   @override
   void initState() {
     context.read<SubmitRiwayatCubit>().setInitial();
+    // Inisialisasi FormValidator
+    _formValidator = FormValidator(fieldKeys: _fieldKeys);
     super.initState();
+    // Langsung tambahkan satu riwayat saat pertama kali load
+    _addRiwayat();
   }
 
   @override
@@ -61,11 +72,31 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     bumil = context.watch<SelectedBumilCubit>().state;
   }
 
+  // **PERUBAHAN 2: LOGIKA DINAMIS GLOBAL KEY**
+  void _updateKeys(int index) {
+    // Daftarkan semua field wajib
+    const requiredFields = [
+      'tgl_lahir',
+      'status_bayi',
+      'status_lahir',
+      'status_term',
+      'tempat',
+      'penolong',
+    ];
+
+    for (var fieldName in requiredFields) {
+      final keyName = '${fieldName}_$index';
+      if (!_fieldKeys.containsKey(keyName)) {
+        _fieldKeys[keyName] = GlobalKey();
+      }
+    }
+  }
+
   void _addRiwayat() {
     setState(() {
       riwayatList.add({
         'tgl_lahir': DateTime(DateTime.now().year - 1),
-        'berat_bayi': '0',
+        'berat_bayi': '',
         'komplikasi': '',
         'panjang_bayi': '',
         'penolong': '',
@@ -75,13 +106,39 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
         'status_term': '',
         'tempat': '',
       });
+      // Update keys untuk riwayat yang baru ditambahkan
+      _updateKeys(riwayatList.length - 1);
     });
   }
 
   void _removeRiwayat(int index) {
     setState(() {
       riwayatList.removeAt(index);
+
+      // Hapus semua keys lama
+      _fieldKeys.clear();
+
+      // Regenerasi semua keys untuk memastikan indeksnya benar
+      for (int i = 0; i < riwayatList.length; i++) {
+        _updateKeys(i);
+      }
     });
+  }
+
+  Future<void> _submitData() async {
+    // **PERUBAHAN 3: GANTI VALIDASI MANUAL DENGAN VALIDATE AND SCROLL**
+    _formValidator.reset();
+
+    if (!_formValidator.validateAndScroll(_formKey, context)) {
+      return;
+    }
+
+    _formKey.currentState!.save();
+
+    context.read<SubmitRiwayatCubit>().addRiwayat(
+      bumilId: bumil!.idBumil,
+      riwayatList: riwayatList,
+    );
   }
 
   @override
@@ -100,13 +157,33 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
               ...riwayatList.asMap().entries.map((entry) {
                 int index = entry.key;
                 var data = entry.value;
+
+                // Getter untuk GlobalKey dinamis
+                GlobalKey? getKey(String fieldName) =>
+                    _fieldKeys['${fieldName}_$index'];
+                // Setter untuk wrapValidator dengan fieldName dinamis
+                String? wrap(
+                  String fieldName,
+                  dynamic val,
+                  FieldValidator validator,
+                ) {
+                  return _formValidator.wrapValidator(
+                    '${fieldName}_$index',
+                    val,
+                    validator,
+                  );
+                }
+
                 return Card(
                   margin: const EdgeInsets.only(bottom: 16),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Utils.sectionTitle('Riwayat Kehamilan ${index + 1}'),
                         DatePickerFormField(
+                          key: getKey('tgl_lahir'), // **Key Dinamis**
                           labelText: 'Tanggal Lahir',
                           prefixIcon: Icons.calendar_today,
                           initialValue: data['tgl_lahir'],
@@ -117,6 +194,9 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               data['tgl_lahir'] = date;
                             });
                           },
+                          // **Wrap Validator**
+                          validator: (val) =>
+                              wrap('tgl_lahir', val, _requiredObjectValidator),
                         ),
                         const SizedBox(height: 12),
                         CustomTextField(
@@ -125,6 +205,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           onSaved: (val) => data['berat_bayi'] = val,
                           isNumber: true,
                           suffixText: 'gram',
+                          // Tidak wajib diisi
                         ),
                         const SizedBox(height: 12),
                         CustomTextField(
@@ -133,11 +214,16 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           onSaved: (val) => data['panjang_bayi'] = val,
                           isNumber: true,
                           suffixText: 'cm',
+                          // Tidak wajib diisi
                         ),
                         const SizedBox(height: 12),
-                        _buildPenolongField(data),
+                        _buildPenolongField(
+                          data,
+                          index,
+                        ), // Field dengan sub-field
                         const SizedBox(height: 12),
                         DropdownField(
+                          key: getKey('status_bayi'), // **Key Dinamis**
                           label: 'Status Bayi',
                           icon: Icons.child_care,
                           items: statusBayiList,
@@ -149,12 +235,16 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               data['status_bayi'] = newValue ?? '';
                             });
                           },
-                          validator: (val) => val == null || val.isEmpty
-                              ? 'Wajib dipilih'
-                              : null,
+                          // **Wrap Validator**
+                          validator: (val) => wrap(
+                            'status_bayi',
+                            val,
+                            _requiredObjectValidator,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         DropdownField(
+                          key: getKey('status_lahir'), // **Key Dinamis**
                           label: 'Status Lahir',
                           icon: Icons.pregnant_woman,
                           items: statusLahirList,
@@ -166,17 +256,21 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               data['status_lahir'] = newValue ?? '';
                             });
                           },
+                          // **Wrap Validator Kondisional**
                           validator: (val) {
                             if (data['status_bayi'] != 'Abortus') {
-                              if (val == null || val.isEmpty) {
-                                return 'Wajib dipilih';
-                              }
+                              return wrap(
+                                'status_lahir',
+                                val,
+                                _requiredObjectValidator,
+                              );
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 12),
                         DropdownField(
+                          key: getKey('status_term'), // **Key Dinamis**
                           label: 'Status Kehamilan',
                           icon: Icons.date_range,
                           items: statusKehamilanList,
@@ -188,17 +282,21 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               data['status_term'] = newValue ?? '';
                             });
                           },
+                          // **Wrap Validator Kondisional**
                           validator: (val) {
                             if (data['status_bayi'] != 'Abortus') {
-                              if (val == null || val.isEmpty) {
-                                return 'Wajib dipilih';
-                              }
+                              return wrap(
+                                'status_term',
+                                val,
+                                _requiredObjectValidator,
+                              );
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 12),
                         DropdownField(
+                          key: getKey('tempat'), // **Key Dinamis**
                           label: 'Tempat Persalinan',
                           icon: Icons.home,
                           items: tempatList,
@@ -210,9 +308,9 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                               data['tempat'] = newValue ?? '';
                             });
                           },
-                          validator: (val) => val == null || val.isEmpty
-                              ? 'Wajib dipilih'
-                              : null,
+                          // **Wrap Validator**
+                          validator: (val) =>
+                              wrap('tempat', val, _requiredObjectValidator),
                         ),
                         const SizedBox(height: 12),
                         CustomTextField(
@@ -296,15 +394,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                       label: 'Simpan',
                       loadingLabel: 'Menyimpan...',
                       icon: Icons.save,
-                      onPressed: () {
-                        if (!_formKey.currentState!.validate()) return;
-                        _formKey.currentState!.save();
-
-                        context.read<SubmitRiwayatCubit>().addRiwayat(
-                          bumilId: bumil!.idBumil,
-                          riwayatList: riwayatList,
-                        );
-                      },
+                      onPressed: _submitData,
                     );
                   },
                 ),
@@ -316,14 +406,23 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     );
   }
 
-  Widget _buildPenolongField(Map<String, dynamic> data) {
+  Widget _buildPenolongField(Map<String, dynamic> data, int index) {
     // Cek apakah user memilih "Lainnya"
     bool isLainnya = data['penolong'] == 'Lainnya';
+    GlobalKey? getKey(String fieldName) => _fieldKeys['${fieldName}_$index'];
+    String? wrap(String fieldName, dynamic val, FieldValidator validator) {
+      return _formValidator.wrapValidator(
+        '${fieldName}_$index',
+        val,
+        validator,
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownButtonFormField<String>(
+          key: getKey('penolong'), // **Key Dinamis**
           value:
               data['penolong'] != null &&
                   penolongList.contains(data['penolong'])
@@ -339,23 +438,23 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
           onChanged: (newValue) {
             setState(() {
               data['penolong'] = newValue ?? '';
-              if (newValue == 'Lainnya') {
-                data['penolongLainnya'] = ''; // aktifkan field tambahan
-              } else {
+              if (newValue != 'Lainnya') {
                 data['penolongLainnya'] = null; // sembunyikan field tambahan
               }
             });
           },
-          validator: null, // dropdown tidak wajib
+          // **Wrap Validator** untuk dropdown utama
+          validator: (val) => wrap('penolong', val, _requiredObjectValidator),
         ),
         if (isLainnya) const SizedBox(height: 8),
         if (isLainnya)
           TextFormField(
+            // Field 'Lainnya' tidak perlu GlobalKey dinamis baru karena terikat pada penolong.
             decoration: const InputDecoration(
               labelText: 'Penolong Lainnya',
               prefixIcon: Icon(Icons.person_outline),
             ),
-            onChanged: (val) => data['penolongLainnya'] = val,
+            onChanged: (val) => data['penolong'] = val, // Simpan di 'penolong'
             validator: (val) {
               if (val == null || val.isEmpty) {
                 return 'Wajib diisi';
