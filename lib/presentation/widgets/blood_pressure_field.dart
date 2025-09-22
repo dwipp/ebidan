@@ -1,9 +1,11 @@
+import 'package:ebidan/common/utility/form_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class BloodPressureField extends StatefulWidget {
   const BloodPressureField({
     super.key,
+    this.fieldKey,
     this.controller,
     this.label = "Tekanan Darah",
     this.hint = "120/80",
@@ -11,9 +13,11 @@ class BloodPressureField extends StatefulWidget {
     this.maxSistolik = 300,
     this.minDiastolik = 30,
     this.maxDiastolik = 200,
-    this.validator, // optional override
+    // this.validator, // optional override
+    this.formValidator,
   });
 
+  final GlobalKey<dynamic>? fieldKey;
   final TextEditingController? controller;
   final String label;
   final String hint;
@@ -21,7 +25,8 @@ class BloodPressureField extends StatefulWidget {
   final int maxSistolik;
   final int minDiastolik;
   final int maxDiastolik;
-  final String? Function(String?)? validator;
+  // final String? Function(String?)? validator;
+  final FormValidator? formValidator;
 
   @override
   State<BloodPressureField> createState() => _BloodPressureFieldState();
@@ -120,7 +125,7 @@ class _BloodPressureFieldState extends State<BloodPressureField> {
     _lastText = _c.text;
   }
 
-  String? _defaultValidator(String? value) {
+  String? defaultValidator(dynamic value) {
     final v = (value ?? '').trim();
     final m = RegExp(r'^(\d{2,3})/(\d{2,3})$').firstMatch(v);
     if (m == null) return 'Gunakan format ${widget.hint}';
@@ -139,6 +144,7 @@ class _BloodPressureFieldState extends State<BloodPressureField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      key: widget.fieldKey,
       controller: _c,
       keyboardType: TextInputType.number,
       inputFormatters: [
@@ -152,7 +158,10 @@ class _BloodPressureFieldState extends State<BloodPressureField> {
         suffixText: "mmHg",
         suffixStyle: TextStyle(color: Colors.black54, fontSize: 16),
       ),
-      validator: widget.validator ?? _defaultValidator,
+      validator: widget.formValidator != null
+          ? (val) =>
+                widget.formValidator!.wrapValidator('td', val, defaultValidator)
+          : defaultValidator,
     );
   }
 }

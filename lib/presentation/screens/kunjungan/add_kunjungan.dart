@@ -11,6 +11,7 @@ import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ebidan/common/utility/form_validator.dart';
 
 class KunjunganScreen extends StatefulWidget {
   final bool firstTime;
@@ -23,6 +24,28 @@ class KunjunganScreen extends StatefulWidget {
 
 class _KunjunganState extends State<KunjunganScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  // Definisi Global Key untuk field wajib
+  final Map<String, GlobalKey> _fieldKeys = {
+    'keluhan': GlobalKey(),
+    'bb': GlobalKey(),
+    'lila': GlobalKey(),
+    'lp': GlobalKey(),
+    'td': GlobalKey(),
+    'uk': GlobalKey(),
+    'planning': GlobalKey(),
+    'periksaUsg': GlobalKey(), // Untuk field kondisional di _buildUsgField
+  };
+
+  late FormValidator _formValidator;
+
+  // Validator standar untuk string/text (val.isEmpty)
+  String? _requiredStringValidator(dynamic val) =>
+      val == null || val.isEmpty ? 'Wajib diisi' : null;
+
+  // Validator standar untuk objek/dropdown/datepicker (val == null)
+  String? _requiredObjectValidator(dynamic val) =>
+      val == null ? 'Wajib dipilih' : null;
 
   final TextEditingController bbController = TextEditingController();
   final TextEditingController keluhanController = TextEditingController();
@@ -53,6 +76,12 @@ class _KunjunganState extends State<KunjunganScreen> {
   Bumil? bumil;
 
   @override
+  void initState() {
+    _formValidator = FormValidator(fieldKeys: _fieldKeys);
+    super.initState();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     bumil = context.watch<SelectedBumilCubit>().state;
@@ -66,7 +95,13 @@ class _KunjunganState extends State<KunjunganScreen> {
   }
 
   Future<void> _saveData() async {
-    if (!_formKey.currentState!.validate()) return;
+    _formValidator.reset();
+
+    // Panggil validateAndScroll
+    if (!_formValidator.validateAndScroll(_formKey, context)) {
+      // SnackBar error sudah ditangani oleh FormValidator
+      return;
+    }
 
     final kunjungan = Kunjungan(
       id: '',
@@ -99,7 +134,6 @@ class _KunjunganState extends State<KunjunganScreen> {
   }) {
     final today = tglKunjungan ?? DateTime.now();
 
-    // Hitung selisih hari antara today dan hpht
     final selisihHari = today.difference(hpht).inDays;
 
     if (selisihHari < 0) {
@@ -108,10 +142,8 @@ class _KunjunganState extends State<KunjunganScreen> {
 
     final minggu = selisihHari ~/ 7;
     final hari = selisihHari % 7;
-    if (hari == 0) {
-      return '$minggu minggu';
-    }
-    return '$minggu minggu $hari hari';
+
+    return '$minggu minggu ${hari > 0 ? '$hari hari' : ''}'.trim();
   }
 
   @override
@@ -132,51 +164,80 @@ class _KunjunganState extends State<KunjunganScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PageHeader(title: "Kunjungan Baru"),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Utils.sectionTitle('Subjective'),
               CustomTextField(
+                key: _fieldKeys['keluhan'],
                 controller: keluhanController,
                 label: "Keluhan",
                 icon: Icons.warning_amber,
                 isMultiline: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // Gunakan wrapValidator
+                validator: (val) => _formValidator.wrapValidator(
+                  'keluhan',
+                  val,
+                  _requiredStringValidator,
+                ),
               ),
               const SizedBox(height: 16),
               Utils.sectionTitle('Objective'),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['bb'],
                 controller: bbController,
                 label: "Berat Badan",
                 icon: Icons.monitor_weight,
                 suffixText: 'kg',
                 isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // Gunakan wrapValidator
+                validator: (val) => _formValidator.wrapValidator(
+                  'bb',
+                  val,
+                  _requiredStringValidator,
+                ),
               ),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['lila'],
                 controller: lilaController,
                 label: "Lingkar Lengan Atas (LILA)",
                 icon: Icons.straighten,
                 suffixText: 'cm',
                 isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // Gunakan wrapValidator
+                validator: (val) => _formValidator.wrapValidator(
+                  'lila',
+                  val,
+                  _requiredStringValidator,
+                ),
               ),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['lp'],
                 controller: lpController,
                 label: "Lingkar Perut",
                 icon: Icons.pregnant_woman,
                 suffixText: 'cm',
                 isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // Gunakan wrapValidator
+                validator: (val) => _formValidator.wrapValidator(
+                  'lp',
+                  val,
+                  _requiredStringValidator,
+                ),
               ),
               const SizedBox(height: 12),
-              BloodPressureField(controller: tdController),
+              BloodPressureField(
+                fieldKey: _fieldKeys['td'],
+                controller: tdController,
+                formValidator: _formValidator,
+              ),
               const SizedBox(height: 12),
               CustomTextField(
                 controller: tfuController,
@@ -202,22 +263,33 @@ class _KunjunganState extends State<KunjunganScreen> {
               ),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['uk'],
                 controller: ukController,
                 label: "Usia Kandungan",
                 icon: Icons.calendar_today,
-                isNumber: true,
                 readOnly: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // Gunakan wrapValidator
+                validator: (val) => _formValidator.wrapValidator(
+                  'uk',
+                  val,
+                  _requiredStringValidator,
+                ),
               ),
               const SizedBox(height: 16),
               Utils.sectionTitle('Planning'),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['planning'],
                 controller: planningController,
                 label: "Planning",
                 icon: Icons.assignment,
                 isMultiline: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // Gunakan wrapValidator
+                validator: (val) => _formValidator.wrapValidator(
+                  'planning',
+                  val,
+                  _requiredStringValidator,
+                ),
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -266,6 +338,7 @@ class _KunjunganState extends State<KunjunganScreen> {
         if (isUsg) const SizedBox(height: 8),
         if (isUsg)
           DropdownField(
+            key: _fieldKeys['periksaUsg'], // Key untuk field kondisional
             label: 'Periksa USG',
             icon: Icons.pregnant_woman,
             items: _periksaUsgList,
@@ -277,7 +350,12 @@ class _KunjunganState extends State<KunjunganScreen> {
                 _selectedPeriksaUsg = newValue?.toLowerCase() == "ya";
               });
             },
-            validator: (val) => val == null ? 'Wajib dipilih' : null,
+            // Gunakan wrapValidator
+            validator: (val) => _formValidator.wrapValidator(
+              'periksaUsg',
+              val,
+              _requiredObjectValidator,
+            ),
           ),
       ],
     );

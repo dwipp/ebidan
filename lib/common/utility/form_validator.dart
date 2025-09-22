@@ -4,19 +4,16 @@ typedef FieldValidator = String? Function(dynamic value);
 
 class FormValidator {
   final Map<String, GlobalKey> fieldKeys;
-  // **Hapus Map 'validators' di sini.** Validator harus didefinisikan di FormField
-  // dan dibungkus oleh FormValidator.wrapValidator.
-
   GlobalKey? _firstErrorFieldKey;
 
-  // Anda hanya perlu fieldKeys di konstruktor
   FormValidator({required this.fieldKeys});
 
   void reset() {
     _firstErrorFieldKey = null;
   }
 
-  // Wrapper yang harus digunakan oleh semua FormField
+  /// Wrapper yang harus digunakan oleh semua FormField.
+  /// Ini mencatat GlobalKey dari field pertama yang gagal validasi.
   String? wrapValidator<T>(
     String fieldName,
     T? value,
@@ -32,17 +29,16 @@ class FormValidator {
   }
 
   /// Validasi seluruh form menggunakan FormState.validate() dan scroll ke field pertama yang error.
-  /// CATATAN: Semua FormField HARUS menggunakan FormValidator.wrapValidator.
   bool validateAndScroll(GlobalKey<FormState> formKey, BuildContext context) {
     // 1. Reset key error sebelum validasi
     _firstErrorFieldKey = null;
 
     // 2. Jalankan validasi asli dari Flutter Form
-    // Semua field akan memanggil wrapValidator, yang akan mencatat _firstErrorFieldKey.
+    // Ini akan memicu semua wrapValidator, yang mencatat _firstErrorFieldKey.
     final isValid = formKey.currentState!.validate();
 
     if (!isValid && _firstErrorFieldKey?.currentContext != null) {
-      // 3. Scroll ke GlobalKey yang dicatat oleh wrapValidator
+      // 3. Tampilkan SnackBar error
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Periksa field yang belum valid 👆'),
@@ -50,6 +46,7 @@ class FormValidator {
         ),
       );
 
+      // 4. Scroll ke GlobalKey yang dicatat
       Scrollable.ensureVisible(
         _firstErrorFieldKey!.currentContext!,
         duration: const Duration(milliseconds: 300),

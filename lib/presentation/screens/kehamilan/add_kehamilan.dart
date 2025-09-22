@@ -233,16 +233,6 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
     return DateTime(tahun, bulan, hari);
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
   @override
   void dispose() {
     _tbController.dispose();
@@ -271,7 +261,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionTitle('Data Umum'),
+              Utils.sectionTitle('Data Umum'),
               CustomTextField(
                 key: _fieldKeys['noKohort'],
                 label: "No. Kohort Ibu",
@@ -319,7 +309,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 isNumber: true,
               ),
               const SizedBox(height: 16),
-              _buildSectionTitle('Data Kehamilan'),
+              Utils.sectionTitle('Data Kehamilan'),
               DatePickerFormField(
                 labelText: 'Hari Pertama Haid Terakhir (HPHT)',
                 prefixIcon: Icons.date_range,
