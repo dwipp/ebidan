@@ -37,30 +37,35 @@ class DetailPersalinanScreen extends StatelessWidget {
 
               // Selalu tampil
               Utils.generateRowLabelValue(
-                "Status Bayi",
-                persalinan?.statusBayi ?? "-",
+                context,
+                label: "Status Bayi",
+                value: persalinan?.statusBayi ?? "-",
               ),
 
               // Tampil hanya jika status bayi bukan Abortus
               if (persalinan?.statusBayi != "Abortus") ...[
                 Utils.generateRowLabelValue(
-                  "Berat Lahir",
-                  persalinan?.beratLahir?.toString() ?? "-",
+                  context,
+                  label: "Berat Lahir",
+                  value: persalinan?.beratLahir?.toString() ?? "-",
                   suffix: 'gram',
                 ),
                 Utils.generateRowLabelValue(
-                  "Panjang Badan",
-                  persalinan?.panjangBadan?.toString() ?? "-",
+                  context,
+                  label: "Panjang Badan",
+                  value: persalinan?.panjangBadan?.toString() ?? "-",
                   suffix: 'cm',
                 ),
                 Utils.generateRowLabelValue(
-                  "Lingkar Kepala",
-                  persalinan?.lingkarKepala?.toString() ?? "-",
+                  context,
+                  label: "Lingkar Kepala",
+                  value: persalinan?.lingkarKepala?.toString() ?? "-",
                   suffix: 'cm',
                 ),
                 Utils.generateRowLabelValue(
-                  "Jenis Kelamin",
-                  persalinan?.sex ?? "-",
+                  context,
+                  label: "Jenis Kelamin",
+                  value: persalinan?.sex ?? "-",
                 ),
               ],
 
@@ -71,23 +76,31 @@ class DetailPersalinanScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Utils.generateRowLabelValue(
-                "Tanggal Persalinan",
-                persalinan?.tglPersalinan != null
+                context,
+                label: "Tanggal Persalinan",
+                value: persalinan?.tglPersalinan != null
                     ? Utils.formattedDate(persalinan?.tglPersalinan!)
                     : "-",
               ),
               Utils.generateRowLabelValue(
-                "Umur Kehamilan",
-                persalinan?.umurKehamilan?.toString() ?? "-",
+                context,
+                label: "Umur Kehamilan",
+                value: persalinan?.umurKehamilan?.toString() ?? "-",
               ),
               Utils.generateRowLabelValue(
-                "Cara Persalinan",
-                persalinan?.cara ?? "-",
+                context,
+                label: "Cara Persalinan",
+                value: persalinan?.cara ?? "-",
               ),
-              Utils.generateRowLabelValue("Tempat", persalinan?.tempat ?? "-"),
               Utils.generateRowLabelValue(
-                "Penolong",
-                persalinan?.penolong ?? "-",
+                context,
+                label: "Tempat",
+                value: persalinan?.tempat ?? "-",
+              ),
+              Utils.generateRowLabelValue(
+                context,
+                label: "Penolong",
+                value: persalinan?.penolong ?? "-",
               ),
             ],
           ),

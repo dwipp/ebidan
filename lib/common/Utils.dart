@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -76,8 +77,9 @@ class Utils {
   }
 
   static Widget generateRowLabelValue(
-    String label,
-    String? value, {
+    BuildContext context, {
+    required String label,
+    String? value,
     String suffix = '',
   }) {
     return IntrinsicHeight(
@@ -88,7 +90,7 @@ class Utils {
             flex: 3,
             child: Container(
               padding: const EdgeInsets.all(8),
-              color: Colors.grey.shade100, // bg label
+              color: context.themeColors.onTertiary, // bg label
               alignment: Alignment.centerLeft,
               child: Text(
                 label,

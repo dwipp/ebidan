@@ -7,15 +7,9 @@ import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit
 import 'package:ebidan/state_management/persalinan/cubit/selected_persalinan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 class DetailKehamilanScreen extends StatelessWidget {
   const DetailKehamilanScreen({super.key});
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return "-";
-    return DateFormat("d MMMM yyyy", "id_ID").format(date);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,51 +78,85 @@ class DetailKehamilanScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Utils.generateRowLabelValue(
-                "Tinggi Badan",
-                kehamilan.tb?.toString(),
-                suffix: "cm",
+                context,
+                label: 'Tinggi Badan',
+                value: kehamilan.tb?.toString(),
+                suffix: 'cm',
               ),
               Utils.generateRowLabelValue(
-                "No. Kohort Ibu",
-                kehamilan.noKohortIbu,
+                context,
+                label: "No. Kohort Ibu",
+                value: kehamilan.noKohortIbu,
               ),
               Utils.generateRowLabelValue(
-                "No. Rekam Medis",
-                kehamilan.noRekaMedis,
-              ),
-              Utils.generateRowLabelValue("BPJS", kehamilan.bpjs),
-              Utils.generateRowLabelValue(
-                "Status Resti",
-                kehamilan.statusResti,
-              ),
-              Utils.generateRowLabelValue("Status TT", kehamilan.statusTt),
-              Utils.generateRowLabelValue(
-                "Kontrasepsi Sebelum Hamil",
-                kehamilan.kontrasepsiSebelumHamil,
-              ),
-              Utils.generateRowLabelValue("GPA", kehamilan.gpa),
-              Utils.generateRowLabelValue("HPHT", _formatDate(kehamilan.hpht)),
-              Utils.generateRowLabelValue("HTP", _formatDate(kehamilan.htp)),
-              Utils.generateRowLabelValue(
-                "Tanggal Periksa USG",
-                _formatDate(kehamilan.tglPeriksaUsg),
+                context,
+                label: "No. Rekam Medis",
+                value: kehamilan.noRekaMedis,
               ),
               Utils.generateRowLabelValue(
-                "Kontrol Dokter",
-                kehamilan.kontrolDokter ? 'Ya' : 'Tidak',
+                context,
+                label: "BPJS",
+                value: kehamilan.bpjs,
               ),
               Utils.generateRowLabelValue(
-                "Riwayat Penyakit",
-                kehamilan.riwayatPenyakit,
+                context,
+                label: "Status Resti",
+                value: kehamilan.statusResti,
               ),
               Utils.generateRowLabelValue(
-                "Riwayat Alergi",
-                kehamilan.riwayatAlergi,
+                context,
+                label: "Status TT",
+                value: kehamilan.statusTt,
               ),
-              Utils.generateRowLabelValue("Hasil Lab", kehamilan.hasilLab),
               Utils.generateRowLabelValue(
-                'Hemoglobin',
-                kehamilan.hemoglobin,
+                context,
+                label: "Kontrasepsi Sebelum Hamil",
+                value: kehamilan.kontrasepsiSebelumHamil,
+              ),
+              Utils.generateRowLabelValue(
+                context,
+                label: "GPA",
+                value: kehamilan.gpa,
+              ),
+              Utils.generateRowLabelValue(
+                context,
+                label: "HPHT",
+                value: Utils.formattedDate(kehamilan.hpht),
+              ),
+              Utils.generateRowLabelValue(
+                context,
+                label: "HTP",
+                value: Utils.formattedDate(kehamilan.htp),
+              ),
+              Utils.generateRowLabelValue(
+                context,
+                label: "Tanggal Periksa USG",
+                value: Utils.formattedDate(kehamilan.tglPeriksaUsg),
+              ),
+              Utils.generateRowLabelValue(
+                context,
+                label: "Kontrol Dokter",
+                value: kehamilan.kontrolDokter ? 'Ya' : 'Tidak',
+              ),
+              Utils.generateRowLabelValue(
+                context,
+                label: "Riwayat Penyakit",
+                value: kehamilan.riwayatPenyakit,
+              ),
+              Utils.generateRowLabelValue(
+                context,
+                label: "Riwayat Alergi",
+                value: kehamilan.riwayatAlergi,
+              ),
+              Utils.generateRowLabelValue(
+                context,
+                label: "Hasil Lab",
+                value: kehamilan.hasilLab,
+              ),
+              Utils.generateRowLabelValue(
+                context,
+                label: "Hemoglobin",
+                value: kehamilan.hemoglobin,
                 suffix: 'g/dL',
               ),
 
@@ -139,8 +167,9 @@ class DetailKehamilanScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Utils.generateRowLabelValue(
-                "Menerima buku KIA",
-                Utils.formattedDate(kehamilan.createdAt),
+                context,
+                label: "Menerima buku KIA",
+                value: Utils.formattedDate(kehamilan.createdAt),
               ),
 
               const SizedBox(height: 16),

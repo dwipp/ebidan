@@ -70,7 +70,7 @@ class _MainAppState extends State<MainApp> {
             surface: Colors.white, // background kartu, dsb
             onPrimary: Colors.white, // teks/icon di atas primary
             onSecondary: Colors.white, // teks/icon di atas secondary
-            onTertiary: Colors.white, // teks/icon di atas tertiary
+            onTertiary: Colors.grey.shade100, // teks/icon di atas tertiary
             onSurface: Colors.black87, // teks default
             brightness: Brightness.light,
           ),
@@ -86,7 +86,7 @@ class _MainAppState extends State<MainApp> {
             surface: Colors.grey.shade900,
             onPrimary: Colors.black,
             onSecondary: Colors.black,
-            onTertiary: Colors.black,
+            onTertiary: Colors.black26,
             onSurface: Colors.white,
             brightness: Brightness.dark,
           ),

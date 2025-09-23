@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:flutter/material.dart';
 
 enum SnackbarType { success, error, general }
@@ -18,9 +19,9 @@ class Snackbar {
     final overlay = Overlay.of(context);
 
     final color = switch (type) {
-      SnackbarType.error => Colors.red,
-      SnackbarType.success => Colors.green,
-      SnackbarType.general => Colors.grey.shade800,
+      SnackbarType.error => context.themeColors.error,
+      SnackbarType.success => context.themeColors.tertiary,
+      SnackbarType.general => context.themeColors.darkGrey,
     };
 
     _overlayEntry = OverlayEntry(
@@ -58,7 +59,8 @@ class _AnimatedSnackbar extends StatefulWidget {
   _AnimatedSnackbarState createState() => _AnimatedSnackbarState();
 }
 
-class _AnimatedSnackbarState extends State<_AnimatedSnackbar> with SingleTickerProviderStateMixin {
+class _AnimatedSnackbarState extends State<_AnimatedSnackbar>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
   double _appBarHeight = 0;
@@ -74,12 +76,7 @@ class _AnimatedSnackbarState extends State<_AnimatedSnackbar> with SingleTickerP
     _offsetAnimation = Tween<Offset>(
       begin: const Offset(0.0, -1.0),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
 
