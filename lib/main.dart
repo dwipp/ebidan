@@ -54,10 +54,43 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: BlocProviders().providers(),
-      child: const MaterialApp(
+      child: MaterialApp(
         initialRoute: AppRouter.homepage,
         onGenerateRoute: AppRouter.onGenerateRoute,
         debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.system, // otomatis ikut sistem (light/dark)
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.blue,      // warna utama
+            primary: Colors.blue,        // utama
+            secondary: Colors.orange,    // secondary
+            tertiary: Colors.green,      // tambahan
+            error: Colors.red,           // error
+            surface: Colors.white,       // background kartu, dsb
+            onPrimary: Colors.white,     // teks/icon di atas primary
+            onSecondary: Colors.white,   // teks/icon di atas secondary
+            onTertiary: Colors.white,    // teks/icon di atas tertiary
+            onSurface: Colors.black87,   // teks default
+            brightness: Brightness.light,
+          ),
+        ),
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.blue,
+            primary: Colors.blue.shade200,
+            secondary: Colors.orange.shade200,
+            tertiary: Colors.green.shade200,
+            error: Colors.red.shade300,
+            surface: Colors.grey.shade900,
+            onPrimary: Colors.black,
+            onSecondary: Colors.black,
+            onTertiary: Colors.black,
+            onSurface: Colors.white,
+            brightness: Brightness.dark,
+          ),
+        ),
       ),
     );
   }
