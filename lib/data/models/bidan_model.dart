@@ -15,6 +15,7 @@ class PremiumStatus {
 }
 
 class Bidan {
+  final String? photoUrl;
   final bool active;
   final DateTime createdAt;
   final String desa;
@@ -29,6 +30,7 @@ class Bidan {
   final Trial trial;
 
   Bidan({
+    required this.photoUrl,
     required this.active,
     required this.createdAt,
     required this.desa,
@@ -43,8 +45,9 @@ class Bidan {
     required this.trial,
   });
 
-  factory Bidan.fromJson(Map<String, dynamic> json) {
+  factory Bidan.fromJson(Map<String, dynamic> json, {required String? avatar}) {
     return Bidan(
+      photoUrl: avatar,
       active: json['active'] ?? false,
       createdAt: (json['created_at'] as Timestamp).toDate(),
       desa: json['desa'] ?? '',

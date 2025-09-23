@@ -26,16 +26,40 @@ class HomeScreen extends StatelessWidget {
     context.read<SelectedBumilCubit>().clear;
     context.read<SelectedKehamilanCubit>().clear;
     final user = context.watch<UserCubit>().state;
-
+    
     return Scaffold(
       appBar: PageHeader(
         title: 'eBidan',
         hideBackButton: true,
         actions: [
+          // IconButton untuk menampilkan foto profil user
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => LogoutHandler.handleLogout(context),
+            icon: CircleAvatar(
+              backgroundColor: Colors.white.withOpacity(0.2),
+              // Memeriksa apakah photoUrl tersedia
+              backgroundImage: user?.photoUrl != null
+                  ? NetworkImage(user!.photoUrl!) as ImageProvider
+                  : null,
+              // Jika photoUrl tidak ada, tampilkan ikon default atau inisial nama
+              child: user?.photoUrl == null
+                  ? const Icon(Icons.person, color: Colors.black54)
+                  : null,
+                  radius: 13,
+            ),
+            onPressed: () {
+              // if (user == null){
+                LogoutHandler.handleLogout(context);
+              // }else {
+              // // Navigasi ke halaman profil
+              // // Navigator.of(context).pushNamed(AppRouter.profile);
+              // }
+            },
           ),
+          // Logout button
+          // IconButton(
+          //   icon: const Icon(Icons.logout),
+          //   onPressed: () => LogoutHandler.handleLogout(context),
+          // ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -102,8 +126,8 @@ class HomeScreen extends StatelessWidget {
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
+                                children: const [
+                                  Text(
                                     "Kehamilan",
                                     style: TextStyle(
                                       fontSize: 20,
@@ -111,7 +135,7 @@ class HomeScreen extends StatelessWidget {
                                       color: Colors.white,
                                     ),
                                   ),
-                                  const Icon(
+                                  Icon(
                                     Icons.chevron_right,
                                     size: 28,
                                     color: Colors.white,
@@ -135,7 +159,7 @@ class HomeScreen extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 16),
+                                  const SizedBox(width: 16),
                                   Expanded(
                                     child: _buildStatItem(
                                       icon: Icons.pregnant_woman,
@@ -239,12 +263,19 @@ class HomeScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 20),
                               SummaryChart(
-  pasien: statistic?.lastMonthData?.pasien.total ?? 0,
-  kehamilan: statistic?.lastMonthData?.kehamilan.total ?? 0,
-  kunjungan: statistic?.lastMonthData?.kunjungan.total ?? 0,
-  persalinan: statistic?.lastMonthData?.persalinan.total ?? 0,
-  showCenterValue: false,
-),
+                                pasien:
+                                    statistic?.lastMonthData?.pasien.total ?? 0,
+                                kehamilan: statistic
+                                        ?.lastMonthData?.kehamilan.total ??
+                                    0,
+                                kunjungan: statistic
+                                        ?.lastMonthData?.kunjungan.total ??
+                                    0,
+                                persalinan: statistic
+                                        ?.lastMonthData?.persalinan.total ??
+                                    0,
+                                showCenterValue: false,
+                              ),
                             ],
                           ),
                         ),

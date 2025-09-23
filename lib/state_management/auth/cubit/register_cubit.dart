@@ -108,6 +108,7 @@ class RegisterCubit extends Cubit<RegisterState> {
 
     try {
       final bidan = Bidan(
+        photoUrl: auth.photoURL,
         active: true,
         createdAt: DateTime.now(),
         desa: desa,
