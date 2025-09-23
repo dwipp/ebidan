@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
     context.read<SelectedBumilCubit>().clear;
     context.read<SelectedKehamilanCubit>().clear;
     final user = context.watch<UserCubit>().state;
-    
+
     return Scaffold(
       appBar: PageHeader(
         title: 'eBidan',
@@ -40,26 +40,21 @@ class HomeScreen extends StatelessWidget {
               backgroundImage: user?.photoUrl != null
                   ? NetworkImage(user!.photoUrl!) as ImageProvider
                   : null,
+                  radius: 13,
               // Jika photoUrl tidak ada, tampilkan ikon default atau inisial nama
               child: user?.photoUrl == null
                   ? const Icon(Icons.person, color: Colors.black54)
                   : null,
-                  radius: 13,
             ),
             onPressed: () {
-              // if (user == null){
+              if (user == null){
                 LogoutHandler.handleLogout(context);
-              // }else {
-              // // Navigasi ke halaman profil
-              // // Navigator.of(context).pushNamed(AppRouter.profile);
-              // }
+              }else {
+              // Navigasi ke halaman profil
+              Navigator.of(context).pushNamed(AppRouter.profile);
+              }
             },
           ),
-          // Logout button
-          // IconButton(
-          //   icon: const Icon(Icons.logout),
-          //   onPressed: () => LogoutHandler.handleLogout(context),
-          // ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

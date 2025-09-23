@@ -1,3 +1,4 @@
+import 'package:ebidan/presentation/screens/auth/profile.dart';
 import 'package:ebidan/presentation/screens/bumil/check_bumil.dart';
 import 'package:ebidan/presentation/screens/bumil/data_bumil.dart';
 import 'package:ebidan/presentation/screens/bumil/edit_bumil.dart';
@@ -36,6 +37,7 @@ class AppRouter {
   static const String homepage = '/';
   static const String login = '/login';
   static const String register = '/register';
+  static const String profile = '/profile';
 
   static const String addBumil = '/addbumil';
   static const String pilihBumil = '/pilihbumil';
@@ -80,6 +82,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => LoginScreen());
       case register:
         return MaterialPageRoute(builder: (_) => RegisterScreen());
+      case profile:
+        return MaterialPageRoute(builder: (_) => ProfileScreen());
       case pilihBumil:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
