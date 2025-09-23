@@ -46,7 +46,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               _buildProfileHeader(user),
               const SizedBox(height: 24),
-              _buildSubscriptionCard(user.premiumStatus),
+              _buildSubscriptionCard(user.premiumStatus, user: user),
               const SizedBox(height: 24),
               _buildUserInfoCard(user),
               const SizedBox(height: 8),
@@ -94,32 +94,94 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSubscriptionCard(PremiumStatus status) {
+  // Inside the ProfileScreen class
+
+  Widget _buildSubscriptionCard(PremiumStatus status, {required Bidan user}) {
     String title;
     String description;
     Color color;
     IconData icon;
+    Widget? actionButton; // A new widget for the action button
 
     switch (status.premiumType) {
       case PremiumType.trial:
+        final expiry = user.expiryDate;
+        if (expiry == null) {
+          title = "Trial Aktif";
+          description =
+              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(status.expiryDate!)}";
+          color = Colors.orange.shade100;
+          icon = Icons.star;
+          break;
+        }
+        final now = DateTime.now();
+        final daysLeft = expiry.difference(now).inDays;
+        
+        if (daysLeft > 7 || daysLeft < 0) {
+          title = "Trial Aktif";
+          description =
+              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(status.expiryDate!)}";
+          color = Colors.orange.shade100;
+          icon = Icons.star;
+          break;
+        }
         title = "Trial Aktif";
         description =
-            "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(status.expiryDate!)}";
+            "Berakhir dalam $daysLeft hari.\nklik untuk langganan";
         color = Colors.orange.shade100;
         icon = Icons.star;
         break;
       case PremiumType.subscription:
+        final expiry = user.expiryDate;
+        if (expiry == null) {
+          title = "Langganan Premium Aktif";
+          description =
+              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(status.expiryDate!)}";
+          color = Colors.green.shade100;
+          icon = Icons.check_circle;
+          break;
+        }
+        final now = DateTime.now();
+        final daysLeft = expiry.difference(now).inDays;
+        if (daysLeft > 7 || daysLeft < 0) {
+          title = "Langganan Premium Aktif";
+          description =
+              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(status.expiryDate!)}";
+          color = Colors.green.shade100;
+          icon = Icons.check_circle;
+          break;
+        }
         title = "Langganan Premium Aktif";
         description =
-            "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(status.expiryDate!)}";
+            "Berakhir dalam $daysLeft hari.\nklik untuk perpanjang";
         color = Colors.green.shade100;
-        icon = Icons.check_circle;
+        icon = Icons.star;
         break;
       default:
         title = "Akses Standar";
-        description = "Upgrade ke Premium untuk fitur lengkap.";
+        description = "Saat ini Anda tidak memiliki akses ke Statistik.";
         color = Colors.red.shade100;
         icon = Icons.cancel;
+        // Add the subscribe button here
+        actionButton = ElevatedButton(
+          onPressed: () {
+            // Action to navigate to the subscription page
+            // Example: Navigator.of(context).pushNamed(AppRouter.subscribe);
+            // For now, let's show a simple message
+            // You need to pass context to this method if you want to use ScaffoldMessenger
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   const SnackBar(content: Text("Akses ke halaman langganan.")),
+            // );
+          },
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white, 
+            backgroundColor: Colors.blue.shade700,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          child: const Text("Upgrade Sekarang"),
+        );
         break;
     }
 
@@ -131,26 +193,38 @@ class ProfileScreen extends StatelessWidget {
       elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 40, color: color == Colors.red.shade100 ? Colors.red.shade700 : Colors.blue.shade700),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+            Row(
+              children: [
+                Icon(icon, size: 40, color: color == Colors.red.shade100 ? Colors.red.shade700 : Colors.blue.shade700),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(description),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(description),
-                ],
-              ),
+                ),
+              ],
             ),
+            if (actionButton != null) ...[
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity, // Make the button full width
+                child: actionButton,
+              ),
+            ],
           ],
         ),
       ),
