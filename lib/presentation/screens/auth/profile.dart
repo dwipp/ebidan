@@ -1,6 +1,7 @@
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
@@ -46,7 +47,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               _buildProfileHeader(user),
               const SizedBox(height: 24),
-              _buildSubscriptionCard(user.premiumStatus, user: user),
+              _buildSubscriptionCard(context, status: user.premiumStatus, user: user),
               const SizedBox(height: 24),
               _buildUserInfoCard(user),
               const SizedBox(height: 8),
@@ -96,91 +97,120 @@ class ProfileScreen extends StatelessWidget {
 
   // Inside the ProfileScreen class
 
-  Widget _buildSubscriptionCard(PremiumStatus status, {required Bidan user}) {
+  Widget _buildSubscriptionCard(BuildContext context, {required PremiumStatus status, required Bidan user}) {
     String title;
-    String description;
     Color color;
     IconData icon;
-    Widget? actionButton; // A new widget for the action button
+    Widget? descriptionWidget; // Use a widget for flexibility
+
+    // Function to handle the navigation
+    void handleAction(BuildContext context) {
+      // Navigate to the subscription page
+      // Example: Navigator.of(context).pushNamed(AppRouter.subscribe);
+      // For now, let's show a simple message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Akses ke halaman langganan.")),
+      );
+    }
+
+    // Common style for the actionable text
+    final TextStyle actionTextStyle = TextStyle(
+      color: Colors.blue,
+      fontWeight: FontWeight.w600,
+      decoration: TextDecoration.underline,
+    );
 
     switch (status.premiumType) {
       case PremiumType.trial:
         final expiry = user.expiryDate;
-        if (expiry == null) {
-          title = "Trial Aktif";
-          description =
-              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(status.expiryDate!)}";
-          color = Colors.orange.shade100;
-          icon = Icons.star;
-          break;
-        }
-        final now = DateTime.now();
-        final daysLeft = expiry.difference(now).inDays;
-        
-        if (daysLeft > 7 || daysLeft < 0) {
-          title = "Trial Aktif";
-          description =
-              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(status.expiryDate!)}";
-          color = Colors.orange.shade100;
-          icon = Icons.star;
-          break;
-        }
         title = "Trial Aktif";
-        description =
-            "Berakhir dalam $daysLeft hari.\nklik untuk langganan";
         color = Colors.orange.shade100;
         icon = Icons.star;
+
+        if (expiry != null) {
+          final now = DateTime.now();
+          final daysLeft = expiry.difference(now).inDays;
+
+          if (daysLeft > 7 || daysLeft < 0) {
+            descriptionWidget = Text("Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}");
+          } else {
+            descriptionWidget = RichText(
+              text: TextSpan(
+                style: const TextStyle(color: Colors.black87),
+                children: <TextSpan>[
+                  TextSpan(text: "Berakhir dalam $daysLeft hari.\n"),
+                  TextSpan(
+                    text: "Klik untuk langganan.",
+                    style: actionTextStyle,
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => handleAction(context),
+                  ),
+                ],
+              ),
+            );
+          }
+        } else {
+          descriptionWidget = Text("Berakhir pada: Tidak diketahui");
+        }
         break;
+
       case PremiumType.subscription:
         final expiry = user.expiryDate;
-        if (expiry == null) {
-          title = "Langganan Premium Aktif";
-          description =
-              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(status.expiryDate!)}";
-          color = Colors.green.shade100;
-          icon = Icons.check_circle;
-          break;
-        }
-        final now = DateTime.now();
-        final daysLeft = expiry.difference(now).inDays;
-        if (daysLeft > 7 || daysLeft < 0) {
-          title = "Langganan Premium Aktif";
-          description =
-              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(status.expiryDate!)}";
-          color = Colors.green.shade100;
-          icon = Icons.check_circle;
-          break;
-        }
         title = "Langganan Premium Aktif";
-        description =
-            "Berakhir dalam $daysLeft hari.\nklik untuk perpanjang";
         color = Colors.green.shade100;
-        icon = Icons.star;
+        icon = Icons.check_circle;
+
+        if (expiry != null) {
+          final now = DateTime.now();
+          final daysLeft = expiry.difference(now).inDays;
+
+          if (daysLeft > 7 || daysLeft < 0) {
+            descriptionWidget = Text("Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}");
+          } else {
+            descriptionWidget = RichText(
+              text: TextSpan(
+                style: const TextStyle(color: Colors.black87),
+                children: <TextSpan>[
+                  TextSpan(text: "Berakhir dalam $daysLeft hari.\n"),
+                  TextSpan(
+                    text: "Klik untuk perpanjang.",
+                    style: actionTextStyle,
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => handleAction(context),
+                  ),
+                ],
+              ),
+            );
+          }
+        } else {
+          descriptionWidget = Text("Berakhir pada: Tidak diketahui");
+        }
         break;
+
       default:
         title = "Akses Standar";
-        description = "Saat ini Anda tidak memiliki akses ke Statistik.";
         color = Colors.red.shade100;
         icon = Icons.cancel;
-        // Add the subscribe button here
-        actionButton = ElevatedButton(
-          onPressed: () {
-            // Action to navigate to the subscription page
-            // Example: Navigator.of(context).pushNamed(AppRouter.subscribe);
-            // For now, let's show a simple message
-            // You need to pass context to this method if you want to use ScaffoldMessenger
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   const SnackBar(content: Text("Akses ke halaman langganan.")),
-            // );
-          },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white, 
-            backgroundColor: Colors.blue.shade700,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+        descriptionWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("Saat ini Anda tidak memiliki akses ke Statistik."),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => handleAction(context),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue.shade700,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text("Upgrade Sekarang"),
+              ),
             ),
-          ),
-          child: const Text("Upgrade Sekarang"),
+          ],
         );
         break;
     }
@@ -193,38 +223,27 @@ class ProfileScreen extends StatelessWidget {
       elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(icon, size: 40, color: color == Colors.red.shade100 ? Colors.red.shade700 : Colors.blue.shade700),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(description),
-                    ],
+            Icon(icon, size: 40, color: color == Colors.red.shade100 ? Colors.red.shade700 : Colors.blue.shade700),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            if (actionButton != null) ...[
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity, // Make the button full width
-                child: actionButton,
+                  const SizedBox(height: 4),
+                  descriptionWidget,
+                ],
               ),
-            ],
+            ),
           ],
         ),
       ),
