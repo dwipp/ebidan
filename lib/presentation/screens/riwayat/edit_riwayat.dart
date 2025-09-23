@@ -12,6 +12,8 @@ import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// Import FormValidator
+import 'package:ebidan/common/utility/form_validator.dart';
 
 class EditRiwayatBumilScreen extends StatefulWidget {
   final String state;
@@ -23,6 +25,22 @@ class EditRiwayatBumilScreen extends StatefulWidget {
 
 class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  // **PERUBAHAN 1: Definisikan GlobalKey untuk setiap field wajib**
+  final Map<String, GlobalKey> _fieldKeys = {
+    'beratBayi': GlobalKey(),
+    'panjangBayi': GlobalKey(),
+    'statusBayi': GlobalKey(),
+    'tglLahir': GlobalKey(),
+    'statusLahir': GlobalKey(),
+    'statusKehamilan': GlobalKey(),
+    'tempat': GlobalKey(),
+    'penolong': GlobalKey(),
+    'penolongLainnya': GlobalKey(),
+  };
+
+  // **PERUBAHAN 2: Deklarasi FormValidator**
+  late FormValidator _formValidator;
 
   String? _statusBayi;
   final List<String> statusBayiList = ['Hidup', 'Mati', 'Abortus'];
@@ -60,10 +78,20 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
 
   Bumil? bumil;
   Riwayat? riwayat;
+  
+  // Validator standar untuk wajib diisi
+  String? _requiredValidator(dynamic val) {
+    if (val is String) {
+      return val.isEmpty ? 'Wajib diisi' : null;
+    }
+    return val == null ? 'Wajib dipilih' : null;
+  }
 
   @override
   void initState() {
     context.read<SubmitRiwayatCubit>().setInitial();
+    // **PERUBAHAN 3: Inisialisasi FormValidator**
+    _formValidator = FormValidator(fieldKeys: _fieldKeys);
     super.initState();
   }
 
@@ -107,7 +135,13 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
   }
 
   void _submitForm() {
-    if (!_formKey.currentState!.validate()) return;
+    // **PERUBAHAN 4: Ganti validasi manual dengan validateAndScroll**
+    _formValidator.reset();
+
+    if (!_formValidator.validateAndScroll(_formKey, context)) {
+      return;
+    }
+
     if (riwayat == null && bumil == null) return;
 
     final newRiwayat = Riwayat(
@@ -151,22 +185,37 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
               _buildSectionTitle('Informasi Bayi'),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['beratBayi'], // Tambahkan key
                 label: 'Berat Bayi',
                 icon: Icons.monitor_weight,
                 controller: _beratBayiController,
                 isNumber: true,
                 suffixText: 'gram',
+                // **PERUBAHAN 5: Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'beratBayi',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['panjangBayi'], // Tambahkan key
                 label: 'Panjang Bayi',
                 icon: Icons.straighten,
                 controller: _panjangBayiController,
                 isNumber: true,
                 suffixText: 'cm',
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'panjangBayi',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               const SizedBox(height: 12),
               DropdownField(
+                key: _fieldKeys['statusBayi'], // Tambahkan key
                 label: 'Status Bayi',
                 icon: Icons.child_care,
                 items: statusBayiList,
@@ -176,12 +225,17 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                     _statusBayi = newValue;
                   });
                 },
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Wajib dipilih' : null,
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'statusBayi',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               const SizedBox(height: 16),
               _buildSectionTitle('Persalinan'),
               DatePickerFormField(
+                key: _fieldKeys['tglLahir'], // Tambahkan key
                 labelText: 'Tanggal Lahir',
                 prefixIcon: Icons.calendar_today,
                 initialValue: _tglLahir,
@@ -192,8 +246,15 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                     _tglLahir = date;
                   });
                 },
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'tglLahir',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               DropdownField(
+                key: _fieldKeys['statusLahir'], // Tambahkan key
                 label: 'Status Lahir',
                 icon: Icons.pregnant_woman,
                 items: statusLahirList,
@@ -204,16 +265,19 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                   });
                 },
                 validator: (val) {
-                  if (_statusBayi != 'Abortus') {
-                    if (val == null || val.isEmpty) {
-                      return 'Wajib dipilih';
-                    }
+                  if (_statusBayi != "Abortus") {
+                    return _formValidator.wrapValidator(
+                      'statusLahir',
+                      val,
+                      _requiredValidator,
+                    );
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 12),
               DropdownField(
+                key: _fieldKeys['statusKehamilan'], // Tambahkan key
                 label: 'Status Kehamilan',
                 icon: Icons.date_range,
                 items: statusKehamilanList,
@@ -224,16 +288,19 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                   });
                 },
                 validator: (val) {
-                  if (_statusBayi != 'Abortus') {
-                    if (val == null || val.isEmpty) {
-                      return 'Wajib dipilih';
-                    }
+                  if (_statusBayi != "Abortus") {
+                    return _formValidator.wrapValidator(
+                      'statusKehamilan',
+                      val,
+                      _requiredValidator,
+                    );
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 12),
               DropdownField(
+                key: _fieldKeys['tempat'], // Tambahkan key
                 label: 'Tempat Persalinan',
                 icon: Icons.home,
                 items: tempatList,
@@ -243,8 +310,12 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                     _tempat = newValue;
                   });
                 },
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Wajib dipilih' : null,
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'tempat',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               const SizedBox(height: 12),
               _buildPenolongField(),
@@ -314,6 +385,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownButtonFormField<String>(
+          key: _fieldKeys['penolong'], // Tambahkan key
           value: _penolong != null && penolongList.contains(_penolong)
               ? _penolong
               : null, // hanya value yang ada di list
@@ -332,15 +404,30 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
               }
             });
           },
-          validator: null, // dropdown tidak wajib
+          // validator: (val) {
+          //   if (_penolong == null || _penolong!.isEmpty) {
+          //     return 'Wajib dipilih';
+          //   }
+          //   return null;
+          // },
+          validator: (val) => _formValidator.wrapValidator(
+            'penolong',
+            val,
+            _requiredValidator,
+          ),
         ),
         if (isLainnya) const SizedBox(height: 8),
         if (isLainnya)
           CustomTextField(
+            key: _fieldKeys['penolongLainnya'], // Tambahkan key
             label: 'Penolong Lainnya',
             icon: Icons.person_outline,
             controller: _penolongLainnyaController,
-            validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+            validator: (val) => _formValidator.wrapValidator(
+              'penolong',
+              val,
+              _requiredValidator,
+            ),
           ),
       ],
     );

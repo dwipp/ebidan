@@ -37,6 +37,9 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
     'umurKehamilan': GlobalKey(),
     'sex': GlobalKey(),
     'caraBersalin': GlobalKey(),
+    'caraBersalinLainnya': GlobalKey(),
+    'penolong': GlobalKey(),
+    'penolongLainnya': GlobalKey(),
     'tempatBersalin': GlobalKey(),
   };
 
@@ -453,6 +456,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownButtonFormField<String>(
+          key: _fieldKeys['penolong'], // Tambahkan key
           value: _penolong != null && penolongList.contains(_penolong)
               ? _penolong
               : null, // hanya value yang ada di list
@@ -471,20 +475,31 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
               }
             });
           },
-          validator: (val) {
-            if (_penolong == null || _penolong!.isEmpty) {
-              return 'Wajib dipilih';
-            }
-            return null;
-          },
+          // validator: (val) {
+          //   if (_penolong == null || _penolong!.isEmpty) {
+          //     return 'Wajib dipilih';
+          //   }
+          //   return null;
+          // },
+            validator: (val) => _formValidator.wrapValidator(
+              'penolong',
+              val,
+              _requiredValidator,
+            ),
         ),
         if (isLainnya) const SizedBox(height: 8),
         if (isLainnya)
           CustomTextField(
+            key: _fieldKeys['penolongLainnya'], // Tambahkan key
             label: 'Penolong Lainnya',
             icon: Icons.person_outline,
             controller: _penolongLainnyaController,
-            validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+            // validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+              validator: (val) => _formValidator.wrapValidator(
+              'penolongLainnya',
+              val,
+              _requiredValidator,
+            ),
           ),
       ],
     );
@@ -517,10 +532,16 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
         if (isLainnya) const SizedBox(height: 8),
         if (isLainnya)
           CustomTextField(
+          key: _fieldKeys['caraBersalinLainnya'], // Tambahkan key
             label: 'Cara Persalinan Lainnya',
             icon: Icons.pregnant_woman,
             controller: _caraLainnyaController,
-            validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+            // validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+            validator: (val) => _formValidator.wrapValidator(
+              'caraBersalinLainnya',
+              val,
+              _requiredValidator,
+            ),
           ),
       ],
     );
