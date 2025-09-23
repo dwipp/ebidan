@@ -168,13 +168,28 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Informasi Pengguna",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Informasi Saya",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
+              // Tambahkan tombol edit profile di sini
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  // Aksi untuk mengedit profil
+                  // Contoh: Navigator.of(context).pushNamed(AppRouter.editProfile);
+                  
+                },
+                tooltip: "Edit Profil",
+              ),
+            ],
+          ),
             const Divider(height: 20, thickness: 1),
             _buildInfoRow(Icons.email, "Email", user.email),
             _buildInfoRow(Icons.badge, "NIP", user.nip),
