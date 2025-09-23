@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class MenuButton extends StatelessWidget {
@@ -16,8 +17,12 @@ class MenuButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color iconColor = enabled ? Colors.blue : Colors.grey.shade400;
-    final Color textColor = enabled ? Colors.black : Colors.grey.shade500;
+    final Color iconColor = enabled
+        ? context.themeColors.primary
+        : context.themeColors.primary.withOpacity(0.38);
+    final Color textColor = enabled
+        ? context.themeColors.onSurface
+        : context.themeColors.onSurface.withOpacity(0.38);
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -44,7 +49,9 @@ class MenuButton extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
-                color: enabled ? Colors.grey : Colors.grey.shade400,
+                color: enabled
+                    ? context.themeColors.onSurface
+                    : context.themeColors.onSurface.withOpacity(0.38),
               ),
             ],
           ),

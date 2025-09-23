@@ -17,20 +17,24 @@ class LoginScreen extends StatelessWidget {
       body: BlocConsumer<LoginCubit, LoginState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            final user = state.user;
+            // final user = state.user;
             final isReg = state.isRegistered;
 
-            final text = isReg
-                ? 'Hi, bidan ${user.displayName}'
-                : 'Hi, ${user.displayName}';
-              
-            Snackbar.show(context, message: text, type: SnackbarType.success);
+            // final text = isReg
+            //     ? 'Hi, bidan ${user.displayName}'
+            //     : 'Hi, ${user.displayName}';
+
+            // Snackbar.show(context, message: text, type: SnackbarType.success);
 
             Navigator.of(context).pushReplacementNamed(
               isReg ? AppRouter.homepage : AppRouter.register,
             );
           } else if (state is LoginFailure) {
-            Snackbar.show(context, message: state.message, type: SnackbarType.error);
+            Snackbar.show(
+              context,
+              message: state.message,
+              type: SnackbarType.error,
+            );
           }
         },
         builder: (context, state) {

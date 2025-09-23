@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,7 +48,9 @@ class PageHeader extends StatelessWidget implements PreferredSizeWidget {
                   children: [
                     Icon(
                       connected ? Icons.wifi : Icons.wifi_off,
-                      color: connected ? Colors.green : Colors.red,
+                      color: connected
+                          ? context.themeColors.tertiary
+                          : context.themeColors.error,
                     ),
                     if (onlyNetwork) const SizedBox(width: 12),
                   ],

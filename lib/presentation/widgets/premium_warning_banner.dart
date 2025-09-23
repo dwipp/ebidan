@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
@@ -42,9 +43,11 @@ class PremiumWarningBanner extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.orange.shade100,
+        color: context.themeColors.secondary.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.orange.shade300),
+        border: Border.all(
+          color: context.themeColors.secondary.withOpacity(0.5),
+        ),
       ),
       child: InkWell(
         onTap: () {
@@ -52,22 +55,22 @@ class PremiumWarningBanner extends StatelessWidget {
         },
         child: Row(
           children: [
-            const Icon(Icons.warning, color: Colors.orange),
+            Icon(Icons.warning, color: context.themeColors.secondary),
             const SizedBox(width: 8),
             Expanded(
               child: RichText(
                 text: TextSpan(
-                  style: const TextStyle(color: Colors.black87),
+                  style: TextStyle(color: context.themeColors.onSurface),
                   children: [
                     TextSpan(
                       text:
                           "Akun ${premiumType == PremiumType.trial ? "Trial" : "Premium"} "
                           "Anda akan berakhir dalam $daysLeft hari. ",
                     ),
-                    const TextSpan(
+                    TextSpan(
                       text: "Klik untuk perpanjang",
                       style: TextStyle(
-                        color: Colors.blue,
+                        color: context.themeColors.primary,
                         fontWeight: FontWeight.w600,
                         decoration: TextDecoration.underline,
                       ),

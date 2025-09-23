@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
@@ -35,23 +36,23 @@ class HomeScreen extends StatelessWidget {
           // IconButton untuk menampilkan foto profil user
           IconButton(
             icon: CircleAvatar(
-              backgroundColor: Colors.white.withOpacity(0.2),
+              backgroundColor: context.themeColors.surface,
               // Memeriksa apakah photoUrl tersedia
               backgroundImage: user?.photoUrl != null
                   ? NetworkImage(user!.photoUrl!) as ImageProvider
                   : null,
-                  radius: 13,
+              radius: 13,
               // Jika photoUrl tidak ada, tampilkan ikon default atau inisial nama
               child: user?.photoUrl == null
-                  ? const Icon(Icons.person, color: Colors.black54)
+                  ? Icon(Icons.person, color: context.themeColors.onSurface)
                   : null,
             ),
             onPressed: () {
-              if (user == null){
+              if (user == null) {
                 LogoutHandler.handleLogout(context);
-              }else {
-              // Navigasi ke halaman profil
-              Navigator.of(context).pushNamed(AppRouter.profile);
+              } else {
+                // Navigasi ke halaman profil
+                Navigator.of(context).pushNamed(AppRouter.profile);
               }
             },
           ),
@@ -63,7 +64,6 @@ class HomeScreen extends StatelessWidget {
             context,
           ).pushNamed(AppRouter.pilihBumil, arguments: {'state': 'kunjungan'});
         },
-        backgroundColor: Colors.lightBlue[100],
         child: const Icon(Icons.add),
       ),
       body: SafeArea(
@@ -99,17 +99,10 @@ class HomeScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.pink.shade200,
-                                Colors.pink.shade100,
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            gradient: context.themeColors.pinkGradient,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.pink.shade100.withOpacity(0.4),
+                                color: context.themeColors.shadowPink,
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -218,17 +211,10 @@ class HomeScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(24),
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.blue.shade300,
-                                Colors.blue.shade100,
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            gradient: context.themeColors.blueGradient,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.blue.shade100.withOpacity(0.4),
+                                color: context.themeColors.shadowBlue,
                                 blurRadius: 10,
                                 offset: const Offset(0, 6),
                               ),
@@ -260,14 +246,17 @@ class HomeScreen extends StatelessWidget {
                               SummaryChart(
                                 pasien:
                                     statistic?.lastMonthData?.pasien.total ?? 0,
-                                kehamilan: statistic
-                                        ?.lastMonthData?.kehamilan.total ??
+                                kehamilan:
+                                    statistic?.lastMonthData?.kehamilan.total ??
                                     0,
-                                kunjungan: statistic
-                                        ?.lastMonthData?.kunjungan.total ??
+                                kunjungan:
+                                    statistic?.lastMonthData?.kunjungan.total ??
                                     0,
-                                persalinan: statistic
-                                        ?.lastMonthData?.persalinan.total ??
+                                persalinan:
+                                    statistic
+                                        ?.lastMonthData
+                                        ?.persalinan
+                                        .total ??
                                     0,
                                 showCenterValue: false,
                               ),

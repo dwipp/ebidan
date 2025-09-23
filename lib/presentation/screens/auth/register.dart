@@ -121,7 +121,11 @@ class _RegisterState extends State<RegisterScreen> {
               ),
             );
           } else if (state is RegisterFailure) {
-            Snackbar.show(context, message: state.message, type: SnackbarType.error);
+            Snackbar.show(
+              context,
+              message: state.message,
+              type: SnackbarType.error,
+            );
           }
         },
         builder: (context, state) {

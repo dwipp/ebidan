@@ -62,16 +62,16 @@ class _MainAppState extends State<MainApp> {
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue,      // warna utama
-            primary: Colors.blue,        // utama
-            secondary: Colors.orange,    // secondary
-            tertiary: Colors.green,      // tambahan
-            error: Colors.red,           // error
-            surface: Colors.white,       // background kartu, dsb
-            onPrimary: Colors.white,     // teks/icon di atas primary
-            onSecondary: Colors.white,   // teks/icon di atas secondary
-            onTertiary: Colors.white,    // teks/icon di atas tertiary
-            onSurface: Colors.black87,   // teks default
+            seedColor: Colors.blue, // warna utama
+            primary: Colors.blue, // utama
+            secondary: Colors.orange, // secondary
+            tertiary: Colors.green, // tambahan
+            error: Colors.red, // error
+            surface: Colors.white, // background kartu, dsb
+            onPrimary: Colors.white, // teks/icon di atas primary
+            onSecondary: Colors.white, // teks/icon di atas secondary
+            onTertiary: Colors.white, // teks/icon di atas tertiary
+            onSurface: Colors.black87, // teks default
             brightness: Brightness.light,
           ),
         ),
