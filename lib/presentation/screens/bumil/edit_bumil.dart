@@ -8,6 +8,8 @@ import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/state_management/bumil/cubit/submit_bumil_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// Import FormValidator
+import 'package:ebidan/common/utility/form_validator.dart';
 
 class EditBumilScreen extends StatefulWidget {
   final Bumil bumil;
@@ -19,6 +21,32 @@ class EditBumilScreen extends StatefulWidget {
 
 class _EditBumilState extends State<EditBumilScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  // **PERUBAHAN 1: Definisikan GlobalKey untuk setiap field wajib**
+  final Map<String, GlobalKey> _fieldKeys = {
+    // Data Ibu
+    'namaIbu': GlobalKey(),
+    'agamaIbu': GlobalKey(),
+    'golDarahIbu': GlobalKey(),
+    'pekerjaanIbu': GlobalKey(),
+    'nikIbu': GlobalKey(),
+    'pendidikanIbu': GlobalKey(),
+    'tanggalLahirIbu': GlobalKey(),
+    // Data Suami
+    'namaSuami': GlobalKey(),
+    'agamaSuami': GlobalKey(),
+    'golDarahSuami': GlobalKey(),
+    'pekerjaanSuami': GlobalKey(),
+    'nikSuami': GlobalKey(),
+    'pendidikanSuami': GlobalKey(),
+    'tanggalLahirSuami': GlobalKey(),
+    // Data Lain
+    'alamat': GlobalKey(),
+    'noHp': GlobalKey(),
+  };
+
+  // **PERUBAHAN 2: Deklarasi FormValidator**
+  late FormValidator _formValidator;
 
   // Controllers
   final _namaIbuController = TextEditingController();
@@ -35,7 +63,6 @@ class _EditBumilState extends State<EditBumilScreen> {
   DateTime? _birthdateIbu;
   DateTime? _birthdateSuami;
 
-  // Tambah di atas (list pilihan dropdown)
   final List<String> _agamaList = [
     'Islam',
     'Kristen',
@@ -50,6 +77,7 @@ class _EditBumilState extends State<EditBumilScreen> {
     'SD',
     'SMP',
     'SMA',
+    'D3',
     'S1',
     'S2',
     'S3',
@@ -74,19 +102,27 @@ class _EditBumilState extends State<EditBumilScreen> {
     );
   }
 
-  String? _validateNIK(String? val) {
+  // **Definisi validator sederhana untuk di-wrap**
+  String? _requiredValidator(dynamic val) {
+    if (val is String) {
+      return val.isEmpty ? 'Wajib diisi' : null;
+    }
+    return val == null ? 'Wajib diisi' : null;
+  }
+
+  String? _validateNIK(dynamic val) {
     if (val == null || val.isEmpty) return 'Wajib diisi';
     if (!RegExp(r'^\d{16}$').hasMatch(val)) return 'Harus 16 digit angka';
     return null;
   }
 
   String? _validateKK(String? val) {
-    if (val == null || val.isEmpty) return 'Wajib diisi';
+    if (val == null || val.isEmpty) return null;
     if (!RegExp(r'^\d{16}$').hasMatch(val)) return 'Harus 16 digit angka';
     return null;
   }
 
-  String? _validateHP(String? val) {
+  String? _validateHP(dynamic val) {
     if (val == null || val.isEmpty) return 'Wajib diisi';
     if (!RegExp(r'^\d{10,15}$').hasMatch(val)) return 'Nomor HP tidak valid';
     return null;
@@ -109,6 +145,9 @@ class _EditBumilState extends State<EditBumilScreen> {
 
   @override
   void initState() {
+    // **PERUBAHAN 3: Inisialisasi FormValidator**
+    _formValidator = FormValidator(fieldKeys: _fieldKeys);
+    
     context.read<SubmitBumilCubit>().setInitial();
     _namaIbuController.text = widget.bumil.namaIbu;
     _namaSuamiController.text = widget.bumil.namaSuami;
@@ -133,7 +172,13 @@ class _EditBumilState extends State<EditBumilScreen> {
   }
 
   void _submitForm() {
-    if (!_formKey.currentState!.validate()) return;
+    // **PERUBAHAN 4: Ganti validasi manual dengan validateAndScroll**
+    _formValidator.reset();
+
+    if (!_formValidator.validateAndScroll(_formKey, context)) {
+      // FormValidator sudah menangani scroll dan snackbar.
+      return;
+    }
 
     final bumil = Bumil(
       namaIbu: _namaIbuController.text.trim(),
@@ -177,14 +222,21 @@ class _EditBumilState extends State<EditBumilScreen> {
                 children: [
                   _buildSectionTitle('Data Ibu'),
                   CustomTextField(
+                    key: _fieldKeys['namaIbu'], // Tambahkan key
                     label: 'Nama Ibu',
                     icon: Icons.person,
                     controller: _namaIbuController,
                     textCapitalization: TextCapitalization.words,
-                    validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                    // **PERUBAHAN 5: Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'namaIbu',
+                      val,
+                      _requiredValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
+                    key: _fieldKeys['agamaIbu'], // Tambahkan key
                     label: 'Agama Ibu',
                     icon: Icons.account_balance,
                     items: _agamaList,
@@ -194,10 +246,16 @@ class _EditBumilState extends State<EditBumilScreen> {
                         _selectedAgamaIbu = newValue;
                       });
                     },
-                    validator: (val) => val == null ? 'Wajib dipilih' : null,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'agamaIbu',
+                      val,
+                      _requiredValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
+                    key: _fieldKeys['golDarahIbu'], // Tambahkan key
                     label: 'Golongan Darah Ibu',
                     icon: Icons.bloodtype,
                     items: _golDarahList,
@@ -207,22 +265,35 @@ class _EditBumilState extends State<EditBumilScreen> {
                         _selectedGolIbu = newValue;
                       });
                     },
+                    // Golongan darah tidak wajib, jadi tidak perlu validator
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
+                    key: _fieldKeys['pekerjaanIbu'], // Tambahkan key
                     label: 'Pekerjaan Ibu',
                     icon: Icons.work,
                     controller: _jobIbuController,
-                    validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'pekerjaanIbu',
+                      val,
+                      _requiredValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
+                    key: _fieldKeys['nikIbu'], // Tambahkan key
                     label: 'NIK Ibu',
                     icon: Icons.badge,
                     controller: _nikIbuController,
                     isNumber: true,
                     maxLength: 16,
-                    validator: _validateNIK,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'nikIbu',
+                      val,
+                      _validateNIK,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
@@ -235,6 +306,7 @@ class _EditBumilState extends State<EditBumilScreen> {
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
+                    key: _fieldKeys['pendidikanIbu'], // Tambahkan key
                     label: 'Pendidikan Ibu',
                     icon: Icons.school,
                     items: _pendidikanList,
@@ -244,10 +316,16 @@ class _EditBumilState extends State<EditBumilScreen> {
                         _selectedPendidikanIbu = newValue;
                       });
                     },
-                    validator: (val) => val == null ? 'Wajib dipilih' : null,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'pendidikanIbu',
+                      val,
+                      _requiredValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DatePickerFormField(
+                    key: _fieldKeys['tanggalLahirIbu'], // Tambahkan key
                     labelText: 'Tanggal Lahir Ibu',
                     prefixIcon: Icons.calendar_today,
                     initialValue: _birthdateIbu,
@@ -258,20 +336,32 @@ class _EditBumilState extends State<EditBumilScreen> {
                         _birthdateIbu = date;
                       });
                     },
-                    validator: (val) => val == null ? 'Wajib diisi' : null,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'tanggalLahirIbu',
+                      val,
+                      _requiredValidator,
+                    ),
                   ),
 
                   const SizedBox(height: 16),
                   _buildSectionTitle('Data Suami'),
                   CustomTextField(
+                    key: _fieldKeys['namaSuami'], // Tambahkan key
                     label: 'Nama Suami',
                     icon: Icons.person,
                     controller: _namaSuamiController,
                     textCapitalization: TextCapitalization.words,
-                    validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'namaSuami',
+                      val,
+                      _requiredValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
+                    key: _fieldKeys['agamaSuami'], // Tambahkan key
                     label: 'Agama Suami',
                     icon: Icons.account_balance,
                     items: _agamaList,
@@ -281,10 +371,16 @@ class _EditBumilState extends State<EditBumilScreen> {
                         _selectedAgamaSuami = newValue;
                       });
                     },
-                    validator: (val) => val == null ? 'Wajib dipilih' : null,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'agamaSuami',
+                      val,
+                      _requiredValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
+                    key: _fieldKeys['golDarahSuami'], // Tambahkan key
                     label: 'Golongan Darah Suami',
                     icon: Icons.bloodtype,
                     items: _golDarahList,
@@ -297,19 +393,31 @@ class _EditBumilState extends State<EditBumilScreen> {
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
+                    key: _fieldKeys['pekerjaanSuami'], // Tambahkan key
                     label: 'Pekerjaan Suami',
                     icon: Icons.work,
                     controller: _jobSuamiController,
-                    validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'pekerjaanSuami',
+                      val,
+                      _requiredValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
+                    key: _fieldKeys['nikSuami'], // Tambahkan key
                     label: 'NIK Suami',
                     icon: Icons.badge,
                     controller: _nikSuamiController,
                     isNumber: true,
                     maxLength: 16,
-                    validator: _validateNIK,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'nikSuami',
+                      val,
+                      _validateNIK,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
@@ -322,6 +430,7 @@ class _EditBumilState extends State<EditBumilScreen> {
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
+                    key: _fieldKeys['pendidikanSuami'], // Tambahkan key
                     label: 'Pendidikan Suami',
                     icon: Icons.school,
                     items: _pendidikanList,
@@ -331,10 +440,16 @@ class _EditBumilState extends State<EditBumilScreen> {
                         _selectedPendidikanSuami = newValue;
                       });
                     },
-                    validator: (val) => val == null ? 'Wajib dipilih' : null,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'pendidikanSuami',
+                      val,
+                      _requiredValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DatePickerFormField(
+                    key: _fieldKeys['tanggalLahirSuami'], // Tambahkan key
                     labelText: 'Tanggal Lahir Suami',
                     prefixIcon: Icons.calendar_today,
                     initialValue: _birthdateSuami,
@@ -345,24 +460,41 @@ class _EditBumilState extends State<EditBumilScreen> {
                         _birthdateSuami = date;
                       });
                     },
-                    validator: (val) => val == null ? 'Wajib diisi' : null,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'tanggalLahirSuami',
+                      val,
+                      _requiredValidator,
+                    ),
                   ),
 
                   const SizedBox(height: 16),
                   _buildSectionTitle('Data Lain'),
                   CustomTextField(
+                    key: _fieldKeys['alamat'], // Tambahkan key
                     label: 'Alamat',
                     icon: Icons.home,
                     controller: _alamatController,
-                    validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'alamat',
+                      val,
+                      _requiredValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
+                    key: _fieldKeys['noHp'], // Tambahkan key
                     label: 'No HP',
                     icon: Icons.phone,
                     controller: _noHpController,
                     keyboardType: TextInputType.phone,
-                    validator: _validateHP,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'noHp',
+                      val,
+                      _validateHP,
+                    ),
                   ),
 
                   const SizedBox(height: 24),
