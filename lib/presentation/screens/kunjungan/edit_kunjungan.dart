@@ -12,6 +12,8 @@ import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// Import FormValidator
+import 'package:ebidan/common/utility/form_validator.dart';
 
 class EditKunjunganScreen extends StatefulWidget {
   const EditKunjunganScreen({super.key});
@@ -22,6 +24,19 @@ class EditKunjunganScreen extends StatefulWidget {
 
 class _EditKunjunganState extends State<EditKunjunganScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  // **PERUBAHAN 1: Definisikan GlobalKey untuk setiap field wajib**
+  final Map<String, GlobalKey> _fieldKeys = {
+    'keluhan': GlobalKey(),
+    'bb': GlobalKey(),
+    'lila': GlobalKey(),
+    'lp': GlobalKey(),
+    'uk': GlobalKey(),
+    'planning': GlobalKey(),
+  };
+
+  // **PERUBAHAN 2: Deklarasi FormValidator**
+  late FormValidator _formValidator;
 
   final TextEditingController bbController = TextEditingController();
   final TextEditingController keluhanController = TextEditingController();
@@ -49,6 +64,21 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
   Kunjungan? kunjungan;
   Bumil? bumil;
 
+  // Validator standar untuk wajib diisi
+  String? _requiredValidator(dynamic val) {
+    if (val is String) {
+      return val.isEmpty ? 'Wajib diisi' : null;
+    }
+    return val == null ? 'Wajib dipilih' : null;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // **PERUBAHAN 3: Inisialisasi FormValidator**
+    _formValidator = FormValidator(fieldKeys: _fieldKeys);
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -68,7 +98,12 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
   }
 
   Future<void> _saveData() async {
-    if (!_formKey.currentState!.validate()) return;
+    // **PERUBAHAN 4: Ganti validasi manual dengan validateAndScroll**
+    _formValidator.reset();
+
+    if (!_formValidator.validateAndScroll(_formKey, context)) {
+      return;
+    }
 
     final data = Kunjungan(
       id: kunjungan!.id,
@@ -120,40 +155,64 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
             children: [
               Utils.sectionTitle('Subjective'),
               CustomTextField(
+                key: _fieldKeys['keluhan'], // Tambahkan key
                 controller: keluhanController,
                 label: "Keluhan",
                 icon: Icons.warning_amber,
                 isMultiline: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // **PERUBAHAN 5: Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'keluhan',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               const SizedBox(height: 16),
               Utils.sectionTitle('Objective'),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['bb'], // Tambahkan key
                 controller: bbController,
                 label: "Berat Badan",
                 icon: Icons.monitor_weight,
                 suffixText: 'kg',
                 isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'bb',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['lila'], // Tambahkan key
                 controller: lilaController,
                 label: "Lingkar Lengan Atas (LILA)",
                 icon: Icons.straighten,
                 suffixText: 'cm',
                 isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'lila',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['lp'], // Tambahkan key
                 controller: lpController,
                 label: "Lingkar Perut",
                 icon: Icons.pregnant_woman,
                 suffixText: 'cm',
                 isNumber: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'lp',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               const SizedBox(height: 12),
               BloodPressureField(controller: tdController),
@@ -179,22 +238,34 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
               ),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['uk'], // Tambahkan key
                 controller: ukController,
                 label: "Usia Kandungan",
                 icon: Icons.calendar_today,
                 isNumber: true,
                 readOnly: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'uk',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               const SizedBox(height: 16),
               Utils.sectionTitle('Planning'),
               const SizedBox(height: 12),
               CustomTextField(
+                key: _fieldKeys['planning'], // Tambahkan key
                 controller: planningController,
                 label: "Planning",
                 icon: Icons.assignment,
                 isMultiline: true,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'planning',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               const SizedBox(height: 12),
               CustomTextField(
