@@ -1,14 +1,51 @@
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
+  Widget _buildVersionInfo() {
+    return FutureBuilder<PackageInfo>(
+      future: PackageInfo.fromPlatform(),
+      builder: (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
+        if (snapshot.hasData) {
+          final String version = snapshot.data!.version;
+          final String buildNumber = snapshot.data!.buildNumber;
+          String versionText = 'versi $version';
+
+          // Tampilkan build number hanya dalam mode debug
+          if (kDebugMode) {
+            versionText += ' ($buildNumber)';
+          }
+          
+          return Text(
+            versionText,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w300,
+            ),
+          );
+        } else {
+          // Tampilkan teks sementara saat memuat
+          return const Text(
+            'Memuat versi...',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w300,
+            ),
+          );
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +71,13 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: PageHeader(
         title: 'Profil Saya',
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () => LogoutHandler.handleLogout(context),
-            ),
-          ],),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => LogoutHandler.handleLogout(context),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -51,10 +89,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _buildUserInfoCard(user),
               const SizedBox(height: 8),
-              Text('versi 1.0.0', 
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w300,),),
+              _buildVersionInfo(), // Panggil widget baru di sini
             ],
           ),
         ),
@@ -95,25 +130,18 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Inside the ProfileScreen class
-
   Widget _buildSubscriptionCard(BuildContext context, {required PremiumStatus status, required Bidan user}) {
     String title;
     Color color;
     IconData icon;
-    Widget? descriptionWidget; // Use a widget for flexibility
+    Widget? descriptionWidget;
 
-    // Function to handle the navigation
     void handleAction(BuildContext context) {
-      // Navigate to the subscription page
-      // Example: Navigator.of(context).pushNamed(AppRouter.subscribe);
-      // For now, let's show a simple message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Akses ke halaman langganan.")),
       );
     }
 
-    // Common style for the actionable text
     final TextStyle actionTextStyle = TextStyle(
       color: Colors.blue,
       fontWeight: FontWeight.w600,
@@ -150,7 +178,7 @@ class ProfileScreen extends StatelessWidget {
             );
           }
         } else {
-          descriptionWidget = Text("Berakhir pada: Tidak diketahui");
+          descriptionWidget = const Text("Berakhir pada: Tidak diketahui");
         }
         break;
 
@@ -183,7 +211,7 @@ class ProfileScreen extends StatelessWidget {
             );
           }
         } else {
-          descriptionWidget = Text("Berakhir pada: Tidak diketahui");
+          descriptionWidget = const Text("Berakhir pada: Tidak diketahui");
         }
         break;
 
@@ -262,27 +290,24 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "Informasi Saya",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Informasi Saya",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              // Tambahkan tombol edit profile di sini
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () {
-                  // Aksi untuk mengedit profil
-                  // Contoh: Navigator.of(context).pushNamed(AppRouter.editProfile);
-                  
-                },
-                tooltip: "Edit Profil",
-              ),
-            ],
-          ),
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    // Aksi untuk mengedit profil
+                  },
+                  tooltip: "Edit Profil",
+                ),
+              ],
+            ),
             const Divider(height: 20, thickness: 1),
             _buildInfoRow(Icons.email, "Email", user.email),
             _buildInfoRow(Icons.badge, "NIP", user.nip),
