@@ -2,6 +2,7 @@ import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/get_kehamilan_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit.dart';
@@ -45,11 +46,7 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
             _expanded = false;
             _loading = true;
           } else if (state is GetKehamilanFailure) {
-            Utils.showSnackBar(
-              context,
-              content: 'Gagal: ${state.message}',
-              isSuccess: false,
-            );
+            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
             _expanded = false;
             _loading = false;
           }

@@ -4,10 +4,10 @@ import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/submit_riwayat_cubit.dart';
-import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
 import 'package:flutter/material.dart';
@@ -260,11 +260,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                 child: BlocConsumer<SubmitRiwayatCubit, SubmitiwayatState>(
                   listener: (context, state) {
                     if (state is SubmitRiwayatSuccess) {
-                      Utils.showSnackBar(
-                        context,
-                        content: 'Riwayat berhasil disimpan',
-                        isSuccess: true,
-                      );
+            Snackbar.show(context, message: 'Riwayat berhasil disimpan', type: SnackbarType.success);
 
                       if (widget.state == 'lateUpdate') {
                         Navigator.pop(context, state.listRiwayat);
@@ -275,17 +271,9 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                         );
                       }
                     } else if (state is SubmitRiwayatFailure) {
-                      Utils.showSnackBar(
-                        context,
-                        content: 'Gagal: ${state.message}',
-                        isSuccess: false,
-                      );
+            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
                     } else if (state is AddRiwayatEmpty) {
-                      Utils.showSnackBar(
-                        context,
-                        content: 'Data bumil disimpan tanpa riwayat kehamilan',
-                        isSuccess: true,
-                      );
+            Snackbar.show(context, message: 'Data bumil disimpan tanpa riwayat kehamilan', type: SnackbarType.general);
                       if (widget.state == 'lateUpdate') {
                         Navigator.pop(context, null);
                       } else {

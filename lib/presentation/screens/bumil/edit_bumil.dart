@@ -3,6 +3,7 @@ import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/state_management/bumil/cubit/submit_bumil_cubit.dart';
 import 'package:flutter/material.dart';
@@ -370,21 +371,11 @@ class _EditBumilState extends State<EditBumilScreen> {
                     child: BlocConsumer<SubmitBumilCubit, SubmitBumilState>(
                       listener: (context, state) {
                         if (state.isSuccess && state.bumilId != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Data Bumil berhasil diperbaharui'),
-                            ),
-                          );
+            Snackbar.show(context, message: 'Data Bumil berhasil diperbaharui', type: SnackbarType.success);
                           Navigator.pop(context);
                         }
                         if (state.error != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Gagal menyimpan data: ${state.error}',
-                              ),
-                            ),
-                          );
+            Snackbar.show(context, message: 'Gagal menyimpan data: ${state.error}', type: SnackbarType.error);
                         }
                       },
                       builder: (context, state) {

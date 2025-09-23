@@ -1,3 +1,4 @@
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,17 +23,14 @@ class LoginScreen extends StatelessWidget {
             final text = isReg
                 ? 'Hi, bidan ${user.displayName}'
                 : 'Hi, ${user.displayName}';
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(text)));
+              
+            Snackbar.show(context, message: text, type: SnackbarType.success);
 
             Navigator.of(context).pushReplacementNamed(
               isReg ? AppRouter.homepage : AppRouter.register,
             );
           } else if (state is LoginFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            Snackbar.show(context, message: state.message, type: SnackbarType.error);
           }
         },
         builder: (context, state) {

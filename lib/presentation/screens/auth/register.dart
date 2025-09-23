@@ -1,6 +1,7 @@
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/state_management/auth/cubit/register_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -120,9 +121,7 @@ class _RegisterState extends State<RegisterScreen> {
               ),
             );
           } else if (state is RegisterFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            Snackbar.show(context, message: state.message, type: SnackbarType.error);
           }
         },
         builder: (context, state) {

@@ -2,12 +2,15 @@ import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/state_management/bumil/cubit/submit_bumil_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// Import FormValidator
+import 'package:ebidan/common/utility/form_validator.dart';
 
 class AddBumilScreen extends StatefulWidget {
   final String nikIbu;
@@ -20,9 +23,7 @@ class AddBumilScreen extends StatefulWidget {
 class _AddBumilState extends State<AddBumilScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // **Perbaikan Awal: Menyiapkan GlobalKey untuk setiap field wajib**
-  GlobalKey? _firstErrorFieldKey;
-
+  // Definisikan GlobalKey untuk setiap field wajib
   final Map<String, GlobalKey> _fieldKeys = {
     // Data Ibu
     'namaIbu': GlobalKey(),
@@ -44,6 +45,9 @@ class _AddBumilState extends State<AddBumilScreen> {
     'alamat': GlobalKey(),
     'noHp': GlobalKey(),
   };
+
+  // **PERUBAHAN 1: Deklarasi FormValidator**
+  late FormValidator _formValidator;
 
   // Controllers
   final _namaIbuController = TextEditingController();
@@ -99,28 +103,13 @@ class _AddBumilState extends State<AddBumilScreen> {
     );
   }
 
-  // Validator standar untuk wajib diisi
-  String? _requiredValidator(dynamic val) {
-    if (val is String) {
-      return val.isEmpty ? 'Wajib diisi' : null;
-    }
-    return val == null ? 'Wajib diisi' : null;
-  }
+  // Validator standar untuk string/text (val.isEmpty)
+  String? _requiredStringValidator(dynamic val) =>
+      val == null || val.isEmpty ? 'Wajib diisi' : null;
 
-  // **Perbaikan B: Fungsi Validator wrapper**
-  String? _wrappedValidator(
-    String fieldName,
-    dynamic value,
-    String? Function(dynamic) validator,
-  ) {
-    final error = validator(value);
-
-    // Jika ada error DAN belum ada field error yang dicatat, catat kunci ini.
-    if (error != null && _firstErrorFieldKey == null) {
-      _firstErrorFieldKey = _fieldKeys[fieldName];
-    }
-    return error;
-  }
+  // Validator standar untuk objek/dropdown/datepicker (val == null)
+  String? _requiredObjectValidator(dynamic val) =>
+      val == null ? 'Wajib dipilih' : null;
 
   String? _validateNIK(dynamic val) {
     if (val == null || val.isEmpty) return 'Wajib diisi';
@@ -144,31 +133,17 @@ class _AddBumilState extends State<AddBumilScreen> {
   void initState() {
     context.read<SubmitBumilCubit>().setInitial();
     _nikIbuController.text = widget.nikIbu;
+    // **PERUBAHAN 3: Inisialisasi FormValidator**
+    _formValidator = FormValidator(fieldKeys: _fieldKeys);
     super.initState();
   }
 
   void _submitForm() {
-    // 1. Reset kunci error sebelum validasi
-    _firstErrorFieldKey = null;
+    // **PERUBAHAN 4: Ganti validasi manual dengan validateAndScroll**
+    _formValidator.reset();
 
-    final isValid = _formKey.currentState!.validate();
-    if (!isValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Periksa field yang belum valid 👆'),
-          backgroundColor: Colors.red,
-        ),
-      );
-
-      // **Perbaikan C: Scroll ke GlobalKey yang dicatat**
-      if (_firstErrorFieldKey?.currentContext != null) {
-        Scrollable.ensureVisible(
-          _firstErrorFieldKey!.currentContext!,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeIn,
-          alignment: 0.1,
-        );
-      }
+    if (!_formValidator.validateAndScroll(_formKey, context)) {
+      // FormValidator sudah menangani scroll dan snackbar.
       return;
     }
 
@@ -229,20 +204,21 @@ class _AddBumilState extends State<AddBumilScreen> {
                 children: [
                   _buildSectionTitle('Data Ibu'),
                   CustomTextField(
-                    key: _fieldKeys['namaIbu'], // <-- Key ditambahkan
+                    key: _fieldKeys['namaIbu'],
                     label: 'Nama Ibu',
                     icon: Icons.person,
                     controller: _namaIbuController,
                     textCapitalization: TextCapitalization.words,
-                    validator: (val) => _wrappedValidator(
+                    // **PERUBAHAN 5: Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'namaIbu',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredStringValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
-                    key: _fieldKeys['agamaIbu'], // <-- Key ditambahkan
+                    key: _fieldKeys['agamaIbu'],
                     label: 'Agama Ibu',
                     icon: Icons.account_balance,
                     items: _agamaList,
@@ -252,15 +228,16 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _selectedAgamaIbu = newValue;
                       });
                     },
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'agamaIbu',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredObjectValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
-                    key: _fieldKeys['golDarahIbu'], // <-- Key ditambahkan
+                    key: _fieldKeys['golDarahIbu'],
                     label: 'Golongan Darah Ibu',
                     icon: Icons.bloodtype,
                     items: _golDarahList,
@@ -270,37 +247,40 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _selectedGolIbu = newValue;
                       });
                     },
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'golDarahIbu',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredObjectValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
-                    key: _fieldKeys['pekerjaanIbu'], // <-- Key ditambahkan
+                    key: _fieldKeys['pekerjaanIbu'],
                     label: 'Pekerjaan Ibu',
                     icon: Icons.work,
                     controller: _jobIbuController,
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'pekerjaanIbu',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredStringValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
-                    key: _fieldKeys['nikIbu'], // <-- Key ditambahkan
+                    key: _fieldKeys['nikIbu'],
                     label: 'NIK Ibu',
                     icon: Icons.badge,
                     controller: _nikIbuController,
                     isNumber: true,
                     maxLength: 16,
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'nikIbu',
                       val,
                       _validateNIK,
-                    ), // <-- Validator di-wrap
+                    ),
                   ),
                   const SizedBox(height: 12),
                   // KK Ibu tidak wajib
@@ -314,7 +294,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
-                    key: _fieldKeys['pendidikanIbu'], // <-- Key ditambahkan
+                    key: _fieldKeys['pendidikanIbu'],
                     label: 'Pendidikan Ibu',
                     icon: Icons.school,
                     items: _pendidikanList,
@@ -324,15 +304,16 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _selectedPendidikanIbu = newValue;
                       });
                     },
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'pendidikanIbu',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredObjectValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DatePickerFormField(
-                    key: _fieldKeys['tanggalLahirIbu'], // <-- Key ditambahkan
+                    key: _fieldKeys['tanggalLahirIbu'],
                     labelText: 'Tanggal Lahir Ibu',
                     prefixIcon: Icons.calendar_today,
                     initialValue: _birthdateIbu,
@@ -343,30 +324,32 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _birthdateIbu = date;
                       });
                     },
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'tanggalLahirIbu',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredStringValidator,
+                    ),
                   ),
 
                   const SizedBox(height: 16),
                   _buildSectionTitle('Data Suami'),
                   CustomTextField(
-                    key: _fieldKeys['namaSuami'], // <-- Key ditambahkan
+                    key: _fieldKeys['namaSuami'],
                     label: 'Nama Suami',
                     icon: Icons.person,
                     controller: _namaSuamiController,
                     textCapitalization: TextCapitalization.words,
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'namaSuami',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredStringValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
-                    key: _fieldKeys['agamaSuami'], // <-- Key ditambahkan
+                    key: _fieldKeys['agamaSuami'],
                     label: 'Agama Suami',
                     icon: Icons.account_balance,
                     items: _agamaList,
@@ -376,15 +359,16 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _selectedAgamaSuami = newValue;
                       });
                     },
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'agamaSuami',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredObjectValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
-                    key: _fieldKeys['golDarahSuami'], // <-- Key ditambahkan
+                    key: _fieldKeys['golDarahSuami'],
                     label: 'Golongan Darah Suami',
                     icon: Icons.bloodtype,
                     items: _golDarahList,
@@ -394,37 +378,40 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _selectedGolSuami = newValue;
                       });
                     },
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'golDarahSuami',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredObjectValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
-                    key: _fieldKeys['pekerjaanSuami'], // <-- Key ditambahkan
+                    key: _fieldKeys['pekerjaanSuami'],
                     label: 'Pekerjaan Suami',
                     icon: Icons.work,
                     controller: _jobSuamiController,
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'pekerjaanSuami',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredStringValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
-                    key: _fieldKeys['nikSuami'], // <-- Key ditambahkan
+                    key: _fieldKeys['nikSuami'],
                     label: 'NIK Suami',
                     icon: Icons.badge,
                     controller: _nikSuamiController,
                     isNumber: true,
                     maxLength: 16,
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'nikSuami',
                       val,
                       _validateNIK,
-                    ), // <-- Validator di-wrap
+                    ),
                   ),
                   const SizedBox(height: 12),
                   // KK Suami tidak wajib
@@ -441,17 +428,13 @@ class _AddBumilState extends State<AddBumilScreen> {
                         setState(() {
                           _kkSuamiController.text = _kkIbuController.text;
                         });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('No KK Suami sama dengan No KK Ibu'),
-                          ),
-                        );
+            Snackbar.show(context, message: 'No KK Suami sama dengan No KK Ibu', type: SnackbarType.general);
                       },
                     ),
                   ),
                   const SizedBox(height: 12),
                   DropdownField(
-                    key: _fieldKeys['pendidikanSuami'], // <-- Key ditambahkan
+                    key: _fieldKeys['pendidikanSuami'],
                     label: 'Pendidikan Suami',
                     icon: Icons.school,
                     items: _pendidikanList,
@@ -461,15 +444,16 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _selectedPendidikanSuami = newValue;
                       });
                     },
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'pendidikanSuami',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredObjectValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DatePickerFormField(
-                    key: _fieldKeys['tanggalLahirSuami'], // <-- Key ditambahkan
+                    key: _fieldKeys['tanggalLahirSuami'],
                     labelText: 'Tanggal Lahir Suami',
                     prefixIcon: Icons.calendar_today,
                     initialValue: _birthdateSuami,
@@ -480,38 +464,41 @@ class _AddBumilState extends State<AddBumilScreen> {
                         _birthdateSuami = date;
                       });
                     },
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'tanggalLahirSuami',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredStringValidator,
+                    ),
                   ),
 
                   const SizedBox(height: 16),
                   _buildSectionTitle('Data Lain'),
                   CustomTextField(
-                    key: _fieldKeys['alamat'], // <-- Key ditambahkan
+                    key: _fieldKeys['alamat'],
                     label: 'Alamat',
                     icon: Icons.home,
                     controller: _alamatController,
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'alamat',
                       val,
-                      _requiredValidator,
-                    ), // <-- Validator di-wrap
+                      _requiredStringValidator,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
-                    key: _fieldKeys['noHp'], // <-- Key ditambahkan
+                    key: _fieldKeys['noHp'],
                     label: 'No HP',
                     icon: Icons.phone,
                     controller: _noHpController,
                     keyboardType: TextInputType.phone,
-                    validator: (val) => _wrappedValidator(
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
                       'noHp',
                       val,
                       _validateHP,
-                    ), // <-- Validator di-wrap
+                    ),
                   ),
 
                   const SizedBox(height: 24),
@@ -520,11 +507,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     child: BlocConsumer<SubmitBumilCubit, SubmitBumilState>(
                       listener: (context, state) {
                         if (state.isSuccess && state.bumilId != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Data Bumil berhasil disimpan'),
-                            ),
-                          );
+            Snackbar.show(context, message: 'Data Bumil berhasil disimpan', type: SnackbarType.success);
                           Navigator.pushReplacementNamed(
                             context,
                             AppRouter.addRiwayat,
@@ -532,13 +515,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                           );
                         }
                         if (state.error != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Gagal menyimpan data: ${state.error}',
-                              ),
-                            ),
-                          );
+            Snackbar.show(context, message: 'Gagal menyimpan data: ${state.error}', type: SnackbarType.error);
                         }
                       },
                       builder: (context, state) {

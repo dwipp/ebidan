@@ -1,5 +1,6 @@
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/state_management/bumil/cubit/check_bumil_cubit.dart';
 import 'package:flutter/material.dart';
@@ -65,17 +66,11 @@ class _CheckBumilScreenState extends State<CheckBumilScreen> {
                 child: BlocConsumer<CheckBumilCubit, CheckBumilState>(
                   listener: (context, state) {
                     if (state is CheckBumilError) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(state.message)));
+            Snackbar.show(context, message: state.message, type: SnackbarType.error);
                     }
 
                     if (state is CheckBumilNotFound) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Silahkan tambah pasien baru...'),
-                        ),
-                      );
+            Snackbar.show(context, message: 'Silahkan tambah pasien baru...', type: SnackbarType.general);
                       Navigator.pushReplacementNamed(
                         context,
                         AppRouter.addBumil,

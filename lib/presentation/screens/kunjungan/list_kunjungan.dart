@@ -2,6 +2,7 @@ import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/get_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit.dart';
 import 'package:flutter/material.dart';
@@ -56,11 +57,7 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
           if (state is GetKunjunganSuccess) {
             _kunjunganList = state.kunjungans;
           } else if (state is GetKunjunganFailure) {
-            Utils.showSnackBar(
-              context,
-              content: 'Gagal: ${state.message}',
-              isSuccess: false,
-            );
+            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
           }
         },
         builder: (context, state) {

@@ -3,6 +3,7 @@ import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/data/models/persalinan_model.dart';
 import 'package:ebidan/common/Utils.dart';
@@ -354,22 +355,14 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                     BlocConsumer<SubmitPersalinanCubit, SubmitPersalinanState>(
                       listener: (context, state) {
                         if (state is AddPersalinanSuccess) {
-                          Utils.showSnackBar(
-                            context,
-                            content: 'Data persalinan berhasil disimpan',
-                            isSuccess: true,
-                          );
+            Snackbar.show(context, message: 'Data persalinan berhasil disimpan', type: SnackbarType.success);
                           Navigator.pushNamedAndRemoveUntil(
                             context,
                             AppRouter.homepage,
                             (route) => false,
                           );
                         } else if (state is AddPersalinanFailure) {
-                          Utils.showSnackBar(
-                            context,
-                            content: 'Gagal: ${state.message}',
-                            isSuccess: true,
-                          );
+            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
                         }
                       },
                       builder: (context, state) {

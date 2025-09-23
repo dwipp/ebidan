@@ -1,3 +1,4 @@
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 
 typedef FieldValidator = String? Function(dynamic value);
@@ -39,11 +40,10 @@ class FormValidator {
 
     if (!isValid && _firstErrorFieldKey?.currentContext != null) {
       // 3. Tampilkan SnackBar error
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Periksa field yang belum valid 👆'),
-          backgroundColor: Colors.red,
-        ),
+      Snackbar.show(
+        context,
+        message: "Periksa field yang belum valid 👇🏼!",
+        type: SnackbarType.error,
       );
 
       // 4. Scroll ke GlobalKey yang dicatat

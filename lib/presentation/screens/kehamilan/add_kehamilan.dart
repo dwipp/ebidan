@@ -6,6 +6,7 @@ import 'package:ebidan/presentation/widgets/dropdown_field.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/gpa_field.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
@@ -484,22 +485,14 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 child: BlocConsumer<SubmitKehamilanCubit, SubmitKehamilanState>(
                   listener: (context, state) {
                     if (state is AddKehamilanSuccess) {
-                      Utils.showSnackBar(
-                        context,
-                        content: 'Data kehamilan berhasil disimpan',
-                        isSuccess: true,
-                      );
+            Snackbar.show(context, message: 'Data kehamilan berhasil disimpan', type: SnackbarType.success);
                       Navigator.pushReplacementNamed(
                         context,
                         AppRouter.kunjungan,
                         arguments: {'firstTime': state.firstTime},
                       );
                     } else if (state is AddKehamilanFailure) {
-                      Utils.showSnackBar(
-                        context,
-                        content: 'Gagal: ${state.message}',
-                        isSuccess: false,
-                      );
+            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
                     }
                   },
                   builder: (context, state) {

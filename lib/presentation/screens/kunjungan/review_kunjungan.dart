@@ -3,6 +3,7 @@ import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/submit_kunjungan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -111,11 +112,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                 child: BlocConsumer<SubmitKunjunganCubit, SubmitKunjunganState>(
                   listener: (context, state) {
                     if (state is AddKunjunganSuccess) {
-                      Utils.showSnackBar(
-                        context,
-                        content: 'Data berhasil disimpan',
-                        isSuccess: true,
-                      );
+            Snackbar.show(context, message: 'Data berhasil disimpan', type: SnackbarType.success);
                       if (widget.data.id.isNotEmpty) {
                         int count = 0;
                         Navigator.popUntil(context, (route) => count++ >= 2);
@@ -127,11 +124,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                         );
                       }
                     } else if (state is AddKunjunganFailure) {
-                      Utils.showSnackBar(
-                        context,
-                        content: 'Gagal: ${state.message}',
-                        isSuccess: false,
-                      );
+            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
                     }
                   },
                   builder: (context, state) {
