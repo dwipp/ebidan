@@ -16,7 +16,6 @@ class Snackbar {
     }
 
     final overlay = Overlay.of(context);
-    if (overlay == null) return;
 
     final color = switch (type) {
       SnackbarType.error => Colors.red,
@@ -48,13 +47,11 @@ class _AnimatedSnackbar extends StatefulWidget {
   final String message;
   final Color color;
   final VoidCallback onDismissed;
-  final Duration duration;
 
   const _AnimatedSnackbar({
     required this.message,
     required this.color,
     required this.onDismissed,
-    this.duration = const Duration(seconds: 3),
   });
 
   @override
@@ -87,7 +84,7 @@ class _AnimatedSnackbarState extends State<_AnimatedSnackbar> with SingleTickerP
     _controller.forward();
 
     // Atur timer untuk memulai animasi kembali (slide-out)
-    Future.delayed(widget.duration).then((_) {
+    Future.delayed(Duration(seconds: 3)).then((_) {
       _controller.reverse().then((_) {
         // Panggil callback setelah animasi selesai
         widget.onDismissed();

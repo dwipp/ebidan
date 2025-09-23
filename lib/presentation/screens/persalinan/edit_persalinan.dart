@@ -14,6 +14,8 @@ import 'package:ebidan/state_management/persalinan/cubit/selected_persalinan_cub
 import 'package:flutter/material.dart';
 import 'package:ebidan/presentation/widgets/date_time_picker_field.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// Import FormValidator
+import 'package:ebidan/common/utility/form_validator.dart';
 
 class EditPersalinanScreen extends StatefulWidget {
   const EditPersalinanScreen({super.key});
@@ -24,6 +26,22 @@ class EditPersalinanScreen extends StatefulWidget {
 
 class _EditPersalinanState extends State<EditPersalinanScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  // **PERUBAHAN 1: Definisikan GlobalKey untuk setiap field wajib**
+  final Map<String, GlobalKey> _fieldKeys = {
+    'tglPersalinan': GlobalKey(),
+    'statusBayi': GlobalKey(),
+    'beratBayi': GlobalKey(),
+    'lingkarKepala': GlobalKey(),
+    'panjangBadan': GlobalKey(),
+    'umurKehamilan': GlobalKey(),
+    'sex': GlobalKey(),
+    'caraBersalin': GlobalKey(),
+    'tempatBersalin': GlobalKey(),
+  };
+
+  // **PERUBAHAN 2: Deklarasi FormValidator**
+  late FormValidator _formValidator;
 
   final _beratBayiController = TextEditingController();
   final _lingkarKepalaController = TextEditingController();
@@ -68,10 +86,20 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
   Kehamilan? kehamilan;
   Persalinan? persalinan;
 
+  // Validator standar untuk wajib diisi
+  String? _requiredValidator(dynamic val) {
+    if (val is String) {
+      return val.isEmpty ? 'Wajib diisi' : null;
+    }
+    return val == null ? 'Wajib dipilih' : null;
+  }
+
   @override
   void initState() {
     super.initState();
     context.read<SubmitPersalinanCubit>().setInitial();
+    // **PERUBAHAN 3: Inisialisasi FormValidator**
+    _formValidator = FormValidator(fieldKeys: _fieldKeys);
   }
 
   @override
@@ -153,10 +181,14 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
   }
 
   Future<void> _submitData() async {
-    print('submit');
-    if (!_formKey.currentState!.validate()) return;
+    // **PERUBAHAN 4: Ganti validasi manual dengan validateAndScroll**
+    _formValidator.reset();
+
+    if (!_formValidator.validateAndScroll(_formKey, context)) {
+      return;
+    }
+    
     if (persalinan == null) return;
-    // _formKey.currentState!.save();
     final updatedPersalinan = Persalinan(
       id: persalinan!.id,
       beratLahir: _beratBayiController.text.trim(),
@@ -178,13 +210,6 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
     context.read<SubmitPersalinanCubit>().editPersalinan(
       updatedPersalinan: updatedPersalinan,
     );
-
-    // context.read<AddPersalinanCubit>().addPersalinan(
-    //   persalinanList,
-    //   bumilId: bumil!.idBumil,
-    //   kehamilanId: bumil!.latestKehamilanId!,
-    //   resti: bumil!.latestKehamilanResti!.join(", "),
-    // );
   }
 
   @override
@@ -202,15 +227,16 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PageHeader(title: 'Perbaharui Data Persalinan'),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: Column(
+          child: Form(
+        key: _formKey,
+        child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Utils.sectionTitle('Detail Persalinan'),
               DateTimePickerField(
+                key: _fieldKeys['tglPersalinan'], // Tambahkan key
                 labelText: 'Tanggal Persalinan',
                 prefixIcon: Icons.calendar_today,
                 initialValue: _tglPersalinan,
@@ -224,15 +250,20 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                         hpht: kehamilan!.hpht!,
                         tanggalPersalinan: dateTime,
                       );
-                      // data.umurKehamilanController.text = usia;
                       _umurKehamilanController.text = usia;
                     });
                   }
                 },
-                validator: (val) => val == null ? 'Wajib diisi' : null,
+                // **PERUBAHAN 5: Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'tglPersalinan',
+                  val,
+                  _requiredValidator,
+                ),
                 context: context,
               ),
               DropdownField(
+                key: _fieldKeys['statusBayi'], // Tambahkan key
                 label: 'Status Bayi',
                 icon: Icons.child_care,
                 items: statusBayiList,
@@ -242,10 +273,15 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                     _statusBayi = newValue ?? '';
                   });
                 },
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Wajib dipilih' : null,
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'statusBayi',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               CustomTextField(
+                key: _fieldKeys['beratBayi'], // Tambahkan key
                 controller: _beratBayiController,
                 label: 'Berat Lahir',
                 icon: Icons.monitor_weight,
@@ -254,14 +290,17 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                 disable: _statusBayi == "Abortus",
                 validator: (val) {
                   if (_statusBayi != "Abortus") {
-                    if (val == null || val.isEmpty) {
-                      return 'Wajib diisi';
-                    }
+                    return _formValidator.wrapValidator(
+                      'beratBayi',
+                      val,
+                      _requiredValidator,
+                    );
                   }
                   return null;
                 },
               ),
               CustomTextField(
+                key: _fieldKeys['lingkarKepala'], // Tambahkan key
                 controller: _lingkarKepalaController,
                 label: 'Lingkar Kepala',
                 icon: Icons.circle_outlined,
@@ -270,14 +309,17 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                 disable: _statusBayi == "Abortus",
                 validator: (val) {
                   if (_statusBayi != "Abortus") {
-                    if (val == null || val.isEmpty) {
-                      return 'Wajib diisi';
-                    }
+                    return _formValidator.wrapValidator(
+                      'lingkarKepala',
+                      val,
+                      _requiredValidator,
+                    );
                   }
                   return null;
                 },
               ),
               CustomTextField(
+                key: _fieldKeys['panjangBadan'], // Tambahkan key
                 controller: _panjangBadanController,
                 label: 'Panjang Badan',
                 icon: Icons.straighten,
@@ -286,24 +328,33 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                 disable: _statusBayi == "Abortus",
                 validator: (val) {
                   if (_statusBayi != "Abortus") {
-                    if (val == null || val.isEmpty) {
-                      return 'Wajib diisi';
-                    }
+                    return _formValidator.wrapValidator(
+                      'panjangBadan',
+                      val,
+                      _requiredValidator,
+                    );
                   }
                   return null;
                 },
               ),
               CustomTextField(
+                key: _fieldKeys['umurKehamilan'], // Tambahkan key
                 label: 'Umur Kehamilan',
                 icon: Icons.date_range,
                 isNumber: true,
                 readOnly: true,
                 controller: _umurKehamilanController,
-                validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'umurKehamilan',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               const SizedBox(height: 16),
               Utils.sectionTitle('Kondisi Persalinan'),
               DropdownField(
+                key: _fieldKeys['sex'], // Tambahkan key
                 label: 'Jenis Kelamin',
                 icon: Icons.transgender,
                 items: sexList,
@@ -316,9 +367,11 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                 enabled: _statusBayi != "Abortus",
                 validator: (val) {
                   if (_statusBayi != "Abortus") {
-                    if (val == null || val.isEmpty) {
-                      return 'Wajib dipilih';
-                    }
+                    return _formValidator.wrapValidator(
+                      'sex',
+                      val,
+                      _requiredValidator,
+                    );
                   }
                   return null;
                 },
@@ -326,6 +379,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
               _buildCaraMelahirkanField(),
               _buildPenolongField(),
               DropdownField(
+                key: _fieldKeys['tempatBersalin'], // Tambahkan key
                 label: 'Tempat Persalinan',
                 icon: Icons.home,
                 items: tempatList,
@@ -335,8 +389,12 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                     _tempatBersalin = newValue ?? '';
                   });
                 },
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Wajib dipilih' : null,
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'tempatBersalin',
+                  val,
+                  _requiredValidator,
+                ),
               ),
               DatePickerFormField(
                 labelText: 'Tanggal Pembuatan Data',
@@ -413,7 +471,12 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
               }
             });
           },
-          validator: null, // dropdown tidak wajib
+          validator: (val) {
+            if (_penolong == null || _penolong!.isEmpty) {
+              return 'Wajib dipilih';
+            }
+            return null;
+          },
         ),
         if (isLainnya) const SizedBox(height: 8),
         if (isLainnya)
@@ -434,6 +497,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownField(
+          key: _fieldKeys['caraBersalin'], // Tambahkan key
           label: 'Cara Persalinan',
           icon: Icons.pregnant_woman,
           items: _statusBayi != "Abortus" ? _caraLahirList : _caraAbortusList,
@@ -443,8 +507,12 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
               _caraBersalin = newValue;
             });
           },
-          validator: (val) =>
-              val == null || val.isEmpty ? 'Wajib dipilih' : null,
+          // **Wrap validator**
+          validator: (val) => _formValidator.wrapValidator(
+            'caraBersalin',
+            val,
+            _requiredValidator,
+          ),
         ),
         if (isLainnya) const SizedBox(height: 8),
         if (isLainnya)
