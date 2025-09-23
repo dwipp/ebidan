@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -53,13 +54,16 @@ class CustomTextField extends StatelessWidget {
         prefixIcon: Icon(icon),
         suffixText: suffixText,
         suffixIcon: suffixIcon, // ✅ aktifkan
-        suffixStyle: const TextStyle(color: Colors.black54, fontSize: 16),
+        suffixStyle: TextStyle(
+          color: context.themeColors.suffixText,
+          fontSize: 16,
+        ),
       ),
       maxLength: maxLength,
       keyboardType: isNumber
           ? TextInputType.number
           : keyboardType ??
-              (isMultiline ? TextInputType.multiline : TextInputType.text),
+                (isMultiline ? TextInputType.multiline : TextInputType.text),
       textCapitalization: isNumber
           ? TextCapitalization.none
           : textCapitalization,

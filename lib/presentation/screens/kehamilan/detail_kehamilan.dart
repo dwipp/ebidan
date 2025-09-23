@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -186,7 +187,7 @@ class DetailKehamilanScreen extends StatelessWidget {
                         (r) => Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(8),
-                          color: Colors.red.shade100,
+                          color: context.themeColors.error.withOpacity(0.2),
                           child: Text('- $r'),
                         ),
                       )

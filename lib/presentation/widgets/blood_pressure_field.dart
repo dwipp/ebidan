@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/common/utility/form_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -153,10 +154,13 @@ class _BloodPressureFieldState extends State<BloodPressureField> {
       decoration: InputDecoration(
         labelText: widget.label,
         hintText: widget.hint,
-        hintStyle: TextStyle(color: Colors.black26),
+        hintStyle: TextStyle(color: context.themeColors.hintText),
         prefixIcon: const Icon(Icons.bloodtype),
         suffixText: "mmHg",
-        suffixStyle: TextStyle(color: Colors.black54, fontSize: 16),
+        suffixStyle: TextStyle(
+          color: context.themeColors.suffixText,
+          fontSize: 16,
+        ),
       ),
       validator: widget.formValidator != null
           ? (val) =>

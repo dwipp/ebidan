@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
@@ -317,13 +318,17 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                         CustomTextField(
                           label: 'Komplikasi',
                           icon: Icons.local_hospital,
+                          isMultiline: true,
                           onSaved: (val) => data['komplikasi'] = val,
                         ),
                         const SizedBox(height: 12),
                         Align(
                           alignment: Alignment.centerRight,
                           child: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
+                            icon: Icon(
+                              Icons.delete,
+                              color: context.themeColors.error,
+                            ),
                             onPressed: () => _removeRiwayat(index),
                           ),
                         ),
@@ -349,7 +354,11 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                 child: BlocConsumer<SubmitRiwayatCubit, SubmitiwayatState>(
                   listener: (context, state) {
                     if (state is SubmitRiwayatSuccess) {
-            Snackbar.show(context, message: 'Riwayat berhasil disimpan', type: SnackbarType.success);
+                      Snackbar.show(
+                        context,
+                        message: 'Riwayat berhasil disimpan',
+                        type: SnackbarType.success,
+                      );
 
                       if (widget.state == 'lateUpdate') {
                         Navigator.pop(context, state.listRiwayat);
@@ -360,9 +369,17 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                         );
                       }
                     } else if (state is SubmitRiwayatFailure) {
-            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
+                      Snackbar.show(
+                        context,
+                        message: 'Gagal: ${state.message}',
+                        type: SnackbarType.error,
+                      );
                     } else if (state is AddRiwayatEmpty) {
-            Snackbar.show(context, message: 'Data bumil disimpan tanpa riwayat kehamilan', type: SnackbarType.general);
+                      Snackbar.show(
+                        context,
+                        message: 'Data bumil disimpan tanpa riwayat kehamilan',
+                        type: SnackbarType.general,
+                      );
                       if (widget.state == 'lateUpdate') {
                         Navigator.pop(context, null);
                       } else {

@@ -25,6 +25,10 @@ extension CustomColors on ColorScheme {
   Color get darkGrey => brightness == Brightness.dark
       ? Colors.grey.shade600
       : Colors.grey.shade800;
+  Color get suffixText =>
+      brightness == Brightness.dark ? Colors.grey.shade400 : Colors.black54;
+  Color get hintText =>
+      brightness == Brightness.dark ? Colors.grey.shade800 : Colors.black26;
 
   Color get shadowPink => brightness == Brightness.dark
       ? Colors.transparent

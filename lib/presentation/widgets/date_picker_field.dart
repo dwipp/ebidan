@@ -1,4 +1,5 @@
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class DatePickerFormField extends FormField<DateTime> {
@@ -47,8 +48,8 @@ class DatePickerFormField extends FormField<DateTime> {
                  style: TextStyle(
                    fontSize: 16,
                    color: field.value == null
-                       ? Colors.grey.shade600
-                       : Colors.black,
+                       ? context.themeColors.hintText
+                       : context.themeColors.onSurface,
                  ),
                ),
              ),

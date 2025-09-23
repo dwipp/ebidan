@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
@@ -396,7 +397,10 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
+                            icon: Icon(
+                              Icons.delete,
+                              color: context.themeColors.error,
+                            ),
                             onPressed: () => _removePersalinan(index),
                           ),
                         ),
@@ -422,14 +426,22 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                     BlocConsumer<SubmitPersalinanCubit, SubmitPersalinanState>(
                       listener: (context, state) {
                         if (state is AddPersalinanSuccess) {
-            Snackbar.show(context, message: 'Data persalinan berhasil disimpan', type: SnackbarType.success);
+                          Snackbar.show(
+                            context,
+                            message: 'Data persalinan berhasil disimpan',
+                            type: SnackbarType.success,
+                          );
                           Navigator.pushNamedAndRemoveUntil(
                             context,
                             AppRouter.homepage,
                             (route) => false,
                           );
                         } else if (state is AddPersalinanFailure) {
-            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
+                          Snackbar.show(
+                            context,
+                            message: 'Gagal: ${state.message}',
+                            type: SnackbarType.error,
+                          );
                         }
                       },
                       builder: (context, state) {

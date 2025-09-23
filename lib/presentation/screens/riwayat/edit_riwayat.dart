@@ -78,7 +78,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
 
   Bumil? bumil;
   Riwayat? riwayat;
-  
+
   // Validator standar untuk wajib diisi
   String? _requiredValidator(dynamic val) {
     if (val is String) {
@@ -324,6 +324,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                 label: 'Komplikasi',
                 icon: Icons.local_hospital,
                 controller: _komplikasiController,
+                isMultiline: true,
               ),
               const SizedBox(height: 20),
               SizedBox(
@@ -331,7 +332,11 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                 child: BlocConsumer<SubmitRiwayatCubit, SubmitiwayatState>(
                   listener: (context, state) {
                     if (state is SubmitRiwayatSuccess) {
-            Snackbar.show(context, message: 'Riwayat berhasil disimpan', type: SnackbarType.success);
+                      Snackbar.show(
+                        context,
+                        message: 'Riwayat berhasil disimpan',
+                        type: SnackbarType.success,
+                      );
 
                       if (widget.state == 'lateUpdate') {
                         Navigator.pop(context, state.listRiwayat);
@@ -342,9 +347,17 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                         );
                       }
                     } else if (state is SubmitRiwayatFailure) {
-            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
+                      Snackbar.show(
+                        context,
+                        message: 'Gagal: ${state.message}',
+                        type: SnackbarType.error,
+                      );
                     } else if (state is AddRiwayatEmpty) {
-            Snackbar.show(context, message: 'Data bumil disimpan tanpa riwayat kehamilan', type: SnackbarType.general);
+                      Snackbar.show(
+                        context,
+                        message: 'Data bumil disimpan tanpa riwayat kehamilan',
+                        type: SnackbarType.general,
+                      );
                       if (widget.state == 'lateUpdate') {
                         Navigator.pop(context, null);
                       } else {
@@ -410,11 +423,8 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
           //   }
           //   return null;
           // },
-          validator: (val) => _formValidator.wrapValidator(
-            'penolong',
-            val,
-            _requiredValidator,
-          ),
+          validator: (val) =>
+              _formValidator.wrapValidator('penolong', val, _requiredValidator),
         ),
         if (isLainnya) const SizedBox(height: 8),
         if (isLainnya)
