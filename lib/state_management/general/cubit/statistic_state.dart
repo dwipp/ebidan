@@ -27,6 +27,10 @@ class StatisticSuccess extends StatisticState {
   List<Object?> get props => [statistic];
 }
 
+class StatisticNoAccount extends StatisticState {
+  const StatisticNoAccount({required super.statistic});
+}
+
 class StatisticFailure extends StatisticState {
   final String message;
 

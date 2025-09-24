@@ -11,7 +11,6 @@ import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit
 import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/persalinan/cubit/selected_persalinan_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -22,13 +21,12 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<StatisticCubit>().fetchStatistic();
-    context.read<SelectedPersalinanCubit>().clear;
-    context.read<SelectedKunjunganCubit>().clear;
-    context.read<SelectedRiwayatCubit>().clear;
-    context.read<SelectedBumilCubit>().clear;
-    context.read<SelectedKehamilanCubit>().clear;
+    context.read<SelectedPersalinanCubit>().clear();
+    context.read<SelectedKunjunganCubit>().clear();
+    context.read<SelectedRiwayatCubit>().clear();
+    context.read<SelectedBumilCubit>().clear();
+    context.read<SelectedKehamilanCubit>().clear();
     final user = context.watch<UserCubit>().state;
-    final auth = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
       appBar: PageHeader(
@@ -50,7 +48,7 @@ class HomeScreen extends StatelessWidget {
                   : null,
             ),
             onPressed: () {
-              if (auth == null) {
+              if (user?.photoUrl == null) {
                 LogoutHandler.handleLogout(context);
               } else {
                 // Navigasi ke halaman profil
@@ -79,8 +77,10 @@ class HomeScreen extends StatelessWidget {
                 if (state is StatisticSuccess) {
                   statistic = state.statistic;
                 }
-                if (state is StatisticFailure) {
-                  return Center(child: Text("Error: ${state.message}"));
+                if (state is StatisticNoAccount) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    LogoutHandler.handleLogout(context);
+                  });
                 }
 
                 return StaggeredGrid.count(

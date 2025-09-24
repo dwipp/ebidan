@@ -12,7 +12,7 @@ class StatisticCubit extends Cubit<StatisticState> {
   Future<void> fetchStatistic() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      emit(StatisticFailure(message: 'User belum login', statistic: null));
+      emit(StatisticNoAccount(statistic: null));
       return;
     }
     emit(StatisticLoading(statistic: null));

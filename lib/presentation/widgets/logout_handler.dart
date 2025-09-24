@@ -1,4 +1,5 @@
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,11 @@ class LogoutHandler {
     context.read<LoginCubit>().signOut();
     context.read<UserCubit>().clearAll();
     if (context.mounted) {
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRouter.login,
+        (route) => false, // hapus semua route sebelumnya
+      );
     }
   }
 }
