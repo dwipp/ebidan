@@ -11,6 +11,7 @@ import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit
 import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/persalinan/cubit/selected_persalinan_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -27,6 +28,7 @@ class HomeScreen extends StatelessWidget {
     context.read<SelectedBumilCubit>().clear;
     context.read<SelectedKehamilanCubit>().clear;
     final user = context.watch<UserCubit>().state;
+    final auth = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
       appBar: PageHeader(
@@ -48,7 +50,7 @@ class HomeScreen extends StatelessWidget {
                   : null,
             ),
             onPressed: () {
-              if (user == null) {
+              if (auth == null) {
                 LogoutHandler.handleLogout(context);
               } else {
                 // Navigasi ke halaman profil

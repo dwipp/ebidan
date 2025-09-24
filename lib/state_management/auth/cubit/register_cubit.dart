@@ -107,13 +107,14 @@ class RegisterCubit extends Cubit<RegisterState> {
     emit(RegisterSubmitting());
 
     try {
+      final puskesmasRef = selectedPuskesmas['ref'] as DocumentReference;
       final bidan = Bidan(
         photoUrl: auth.photoURL,
         active: true,
         createdAt: DateTime.now(),
         desa: desa,
         email: email,
-        idPuskesmas: selectedPuskesmas['ref'] as DocumentReference,
+        idPuskesmas: puskesmasRef.path,
         nama: nama,
         nip: nip,
         noHp: noHp,
@@ -129,7 +130,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       await FirebaseFirestore.instance
           .collection('bidan')
           .doc(auth.uid)
-          .set(bidan.toJson());
+          .set(bidan.toFirestore());
       user.loggedInUser(bidan);
 
       emit(RegisterSuccess());

@@ -1,6 +1,7 @@
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/state_management/auth/cubit/profile_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -25,22 +26,16 @@ class ProfileScreen extends StatelessWidget {
           if (kDebugMode) {
             versionText += ' ($buildNumber)';
           }
-          
+
           return Text(
             versionText,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w300,
-            ),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
           );
         } else {
           // Tampilkan teks sementara saat memuat
           return const Text(
             'Memuat versi...',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w300,
-            ),
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
           );
         }
       },
@@ -49,25 +44,31 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<UserCubit>().state;
+    context.read<ProfileCubit>().getProfile();
 
-    if (user == null) {
-      return Scaffold(
-        appBar: PageHeader(
-          title: 'Profil', 
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () => LogoutHandler.handleLogout(context),
+    return BlocBuilder<UserCubit, Bidan?>(
+      builder: (context, bidan) {
+        if (bidan == null) {
+          return Scaffold(
+            appBar: PageHeader(
+              title: 'Profil',
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: () => LogoutHandler.handleLogout(context),
+                ),
+              ],
             ),
-          ],
-        ),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
+        return _buildProfileScaffold(context, bidan);
+      },
+    );
+  }
+
+  Widget _buildProfileScaffold(BuildContext context, Bidan user) {
     return Scaffold(
       appBar: PageHeader(
         title: 'Profil Saya',
@@ -85,11 +86,15 @@ class ProfileScreen extends StatelessWidget {
             children: [
               _buildProfileHeader(user),
               const SizedBox(height: 24),
-              _buildSubscriptionCard(context, status: user.premiumStatus, user: user),
+              _buildSubscriptionCard(
+                context,
+                status: user.premiumStatus,
+                user: user,
+              ),
               const SizedBox(height: 24),
               _buildUserInfoCard(user),
               const SizedBox(height: 8),
-              _buildVersionInfo(), // Panggil widget baru di sini
+              _buildVersionInfo(),
             ],
           ),
         ),
@@ -113,24 +118,22 @@ class ProfileScreen extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           user.nama,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(
           user.role,
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey.shade600,
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
         ),
       ],
     );
   }
 
-  Widget _buildSubscriptionCard(BuildContext context, {required PremiumStatus status, required Bidan user}) {
+  Widget _buildSubscriptionCard(
+    BuildContext context, {
+    required PremiumStatus status,
+    required Bidan user,
+  }) {
     String title;
     Color color;
     IconData icon;
@@ -160,7 +163,9 @@ class ProfileScreen extends StatelessWidget {
           final daysLeft = expiry.difference(now).inDays;
 
           if (daysLeft > 7 || daysLeft < 0) {
-            descriptionWidget = Text("Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}");
+            descriptionWidget = Text(
+              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}",
+            );
           } else {
             descriptionWidget = RichText(
               text: TextSpan(
@@ -193,7 +198,9 @@ class ProfileScreen extends StatelessWidget {
           final daysLeft = expiry.difference(now).inDays;
 
           if (daysLeft > 7 || daysLeft < 0) {
-            descriptionWidget = Text("Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}");
+            descriptionWidget = Text(
+              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}",
+            );
           } else {
             descriptionWidget = RichText(
               text: TextSpan(
@@ -245,16 +252,20 @@ class ProfileScreen extends StatelessWidget {
 
     return Card(
       color: color,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 40, color: color == Colors.red.shade100 ? Colors.red.shade700 : Colors.blue.shade700),
+            Icon(
+              icon,
+              size: 40,
+              color: color == Colors.red.shade100
+                  ? Colors.red.shade700
+                  : Colors.blue.shade700,
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -280,9 +291,7 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildUserInfoCard(Bidan user) {
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -294,10 +303,7 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 const Text(
                   "Informasi Saya",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                   icon: const Icon(Icons.edit),
@@ -333,10 +339,7 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 2),
                 Text(

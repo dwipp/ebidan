@@ -56,7 +56,9 @@ class LoginCubit extends Cubit<LoginState> {
 
       // set user yang login di cubit
       if (isReg) {
-        user.loggedInUser(Bidan.fromJson(doc.data()!, avatar: auth.photoURL));
+        user.loggedInUser(
+          Bidan.fromFirestore(doc.data()!, avatar: auth.photoURL),
+        );
       }
 
       emit(LoginSuccess(auth, isReg));
