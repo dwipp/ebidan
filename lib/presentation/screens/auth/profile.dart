@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
@@ -12,35 +13,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
-
-  Widget _buildVersionInfo() {
-    return FutureBuilder<PackageInfo>(
-      future: PackageInfo.fromPlatform(),
-      builder: (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
-        if (snapshot.hasData) {
-          final String version = snapshot.data!.version;
-          final String buildNumber = snapshot.data!.buildNumber;
-          String versionText = 'versi $version';
-
-          // Tampilkan build number hanya dalam mode debug
-          if (kDebugMode) {
-            versionText += ' ($buildNumber)';
-          }
-
-          return Text(
-            versionText,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
-          );
-        } else {
-          // Tampilkan teks sementara saat memuat
-          return const Text(
-            'Memuat versi...',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
-          );
-        }
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +118,7 @@ class ProfileScreen extends StatelessWidget {
     }
 
     final TextStyle actionTextStyle = TextStyle(
-      color: Colors.blue,
+      color: context.themeColors.primary,
       fontWeight: FontWeight.w600,
       decoration: TextDecoration.underline,
     );
@@ -155,7 +127,7 @@ class ProfileScreen extends StatelessWidget {
       case PremiumType.trial:
         final expiry = user.expiryDate;
         title = "Trial Aktif";
-        color = Colors.orange.shade100;
+        color = context.themeColors.trialBg;
         icon = Icons.star;
 
         if (expiry != null) {
@@ -169,7 +141,7 @@ class ProfileScreen extends StatelessWidget {
           } else {
             descriptionWidget = RichText(
               text: TextSpan(
-                style: const TextStyle(color: Colors.black87),
+                style: TextStyle(color: context.themeColors.onSurface),
                 children: <TextSpan>[
                   TextSpan(text: "Berakhir dalam $daysLeft hari.\n"),
                   TextSpan(
@@ -190,7 +162,7 @@ class ProfileScreen extends StatelessWidget {
       case PremiumType.subscription:
         final expiry = user.expiryDate;
         title = "Langganan Premium Aktif";
-        color = Colors.green.shade100;
+        color = context.themeColors.premiumBg;
         icon = Icons.check_circle;
 
         if (expiry != null) {
@@ -204,7 +176,7 @@ class ProfileScreen extends StatelessWidget {
           } else {
             descriptionWidget = RichText(
               text: TextSpan(
-                style: const TextStyle(color: Colors.black87),
+                style: TextStyle(color: context.themeColors.onSurface),
                 children: <TextSpan>[
                   TextSpan(text: "Berakhir dalam $daysLeft hari.\n"),
                   TextSpan(
@@ -224,7 +196,7 @@ class ProfileScreen extends StatelessWidget {
 
       default:
         title = "Akses Standar";
-        color = Colors.red.shade100;
+        color = context.themeColors.nonPremiumBg;
         icon = Icons.cancel;
         descriptionWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,8 +208,8 @@ class ProfileScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => handleAction(context),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.blue.shade700,
+                  foregroundColor: context.themeColors.onPrimary,
+                  backgroundColor: context.themeColors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -262,9 +234,9 @@ class ProfileScreen extends StatelessWidget {
             Icon(
               icon,
               size: 40,
-              color: color == Colors.red.shade100
-                  ? Colors.red.shade700
-                  : Colors.blue.shade700,
+              color: color == context.themeColors.nonPremiumBg
+                  ? context.themeColors.error
+                  : context.themeColors.primary,
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -354,6 +326,35 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildVersionInfo() {
+    return FutureBuilder<PackageInfo>(
+      future: PackageInfo.fromPlatform(),
+      builder: (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
+        if (snapshot.hasData) {
+          final String version = snapshot.data!.version;
+          final String buildNumber = snapshot.data!.buildNumber;
+          String versionText = 'versi $version';
+
+          // Tampilkan build number hanya dalam mode debug
+          if (kDebugMode) {
+            versionText += ' ($buildNumber)';
+          }
+
+          return Text(
+            versionText,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+          );
+        } else {
+          // Tampilkan teks sementara saat memuat
+          return const Text(
+            'Memuat versi...',
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+          );
+        }
+      },
     );
   }
 }

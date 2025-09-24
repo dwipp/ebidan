@@ -36,4 +36,13 @@ extension CustomColors on ColorScheme {
   Color get shadowBlue => brightness == Brightness.dark
       ? Colors.transparent
       : Colors.blue.shade100.withOpacity(0.4);
+  Color get premiumBg => brightness == Brightness.dark
+      ? Colors.green.shade100.withOpacity(0.5)
+      : Colors.green.shade100;
+  Color get trialBg => brightness == Brightness.dark
+      ? Colors.orange.shade100.withOpacity(0.5)
+      : Colors.orange.shade100;
+  Color get nonPremiumBg => brightness == Brightness.dark
+      ? Colors.red.shade100.withOpacity(0.5)
+      : Colors.red.shade100;
 }

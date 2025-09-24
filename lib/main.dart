@@ -79,7 +79,7 @@ class _MainAppState extends State<MainApp> {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.blue,
-            primary: Colors.blue.shade200,
+            primary: Colors.blue.shade300,
             secondary: Colors.orange.shade200,
             tertiary: Colors.green.shade200,
             error: Colors.red.shade300,
