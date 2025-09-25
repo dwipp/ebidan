@@ -1,9 +1,10 @@
 import 'package:ebidan/firebase_options.dart';
-import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
+import 'package:ebidan/presentation/screens/auth/login.dart';
+import 'package:ebidan/presentation/screens/home.dart';
 import 'package:ebidan/state_management/app_bloc_observer.dart';
 import 'package:ebidan/state_management/bloc_providers.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
-import 'package:ebidan/state_management/general/cubit/statistic_cubit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,13 +31,6 @@ void main() async {
 
   Bloc.observer = AppBlocObserver();
 
-  // check koneksi internet
-  final connectivityCubit = ConnectivityCubit();
-  connectivityCubit.checkNow();
-
-  final statisticCubit = StatisticCubit();
-  statisticCubit.fetchStatistic();
-
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((value) => runApp(MainApp()));
@@ -55,7 +49,7 @@ class _MainAppState extends State<MainApp> {
     return MultiBlocProvider(
       providers: BlocProviders().providers(),
       child: MaterialApp(
-        initialRoute: AppRouter.homepage,
+        home: AuthGate(),
         onGenerateRoute: AppRouter.onGenerateRoute,
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system, // otomatis ikut sistem (light/dark)
@@ -92,6 +86,32 @@ class _MainAppState extends State<MainApp> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final user = snapshot.data;
+
+        if (user == null) {
+          return const LoginScreen();
+        } else {
+          return const HomeScreen();
+        }
+      },
     );
   }
 }

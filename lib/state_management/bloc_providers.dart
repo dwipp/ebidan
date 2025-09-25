@@ -90,6 +90,8 @@ class BlocProviders {
         create: (context) => ProfileCubit(userCubit: context.read<UserCubit>()),
       ),
       BlocProvider<StatisticCubit>(create: (context) => StatisticCubit()),
+      BlocProvider(create: (_) => StatisticCubit()..fetchStatistic()),
+      BlocProvider(create: (_) => ConnectivityCubit()..checkNow()),
     ];
   }
 }

@@ -77,11 +77,6 @@ class HomeScreen extends StatelessWidget {
                 if (state is StatisticSuccess) {
                   statistic = state.statistic;
                 }
-                if (state is StatisticNoAccount) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    LogoutHandler.handleLogout(context);
-                  });
-                }
 
                 return StaggeredGrid.count(
                   crossAxisCount: 4,
