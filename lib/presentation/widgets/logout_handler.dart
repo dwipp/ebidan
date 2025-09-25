@@ -1,5 +1,6 @@
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:flutter/material.dart';
@@ -48,14 +49,23 @@ class LogoutHandler {
 
   /// Proses logout
   static Future<void> _logout(BuildContext context) async {
-    context.read<LoginCubit>().signOut();
-    context.read<UserCubit>().clearAll();
-    if (context.mounted) {
+    try {
+      // tunggu logout selesai
+      await context.read<LoginCubit>().signOut();
+      await context.read<UserCubit>().clearAll();
+
+      // pastikan context masih mounted
+      if (!context.mounted) return;
+
       Navigator.pushNamedAndRemoveUntil(
         context,
         AppRouter.login,
         (route) => false, // hapus semua route sebelumnya
       );
+    } catch (e) {
+      // opsional: tampilkan error kalau gagal logout
+      print('Logout error: $e');
+      // Snackbar.show(context, message: 'Gagal logout, coba lagi');
     }
   }
 }
