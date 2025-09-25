@@ -6,6 +6,7 @@ import 'package:ebidan/state_management/bumil/cubit/check_bumil_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/submit_bumil_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/search_bumil_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
+import 'package:ebidan/state_management/general/cubit/back_press_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/statistic_cubit.dart';
 import 'package:ebidan/state_management/kehamilan/cubit/submit_kehamilan_cubit.dart';
@@ -90,8 +91,13 @@ class BlocProviders {
         create: (context) => ProfileCubit(userCubit: context.read<UserCubit>()),
       ),
       BlocProvider<StatisticCubit>(create: (context) => StatisticCubit()),
-      BlocProvider(create: (_) => StatisticCubit()..fetchStatistic()),
-      BlocProvider(create: (_) => ConnectivityCubit()..checkNow()),
+      BlocProvider(
+        create: (_) => StatisticCubit()..fetchStatistic(),
+      ), // fetch statistic
+      BlocProvider(
+        create: (_) => ConnectivityCubit()..checkNow(),
+      ), //. check internet
+      BlocProvider<BackPressCubit>(create: (context) => BackPressCubit()),
     ];
   }
 }

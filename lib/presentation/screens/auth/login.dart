@@ -1,5 +1,6 @@
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
+import 'package:ebidan/state_management/general/cubit/back_press_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,21 +14,34 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        SystemNavigator.pop(); // langsung keluar aplikasi di Android
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+
+        final allowExit = context.read<BackPressCubit>().onBackPressed();
+        if (!allowExit) {
+          Snackbar.show(context, message: 'Tekan sekali lagi untuk keluar');
+        } else {
+          SystemNavigator.pop();
+        }
       },
       child: Scaffold(
         appBar: const PageHeader(title: 'Login eBidan', hideBackButton: true),
         body: BlocConsumer<LoginCubit, LoginState>(
           listener: (context, state) {
             if (state is LoginSuccess) {
-              final isReg = state.isRegistered;
+              final isRegistered = state.isRegistered;
 
-              Navigator.of(context).pushReplacementNamed(
-                isReg ? AppRouter.homepage : AppRouter.register,
-              );
+              if (isRegistered) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRouter.homepage,
+                  (route) => false,
+                );
+              } else {
+                Navigator.of(context).pushReplacementNamed(AppRouter.register);
+              }
             } else if (state is LoginFailure) {
               Snackbar.show(
                 context,
