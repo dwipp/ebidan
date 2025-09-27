@@ -1,4 +1,5 @@
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/donut_chart.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/k1_chart.dart';
@@ -41,10 +42,10 @@ class KunjunganStatsScreen extends StatelessWidget {
         "value": selectedKunjungan?.k1AksesDokter,
       },
       {"label": "K1 Akses USG", "value": selectedKunjungan?.k1AksesUsg},
-      {"label": "Abortus", "value": selectedKunjungan?.abortus},
       {"label": "K2", "value": selectedKunjungan?.k2},
       {"label": "K3", "value": selectedKunjungan?.k3},
       {"label": "K4", "value": selectedKunjungan?.k4},
+      {"label": "Abortus (0-20 mg)", "value": selectedKunjungan?.abortus},
       {"label": "K5", "value": selectedKunjungan?.k5},
       {"label": "K5 USG", "value": selectedKunjungan?.k5Usg},
       {"label": "K6", "value": selectedKunjungan?.k6},
@@ -84,7 +85,7 @@ class KunjunganStatsScreen extends StatelessWidget {
         gridItems.add(
           Card(
             margin: EdgeInsets.zero,
-            color: _getKategoriColor(parentLabel).withOpacity(0.2),
+            color: _getKategoriColor(parentLabel).shade200,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -104,7 +105,7 @@ class KunjunganStatsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
-                      color: _getKategoriColor(parentLabel),
+                      color: _getKategoriColor(parentLabel).shade400,
                     ),
                   ),
                   const Divider(),
@@ -127,7 +128,9 @@ class KunjunganStatsScreen extends StatelessWidget {
                             "${item["value"] ?? 0}",
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: _getKategoriColor(item["label"]),
+                              color: context
+                                  .themeColors
+                                  .darkGrey, //_getKategoriColor(item["label"]).shade400,
                             ),
                           ),
                         ],
@@ -175,75 +178,79 @@ class KunjunganStatsScreen extends StatelessWidget {
               const SizedBox(height: 32),
 
               // --- CHART AREA ---
-              Text(
-                "Visualisasi",
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-
-              // --- Donut Chart Card ---
-              _buildChartCard(
-                context,
-                "Perbandingan Kunjungan",
-                DonutChart(
-                  data: [
-                    PieChartDataItem(
-                      label: 'K1',
-                      value: (selectedKunjungan?.k1 ?? 0).toDouble(),
-                    ),
-                    PieChartDataItem(
-                      label: 'K2',
-                      value: (selectedKunjungan?.k2 ?? 0).toDouble(),
-                    ),
-                    PieChartDataItem(
-                      label: 'K3',
-                      value: (selectedKunjungan?.k3 ?? 0).toDouble(),
-                    ),
-                    PieChartDataItem(
-                      label: 'K4',
-                      value: (selectedKunjungan?.k4 ?? 0).toDouble(),
-                    ),
-                    PieChartDataItem(
-                      label: 'K5',
-                      value: (selectedKunjungan?.k5 ?? 0).toDouble(),
-                    ),
-                    PieChartDataItem(
-                      label: 'K6',
-                      value: (selectedKunjungan?.k6 ?? 0).toDouble(),
-                    ),
-                  ],
-                  showCenterValue: true,
-                  centerLabelTop: '${selectedKunjungan?.total ?? 0}',
-                  centerLabelBottom: 'Kunjungan',
+              if (selectedKunjungan != null &&
+                  (selectedKunjungan.k1 > 0 ||
+                      selectedKunjungan.k2 > 0 ||
+                      selectedKunjungan.k3 > 0 ||
+                      selectedKunjungan.k4 > 0 ||
+                      selectedKunjungan.k5 > 0 ||
+                      selectedKunjungan.k6 > 0)) ...[
+                Text(
+                  "Visualisasi",
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                gradientColors: [
-                  Colors.blue.shade300.withOpacity(0.5),
-                  Colors.blue.shade100.withOpacity(0.3),
-                ],
-                shadowColor: Colors.blue.shade100.withOpacity(0.4),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 16),
+                // --- Donut Chart Card ---
+                _buildChartCard(
+                  context,
+                  "Perbandingan Kunjungan",
+                  DonutChart(
+                    data: [
+                      PieChartDataItem(
+                        label: 'K1',
+                        value: (selectedKunjungan.k1).toDouble(),
+                      ),
+                      PieChartDataItem(
+                        label: 'K2',
+                        value: (selectedKunjungan.k2).toDouble(),
+                      ),
+                      PieChartDataItem(
+                        label: 'K3',
+                        value: (selectedKunjungan.k3).toDouble(),
+                      ),
+                      PieChartDataItem(
+                        label: 'K4',
+                        value: (selectedKunjungan.k4).toDouble(),
+                      ),
+                      PieChartDataItem(
+                        label: 'K5',
+                        value: (selectedKunjungan.k5).toDouble(),
+                      ),
+                      PieChartDataItem(
+                        label: 'K6',
+                        value: (selectedKunjungan.k6).toDouble(),
+                      ),
+                    ],
+                    showCenterValue: true,
+                    centerLabelTop: '${selectedKunjungan.total}',
+                    centerLabelBottom: 'Kunjungan',
+                  ),
+                  gradientColors: context.themeColors.tealGradient,
+                  shadowColor: Colors.blue.shade100.withOpacity(0.4),
+                ),
+                const SizedBox(height: 24),
+              ],
 
               // --- K1 Chart Card ---
-              _buildChartCard(
-                context,
-                "Distribusi K1",
-                K1Chart(
-                  k1Murni: selectedKunjungan?.k1Murni ?? 0,
-                  k1Akses: selectedKunjungan?.k1Akses ?? 0,
-                  showCenterValue: true,
+              if (selectedKunjungan != null &&
+                  (selectedKunjungan.k1Murni > 0 ||
+                      selectedKunjungan.k1Akses > 0)) ...[
+                _buildChartCard(
+                  context,
+                  "Distribusi K1",
+                  K1Chart(
+                    k1Murni: selectedKunjungan.k1Murni,
+                    k1Akses: selectedKunjungan.k1Akses,
+                    showCenterValue: true,
+                  ),
+                  gradientColors: context.themeColors.orangeGradient,
+                  shadowColor: Colors.orange.shade100.withOpacity(0.4),
                 ),
-                gradientColors: [
-                  Colors.orange.shade300.withOpacity(0.5),
-                  Colors.orange.shade100.withOpacity(0.3),
-                ],
-                shadowColor: Colors.orange.shade100.withOpacity(0.4),
-              ),
 
-              const SizedBox(height: 32),
-
+                const SizedBox(height: 32),
+              ],
               // --- HISTORY BUTTON ---
               if (monthKey == null) ...[
                 SizedBox(
@@ -338,7 +345,7 @@ class KunjunganStatsScreen extends StatelessWidget {
   Widget _buildCardItem(String label, int? value) {
     return Card(
       margin: EdgeInsets.zero,
-      color: _getKategoriColor(label).withOpacity(0.15),
+      color: _getKategoriColor(label).shade200,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -354,7 +361,7 @@ class KunjunganStatsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
-                color: _getKategoriColor(label),
+                color: _getKategoriColor(label).shade400,
               ),
             ),
           ],
@@ -368,25 +375,14 @@ class KunjunganStatsScreen extends StatelessWidget {
     BuildContext context,
     String title,
     Widget chart, {
-    required List<Color> gradientColors,
+    required LinearGradient gradientColors,
     required Color shadowColor,
   }) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          colors: gradientColors,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: shadowColor,
-            blurRadius: 10,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        gradient: gradientColors,
       ),
       child: Column(
         children: [
@@ -431,15 +427,15 @@ class KunjunganStatsScreen extends StatelessWidget {
   }
 
   // Helper method untuk mendapatkan warna
-  Color _getKategoriColor(String label) {
-    if (label.startsWith("K1")) return Colors.blue.shade400;
-    if (label.startsWith("K2")) return Colors.green.shade400;
-    if (label.startsWith("K3")) return Colors.yellow.shade400;
-    if (label.startsWith("K4")) return Colors.orange.shade400;
-    if (label.startsWith("K5")) return Colors.pink.shade400;
-    if (label.startsWith("K6")) return Colors.red.shade400;
-    if (label.contains("Abortus")) return Colors.purple.shade200;
-    return Colors.grey.shade100;
+  MaterialColor _getKategoriColor(String label) {
+    if (label.startsWith("K1")) return Colors.blue;
+    if (label.startsWith("K2")) return Colors.teal;
+    if (label.startsWith("K3")) return Colors.green;
+    if (label.startsWith("K4")) return Colors.orange;
+    if (label.startsWith("K5")) return Colors.pink;
+    if (label.startsWith("K6")) return Colors.red;
+    if (label.contains("Abortus")) return Colors.purple;
+    return Colors.grey;
   }
 
   // Helper method untuk mendapatkan bulan-bulan terakhir

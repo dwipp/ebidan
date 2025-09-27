@@ -7,15 +7,29 @@ extension AppColors on BuildContext {
 extension Gradients on ColorScheme {
   LinearGradient get pinkGradient => LinearGradient(
     colors: brightness == Brightness.dark
-        ? [Colors.pink.shade800, Colors.pink.shade400]
+        ? [Colors.pink.shade800, Colors.pink.shade300]
         : [Colors.pink.shade200, Colors.pink.shade100],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
   LinearGradient get blueGradient => LinearGradient(
     colors: brightness == Brightness.dark
-        ? [Colors.blue.shade800, Colors.blue.shade400]
+        ? [Colors.blue.shade800, Colors.blue.shade300]
         : [Colors.blue.shade300, Colors.blue.shade100],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  LinearGradient get tealGradient => LinearGradient(
+    colors: brightness == Brightness.dark
+        ? [Colors.teal.shade800, Colors.teal.shade300]
+        : [Colors.teal.shade300, Colors.teal.shade100],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  LinearGradient get orangeGradient => LinearGradient(
+    colors: brightness == Brightness.dark
+        ? [Colors.orange.shade800, Colors.orange.shade300]
+        : [Colors.orange.shade300, Colors.orange.shade100],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
