@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
@@ -135,10 +136,11 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                       ),
                       child: Center(
                         child: _loading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
+                                  color: context.themeColors.tertiary,
                                   strokeWidth: 2,
                                 ),
                               )

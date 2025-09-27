@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/firebase_options.dart';
 import 'package:ebidan/presentation/screens/auth/login.dart';
 import 'package:ebidan/presentation/screens/home.dart';
@@ -59,7 +60,7 @@ class _MainAppState extends State<MainApp> {
             seedColor: Colors.cyan, // warna utama
             primary: Colors.blue, // utama
             secondary: Colors.orange, // secondary
-            tertiary: Colors.green, // tambahan
+            tertiary: Colors.cyan, // tambahan
             error: Colors.red, // error
             surface: Colors.white, // background kartu, dsb
             onPrimary: Colors.white, // teks/icon di atas primary
@@ -75,7 +76,7 @@ class _MainAppState extends State<MainApp> {
             seedColor: Colors.cyan,
             primary: Colors.blue.shade300,
             secondary: Colors.orange.shade200,
-            tertiary: Colors.green.shade200,
+            tertiary: Colors.cyan.shade200,
             error: Colors.red.shade300,
             surface: Colors.grey.shade900,
             onPrimary: Colors.black,
@@ -99,8 +100,12 @@ class AuthGate extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(
+                color: context.themeColors.tertiary,
+              ),
+            ),
           );
         }
 

@@ -32,7 +32,11 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ],
             ),
-            body: Center(child: CircularProgressIndicator()),
+            body: Center(
+              child: CircularProgressIndicator(
+                color: context.themeColors.tertiary,
+              ),
+            ),
           );
         }
 

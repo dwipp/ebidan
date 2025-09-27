@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/bumil/cubit/search_bumil_cubit.dart';
@@ -60,7 +61,11 @@ class PilihBumilScreen extends StatelessWidget {
             child: BlocBuilder<SearchBumilCubit, SearchBumilState>(
               builder: (context, state) {
                 if (state is BumilLoading && state.bumilList.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: context.themeColors.tertiary,
+                    ),
+                  );
                 }
 
                 if (state.filteredList.isEmpty) {

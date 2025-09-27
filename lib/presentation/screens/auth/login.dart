@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/back_press_cubit.dart';
@@ -54,7 +55,11 @@ class LoginScreen extends StatelessWidget {
             final user = FirebaseAuth.instance.currentUser;
 
             if (state is LoginLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                child: CircularProgressIndicator(
+                  color: context.themeColors.tertiary,
+                ),
+              );
             }
 
             if (user == null) {
@@ -67,8 +72,8 @@ class LoginScreen extends StatelessWidget {
                     /// Logo aplikasi besar
                     Image.asset(
                       'assets/images/logo-ebidan.png',
-                      width: 300,
-                      height: 300,
+                      width: 250,
+                      height: 250,
                     ),
 
                     /// Spacer untuk geser tombol lebih ke bawah

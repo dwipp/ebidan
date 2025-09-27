@@ -53,14 +53,17 @@ flutter_icons:
   image_path: "assets/icons/app_icon.png"
 
 flutter_native_splash:
-  color: "#FFFFFF"       # background putih
-  color_dark: "#121212"
-  image: assets/icons/app_icon.png   # path logo
+  color: "#00BCD4"
+  icon_background_color: "#00BCD4"
+  image: assets/icons/logo_light.png
+  image_dark: assets/icons/logo_dark.png
   android: true
   ios: false
   android_gravity: center
   ios_content_mode: center
-  fullscreen: false      # biar status bar terlihat (opsional)
+  fullscreen: true      # biar status bar terlihat (opsional)
   android_12:
-    color: "#FFFFFF"       # background putih
-    color_dark: "#121212"
+    color: "#00BCD4"
+    icon_background_color: "#00BCD4"
+    image: assets/icons/logo_light.png 
+    image_dark: assets/icons/logo_dark.png

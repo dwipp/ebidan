@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class Button extends StatelessWidget {
@@ -23,10 +24,13 @@ class Button extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: isSubmitting ? null : onPressed,
       icon: isSubmitting
-          ? const SizedBox(
+          ? SizedBox(
               width: 18,
               height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
+              child: CircularProgressIndicator(
+                color: context.themeColors.tertiary,
+                strokeWidth: 2,
+              ),
             )
           : Icon(icon),
       label: Text(isSubmitting ? loadingLabel : label),

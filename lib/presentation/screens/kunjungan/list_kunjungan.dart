@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -66,7 +67,11 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
         },
         builder: (context, state) {
           if (state is GetKunjunganLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(
+                color: context.themeColors.tertiary,
+              ),
+            );
           } else if (state is GetKunjunganEmpty ||
               state is GetKunjunganFailure) {
             return const Center(child: Text("Tidak ada data kunjungan"));
