@@ -43,6 +43,9 @@ extension CustomColors on ColorScheme {
       brightness == Brightness.dark ? Colors.grey.shade400 : Colors.black54;
   Color get hintText =>
       brightness == Brightness.dark ? Colors.grey.shade800 : Colors.black26;
+  Color get complaint => brightness == Brightness.dark
+      ? Colors.redAccent
+      : Colors.redAccent.shade100;
 
   Color get shadowPink => brightness == Brightness.dark
       ? Colors.transparent

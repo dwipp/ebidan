@@ -1,5 +1,6 @@
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
+import 'package:ebidan/presentation/widgets/browser_launcher.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/auth/cubit/profile_cubit.dart';
@@ -51,6 +52,15 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.small(
+        heroTag: "complaintFab",
+        backgroundColor: context.themeColors.complaint,
+        onPressed: () {
+          BrowserLauncher.openInApp("https://forms.gle/2SR34kx1xjMgA3G27");
+        },
+        child: const Icon(Icons.feedback, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

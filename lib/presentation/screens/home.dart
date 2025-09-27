@@ -1,6 +1,7 @@
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
+import 'package:ebidan/presentation/widgets/browser_launcher.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
@@ -94,231 +95,266 @@ class HomeScreen extends StatelessWidget {
             },
             child: const Icon(Icons.add),
           ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              // Scrollable supaya halaman bisa discroll bila konten banyak
-              child: SingleChildScrollView(
-                child: BlocBuilder<StatisticCubit, StatisticState>(
-                  builder: (context, state) {
-                    Statistic? statistic;
-                    if (state is StatisticSuccess) {
-                      statistic = state.statistic;
-                    }
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  // Scrollable supaya halaman bisa discroll bila konten banyak
+                  child: SingleChildScrollView(
+                    child: BlocBuilder<StatisticCubit, StatisticState>(
+                      builder: (context, state) {
+                        Statistic? statistic;
+                        if (state is StatisticSuccess) {
+                          statistic = state.statistic;
+                        }
 
-                    return StaggeredGrid.count(
-                      crossAxisCount: 4,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      children: [
-                        // Card Bumil (Total + Bulan Ini)
-                        StaggeredGridTile.fit(
-                          crossAxisCellCount: 4,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(20),
-                            onTap: () {
-                              if (FirebaseAuth.instance.currentUser != null &&
-                                  user == null) {
-                                _shouldRegister(context);
-                              } else {
-                                Navigator.of(context).pushNamed(
-                                  AppRouter.pilihBumil,
-                                  arguments: {'state': 'bumil'},
-                                );
-                              }
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
+                        return StaggeredGrid.count(
+                          crossAxisCount: 4,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          children: [
+                            // Card Bumil (Total + Bulan Ini)
+                            StaggeredGridTile.fit(
+                              crossAxisCellCount: 4,
+                              child: InkWell(
                                 borderRadius: BorderRadius.circular(20),
-                                gradient: context.themeColors.pinkGradient,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: context.themeColors.shadowPink,
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: const [
-                                      Text(
-                                        "Kehamilan",
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      Icon(
-                                        Icons.chevron_right,
-                                        size: 28,
-                                        color: Colors.white,
+                                onTap: () {
+                                  if (FirebaseAuth.instance.currentUser !=
+                                          null &&
+                                      user == null) {
+                                    _shouldRegister(context);
+                                  } else {
+                                    Navigator.of(context).pushNamed(
+                                      AppRouter.pilihBumil,
+                                      arguments: {'state': 'bumil'},
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    gradient: context.themeColors.pinkGradient,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: context.themeColors.shadowPink,
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Expanded(
-                                        child: _buildStatItem(
-                                          icon: Icons.groups,
-                                          iconColor: Colors.white,
-                                          label: "Total Ibu Hamil",
-                                          value:
-                                              "${statistic?.kehamilan.allBumilCount ?? 0}",
-                                          bgColor: Colors.pink.shade400
-                                              .withOpacity(0.3),
-                                        ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: const [
+                                          Text(
+                                            "Kehamilan",
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.chevron_right,
+                                            size: 28,
+                                            color: Colors.white,
+                                          ),
+                                        ],
                                       ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: _buildStatItem(
-                                          icon: Icons.pregnant_woman,
-                                          iconColor: Colors.white,
-                                          label: "Bulan Ini",
-                                          value:
-                                              "${statistic?.lastMonthData?.kehamilan.total ?? 0}",
-                                          bgColor: Colors.teal.shade400
-                                              .withOpacity(0.3),
-                                        ),
+                                      const SizedBox(height: 16),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Expanded(
+                                            child: _buildStatItem(
+                                              icon: Icons.groups,
+                                              iconColor: Colors.white,
+                                              label: "Total Ibu Hamil",
+                                              value:
+                                                  "${statistic?.kehamilan.allBumilCount ?? 0}",
+                                              bgColor: Colors.pink.shade400
+                                                  .withOpacity(0.3),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 16),
+                                          Expanded(
+                                            child: _buildStatItem(
+                                              icon: Icons.pregnant_woman,
+                                              iconColor: Colors.white,
+                                              label: "Bulan Ini",
+                                              value:
+                                                  "${statistic?.lastMonthData?.kehamilan.total ?? 0}",
+                                              bgColor: Colors.teal.shade400
+                                                  .withOpacity(0.3),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
 
-                        // K1 Chart
-                        // Statistik Card
-                        StaggeredGridTile.fit(
-                          crossAxisCellCount: 4,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(24),
-                            onTap: () {
-                              if (FirebaseAuth.instance.currentUser != null &&
-                                  user == null) {
-                                _shouldRegister(context);
-                              } else {
-                                if (user != null &&
-                                    !user.premiumStatus.isPremium) {
-                                  // User bukan premium
-                                  showDialog(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      title: const Text("Akses Premium"),
-                                      content: const Text(
-                                        "Fitur statistik hanya tersedia untuk pengguna premium. "
-                                        "Upgrade sekarang untuk membuka akses penuh.",
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.pop(ctx),
-                                          child: const Text("Batal"),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(ctx); // tutup dialog
-                                            // Navigator.pushNamed(
-                                            //   context,
-                                            //   AppRouter.subscribe,
-                                            // ); // arahkan ke halaman subscribe
-                                          },
-                                          child: const Text("Upgrade"),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                } else {
-                                  Navigator.pushNamed(
-                                    context,
-                                    AppRouter.statistics,
-                                  );
-                                }
-                              }
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
+                            // K1 Chart
+                            // Statistik Card
+                            StaggeredGridTile.fit(
+                              crossAxisCellCount: 4,
+                              child: InkWell(
                                 borderRadius: BorderRadius.circular(24),
-                                gradient: context.themeColors.blueGradient,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: context.themeColors.shadowBlue,
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 6),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: const [
-                                      Text(
-                                        "Statistik",
-                                        style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
+                                onTap: () {
+                                  if (FirebaseAuth.instance.currentUser !=
+                                          null &&
+                                      user == null) {
+                                    _shouldRegister(context);
+                                  } else {
+                                    if (user != null &&
+                                        !user.premiumStatus.isPremium) {
+                                      // User bukan premium
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          title: const Text("Akses Premium"),
+                                          content: const Text(
+                                            "Fitur statistik hanya tersedia untuk pengguna premium. "
+                                            "Upgrade sekarang untuk membuka akses penuh.",
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(ctx),
+                                              child: const Text("Batal"),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.pop(
+                                                  ctx,
+                                                ); // tutup dialog
+                                                // Navigator.pushNamed(
+                                                //   context,
+                                                //   AppRouter.subscribe,
+                                                // ); // arahkan ke halaman subscribe
+                                              },
+                                              child: const Text("Upgrade"),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                      Icon(
-                                        Icons.chevron_right,
-                                        size: 28,
-                                        color: Colors.white,
+                                      );
+                                    } else {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRouter.statistics,
+                                      );
+                                    }
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(24),
+                                    gradient: context.themeColors.blueGradient,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: context.themeColors.shadowBlue,
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 6),
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 20),
-                                  SummaryChart(
-                                    pasien:
-                                        statistic
-                                            ?.lastMonthData
-                                            ?.pasien
-                                            .total ??
-                                        0,
-                                    kehamilan:
-                                        statistic
-                                            ?.lastMonthData
-                                            ?.kehamilan
-                                            .total ??
-                                        0,
-                                    kunjungan:
-                                        statistic
-                                            ?.lastMonthData
-                                            ?.kunjungan
-                                            .total ??
-                                        0,
-                                    persalinan:
-                                        statistic
-                                            ?.lastMonthData
-                                            ?.persalinan
-                                            .total ??
-                                        0,
-                                    showCenterValue: false,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: const [
+                                          Text(
+                                            "Statistik",
+                                            style: TextStyle(
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.chevron_right,
+                                            size: 28,
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 20),
+                                      SummaryChart(
+                                        pasien:
+                                            statistic
+                                                ?.lastMonthData
+                                                ?.pasien
+                                                .total ??
+                                            0,
+                                        kehamilan:
+                                            statistic
+                                                ?.lastMonthData
+                                                ?.kehamilan
+                                                .total ??
+                                            0,
+                                        kunjungan:
+                                            statistic
+                                                ?.lastMonthData
+                                                ?.kunjungan
+                                                .total ??
+                                            0,
+                                        persalinan:
+                                            statistic
+                                                ?.lastMonthData
+                                                ?.persalinan
+                                                .total ??
+                                            0,
+                                        showCenterValue: false,
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+                          ],
+                        );
+                      },
+                    ),
+                  ),
                 ),
-              ),
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  child: FloatingActionButton.small(
+                    heroTag: "complaintFab",
+                    backgroundColor: context.themeColors.complaint,
+                    onPressed: () {
+                      BrowserLauncher.openInApp(
+                        "https://forms.gle/2SR34kx1xjMgA3G27",
+                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (_) => const WebviewPage(
+                      //       url: "https://forms.gle/2SR34kx1xjMgA3G27",
+                      //       title: "Flutter",
+                      //     ),
+                      //   ),
+                      // );
+                    },
+                    child: const Icon(Icons.feedback, color: Colors.white),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
