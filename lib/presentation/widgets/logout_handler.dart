@@ -65,7 +65,7 @@ class LogoutHandler {
     } catch (e) {
       // opsional: tampilkan error kalau gagal logout
       print('Logout error: $e');
-      // Snackbar.show(context, message: 'Gagal logout, coba lagi');
+      Snackbar.show(context, message: 'Gagal logout, coba lagi');
     }
   }
 }

@@ -27,7 +27,7 @@ class LoginScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: const PageHeader(title: 'Login eBidan', hideBackButton: true),
+        appBar: const PageHeader(title: '', hideBackButton: true),
         body: BlocConsumer<LoginCubit, LoginState>(
           listener: (context, state) {
             if (state is LoginSuccess) {
@@ -59,12 +59,51 @@ class LoginScreen extends StatelessWidget {
 
             if (user == null) {
               return Center(
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.login),
-                  label: const Text('Sign in with Google'),
-                  onPressed: () {
-                    context.read<LoginCubit>().signInWithGoogle();
-                  },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(height: 100),
+
+                    /// Logo aplikasi besar
+                    Image.asset(
+                      'assets/images/logo-ebidan.png',
+                      width: 300,
+                      height: 300,
+                    ),
+
+                    /// Spacer untuk geser tombol lebih ke bawah
+                    const SizedBox(height: 100),
+
+                    /// Tombol login berupa image dengan border + ripple effect
+                    Material(
+                      color: Colors
+                          .transparent, // wajib untuk efek ripple di sekitar gambar
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () {
+                          context.read<LoginCubit>().signInWithGoogle();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.grey.shade400, // warna border
+                              width: 1.5,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              'assets/images/btn_google_signin.png',
+                              height: 50,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                  ],
                 ),
               );
             }
