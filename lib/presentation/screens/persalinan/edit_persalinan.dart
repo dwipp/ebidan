@@ -190,7 +190,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
     if (!_formValidator.validateAndScroll(_formKey, context)) {
       return;
     }
-    
+
     if (persalinan == null) return;
     final updatedPersalinan = Persalinan(
       id: persalinan!.id,
@@ -229,12 +229,12 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: 'Perbaharui Data Persalinan'),
+      appBar: PageHeader(title: Text('Perbaharui Data Persalinan')),
       body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-        key: _formKey,
-        child: Column(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Utils.sectionTitle('Detail Persalinan'),
@@ -416,14 +416,22 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                     BlocConsumer<SubmitPersalinanCubit, SubmitPersalinanState>(
                       listener: (context, state) {
                         if (state is AddPersalinanSuccess) {
-            Snackbar.show(context, message: 'Data persalinan berhasil disimpan', type: SnackbarType.success);
+                          Snackbar.show(
+                            context,
+                            message: 'Data persalinan berhasil disimpan',
+                            type: SnackbarType.success,
+                          );
                           Navigator.pushNamedAndRemoveUntil(
                             context,
                             AppRouter.homepage,
                             (route) => false,
                           );
                         } else if (state is AddPersalinanFailure) {
-            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
+                          Snackbar.show(
+                            context,
+                            message: 'Gagal: ${state.message}',
+                            type: SnackbarType.error,
+                          );
                         }
                       },
                       builder: (context, state) {
@@ -481,11 +489,8 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
           //   }
           //   return null;
           // },
-            validator: (val) => _formValidator.wrapValidator(
-              'penolong',
-              val,
-              _requiredValidator,
-            ),
+          validator: (val) =>
+              _formValidator.wrapValidator('penolong', val, _requiredValidator),
         ),
         if (isLainnya) const SizedBox(height: 8),
         if (isLainnya)
@@ -495,7 +500,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
             icon: Icons.person_outline,
             controller: _penolongLainnyaController,
             // validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
-              validator: (val) => _formValidator.wrapValidator(
+            validator: (val) => _formValidator.wrapValidator(
               'penolongLainnya',
               val,
               _requiredValidator,
@@ -532,7 +537,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
         if (isLainnya) const SizedBox(height: 8),
         if (isLainnya)
           CustomTextField(
-          key: _fieldKeys['caraBersalinLainnya'], // Tambahkan key
+            key: _fieldKeys['caraBersalinLainnya'], // Tambahkan key
             label: 'Cara Persalinan Lainnya',
             icon: Icons.pregnant_woman,
             controller: _caraLainnyaController,

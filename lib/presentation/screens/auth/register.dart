@@ -101,7 +101,7 @@ class _RegisterState extends State<RegisterScreen> {
       },
       child: Scaffold(
         appBar: PageHeader(
-          title: "Registrasi",
+          title: Text("Registrasi"),
           hideBackButton: true,
           actions: [
             IconButton(

@@ -54,7 +54,10 @@ class HomeScreen extends StatelessWidget {
         },
         child: Scaffold(
           appBar: PageHeader(
-            title: 'eBidan',
+            title: Image.asset(
+              'assets/images/logo-ebidan-text.png',
+              height: 25,
+            ),
             hideBackButton: true,
             actions: [
               // IconButton untuk menampilkan foto profil user

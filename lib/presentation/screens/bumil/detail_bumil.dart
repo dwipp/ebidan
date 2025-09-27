@@ -13,7 +13,7 @@ class DetailBumilScreen extends StatelessWidget {
     final bumil = context.watch<SelectedBumilCubit>().state;
     return Scaffold(
       appBar: PageHeader(
-        title: "Detail Bumil",
+        title: Text("Detail Bumil"),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

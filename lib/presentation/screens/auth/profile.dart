@@ -24,7 +24,7 @@ class ProfileScreen extends StatelessWidget {
         if (bidan == null) {
           return Scaffold(
             appBar: PageHeader(
-              title: 'Profil',
+              title: Text('Profil'),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.logout),
@@ -44,7 +44,7 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildProfileScaffold(BuildContext context, Bidan user) {
     return Scaffold(
       appBar: PageHeader(
-        title: 'Profil Saya',
+        title: Text('Profil Saya'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),

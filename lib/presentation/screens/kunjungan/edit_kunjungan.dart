@@ -146,7 +146,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: "Perbaharui Kunjungan"),
+      appBar: PageHeader(title: Text("Perbaharui Kunjungan")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -178,11 +178,8 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
                 suffixText: 'kg',
                 isNumber: true,
                 // **Wrap validator**
-                validator: (val) => _formValidator.wrapValidator(
-                  'bb',
-                  val,
-                  _requiredValidator,
-                ),
+                validator: (val) =>
+                    _formValidator.wrapValidator('bb', val, _requiredValidator),
               ),
               const SizedBox(height: 12),
               CustomTextField(
@@ -208,11 +205,8 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
                 suffixText: 'cm',
                 isNumber: true,
                 // **Wrap validator**
-                validator: (val) => _formValidator.wrapValidator(
-                  'lp',
-                  val,
-                  _requiredValidator,
-                ),
+                validator: (val) =>
+                    _formValidator.wrapValidator('lp', val, _requiredValidator),
               ),
               const SizedBox(height: 12),
               BloodPressureField(controller: tdController),
@@ -245,11 +239,8 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
                 isNumber: true,
                 readOnly: true,
                 // **Wrap validator**
-                validator: (val) => _formValidator.wrapValidator(
-                  'uk',
-                  val,
-                  _requiredValidator,
-                ),
+                validator: (val) =>
+                    _formValidator.wrapValidator('uk', val, _requiredValidator),
               ),
               const SizedBox(height: 16),
               Utils.sectionTitle('Planning'),

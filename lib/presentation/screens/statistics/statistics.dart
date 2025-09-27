@@ -12,7 +12,7 @@ class StatisticsScreen extends StatelessWidget {
     final warningBanner = PremiumWarningBanner.fromContext(context);
 
     return Scaffold(
-      appBar: PageHeader(title: 'Statistik'),
+      appBar: PageHeader(title: Text('Statistik')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -22,7 +22,11 @@ class StatisticsScreen extends StatelessWidget {
               icon: Icons.history,
               title: 'Kunjungan',
               onTap: () {
-                Navigator.pushNamed(context, AppRouter.kunjunganStats, arguments: {'monthKey':null});
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.kunjunganStats,
+                  arguments: {'monthKey': null},
+                );
               },
             ),
           ],

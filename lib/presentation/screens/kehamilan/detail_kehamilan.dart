@@ -19,7 +19,7 @@ class DetailKehamilanScreen extends StatelessWidget {
     final bumil = context.watch<SelectedBumilCubit>().state;
     return Scaffold(
       appBar: PageHeader(
-        title: "Kehamilan ${kehamilan?.createdAt?.year}",
+        title: Text("Kehamilan ${kehamilan?.createdAt?.year}"),
         actions: (kehamilan?.id == bumil?.latestKehamilanId)
             ? [
                 IconButton(

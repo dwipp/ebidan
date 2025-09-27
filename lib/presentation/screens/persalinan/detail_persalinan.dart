@@ -13,7 +13,7 @@ class DetailPersalinanScreen extends StatelessWidget {
     final persalinan = context.watch<SelectedPersalinanCubit>().state;
     return Scaffold(
       appBar: PageHeader(
-        title: 'Detail Persalinan',
+        title: Text('Detail Persalinan'),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

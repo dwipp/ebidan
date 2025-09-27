@@ -254,7 +254,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: "Kehamilan Baru"),
+      appBar: PageHeader(title: Text("Kehamilan Baru")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -485,14 +485,22 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 child: BlocConsumer<SubmitKehamilanCubit, SubmitKehamilanState>(
                   listener: (context, state) {
                     if (state is AddKehamilanSuccess) {
-            Snackbar.show(context, message: 'Data kehamilan berhasil disimpan', type: SnackbarType.success);
+                      Snackbar.show(
+                        context,
+                        message: 'Data kehamilan berhasil disimpan',
+                        type: SnackbarType.success,
+                      );
                       Navigator.pushReplacementNamed(
                         context,
                         AppRouter.kunjungan,
                         arguments: {'firstTime': state.firstTime},
                       );
                     } else if (state is AddKehamilanFailure) {
-            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
+                      Snackbar.show(
+                        context,
+                        message: 'Gagal: ${state.message}',
+                        type: SnackbarType.error,
+                      );
                     }
                   },
                   builder: (context, state) {

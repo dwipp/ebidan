@@ -43,7 +43,7 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
     context.read<SelectedKunjunganCubit>().clear;
     return Scaffold(
       appBar: PageHeader(
-        title: "Kunjungan",
+        title: Text("Kunjungan"),
         actions: [
           IconButton(
             icon: Icon(_sortDesc ? Icons.arrow_downward : Icons.arrow_upward),
@@ -57,7 +57,11 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
           if (state is GetKunjunganSuccess) {
             _kunjunganList = state.kunjungans;
           } else if (state is GetKunjunganFailure) {
-            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
+            Snackbar.show(
+              context,
+              message: 'Gagal: ${state.message}',
+              type: SnackbarType.error,
+            );
           }
         },
         builder: (context, state) {

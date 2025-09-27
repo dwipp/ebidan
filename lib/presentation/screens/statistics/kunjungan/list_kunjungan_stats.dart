@@ -22,7 +22,7 @@ class ListKunjunganStatsScreen extends StatelessWidget {
     final hasBanner = warningBanner != null;
 
     return Scaffold(
-      appBar: PageHeader(title: "Statistik Kunjungan"),
+      appBar: PageHeader(title: Text("Statistik Kunjungan")),
       body: ListView.builder(
         itemCount: kunjunganStatsList.length + (hasBanner ? 1 : 0),
         itemBuilder: (context, index) {

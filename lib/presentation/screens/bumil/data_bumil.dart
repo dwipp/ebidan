@@ -12,7 +12,7 @@ class DataBumilScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bumil = context.watch<SelectedBumilCubit>().state;
     return Scaffold(
-      appBar: PageHeader(title: bumil?.namaIbu ?? ''),
+      appBar: PageHeader(title: Text(bumil?.namaIbu ?? '')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

@@ -192,7 +192,7 @@ class _AddBumilState extends State<AddBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: 'Tambah Data Bumil'),
+      appBar: PageHeader(title: Text('Tambah Data Bumil')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -428,7 +428,11 @@ class _AddBumilState extends State<AddBumilScreen> {
                         setState(() {
                           _kkSuamiController.text = _kkIbuController.text;
                         });
-            Snackbar.show(context, message: 'No KK Suami sama dengan No KK Ibu', type: SnackbarType.general);
+                        Snackbar.show(
+                          context,
+                          message: 'No KK Suami sama dengan No KK Ibu',
+                          type: SnackbarType.general,
+                        );
                       },
                     ),
                   ),
@@ -494,11 +498,8 @@ class _AddBumilState extends State<AddBumilScreen> {
                     controller: _noHpController,
                     keyboardType: TextInputType.phone,
                     // **Ganti panggilan validator**
-                    validator: (val) => _formValidator.wrapValidator(
-                      'noHp',
-                      val,
-                      _validateHP,
-                    ),
+                    validator: (val) =>
+                        _formValidator.wrapValidator('noHp', val, _validateHP),
                   ),
 
                   const SizedBox(height: 24),
@@ -507,7 +508,11 @@ class _AddBumilState extends State<AddBumilScreen> {
                     child: BlocConsumer<SubmitBumilCubit, SubmitBumilState>(
                       listener: (context, state) {
                         if (state.isSuccess && state.bumilId != null) {
-            Snackbar.show(context, message: 'Data Bumil berhasil disimpan', type: SnackbarType.success);
+                          Snackbar.show(
+                            context,
+                            message: 'Data Bumil berhasil disimpan',
+                            type: SnackbarType.success,
+                          );
                           Navigator.pushReplacementNamed(
                             context,
                             AppRouter.addRiwayat,
@@ -515,7 +520,11 @@ class _AddBumilState extends State<AddBumilScreen> {
                           );
                         }
                         if (state.error != null) {
-            Snackbar.show(context, message: 'Gagal menyimpan data: ${state.error}', type: SnackbarType.error);
+                          Snackbar.show(
+                            context,
+                            message: 'Gagal menyimpan data: ${state.error}',
+                            type: SnackbarType.error,
+                          );
                         }
                       },
                       builder: (context, state) {

@@ -27,7 +27,7 @@ class LoginScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: const PageHeader(title: '', hideBackButton: true),
+        appBar: const PageHeader(title: Text(''), hideBackButton: true),
         body: BlocConsumer<LoginCubit, LoginState>(
           listener: (context, state) {
             if (state is LoginSuccess) {

@@ -43,7 +43,7 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
     context.read<SelectedRiwayatCubit>().clear;
     return Scaffold(
       appBar: PageHeader(
-        title: "Riwayat Kehamilan",
+        title: Text("Riwayat Kehamilan"),
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.lightBlueAccent),

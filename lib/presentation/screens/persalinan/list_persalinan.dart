@@ -15,7 +15,7 @@ class ListPersalinanScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     context.read<SelectedPersalinanCubit>().clear;
     return Scaffold(
-      appBar: PageHeader(title: "Persalinan"),
+      appBar: PageHeader(title: Text("Persalinan")),
       body: ListView.builder(
         itemCount: persalinans.length,
         itemBuilder: (context, index) {

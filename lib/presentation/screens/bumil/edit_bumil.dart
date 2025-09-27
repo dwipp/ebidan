@@ -147,7 +147,7 @@ class _EditBumilState extends State<EditBumilScreen> {
   void initState() {
     // **PERUBAHAN 3: Inisialisasi FormValidator**
     _formValidator = FormValidator(fieldKeys: _fieldKeys);
-    
+
     context.read<SubmitBumilCubit>().setInitial();
     _namaIbuController.text = widget.bumil.namaIbu;
     _namaSuamiController.text = widget.bumil.namaSuami;
@@ -210,7 +210,7 @@ class _EditBumilState extends State<EditBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: 'Perbaharui Data Bumil'),
+      appBar: PageHeader(title: Text('Perbaharui Data Bumil')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -490,11 +490,8 @@ class _EditBumilState extends State<EditBumilScreen> {
                     controller: _noHpController,
                     keyboardType: TextInputType.phone,
                     // **Wrap validator**
-                    validator: (val) => _formValidator.wrapValidator(
-                      'noHp',
-                      val,
-                      _validateHP,
-                    ),
+                    validator: (val) =>
+                        _formValidator.wrapValidator('noHp', val, _validateHP),
                   ),
 
                   const SizedBox(height: 24),
@@ -503,11 +500,19 @@ class _EditBumilState extends State<EditBumilScreen> {
                     child: BlocConsumer<SubmitBumilCubit, SubmitBumilState>(
                       listener: (context, state) {
                         if (state.isSuccess && state.bumilId != null) {
-            Snackbar.show(context, message: 'Data Bumil berhasil diperbaharui', type: SnackbarType.success);
+                          Snackbar.show(
+                            context,
+                            message: 'Data Bumil berhasil diperbaharui',
+                            type: SnackbarType.success,
+                          );
                           Navigator.pop(context);
                         }
                         if (state.error != null) {
-            Snackbar.show(context, message: 'Gagal menyimpan data: ${state.error}', type: SnackbarType.error);
+                          Snackbar.show(
+                            context,
+                            message: 'Gagal menyimpan data: ${state.error}',
+                            type: SnackbarType.error,
+                          );
                         }
                       },
                       builder: (context, state) {

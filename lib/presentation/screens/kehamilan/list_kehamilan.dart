@@ -31,7 +31,7 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
     context.read<SelectedKehamilanCubit>().clear;
     final bumil = context.watch<SelectedBumilCubit>().state;
     return Scaffold(
-      appBar: PageHeader(title: "List Kehamilan"),
+      appBar: PageHeader(title: Text("List Kehamilan")),
       body: BlocConsumer<GetKehamilanCubit, GetKehamilanState>(
         listener: (context, state) {
           if (state is GetKehamilanSuccess) {
@@ -45,7 +45,11 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
             _expanded = false;
             _loading = true;
           } else if (state is GetKehamilanFailure) {
-            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
+            Snackbar.show(
+              context,
+              message: 'Gagal: ${state.message}',
+              type: SnackbarType.error,
+            );
             _expanded = false;
             _loading = false;
           }

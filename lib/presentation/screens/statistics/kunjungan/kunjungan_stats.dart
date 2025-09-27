@@ -146,7 +146,7 @@ class KunjunganStatsScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: const PageHeader(title: 'Statistik Kunjungan'),
+      appBar: const PageHeader(title: Text('Statistik Kunjungan')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(

@@ -13,7 +13,7 @@ class DetailKunjunganScreen extends StatelessWidget {
     final kunjungan = context.watch<SelectedKunjunganCubit>().state;
     return Scaffold(
       appBar: PageHeader(
-        title: Utils.formattedDate(kunjungan?.createdAt),
+        title: Text(Utils.formattedDate(kunjungan?.createdAt)),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

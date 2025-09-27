@@ -13,7 +13,7 @@ class DetailRiwayatScreen extends StatelessWidget {
     final riwayat = context.watch<SelectedRiwayatCubit>().state;
     return Scaffold(
       appBar: PageHeader(
-        title: "Detail Riwayat",
+        title: Text("Detail Riwayat"),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

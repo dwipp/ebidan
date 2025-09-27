@@ -9,7 +9,7 @@ class UpdateKehamilanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: 'Update Kehamilan'),
+      appBar: PageHeader(title: Text('Update Kehamilan')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

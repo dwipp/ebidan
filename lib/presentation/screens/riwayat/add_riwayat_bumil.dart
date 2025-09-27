@@ -147,7 +147,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PageHeader(
-        title: 'Riwayat Kehamilan',
+        title: Text('Riwayat Kehamilan'),
         hideBackButton: widget.state == 'instantUpdate',
       ),
       body: Form(

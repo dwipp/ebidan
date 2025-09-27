@@ -163,7 +163,7 @@ class _KunjunganState extends State<KunjunganScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: "Kunjungan Baru"),
+      appBar: PageHeader(title: Text("Kunjungan Baru")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(

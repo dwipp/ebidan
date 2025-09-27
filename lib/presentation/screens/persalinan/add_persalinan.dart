@@ -185,7 +185,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: 'Data Persalinan'),
+      appBar: PageHeader(title: Text('Data Persalinan')),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(

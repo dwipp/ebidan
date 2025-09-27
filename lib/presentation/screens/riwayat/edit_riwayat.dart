@@ -174,7 +174,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: 'Perbaharui Riwayat'),
+      appBar: PageHeader(title: Text('Perbaharui Riwayat')),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(

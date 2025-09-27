@@ -24,7 +24,7 @@ class PilihBumilScreen extends StatelessWidget {
     );
     return Scaffold(
       appBar: PageHeader(
-        title: 'Pilih Bumil',
+        title: Text('Pilih Bumil'),
         actions: [
           if (pilihState == 'kunjungan')
             IconButton(

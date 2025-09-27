@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PageHeader extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
+  final Widget title;
   final List<Widget>? actions;
   final bool hideBackButton;
   final bool hideNetworkStatus;
@@ -34,7 +34,7 @@ class PageHeader extends StatelessWidget implements PreferredSizeWidget {
               },
               child: const Icon(Icons.arrow_back),
             ),
-      title: Text(title),
+      title: title,
       actions: [
         if (!(hideNetworkStatus))
           // indikator network

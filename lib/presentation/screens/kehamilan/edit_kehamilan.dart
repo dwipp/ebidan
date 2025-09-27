@@ -25,7 +25,7 @@ class EditKehamilanScreen extends StatefulWidget {
 
 class _EditKehamilanState extends State<EditKehamilanScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   // **PERUBAHAN 1: Definisikan GlobalKey untuk setiap field wajib**
   final Map<String, GlobalKey> _fieldKeys = {
     'noKohortIbu': GlobalKey(),
@@ -85,7 +85,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
     }
     return val == null ? 'Wajib dipilih' : null;
   }
-  
+
   @override
   void initState() {
     super.initState();
@@ -255,7 +255,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: "Perbaharui Kehamilan"),
+      appBar: PageHeader(title: Text("Perbaharui Kehamilan")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -351,11 +351,8 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
                 suffixText: 'cm',
                 isNumber: true,
                 // **Wrap validator**
-                validator: (val) => _formValidator.wrapValidator(
-                  'tb',
-                  val,
-                  _requiredValidator,
-                ),
+                validator: (val) =>
+                    _formValidator.wrapValidator('tb', val, _requiredValidator),
               ),
               const SizedBox(height: 12),
               DropdownField(
@@ -483,10 +480,18 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
                 child: BlocConsumer<SubmitKehamilanCubit, SubmitKehamilanState>(
                   listener: (context, state) {
                     if (state is AddKehamilanSuccess) {
-            Snackbar.show(context, message: 'Data kehamilan berhasil disimpan', type: SnackbarType.success);
+                      Snackbar.show(
+                        context,
+                        message: 'Data kehamilan berhasil disimpan',
+                        type: SnackbarType.success,
+                      );
                       Navigator.pop(context);
                     } else if (state is AddKehamilanFailure) {
-            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
+                      Snackbar.show(
+                        context,
+                        message: 'Gagal: ${state.message}',
+                        type: SnackbarType.error,
+                      );
                     }
                   },
                   builder: (context, state) {

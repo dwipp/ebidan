@@ -52,7 +52,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: "Review Kunjungan"),
+      appBar: PageHeader(title: Text("Review Kunjungan")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -112,7 +112,11 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                 child: BlocConsumer<SubmitKunjunganCubit, SubmitKunjunganState>(
                   listener: (context, state) {
                     if (state is AddKunjunganSuccess) {
-            Snackbar.show(context, message: 'Data berhasil disimpan', type: SnackbarType.success);
+                      Snackbar.show(
+                        context,
+                        message: 'Data berhasil disimpan',
+                        type: SnackbarType.success,
+                      );
                       if (widget.data.id.isNotEmpty) {
                         int count = 0;
                         Navigator.popUntil(context, (route) => count++ >= 2);
@@ -124,7 +128,11 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                         );
                       }
                     } else if (state is AddKunjunganFailure) {
-            Snackbar.show(context, message: 'Gagal: ${state.message}', type: SnackbarType.error);
+                      Snackbar.show(
+                        context,
+                        message: 'Gagal: ${state.message}',
+                        type: SnackbarType.error,
+                      );
                     }
                   },
                   builder: (context, state) {
