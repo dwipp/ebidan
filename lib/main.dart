@@ -56,7 +56,7 @@ class _MainAppState extends State<MainApp> {
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue, // warna utama
+            seedColor: Colors.cyan, // warna utama
             primary: Colors.blue, // utama
             secondary: Colors.orange, // secondary
             tertiary: Colors.green, // tambahan
@@ -72,7 +72,7 @@ class _MainAppState extends State<MainApp> {
         darkTheme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue,
+            seedColor: Colors.cyan,
             primary: Colors.blue.shade300,
             secondary: Colors.orange.shade200,
             tertiary: Colors.green.shade200,
