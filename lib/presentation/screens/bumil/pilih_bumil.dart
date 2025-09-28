@@ -32,26 +32,27 @@ class PilihBumilScreen extends StatelessWidget {
         appBar: PageHeader(
           title: const Text('Pilih Bumil'),
           actions: [
-            // === Tombol filter isHamil ===
-            BlocBuilder<SearchBumilCubit, SearchBumilState>(
-              builder: (context, state) {
-                return IconButton(
-                  tooltip: state.showHamilOnly
-                      ? 'Tampilkan semua'
-                      : 'Filter hanya yang sedang hamil',
-                  icon: Icon(
-                    state.showHamilOnly
-                        ? Icons
-                              .pregnant_woman // ikon khusus biar jelas
-                        : Icons.filter_alt_outlined,
-                    color: state.showHamilOnly ? Colors.pink : Colors.grey,
-                  ),
-                  onPressed: () {
-                    context.read<SearchBumilCubit>().toggleFilterHamil();
-                  },
-                );
-              },
-            ),
+            if (pilihState == 'bumil')
+              // === Tombol filter isHamil ===
+              BlocBuilder<SearchBumilCubit, SearchBumilState>(
+                builder: (context, state) {
+                  return IconButton(
+                    tooltip: state.showHamilOnly
+                        ? 'Tampilkan semua'
+                        : 'Filter hanya yang sedang hamil',
+                    icon: Icon(
+                      state.showHamilOnly
+                          ? Icons
+                                .pregnant_woman // ikon khusus biar jelas
+                          : Icons.filter_alt_outlined,
+                      color: state.showHamilOnly ? Colors.pink : Colors.grey,
+                    ),
+                    onPressed: () {
+                      context.read<SearchBumilCubit>().toggleFilterHamil();
+                    },
+                  );
+                },
+              ),
             if (pilihState == 'kunjungan')
               IconButton(
                 icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
