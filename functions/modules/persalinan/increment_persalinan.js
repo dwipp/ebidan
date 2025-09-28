@@ -1,6 +1,6 @@
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
-import { db, FieldValue } from "../firebase.js";
-import { getMonthString } from "../helpers.js";
+import { db } from "../firebase.js";
+import { getMonthString, safeIncrement } from "../helpers.js";
 
 const REGION = "asia-southeast2";
 
@@ -33,7 +33,6 @@ export const incrementPersalinanCount = onDocumentUpdated(
       const doc = await t.get(statsRef);
       const existing = doc.exists ? doc.data() : {};
       const byMonth = existing.by_month || {};
-      const updates = {};
 
       for (const p of newPersalinan) {
         if (!p.tgl_persalinan) continue;
@@ -45,19 +44,23 @@ export const incrementPersalinanCount = onDocumentUpdated(
 
         const monthKey = getMonthString(tgl);
 
-        // pastikan struktur bulan ada di memory (bukan increment)
+        // pastikan struktur bulan ada
         if (!byMonth[monthKey]) {
-          byMonth[monthKey] = { persalinan: {}, kunjungan: {} };
-        }
-        if (!byMonth[monthKey].persalinan) {
-          byMonth[monthKey].persalinan = {};
-        }
-        if (!byMonth[monthKey].kunjungan) {
-          byMonth[monthKey].kunjungan = {};
+          byMonth[monthKey] = {
+            persalinan: { total: 0 },
+            kunjungan: { abortus: 0 },
+          };
+        } else {
+          if (!byMonth[monthKey].persalinan) {
+            byMonth[monthKey].persalinan = { total: 0 };
+          }
+          if (!byMonth[monthKey].kunjungan) {
+            byMonth[monthKey].kunjungan = { abortus: 0 };
+          }
         }
 
         // increment total persalinan
-        updates[`by_month.${monthKey}.persalinan.total`] = FieldValue.increment(1);
+        safeIncrement(byMonth[monthKey].persalinan, "total");
 
         // cek abortus
         if (p.status_bayi === "Abortus") {
@@ -65,6 +68,7 @@ export const incrementPersalinanCount = onDocumentUpdated(
           let lebihDariMinggu = false;
 
           if (typeof p.umur_kehamilan === "string") {
+            // contoh: "20 minggu" atau "20 minggu 5 hari"
             const match = p.umur_kehamilan.match(/(\d+)\s*minggu(?:\s+(\d+)\s*hari)?/i);
             if (match) {
               umurMinggu = parseInt(match[1], 10);
@@ -74,6 +78,7 @@ export const incrementPersalinanCount = onDocumentUpdated(
               }
             }
           } else if (typeof p.umur_kehamilan === "number") {
+            // kalau langsung angka (anggap minggu)
             umurMinggu = p.umur_kehamilan;
           }
 
@@ -83,12 +88,12 @@ export const incrementPersalinanCount = onDocumentUpdated(
             umurMinggu <= 20 &&
             !lebihDariMinggu
           ) {
-            updates[`by_month.${monthKey}.kunjungan.abortus`] = FieldValue.increment(1);
+            safeIncrement(byMonth[monthKey].kunjungan, "abortus");
           }
         }
 
         // --- LOGIC BATAS 13 BULAN ---
-        const months = Object.keys(byMonth).sort(); // YYYY-MM ascending
+        const months = Object.keys(byMonth).sort(); // YYYY-MM format -> urut ascending
         if (months.length > 13) {
           const oldestMonth = months[0];
           delete byMonth[oldestMonth];
@@ -107,7 +112,6 @@ export const incrementPersalinanCount = onDocumentUpdated(
         statsRef,
         {
           ...existing,
-          ...updates,
           by_month: byMonth,
           last_updated_month: newPersalinan.length
             ? getMonthString(

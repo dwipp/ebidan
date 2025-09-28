@@ -1,6 +1,6 @@
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
-import { db, FieldValue } from "../firebase.js";
-import { getMonthString } from "../helpers.js";
+import { db } from "../firebase.js";
+import { getMonthString, safeDecrement } from "../helpers.js";
 
 const REGION = "asia-southeast2";
 
@@ -47,7 +47,6 @@ export const decrementPersalinanCount = onDocumentUpdated(
         let lebihDariMinggu = false;
 
         if (typeof p.umur_kehamilan === "string") {
-          // contoh: "20 minggu" atau "20 minggu 5 hari"
           const match = p.umur_kehamilan.match(/(\d+)\s*minggu(?:\s+(\d+)\s*hari)?/i);
           if (match) {
             umurMinggu = parseInt(match[1], 10);
@@ -70,25 +69,35 @@ export const decrementPersalinanCount = onDocumentUpdated(
         }
       }
 
-      // update statistik dengan decrement
-      const updateData = {
-        by_month: {
-          [monthKey]: {
-            persalinan: {
-              total: FieldValue.increment(-1),
-            },
+      await db.runTransaction(async (t) => {
+        const doc = await t.get(statRef);
+        if (!doc.exists) return;
+
+        const existing = doc.data() || {};
+        const byMonth = existing.by_month || {};
+
+        if (!byMonth[monthKey]) byMonth[monthKey] = {};
+        if (!byMonth[monthKey].persalinan) byMonth[monthKey].persalinan = { total: 0 };
+        if (!byMonth[monthKey].kunjungan) byMonth[monthKey].kunjungan = { abortus: 0 };
+
+        // decrement persalinan
+        safeDecrement(byMonth[monthKey].persalinan, "total");
+
+        // decrement abortus kalau memang abortus
+        if (isAbortus) {
+          safeDecrement(byMonth[monthKey].kunjungan, "abortus");
+        }
+
+        t.set(
+          statRef,
+          {
+            ...existing,
+            by_month: byMonth,
+            last_updated_month: monthKey,
           },
-        },
-      };
-
-      if (isAbortus) {
-        updateData.by_month[monthKey].kunjungan = {
-          abortus: FieldValue.increment(-1),
-        };
-      }
-
-      // --- penting: merge supaya data bulan lain tidak hilang
-      await statRef.set(updateData, { merge: true });
+          { merge: true }
+        );
+      });
 
       console.log(
         `Decremented persalinan count for month: ${monthKey}, bidan: ${idBidan}${
