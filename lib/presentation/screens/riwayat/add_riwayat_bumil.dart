@@ -64,8 +64,6 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
     // Inisialisasi FormValidator
     _formValidator = FormValidator(fieldKeys: _fieldKeys);
     super.initState();
-    // Langsung tambahkan satu riwayat saat pertama kali load
-    _addRiwayat();
   }
 
   @override
@@ -354,11 +352,13 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                 child: BlocConsumer<SubmitRiwayatCubit, SubmitiwayatState>(
                   listener: (context, state) {
                     if (state is SubmitRiwayatSuccess) {
-                      Snackbar.show(
-                        context,
-                        message: 'Riwayat berhasil disimpan',
-                        type: SnackbarType.success,
-                      );
+                      if (riwayatList.isNotEmpty){
+                        Snackbar.show(
+                          context,
+                          message: 'Riwayat berhasil disimpan',
+                          type: SnackbarType.success,
+                        );
+                      }
 
                       if (widget.state == 'lateUpdate') {
                         Navigator.pop(context, state.listRiwayat);
@@ -397,7 +397,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                     }
                     return Button(
                       isSubmitting: isSubmitting,
-                      label: 'Simpan',
+                      label: riwayatList.isEmpty ? 'Tanpa Riwayat' : 'Simpan',
                       loadingLabel: 'Menyimpan...',
                       icon: Icons.save,
                       onPressed: _submitData,
