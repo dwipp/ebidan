@@ -36,16 +36,20 @@ class PilihBumilScreen extends StatelessWidget {
               // === Tombol filter isHamil ===
               BlocBuilder<SearchBumilCubit, SearchBumilState>(
                 builder: (context, state) {
+                  print('toggle: ${state.filter.showHamilOnly}');
+                  print('jumlah: ${state.filteredList.length}');
                   return IconButton(
-                    tooltip: state.showHamilOnly
+                    tooltip: state.filter.showHamilOnly
                         ? 'Tampilkan semua'
                         : 'Filter hanya yang sedang hamil',
                     icon: Icon(
-                      state.showHamilOnly
+                      state.filter.showHamilOnly
                           ? Icons
                                 .pregnant_woman // ikon khusus biar jelas
                           : Icons.filter_alt_outlined,
-                      color: state.showHamilOnly ? Colors.pink : Colors.grey,
+                      color: state.filter.showHamilOnly
+                          ? Colors.pink
+                          : Colors.grey,
                     ),
                     onPressed: () {
                       context.read<SearchBumilCubit>().toggleFilterHamil();
@@ -120,7 +124,7 @@ class PilihBumilScreen extends StatelessWidget {
                               );
 
                               if (pilihState == 'bumil') {
-                                print('isHamil: ${state.showHamilOnly}');
+                                print('isHamil: ${state.filter.showHamilOnly}');
                                 Navigator.pushNamed(
                                   context,
                                   AppRouter.dataBumil,

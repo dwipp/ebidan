@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/data/bumil_filter.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'dart:convert';
 import 'package:ebidan/data/models/bumil_model.dart';
 
 part 'search_bumil_state.dart';
@@ -20,7 +20,7 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
         BumilLoading(
           bumilList: state.bumilList,
           filteredList: state.filteredList,
-          showHamilOnly: state.showHamilOnly,
+          filter: state.filter,
         ),
       );
     } else {
@@ -28,7 +28,7 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
         state.copyWith(
           bumilList: state.bumilList,
           filteredList: state.filteredList,
-          showHamilOnly: state.showHamilOnly,
+          filter: state.filter,
         ),
       );
     }
@@ -44,22 +44,18 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
           .map((doc) => Bumil.fromMap(doc.id, doc.data()))
           .toList();
 
-      // apply filter kalau showHamilOnly aktif
-      final filtered = state.showHamilOnly
-          ? list.where((b) => b.isHamil).toList()
-          : list;
+      // apply semua filter lewat helper
+      final filtered = _applyFilters(list);
 
       emit(
         state.copyWith(
           bumilList: list,
           filteredList: filtered,
-          showHamilOnly: state.showHamilOnly,
+          filter: state.filter,
         ),
       );
     } catch (e) {
-      emit(
-        state.copyWith(error: e.toString(), showHamilOnly: state.showHamilOnly),
-      );
+      emit(state.copyWith(error: e.toString(), filter: state.filter));
     }
   }
 
@@ -72,34 +68,78 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
       return namaMatch || nikMatch;
     }).toList();
 
-    if (state.showHamilOnly) {
-      filtered = filtered.where((b) => b.isHamil).toList();
+    filtered = _applyFilters(filtered);
+
+    emit(state.copyWith(filteredList: filtered, filter: state.filter));
+  }
+
+  // == FILTER ==
+  // apply semua filter
+  List<Bumil> _applyFilters(List<Bumil> list, {FilterModel? filter}) {
+    final f = filter ?? state.filter;
+    var result = list;
+
+    if (f.showHamilOnly) {
+      result = result.where((b) => b.isHamil).toList();
     }
+
+    if (f.statuses.isNotEmpty) {
+      result = result
+          .where((b) => f.statuses.contains(b.latestKunjungan?.status))
+          .toList();
+    }
+
+    if (f.month != null) {
+      result = result
+          .where(
+            (b) =>
+                (b.latestKunjungan?.createdAt?.year == f.month!.year) &&
+                (b.latestKunjungan?.createdAt?.month == f.month!.month),
+          )
+          .toList();
+    }
+
+    return result;
+  }
+
+  void toggleFilterHamil() {
+    final newFilter = state.filter.copyWith(
+      showHamilOnly: !state.filter.showHamilOnly,
+    );
 
     emit(
       state.copyWith(
-        filteredList: filtered,
-        showHamilOnly: state.showHamilOnly,
+        filter: newFilter,
+        filteredList: _applyFilters(state.bumilList, filter: newFilter),
       ),
     );
   }
 
-  void toggleFilterHamil() {
-    final newValue = !state.showHamilOnly;
+  void setStatuses(List<String> statuses) {
+    final newFilter = state.filter.copyWith(statuses: statuses);
+    emit(
+      state.copyWith(
+        filter: newFilter,
+        filteredList: _applyFilters(state.bumilList, filter: newFilter),
+      ),
+    );
+  }
 
-    var filtered = state.bumilList;
-    if (newValue) {
-      filtered = filtered.where((b) => b.isHamil).toList();
-    }
-
-    emit(state.copyWith(showHamilOnly: newValue, filteredList: filtered));
+  void setMonth(DateTime? month) {
+    final newFilter = state.filter.copyWith(month: month);
+    emit(
+      state.copyWith(
+        filter: newFilter,
+        filteredList: _applyFilters(state.bumilList, filter: newFilter),
+      ),
+    );
   }
 
   void resetFilter() {
     emit(
       state.copyWith(
-        showHamilOnly: false,
-        filteredList: state.bumilList, // tampilkan semua lagi
+        filter: const FilterModel(),
+        filteredList: state.bumilList,
       ),
     );
   }

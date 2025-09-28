@@ -6,13 +6,13 @@ class SearchBumilState extends Equatable {
   final List<Bumil> bumilList;
   final List<Bumil> filteredList;
   final String? error;
-  final bool showHamilOnly; // 👈 tambahan
+  final FilterModel filter;
 
   const SearchBumilState({
     required this.bumilList,
     required this.filteredList,
     this.error,
-    this.showHamilOnly = false, // default false
+    this.filter = const FilterModel(),
   });
 
   factory SearchBumilState.initial() {
@@ -20,24 +20,24 @@ class SearchBumilState extends Equatable {
       bumilList: [],
       filteredList: [],
       error: null,
-      showHamilOnly: false,
+      filter: FilterModel(),
     );
   }
 
   @override
-  List<Object?> get props => [bumilList, filteredList, error, showHamilOnly];
+  List<Object?> get props => [bumilList, filteredList, error, filter];
 
   SearchBumilState copyWith({
     List<Bumil>? bumilList,
     List<Bumil>? filteredList,
     String? error,
-    bool? showHamilOnly,
+    FilterModel? filter,
   }) {
     return SearchBumilState(
       bumilList: bumilList ?? this.bumilList,
       filteredList: filteredList ?? this.filteredList,
       error: error ?? this.error,
-      showHamilOnly: showHamilOnly ?? this.showHamilOnly,
+      filter: filter ?? this.filter,
     );
   }
 
@@ -46,7 +46,7 @@ class SearchBumilState extends Equatable {
       'bumilList': bumilList.map((x) => x.toMap()).toList(),
       'filteredList': filteredList.map((x) => x.toMap()).toList(),
       'error': error,
-      'showHamilOnly': showHamilOnly,
+      'filter': filter.toMap(),
     };
   }
 
@@ -63,20 +63,15 @@ class SearchBumilState extends Equatable {
         ),
       ),
       error: map['error'] != null ? map['error'] as String : null,
-      showHamilOnly: map['showHamilOnly'] as bool? ?? false,
+      filter: FilterModel.fromMap(map['filter'] ?? {}),
     );
   }
-
-  String toJson() => json.encode(toMap());
-
-  factory SearchBumilState.fromJson(String source) =>
-      SearchBumilState.fromMap(json.decode(source) as Map<String, dynamic>);
 }
 
 class BumilLoading extends SearchBumilState {
   BumilLoading({
     required super.bumilList,
     required super.filteredList,
-    super.showHamilOnly,
+    super.filter,
   });
 }
