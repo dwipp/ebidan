@@ -20,6 +20,7 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
         BumilLoading(
           bumilList: state.bumilList,
           filteredList: state.filteredList,
+          showHamilOnly: state.showHamilOnly,
         ),
       );
     } else {
@@ -27,6 +28,7 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
         state.copyWith(
           bumilList: state.bumilList,
           filteredList: state.filteredList,
+          showHamilOnly: state.showHamilOnly,
         ),
       );
     }
@@ -41,22 +43,65 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
       final list = snapshot.docs
           .map((doc) => Bumil.fromMap(doc.id, doc.data()))
           .toList();
-      print('bumil: ${list}');
-      emit(state.copyWith(bumilList: list, filteredList: list));
+
+      // apply filter kalau showHamilOnly aktif
+      final filtered = state.showHamilOnly
+          ? list.where((b) => b.isHamil).toList()
+          : list;
+
+      emit(
+        state.copyWith(
+          bumilList: list,
+          filteredList: filtered,
+          showHamilOnly: state.showHamilOnly,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(
+        state.copyWith(error: e.toString(), showHamilOnly: state.showHamilOnly),
+      );
     }
   }
 
   void search(String query) {
     final lower = query.toLowerCase();
-    final filtered = state.bumilList.where((b) {
+
+    var filtered = state.bumilList.where((b) {
       final namaMatch = b.namaIbu.toLowerCase().contains(lower);
       final nikMatch = b.nikIbu.toLowerCase().contains(lower);
       return namaMatch || nikMatch;
     }).toList();
 
-    emit(state.copyWith(filteredList: filtered));
+    if (state.showHamilOnly) {
+      filtered = filtered.where((b) => b.isHamil).toList();
+    }
+
+    emit(
+      state.copyWith(
+        filteredList: filtered,
+        showHamilOnly: state.showHamilOnly,
+      ),
+    );
+  }
+
+  void toggleFilterHamil() {
+    final newValue = !state.showHamilOnly;
+
+    var filtered = state.bumilList;
+    if (newValue) {
+      filtered = filtered.where((b) => b.isHamil).toList();
+    }
+
+    emit(state.copyWith(showHamilOnly: newValue, filteredList: filtered));
+  }
+
+  void resetFilter() {
+    emit(
+      state.copyWith(
+        showHamilOnly: false,
+        filteredList: state.bumilList, // tampilkan semua lagi
+      ),
+    );
   }
 
   // === HYDRATED ===

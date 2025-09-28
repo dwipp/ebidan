@@ -6,29 +6,38 @@ class SearchBumilState extends Equatable {
   final List<Bumil> bumilList;
   final List<Bumil> filteredList;
   final String? error;
+  final bool showHamilOnly; // 👈 tambahan
 
   const SearchBumilState({
     required this.bumilList,
     required this.filteredList,
     this.error,
+    this.showHamilOnly = false, // default false
   });
 
   factory SearchBumilState.initial() {
-    return const SearchBumilState(bumilList: [], filteredList: [], error: null);
+    return const SearchBumilState(
+      bumilList: [],
+      filteredList: [],
+      error: null,
+      showHamilOnly: false,
+    );
   }
 
   @override
-  List<Object?> get props => [bumilList, filteredList, error];
+  List<Object?> get props => [bumilList, filteredList, error, showHamilOnly];
 
   SearchBumilState copyWith({
     List<Bumil>? bumilList,
     List<Bumil>? filteredList,
     String? error,
+    bool? showHamilOnly,
   }) {
     return SearchBumilState(
       bumilList: bumilList ?? this.bumilList,
       filteredList: filteredList ?? this.filteredList,
       error: error ?? this.error,
+      showHamilOnly: showHamilOnly ?? this.showHamilOnly,
     );
   }
 
@@ -37,6 +46,7 @@ class SearchBumilState extends Equatable {
       'bumilList': bumilList.map((x) => x.toMap()).toList(),
       'filteredList': filteredList.map((x) => x.toMap()).toList(),
       'error': error,
+      'showHamilOnly': showHamilOnly,
     };
   }
 
@@ -53,6 +63,7 @@ class SearchBumilState extends Equatable {
         ),
       ),
       error: map['error'] != null ? map['error'] as String : null,
+      showHamilOnly: map['showHamilOnly'] as bool? ?? false,
     );
   }
 
@@ -63,5 +74,9 @@ class SearchBumilState extends Equatable {
 }
 
 class BumilLoading extends SearchBumilState {
-  BumilLoading({required super.bumilList, required super.filteredList});
+  BumilLoading({
+    required super.bumilList,
+    required super.filteredList,
+    super.showHamilOnly,
+  });
 }
