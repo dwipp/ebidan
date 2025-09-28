@@ -8,6 +8,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class DetailBumilScreen extends StatelessWidget {
   const DetailBumilScreen({super.key});
 
+  int usia(DateTime tanggalLahir) {
+    DateTime sekarang = DateTime.now();
+    int usia = sekarang.year - tanggalLahir.year;
+
+    // cek apakah ulang tahun tahun ini sudah lewat atau belum
+    if (sekarang.month < tanggalLahir.month ||
+        (sekarang.month == tanggalLahir.month &&
+            sekarang.day < tanggalLahir.day)) {
+      usia--;
+    }
+
+    return usia;
+  }
+
   @override
   Widget build(BuildContext context) {
     final bumil = context.watch<SelectedBumilCubit>().state;
@@ -79,6 +93,12 @@ class DetailBumilScreen extends StatelessWidget {
                 label: "Tanggal Lahir",
                 value: Utils.formattedDate(bumil?.birthdateIbu),
               ),
+              if (bumil?.birthdateIbu != null)
+                Utils.generateRowLabelValue(
+                  context,
+                  label: "Usia",
+                  value: '${usia(bumil!.birthdateIbu!)} tahun',
+                ),
               const SizedBox(height: 16),
               const Text(
                 "Data Suami",
