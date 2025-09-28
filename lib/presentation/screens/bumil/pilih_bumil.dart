@@ -23,6 +23,7 @@ class PilihBumilScreen extends StatelessWidget {
     context.read<SearchBumilCubit>().fetchData(
       context.read<ConnectivityCubit>().state,
     );
+
     return PopScope(
       canPop: true,
       onPopInvokedWithResult: (didPop, result) {
@@ -33,26 +34,26 @@ class PilihBumilScreen extends StatelessWidget {
           title: const Text('Pilih Bumil'),
           actions: [
             if (pilihState == 'bumil')
-              // === Tombol filter isHamil ===
               BlocBuilder<SearchBumilCubit, SearchBumilState>(
                 builder: (context, state) {
-                  print('toggle: ${state.filter.showHamilOnly}');
-                  print('jumlah: ${state.filteredList.length}');
                   return IconButton(
                     tooltip: state.filter.showHamilOnly
                         ? 'Tampilkan semua'
                         : 'Filter hanya yang sedang hamil',
                     icon: Icon(
                       state.filter.showHamilOnly
-                          ? Icons
-                                .pregnant_woman // ikon khusus biar jelas
+                          ? Icons.pregnant_woman
                           : Icons.filter_alt_outlined,
                       color: state.filter.showHamilOnly
                           ? Colors.pink
                           : Colors.grey,
                     ),
                     onPressed: () {
-                      context.read<SearchBumilCubit>().toggleFilterHamil();
+                      if (!state.filter.showHamilOnly) {
+                        context.read<SearchBumilCubit>().toggleFilterHamil();
+                      } else {
+                        context.read<SearchBumilCubit>().resetFilter();
+                      }
                     },
                   );
                 },
@@ -61,17 +62,16 @@ class PilihBumilScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
                 onPressed: () {
-                  Navigator.of(
-                    context,
-                  ).pushNamed(AppRouter.checkDataBumil).then((_) {
-                    _refresh(context);
-                  });
+                  Navigator.of(context)
+                      .pushNamed(AppRouter.checkDataBumil)
+                      .then((_) => _refresh(context));
                 },
               ),
           ],
         ),
         body: Column(
           children: [
+            // ===== Search =====
             Padding(
               padding: const EdgeInsets.all(8),
               child: TextField(
@@ -87,6 +87,98 @@ class PilihBumilScreen extends StatelessWidget {
                 },
               ),
             ),
+
+            // ===== Compact Filter (Status + Bulan) =====
+            BlocBuilder<SearchBumilCubit, SearchBumilState>(
+              builder: (context, state) {
+                if (!state.filter.showHamilOnly) return const SizedBox.shrink();
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  child: Row(
+                    children: [
+                      // Filter Status
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          value: state.filter.statuses.isNotEmpty
+                              ? state.filter.statuses.first
+                              : null,
+                          decoration: const InputDecoration(
+                            labelText: 'Status',
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 12,
+                            ),
+                          ),
+                          items: ['K1', 'K2', 'K3', 'K4', 'K5', 'K6']
+                              .map(
+                                (s) =>
+                                    DropdownMenuItem(value: s, child: Text(s)),
+                              )
+                              .toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              context.read<SearchBumilCubit>().setStatuses([
+                                val,
+                              ]);
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
+                      // Filter Month
+                      Expanded(
+                        child: InkWell(
+                          onTap: () async {
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: state.filter.month ?? DateTime.now(),
+                              firstDate: DateTime(2020),
+                              lastDate: DateTime(2100),
+                              helpText: 'Pilih Bulan',
+                            );
+                            if (picked != null) {
+                              final month = DateTime(picked.year, picked.month);
+                              context.read<SearchBumilCubit>().setMonth(month);
+                            }
+                          },
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              labelText: 'Bulan',
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 12,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  state.filter.month != null
+                                      ? '${state.filter.month!.month}/${state.filter.month!.year}'
+                                      : 'Pilih Bulan',
+                                ),
+                                const Icon(Icons.calendar_today, size: 18),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            // ===== List Data =====
             Expanded(
               child: BlocBuilder<SearchBumilCubit, SearchBumilState>(
                 builder: (context, state) {
@@ -118,19 +210,17 @@ class PilihBumilScreen extends StatelessWidget {
                             title: Text(bumil.namaIbu),
                             subtitle: Text('NIK: ${bumil.nikIbu}'),
                             trailing: const Icon(Icons.chevron_right),
-                            onTap: () async {
+                            onTap: () {
                               context.read<SelectedBumilCubit>().selectBumil(
                                 bumil,
                               );
 
                               if (pilihState == 'bumil') {
-                                print('isHamil: ${state.filter.showHamilOnly}');
                                 Navigator.pushNamed(
                                   context,
                                   AppRouter.dataBumil,
                                 ).then((_) => _refresh(context));
                               } else {
-                                // === pilihState == kunjungan ===
                                 if (bumil.latestKehamilanId == null ||
                                     bumil.latestKehamilanPersalinan == true) {
                                   Navigator.pushNamed(
