@@ -54,7 +54,7 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
           statusBayi: persalinan.statusBayi ?? '-',
           statusLahir: persalinan.cara ?? '-',
           statusTerm: _getStatusKehamilan(
-            int.tryParse(persalinan.umurKehamilan ?? '-1') ?? -1,
+            persalinan.umurKehamilan ?? '-',
           ),
           tempat: persalinan.tempat ?? '-',
         );
@@ -127,7 +127,7 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
             statusBayi: updatedPersalinan.statusBayi ?? '-',
             statusLahir: updatedPersalinan.cara ?? '-',
             statusTerm: _getStatusKehamilan(
-              int.tryParse(updatedPersalinan.umurKehamilan ?? '-1') ?? -1,
+              updatedPersalinan.umurKehamilan ?? "-",
             ),
             tempat: updatedPersalinan.tempat ?? '-',
           );
@@ -190,15 +190,28 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
     });
   }
 
-  String _getStatusKehamilan(int usiaMinggu) {
-    if (usiaMinggu < 37) {
+  String _getStatusKehamilan(String input) {
+    // Parsing string "X minggu Y hari"
+    final regex = RegExp(r'(\d+)\s*minggu(?:\s*(\d+)\s*hari)?');
+    final match = regex.firstMatch(input.toLowerCase());
+
+    if (match == null) return "-";
+
+    final minggu = int.parse(match.group(1)!);
+    final hari = match.group(2) != null ? int.parse(match.group(2)!) : 0;
+
+    // Konversi ke total hari
+    final totalHari = (minggu * 7) + hari;
+
+    if (totalHari < 259) {
       return "Preterm";
-    } else if (usiaMinggu >= 37 && usiaMinggu <= 41) {
+    } else if (totalHari >= 259 && totalHari <= 293) {
       return "Aterm";
-    } else if (usiaMinggu >= 42) {
+    } else if (totalHari >= 294) {
       return "Postterm";
     } else {
       return "-";
     }
   }
+
 }
