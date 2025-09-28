@@ -115,7 +115,10 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
     );
   }
 
-  void setStatuses(List<String> statuses) {
+  void setStatus(String status) {
+    final statuses = status.toLowerCase() == 'semua'
+        ? ['K1', 'K2', 'K3', 'K4', 'K5', 'K6']
+        : [status];
     final newFilter = state.filter.copyWith(statuses: statuses);
     emit(
       state.copyWith(

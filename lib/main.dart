@@ -9,8 +9,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -86,6 +88,14 @@ class _MainAppState extends State<MainApp> {
             brightness: Brightness.dark,
           ),
         ),
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          MonthYearPickerLocalizations.delegate, // untuk month_year_picker
+        ],
+        supportedLocales: const [Locale('en', 'US'), Locale('id', 'ID')],
+        locale: const Locale('id', 'ID'),
       ),
     );
   }

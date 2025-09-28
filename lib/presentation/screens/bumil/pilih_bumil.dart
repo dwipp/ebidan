@@ -7,6 +7,7 @@ import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 
 class PilihBumilScreen extends StatelessWidget {
   final String pilihState;
@@ -51,6 +52,10 @@ class PilihBumilScreen extends StatelessWidget {
                     onPressed: () {
                       if (!state.filter.showHamilOnly) {
                         context.read<SearchBumilCubit>().toggleFilterHamil();
+                        context.read<SearchBumilCubit>().setMonth(
+                          DateTime.now(),
+                        );
+                        context.read<SearchBumilCubit>().setStatus('Semua');
                       } else {
                         context.read<SearchBumilCubit>().resetFilter();
                       }
@@ -87,7 +92,6 @@ class PilihBumilScreen extends StatelessWidget {
                 },
               ),
             ),
-
             // ===== Compact Filter (Status + Bulan) =====
             BlocBuilder<SearchBumilCubit, SearchBumilState>(
               builder: (context, state) {
@@ -103,9 +107,9 @@ class PilihBumilScreen extends StatelessWidget {
                       // Filter Status
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: state.filter.statuses.isNotEmpty
+                          value: state.filter.statuses.length == 1
                               ? state.filter.statuses.first
-                              : null,
+                              : 'Semua',
                           decoration: const InputDecoration(
                             labelText: 'Status',
                             border: OutlineInputBorder(),
@@ -115,7 +119,7 @@ class PilihBumilScreen extends StatelessWidget {
                               horizontal: 12,
                             ),
                           ),
-                          items: ['K1', 'K2', 'K3', 'K4', 'K5', 'K6']
+                          items: ['Semua', 'K1', 'K2', 'K3', 'K4', 'K5', 'K6']
                               .map(
                                 (s) =>
                                     DropdownMenuItem(value: s, child: Text(s)),
@@ -123,9 +127,7 @@ class PilihBumilScreen extends StatelessWidget {
                               .toList(),
                           onChanged: (val) {
                             if (val != null) {
-                              context.read<SearchBumilCubit>().setStatuses([
-                                val,
-                              ]);
+                              context.read<SearchBumilCubit>().setStatus(val);
                             }
                           },
                         ),
@@ -136,16 +138,18 @@ class PilihBumilScreen extends StatelessWidget {
                       Expanded(
                         child: InkWell(
                           onTap: () async {
-                            final picked = await showDatePicker(
+                            final selected = await showMonthYearPicker(
                               context: context,
+                              locale: const Locale('id', 'ID'),
                               initialDate: state.filter.month ?? DateTime.now(),
                               firstDate: DateTime(2020),
                               lastDate: DateTime(2100),
-                              helpText: 'Pilih Bulan',
                             );
-                            if (picked != null) {
-                              final month = DateTime(picked.year, picked.month);
-                              context.read<SearchBumilCubit>().setMonth(month);
+
+                            if (selected != null) {
+                              context.read<SearchBumilCubit>().setMonth(
+                                selected,
+                              );
                             }
                           },
                           child: InputDecorator(
@@ -177,7 +181,6 @@ class PilihBumilScreen extends StatelessWidget {
                 );
               },
             ),
-
             // ===== List Data =====
             Expanded(
               child: BlocBuilder<SearchBumilCubit, SearchBumilState>(
