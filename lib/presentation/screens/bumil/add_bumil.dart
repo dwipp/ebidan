@@ -328,7 +328,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     validator: (val) => _formValidator.wrapValidator(
                       'tanggalLahirIbu',
                       val,
-                      _requiredStringValidator,
+                      _requiredObjectValidator,
                     ),
                   ),
 
@@ -472,7 +472,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     validator: (val) => _formValidator.wrapValidator(
                       'tanggalLahirSuami',
                       val,
-                      _requiredStringValidator,
+                      _requiredObjectValidator,
                     ),
                   ),
 
