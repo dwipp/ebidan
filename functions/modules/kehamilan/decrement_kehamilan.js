@@ -1,6 +1,6 @@
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
 import { db } from "../firebase.js";
-import { getMonthString } from "../helpers.js";
+import { getMonthString, safeDecrement } from "../helpers.js";
 
 const REGION = "asia-southeast2";
 
@@ -35,12 +35,13 @@ export const decrementKehamilanCount = onDocumentDeleted(
       if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
       if (!byMonth[currentMonth].kehamilan) byMonth[currentMonth].kehamilan = { total: 0 };
 
-      // decrement total kehamilan, tetap aman dari negatif
-      byMonth[currentMonth].kehamilan.total = Math.max((byMonth[currentMonth].kehamilan.total || 0) - 1, 0);
+      // decrement pakai safeDecrement
+      safeDecrement(byMonth[currentMonth].kehamilan, "total");
+      safeDecrement(kehamilan, "all_bumil_count");
 
       t.set(statsRef, {
         ...data,
-        kehamilan: { all_bumil_count: Math.max((kehamilan.all_bumil_count || 0) - 1, 0) },
+        kehamilan,
         last_updated_month: currentMonth,
         by_month: byMonth
       }, { merge: true });
