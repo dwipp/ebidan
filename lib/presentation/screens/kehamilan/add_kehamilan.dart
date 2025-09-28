@@ -32,6 +32,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
     'kb': GlobalKey(),
     'statusTT': GlobalKey(),
     'kontrolDokter': GlobalKey(),
+    'createdAt': GlobalKey(),
   };
 
   // Hapus: Map<String, FieldValidator> _validators, karena akan menggunakan wrapValidator
@@ -65,7 +66,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
   DateTime? _hpht;
   DateTime? _htp;
   DateTime? _tglPeriksaUsg;
-  DateTime? _createdAt = DateTime.now();
+  DateTime? _createdAt;
 
   String? _selectedStatusResti;
   final List<String> _statusRestiList = ['Nakes', 'Masyarakat', '-'];
@@ -406,9 +407,9 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
               ),
               const SizedBox(height: 12),
               DatePickerFormField(
-                labelText: 'Tanggal Terima Buku KIA (Auto)',
+                key: _fieldKeys['createdAt'],
+                labelText: 'Tanggal Terima Buku KIA',
                 prefixIcon: Icons.calendar_view_day,
-                initialValue: _createdAt,
                 context: context,
                 onDateSelected: (date) {
                   setState(() => _createdAt = date);
@@ -420,6 +421,11 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                       ? '-'
                       : '$jarakTahun tahun';
                 },
+                validator: (val) => _formValidator.wrapValidator(
+                  'createdAt',
+                  val,
+                  _requiredObjectValidator,
+                ),
               ),
               const SizedBox(height: 12),
               GPAField(
