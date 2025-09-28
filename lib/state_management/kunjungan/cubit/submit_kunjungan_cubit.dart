@@ -75,6 +75,7 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
       final newKunjungan = Kunjungan.fromFirestore(snapshot.data()!, id: id);
       selectedKunjunganCubit.selectKunjungan(newKunjungan);
 
+      final Map<String, dynamic> bumilKunjungan = {};
       if (firstTime == true) {
         List<String> resti = [];
         if (data.td != null && data.td!.contains('/')) {
@@ -102,19 +103,21 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
                 'kunjungan': true,
               });
         }
-        final docRefBumil = FirebaseFirestore.instance
-            .collection('bumil')
-            .doc(data.idBumil);
-        await docRefBumil.update({
-          'latest_kehamilan_kunjungan': true,
-          'latest_kehamilan.kunjungan': true,
-        });
-        final snapshotBumil = await docRefBumil.get(
-          const GetOptions(source: Source.cache),
-        );
-        final newBumil = Bumil.fromMap(data.idBumil!, snapshotBumil.data()!);
-        selectedBumilCubit.selectBumil(newBumil);
+        bumilKunjungan['latest_kehamilan_kunjungan'] = true;
+        bumilKunjungan['latest_kehamilan.kunjungan'] = true;
       }
+      bumilKunjungan['latest_kunjungan_id'] = id;
+      bumilKunjungan['latest_kunjungan'] = kunjungan;
+      final docRefBumil = FirebaseFirestore.instance
+          .collection('bumil')
+          .doc(data.idBumil);
+      await docRefBumil.update(bumilKunjungan);
+      final snapshotBumil = await docRefBumil.get(
+        const GetOptions(source: Source.cache),
+      );
+      final newBumil = Bumil.fromMap(data.idBumil!, snapshotBumil.data()!);
+      selectedBumilCubit.selectBumil(newBumil);
+
       emit(AddKunjunganSuccess());
     } catch (e) {
       emit(AddKunjunganFailure(e.toString()));

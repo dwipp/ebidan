@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
+import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/data/models/riwayat_model.dart';
 
 class Bumil {
@@ -41,6 +42,8 @@ class Bumil {
   final bool latestKehamilanPersalinan;
   final bool latestKehamilanKunjungan;
   final Kehamilan? latestKehamilan;
+  final String? latestKunjunganId;
+  final Kunjungan? latestKunjungan;
 
   Bumil({
     required this.idBumil,
@@ -72,6 +75,8 @@ class Bumil {
     this.latestKehamilanKunjungan = false,
     this.latestKehamilanPersalinan = false,
     this.latestKehamilan,
+    this.latestKunjunganId,
+    this.latestKunjungan,
   });
 
   /// ====== Factory from Firestore ======
@@ -119,6 +124,13 @@ class Bumil {
               Map<String, dynamic>.from(map['latest_kehamilan']),
             )
           : null,
+      latestKunjunganId: map['latest_kunjungan_id'],
+      latestKunjungan: map['latest_kunjungan'] != null
+          ? Kunjungan.fromFirestore(
+              Map<String, dynamic>.from(map['latest_kunjungan']),
+              id: map['latest_kunjungan_id'] ?? '',
+            )
+          : null,
     );
   }
 
@@ -153,6 +165,8 @@ class Bumil {
       'latest_kehamilan_persalinan': latestKehamilanPersalinan,
       'latest_kehamilan_resti': latestKehamilanResti,
       'latest_kehamilan': latestKehamilan?.toMap(),
+      'latest_kunjungan_id': latestKunjunganId,
+      'latest_kunjungan': latestKunjungan?.toMap(),
     }..removeWhere((key, value) => value == null);
   }
 
@@ -206,6 +220,13 @@ class Bumil {
               Map<String, dynamic>.from(json['latest_kehamilan']),
             )
           : null,
+      latestKunjunganId: json['latest_kunjungan_id'],
+      latestKunjungan: json['latest_kunjungan'] != null
+          ? Kunjungan.fromMap(
+              json['latest_kunjungan_id'],
+              Map<String, dynamic>.from(json['latest_kunjungan']),
+            )
+          : null,
     );
   }
 
@@ -240,6 +261,8 @@ class Bumil {
       'latest_kehamilan_persalinan': latestKehamilanPersalinan,
       'latest_kehamilan_resti': latestKehamilanResti,
       'latest_kehamilan': latestKehamilan?.toJson(),
+      'latest_kunjungan_id': latestKunjunganId,
+      'latest_kunjungan': latestKunjungan?.toMap(),
     };
   }
 
