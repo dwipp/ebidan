@@ -1,6 +1,6 @@
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
-import { getMonthString, parseUK } from "../helpers.js";
-import { db, FieldValue } from "../firebase.js";
+import { getMonthString, parseUK, safeIncrement } from "../helpers.js";
+import { db } from "../firebase.js";
 
 const REGION = "asia-southeast2";
 
@@ -35,55 +35,65 @@ export const incrementKunjunganCount = onDocumentCreated(
       const existing = doc.exists ? doc.data() : {};
       const byMonth = existing.by_month || {};
 
-      // pastikan struktur dasar bulan ada
-      if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
-      if (!byMonth[currentMonth].kunjungan) byMonth[currentMonth].kunjungan = {};
+      // --- Pastikan bulan dan objek kunjungan sudah ada ---
+      if (!byMonth[currentMonth]) {
+        byMonth[currentMonth] = { kunjungan: {} };
+      } else if (!byMonth[currentMonth].kunjungan) {
+        byMonth[currentMonth].kunjungan = {};
+      }
 
-      // build update object
-      const update = {
-        [`by_month.${currentMonth}.kunjungan.total`]: FieldValue.increment(1),
-      };
+      const kunjungan = byMonth[currentMonth].kunjungan;
+
+      // --- Update counts sesuai status ---
+      safeIncrement(kunjungan, "total");
 
       if (status === "k1") {
-        update[`by_month.${currentMonth}.kunjungan.k1`] = FieldValue.increment(1);
+        safeIncrement(kunjungan, "k1");
         if (uk <= 12) {
-          update[`by_month.${currentMonth}.kunjungan.k1_murni`] = FieldValue.increment(1);
-          if (isUsg) update[`by_month.${currentMonth}.kunjungan.k1_murni_usg`] = FieldValue.increment(1);
-          if (kontrolDokter) update[`by_month.${currentMonth}.kunjungan.k1_murni_dokter`] = FieldValue.increment(1);
+          safeIncrement(kunjungan, "k1_murni");
+          if (isUsg) safeIncrement(kunjungan, "k1_murni_usg");
+          if (kontrolDokter) safeIncrement(kunjungan, "k1_murni_dokter");
         } else {
-          update[`by_month.${currentMonth}.kunjungan.k1_akses`] = FieldValue.increment(1);
-          if (isUsg) update[`by_month.${currentMonth}.kunjungan.k1_akses_usg`] = FieldValue.increment(1);
-          if (kontrolDokter) update[`by_month.${currentMonth}.kunjungan.k1_akses_dokter`] = FieldValue.increment(1);
+          safeIncrement(kunjungan, "k1_akses");
+          if (isUsg) safeIncrement(kunjungan, "k1_akses_usg");
+          if (kontrolDokter) safeIncrement(kunjungan, "k1_akses_dokter");
         }
-        if (isUsg) update[`by_month.${currentMonth}.kunjungan.k1_usg`] = FieldValue.increment(1);
-        if (kontrolDokter) update[`by_month.${currentMonth}.kunjungan.k1_dokter`] = FieldValue.increment(1);
-        if (isK1_4t) update[`by_month.${currentMonth}.kunjungan.k1_4t`] = FieldValue.increment(1);
+        if (isUsg) safeIncrement(kunjungan, "k1_usg");
+        if (kontrolDokter) safeIncrement(kunjungan, "k1_dokter");
+        if (isK1_4t) safeIncrement(kunjungan, "k1_4t");
       } else if (status === "k2") {
-        update[`by_month.${currentMonth}.kunjungan.k2`] = FieldValue.increment(1);
+        safeIncrement(kunjungan, "k2");
       } else if (status === "k3") {
-        update[`by_month.${currentMonth}.kunjungan.k3`] = FieldValue.increment(1);
+        safeIncrement(kunjungan, "k3");
       } else if (status === "k4") {
-        update[`by_month.${currentMonth}.kunjungan.k4`] = FieldValue.increment(1);
+        safeIncrement(kunjungan, "k4");
       } else if (status === "k5") {
-        update[`by_month.${currentMonth}.kunjungan.k5`] = FieldValue.increment(1);
-        if (periksaUsg) update[`by_month.${currentMonth}.kunjungan.k5_usg`] = FieldValue.increment(1);
+        safeIncrement(kunjungan, "k5");
+        if (periksaUsg) safeIncrement(kunjungan, "k5_usg");
       } else if (status === "k6") {
-        update[`by_month.${currentMonth}.kunjungan.k6`] = FieldValue.increment(1);
-        if (periksaUsg) update[`by_month.${currentMonth}.kunjungan.k6_usg`] = FieldValue.increment(1);
+        safeIncrement(kunjungan, "k6");
+        if (periksaUsg) safeIncrement(kunjungan, "k6_usg");
       }
 
       // --- LOGIC BATAS 13 BULAN ---
-      const months = Object.keys(byMonth).sort();
+      const months = Object.keys(byMonth).sort(); // YYYY-MM format -> urut ascending
       if (months.length > 13) {
         const oldestMonth = months[0];
         delete byMonth[oldestMonth];
         console.log(`Month limit exceeded. Deleted oldest month: ${oldestMonth} for bidan: ${idBidan}`);
-        update["by_month"] = byMonth; // replace setelah delete
       }
 
-      update["last_updated_month"] = currentMonth;
+      // --- Simpan ke Firestore ---
+      t.set(
+        statsRef,
+        {
+          ...existing,
+          by_month: byMonth,
+          last_updated_month: currentMonth,
+        },
+        { merge: true }
+      );
 
-      t.set(statsRef, update, { merge: true });
       console.log(`Incremented kunjungan count for month: ${currentMonth}, bidan: ${idBidan}`);
     });
   }

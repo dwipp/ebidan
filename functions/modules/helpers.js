@@ -14,3 +14,9 @@ export function parseUK(ukString) {
 export function safeIncrement(obj, key, val = 1) {
   obj[key] = (typeof obj[key] === "number" ? obj[key] : 0) + val;
 }
+
+export function safeDecrement(obj, key, val = 1) {
+  const current = typeof obj[key] === "number" ? obj[key] : 0;
+  obj[key] = Math.max(current - val, 0);
+}
+

@@ -1,5 +1,5 @@
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
-import { getMonthString, parseUK } from "../helpers.js";
+import { getMonthString, parseUK, safeDecrement } from "../helpers.js";
 import { db } from "../firebase.js";
 
 const REGION = "asia-southeast2";
@@ -13,10 +13,10 @@ export const decrementKunjunganCount = onDocumentDeleted(
     const idBidan = dataKunjungan.id_bidan;
     const status = dataKunjungan.status.toLowerCase();
     const uk = dataKunjungan.uk ? parseUK(dataKunjungan.uk) : 0;
-    const isUsg = dataKunjungan.tgl_periksa_usg ? true : false;
+    const isUsg = !!dataKunjungan.tgl_periksa_usg;
     const kontrolDokter = dataKunjungan.kontrol_dokter;
-    const isHighRisk = dataKunjungan.k1_4t ? true : false;
-    const isPeriksaUsg = dataKunjungan.periksa_usg ? true : false;
+    const isK1_4t = dataKunjungan.k1_4t === true;
+    const isPeriksaUsg = dataKunjungan.periksa_usg === true;
 
     // ambil bulan dari created_at dokumen kunjungan
     let currentMonth;
@@ -39,67 +39,61 @@ export const decrementKunjunganCount = onDocumentDeleted(
 
       // pastikan bulan & objek kunjungan ada
       if (!byMonth[currentMonth]) {
-        byMonth[currentMonth] = { 
-          kunjungan: { 
-            total: 0, k1: 0, k2: 0, k3: 0, k4: 0, k5: 0, k6: 0,
-            k1_murni: 0, k1_akses: 0, k1_usg: 0, k1_dokter: 0,
-            k1_4t: 0, k5_usg: 0, k6_usg: 0, k1_murni_usg:0, k1_akses_usg:0, 
-            k1_akses_dokter:0, k1_murni_dokter:0,
-          } 
-        };
+        byMonth[currentMonth] = { kunjungan: {} };
       } else if (!byMonth[currentMonth].kunjungan) {
-        byMonth[currentMonth].kunjungan = { 
-          total: 0, k1: 0, k2: 0, k3: 0, k4: 0, k5: 0, k6: 0,
-          k1_murni: 0, k1_akses: 0, k1_usg: 0, k1_dokter: 0,
-          k1_4t: 0, k5_usg: 0, k6_usg: 0, k1_murni_usg:0, k1_akses_usg:0, 
-          k1_akses_dokter:0, k1_murni_dokter:0,
-        };
+        byMonth[currentMonth].kunjungan = {};
       }
 
       const kunjungan = byMonth[currentMonth].kunjungan;
 
-      // Update sesuai status dengan proteksi agar tidak minus
-      kunjungan.total = Math.max(kunjungan.total - 1, 0);
+      // --- Update counts sesuai status ---
+      safeDecrement(kunjungan, "total");
 
       if (status === "k1") {
-        kunjungan.k1 = Math.max(kunjungan.k1 - 1, 0);
+        safeDecrement(kunjungan, "k1");
         if (uk <= 12) {
-          kunjungan.k1_murni = Math.max(kunjungan.k1_murni - 1, 0);
-          if (isUsg) kunjungan.k1_murni_usg = Math.max(kunjungan.k1_murni_usg - 1, 0);
-          if (kontrolDokter) kunjungan.k1_murni_dokter = Math.max(kunjungan.k1_murni_dokter - 1, 0);
+          safeDecrement(kunjungan, "k1_murni");
+          if (isUsg) safeDecrement(kunjungan, "k1_murni_usg");
+          if (kontrolDokter) safeDecrement(kunjungan, "k1_murni_dokter");
         } else {
-          kunjungan.k1_akses = Math.max(kunjungan.k1_akses - 1, 0);
-          if (isUsg) kunjungan.k1_akses_usg = Math.max(kunjungan.k1_akses_usg - 1, 0);
-          if (kontrolDokter) kunjungan.k1_akses_dokter = Math.max(kunjungan.k1_akses_dokter - 1, 0);
+          safeDecrement(kunjungan, "k1_akses");
+          if (isUsg) safeDecrement(kunjungan, "k1_akses_usg");
+          if (kontrolDokter) safeDecrement(kunjungan, "k1_akses_dokter");
         }
-        if (isUsg) kunjungan.k1_usg = Math.max(kunjungan.k1_usg - 1, 0);
-        if (kontrolDokter) kunjungan.k1_dokter = Math.max(kunjungan.k1_dokter - 1, 0);
-        if (isHighRisk) kunjungan.k1_4t = Math.max(kunjungan.k1_4t - 1, 0);
+        if (isUsg) safeDecrement(kunjungan, "k1_usg");
+        if (kontrolDokter) safeDecrement(kunjungan, "k1_dokter");
+        if (isK1_4t) safeDecrement(kunjungan, "k1_4t");
 
       } else if (status === "k2") {
-        kunjungan.k2 = Math.max(kunjungan.k2 - 1, 0);
+        safeDecrement(kunjungan, "k2");
 
       } else if (status === "k3") {
-        kunjungan.k3 = Math.max(kunjungan.k3 - 1, 0);
+        safeDecrement(kunjungan, "k3");
 
       } else if (status === "k4") {
-        kunjungan.k4 = Math.max(kunjungan.k4 - 1, 0);
+        safeDecrement(kunjungan, "k4");
 
       } else if (status === "k5") {
-        kunjungan.k5 = Math.max(kunjungan.k5 - 1, 0);
-        if (isPeriksaUsg) kunjungan.k5_usg = Math.max(kunjungan.k5_usg - 1, 0);
+        safeDecrement(kunjungan, "k5");
+        if (isPeriksaUsg) safeDecrement(kunjungan, "k5_usg");
 
       } else if (status === "k6") {
-        kunjungan.k6 = Math.max(kunjungan.k6 - 1, 0);
-        if (isPeriksaUsg) kunjungan.k6_usg = Math.max(kunjungan.k6_usg - 1, 0);
+        safeDecrement(kunjungan, "k6");
+        if (isPeriksaUsg) safeDecrement(kunjungan, "k6_usg");
       }
 
       // simpan hasil
-      t.set(statsRef, { 
-        ...existing, 
-        by_month: byMonth,
-        last_updated_month: currentMonth
-      }, { merge: true });
+      t.set(
+        statsRef,
+        {
+          ...existing,
+          by_month: byMonth,
+          last_updated_month: currentMonth,
+        },
+        { merge: true }
+      );
+
+      console.log(`Decremented kunjungan count for month: ${currentMonth}, bidan: ${idBidan}`);
     });
   }
 );
