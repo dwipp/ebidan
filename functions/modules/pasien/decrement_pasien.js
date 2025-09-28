@@ -1,5 +1,5 @@
 import { onDocumentDeleted } from "firebase-functions/v2/firestore";
-import { getMonthString } from "../helpers.js";
+import { getMonthString, safeDecrement } from "../helpers.js";
 import { db } from "../firebase.js";
 
 const REGION = "asia-southeast2";
@@ -25,8 +25,8 @@ export const decrementPasienCount = onDocumentDeleted(
       if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
       if (!byMonth[currentMonth].pasien) byMonth[currentMonth].pasien = { total: 0 };
 
-      // decrement, tapi tidak boleh negatif
-      byMonth[currentMonth].pasien.total = Math.max((byMonth[currentMonth].pasien.total || 0) - 1, 0);
+      // decrement pakai safeDecrement
+      safeDecrement(byMonth[currentMonth].pasien, "total");
 
       t.set(statsRef, {
         ...data,
