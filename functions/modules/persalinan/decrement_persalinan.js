@@ -79,7 +79,7 @@ export const decrementPersalinanCount = onDocumentUpdated(
         if (!byMonth[monthKey]) byMonth[monthKey] = {};
         if (!byMonth[monthKey].persalinan) byMonth[monthKey].persalinan = { total: 0 };
         if (!byMonth[monthKey].kunjungan) byMonth[monthKey].kunjungan = { abortus: 0 };
-        if (!byMonth[monthKey].kehamilan) byMonth[monthKey].kehamilan = { abortus: 0 };
+        if (!byMonth[monthKey].kehamilan) byMonth[monthKey].resti = { abortus: 0 };
 
         // decrement persalinan
         safeDecrement(byMonth[monthKey].persalinan, "total");
@@ -87,7 +87,7 @@ export const decrementPersalinanCount = onDocumentUpdated(
         // decrement abortus kalau memang abortus
         if (isAbortus) {
           safeDecrement(byMonth[monthKey].kunjungan, "abortus");
-          safeDecrement(byMonth[monthKey].kehamilan, "abortus");
+          safeDecrement(byMonth[monthKey].resti, "abortus");
         }
 
         t.set(

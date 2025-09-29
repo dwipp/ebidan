@@ -37,7 +37,7 @@ export const recalculatePersalinanStats = onRequest(
             statsByBidan[idBidan].by_month[monthKey] = { 
               persalinan: { total: 0 },
               kunjungan: { abortus: 0 },
-              kehamilan: { abortus: 0 },
+              resti: { abortus: 0 },
             };
           } else {
             if (!statsByBidan[idBidan].by_month[monthKey].persalinan) {
@@ -46,12 +46,12 @@ export const recalculatePersalinanStats = onRequest(
             if (!statsByBidan[idBidan].by_month[monthKey].kunjungan) {
               statsByBidan[idBidan].by_month[monthKey].kunjungan = { abortus: 0 };
             }
-            if (!statsByBidan[idBidan].by_month[monthKey].kehamilan) {
-              statsByBidan[idBidan].by_month[monthKey].kehamilan = { abortus: 0 };
+            if (!statsByBidan[idBidan].by_month[monthKey].resti) {
+              statsByBidan[idBidan].by_month[monthKey].resti = { abortus: 0 };
             }
           }
 
-          // hitung total persalinan (pakai safeIncrement)
+          // hitung total persalinan
           safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "total");
 
           // --- logika abortus (umur_kehamilan <= 20 minggu TANPA tambahan hari) ---
@@ -81,7 +81,7 @@ export const recalculatePersalinanStats = onRequest(
               !lebihDariMinggu
             ) {
               safeIncrement(statsByBidan[idBidan].by_month[monthKey].kunjungan, "abortus");
-              safeIncrement(statsByBidan[idBidan].by_month[monthKey].kehamilan, "abortus");
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].resti, "abortus");
             }
           }
         }
@@ -104,12 +104,12 @@ export const recalculatePersalinanStats = onRequest(
             if (month >= startMonthKey) {
               byMonth[month] = counts;
               if (!byMonth[month].kunjungan) byMonth[month].kunjungan = { abortus: 0 };
-              if (!byMonth[month].kehamilan) byMonth[month].kehamilan = { abortus: 0 };
+              if (!byMonth[month].resti) byMonth[month].resti = { abortus: 0 };
               if (typeof byMonth[month].kunjungan.abortus !== "number") {
                 byMonth[month].kunjungan.abortus = 0;
               }
-              if (typeof byMonth[month].kehamilan.abortus !== "number") {
-                byMonth[month].kehamilan.abortus = 0;
+              if (typeof byMonth[month].resti.abortus !== "number") {
+                byMonth[month].resti.abortus = 0;
               }
               if (!byMonth[month].persalinan) byMonth[month].persalinan = { total: 0 };
             }
@@ -119,11 +119,17 @@ export const recalculatePersalinanStats = onRequest(
         // tambahkan data baru dari stats
         for (const [month, counts] of Object.entries(stats.by_month)) {
           if (month < startMonthKey) continue; // skip bulan lama
-          if (!byMonth[month]) byMonth[month] = { persalinan: { total: 0 }, kunjungan: { abortus: 0 }, kehamilan: { abortus: 0 } };
+          if (!byMonth[month]) {
+            byMonth[month] = { 
+              persalinan: { total: 0 }, 
+              kunjungan: { abortus: 0 }, 
+              resti: { abortus: 0 } 
+            };
+          }
 
           byMonth[month].persalinan.total = counts.persalinan.total;
           byMonth[month].kunjungan.abortus = counts.kunjungan.abortus;
-          byMonth[month].kehamilan.abortus = counts.kehamilan.abortus;
+          byMonth[month].resti.abortus = counts.resti.abortus;
         }
 
         // set last_updated_month sesuai bulan terbaru
