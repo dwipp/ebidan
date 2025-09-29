@@ -49,6 +49,7 @@ export const incrementPersalinanCount = onDocumentUpdated(
           byMonth[monthKey] = {
             persalinan: { total: 0 },
             kunjungan: { abortus: 0 },
+            kehamilan: { abortus: 0 },
           };
         } else {
           if (!byMonth[monthKey].persalinan) {
@@ -56,6 +57,9 @@ export const incrementPersalinanCount = onDocumentUpdated(
           }
           if (!byMonth[monthKey].kunjungan) {
             byMonth[monthKey].kunjungan = { abortus: 0 };
+          }
+          if (!byMonth[monthKey].kehamilan) {
+            byMonth[monthKey].kehamilan = { abortus: 0 };
           }
         }
 
@@ -89,6 +93,7 @@ export const incrementPersalinanCount = onDocumentUpdated(
             !lebihDariMinggu
           ) {
             safeIncrement(byMonth[monthKey].kunjungan, "abortus");
+            safeIncrement(byMonth[monthKey].kehamilan, "abortus");
           }
         }
 

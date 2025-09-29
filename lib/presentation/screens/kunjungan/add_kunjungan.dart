@@ -86,7 +86,7 @@ class _KunjunganState extends State<KunjunganScreen> {
     super.didChangeDependencies();
     bumil = context.watch<SelectedBumilCubit>().state;
     ukController.text = Utils.hitungUsiaKehamilan(
-      hpht: bumil!.latestKehamilanHpht!,
+      hpht: bumil?.latestKehamilanHpht ?? bumil?.latestKehamilan?.hpht,
       tglKunjungan: _createdAt,
     );
     if (widget.firstTime) {
