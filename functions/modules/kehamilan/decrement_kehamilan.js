@@ -33,18 +33,37 @@ export const decrementKehamilanCount = onDocumentDeleted(
 
       // pastikan struktur by_month ada
       if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
-      if (!byMonth[currentMonth].kehamilan) byMonth[currentMonth].kehamilan = { total: 0 };
+      if (!byMonth[currentMonth].kehamilan) {
+        byMonth[currentMonth].kehamilan = { total: 0, resti_nakes: 0, resti_masyarakat: 0 };
+      }
 
-      // decrement pakai safeDecrement
+      // decrement total
       safeDecrement(byMonth[currentMonth].kehamilan, "total");
+
+      // decrement sesuai status_resti
+      if (kehamilanData.status_resti === "Nakes") {
+        safeDecrement(byMonth[currentMonth].kehamilan, "resti_nakes");
+      } else if (kehamilanData.status_resti === "Masyarakat") {
+        safeDecrement(byMonth[currentMonth].kehamilan, "resti_masyarakat");
+      }
+
+      // decrement all_bumil_count
       safeDecrement(kehamilan, "all_bumil_count");
 
-      t.set(statsRef, {
-        ...data,
-        kehamilan,
-        last_updated_month: currentMonth,
-        by_month: byMonth
-      }, { merge: true });
+      t.set(
+        statsRef,
+        {
+          ...data,
+          kehamilan,
+          last_updated_month: currentMonth,
+          by_month: byMonth,
+        },
+        { merge: true }
+      );
+
+      console.log(
+        `Decremented kehamilan count for month: ${currentMonth}, bidan: ${idBidan}, status_resti: ${kehamilanData.status_resti || "-"}`
+      );
     });
   }
 );

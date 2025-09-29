@@ -31,7 +31,13 @@ export const incrementKehamilanCount = onDocumentCreated(
           kehamilan: { all_bumil_count: 1 },
           last_updated_month: currentMonth,
           by_month: {
-            [currentMonth]: { kehamilan: { total: 1 } }
+            [currentMonth]: {
+              kehamilan: {
+                total: 1,
+                resti_nakes: kehamilanData.status_resti === "Nakes" ? 1 : 0,
+                resti_masyarakat: kehamilanData.status_resti === "Masyarakat" ? 1 : 0,
+              }
+            }
           }
         });
         console.log(`Created new statistics for bidan: ${idBidan}, month: ${currentMonth}`);
@@ -44,10 +50,19 @@ export const incrementKehamilanCount = onDocumentCreated(
 
       // pastikan struktur by_month ada
       if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
-      if (!byMonth[currentMonth].kehamilan) byMonth[currentMonth].kehamilan = { total: 0 };
+      if (!byMonth[currentMonth].kehamilan) {
+        byMonth[currentMonth].kehamilan = { total: 0, resti_nakes: 0, resti_masyarakat: 0 };
+      }
 
-      // increment pakai safeIncrement
+      // increment total
       safeIncrement(byMonth[currentMonth].kehamilan, "total");
+
+      // increment resti sesuai status
+      if (kehamilanData.status_resti === "Nakes") {
+        safeIncrement(byMonth[currentMonth].kehamilan, "resti_nakes");
+      } else if (kehamilanData.status_resti === "Masyarakat") {
+        safeIncrement(byMonth[currentMonth].kehamilan, "resti_masyarakat");
+      }
 
       // --- LOGIC BATAS 13 BULAN ---
       const months = Object.keys(byMonth).sort(); // YYYY-MM format -> urut ascending
@@ -57,14 +72,22 @@ export const incrementKehamilanCount = onDocumentCreated(
         console.log(`Month limit exceeded. Deleted oldest month: ${oldestMonth} for bidan: ${idBidan}`);
       }
 
-      t.set(statsRef, {
-        ...data,
-        kehamilan: { all_bumil_count: safeIncrement(kehamilan, "all_bumil_count") },
-        last_updated_month: currentMonth,
-        by_month: byMonth
-      }, { merge: true });
+      t.set(
+        statsRef,
+        {
+          ...data,
+          kehamilan: {
+            all_bumil_count: safeIncrement(kehamilan, "all_bumil_count"),
+          },
+          last_updated_month: currentMonth,
+          by_month: byMonth,
+        },
+        { merge: true }
+      );
 
-      console.log(`Incremented kehamilan count for month: ${currentMonth}, bidan: ${idBidan}`);
+      console.log(
+        `Incremented kehamilan count for month: ${currentMonth}, bidan: ${idBidan}, status_resti: ${kehamilanData.status_resti || "-"}`
+      );
     });
   }
 );

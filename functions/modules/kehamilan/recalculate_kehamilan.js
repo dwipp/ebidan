@@ -1,0 +1,114 @@
+import { onRequest } from "firebase-functions/v2/https";
+import { getMonthString } from "../helpers.js";
+import { db } from "../firebase.js";
+
+const REGION = "asia-southeast2";
+
+export const recalculateKehamilanStats = onRequest({ region: REGION }, async (req, res) => {
+  try {
+    const snapshot = await db.collection("kehamilan").get();
+    const statsByBidan = {};
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (!data.id_bidan) return;
+
+      const idBidan = data.id_bidan;
+      if (!statsByBidan[idBidan]) {
+        statsByBidan[idBidan] = {
+          by_month: {},
+          latestMonth: null
+        };
+      }
+
+      // --- Tentukan bulan kehamilan ---
+      let monthKey;
+      if (data.created_at?.toDate) {
+        monthKey = getMonthString(data.created_at.toDate());
+      } else if (data.created_at) {
+        monthKey = getMonthString(new Date(data.created_at));
+      } else {
+        monthKey = getMonthString(new Date()); // fallback
+      }
+
+      // update latestMonth
+      if (!statsByBidan[idBidan].latestMonth || monthKey > statsByBidan[idBidan].latestMonth) {
+        statsByBidan[idBidan].latestMonth = monthKey;
+      }
+
+      // inisialisasi by_month
+      if (!statsByBidan[idBidan].by_month[monthKey]) {
+        statsByBidan[idBidan].by_month[monthKey] = {
+          kehamilan: { total: 0, resti_nakes: 0, resti_masyarakat: 0 }
+        };
+      }
+
+      // increment total
+      statsByBidan[idBidan].by_month[monthKey].kehamilan.total++;
+
+      // increment sesuai status_resti
+      if (data.status_resti === "Nakes") {
+        statsByBidan[idBidan].by_month[monthKey].kehamilan.resti_nakes++;
+      } else if (data.status_resti === "Masyarakat") {
+        statsByBidan[idBidan].by_month[monthKey].kehamilan.resti_masyarakat++;
+      }
+    });
+
+    // --- Tentukan bulan awal 13 bulan terakhir ---
+    const now = new Date();
+    const startMonthDate = new Date(now.getFullYear(), now.getMonth() - 12, 1);
+    const startMonthKey = getMonthString(startMonthDate);
+
+    const batch = db.batch();
+
+    for (const [idBidan, stats] of Object.entries(statsByBidan)) {
+      const ref = db.doc(`statistics/${idBidan}`);
+      const doc = await ref.get();
+      const existing = doc.exists ? doc.data() : {};
+      const byMonth = {};
+      const skippedMonths = [];
+
+      // gabungkan existing.by_month yang masih dalam 13 bulan terakhir
+      if (existing.by_month) {
+        for (const [month, counts] of Object.entries(existing.by_month)) {
+          if (month >= startMonthKey) {
+            byMonth[month] = counts;
+          } else {
+            skippedMonths.push(month);
+          }
+        }
+      }
+
+      // tambahkan data baru dari stats
+      for (const [month, counts] of Object.entries(stats.by_month)) {
+        if (month < startMonthKey) {
+          skippedMonths.push(month);
+          continue;
+        }
+        if (!byMonth[month]) byMonth[month] = {};
+        if (!byMonth[month].kehamilan) {
+          byMonth[month].kehamilan = { total: 0, resti_nakes: 0, resti_masyarakat: 0 };
+        }
+
+        byMonth[month].kehamilan.total = counts.kehamilan.total ?? 0;
+        byMonth[month].kehamilan.resti_nakes = counts.kehamilan.resti_nakes ?? 0;
+        byMonth[month].kehamilan.resti_masyarakat = counts.kehamilan.resti_masyarakat ?? 0;
+      }
+
+      batch.set(ref, {
+        ...existing,
+        last_updated_month: stats.latestMonth ?? getMonthString(new Date()),
+        by_month: byMonth
+      }, { merge: true });
+
+      console.log(`Bidan: ${idBidan} | Bulan terbaru: ${stats.latestMonth} | Bulan di-skip: ${skippedMonths.join(", ")}`);
+    }
+
+    await batch.commit();
+    res.status(200).send({ message: "Recalculation complete", statsByBidan });
+
+  } catch (error) {
+    console.error("Recalculation error:", error);
+    res.status(500).send({ error: error.message });
+  }
+});
