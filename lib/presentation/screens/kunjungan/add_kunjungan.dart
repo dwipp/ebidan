@@ -85,7 +85,7 @@ class _KunjunganState extends State<KunjunganScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     bumil = context.watch<SelectedBumilCubit>().state;
-    ukController.text = _hitungUsiaKehamilan(
+    ukController.text = Utils.hitungUsiaKehamilan(
       hpht: bumil!.latestKehamilanHpht!,
       tglKunjungan: _createdAt,
     );
@@ -126,24 +126,6 @@ class _KunjunganState extends State<KunjunganScreen> {
       AppRouter.reviewKunjungan,
       arguments: {'data': kunjungan, 'firstTime': widget.firstTime},
     );
-  }
-
-  String _hitungUsiaKehamilan({
-    required DateTime hpht,
-    required DateTime? tglKunjungan,
-  }) {
-    final today = tglKunjungan ?? DateTime.now();
-
-    final selisihHari = today.difference(hpht).inDays;
-
-    if (selisihHari < 0) {
-      return '0 minggu';
-    }
-
-    final minggu = selisihHari ~/ 7;
-    final hari = selisihHari % 7;
-
-    return '$minggu minggu ${hari > 0 ? '$hari hari' : ''}'.trim();
   }
 
   @override
@@ -255,8 +237,8 @@ class _KunjunganState extends State<KunjunganScreen> {
                 context: context,
                 onDateSelected: (date) {
                   setState(() => _createdAt = date);
-                  ukController.text = _hitungUsiaKehamilan(
-                    hpht: bumil!.latestKehamilanHpht!,
+                  ukController.text = Utils.hitungUsiaKehamilan(
+                    hpht: bumil?.latestKehamilanHpht,
                     tglKunjungan: date,
                   );
                 },

@@ -218,7 +218,9 @@ class PilihBumilScreen extends StatelessWidget {
                                 if (pilihState == 'bumil') {
                                   Navigator.pushNamed(
                                     context,
-                                    AppRouter.dataBumil,
+                                    state.filter.showHamilOnly
+                                        ? AppRouter.ringkasanBumil
+                                        : AppRouter.dataBumil,
                                   ).then((_) => _refresh(context));
                                 } else {
                                   if (bumil.latestKehamilanId == null ||

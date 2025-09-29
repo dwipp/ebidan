@@ -214,27 +214,6 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
     context.read<SubmitKehamilanCubit>().submitKehamilan(kehamilan);
   }
 
-  DateTime hitungHTP(DateTime hpht) {
-    // Tambah 7 hari
-    DateTime tambahHari = hpht.add(const Duration(days: 7));
-
-    // Tambah 9 bulan
-    int bulan = tambahHari.month + 9;
-    int tahun = tambahHari.year;
-
-    if (bulan > 12) {
-      bulan -= 12;
-      tahun += 1;
-    }
-
-    int hari = tambahHari.day;
-    int maxHari = DateTime(tahun, bulan + 1, 0).day;
-    if (hari > maxHari) {
-      hari = maxHari;
-    }
-    return DateTime(tahun, bulan, hari);
-  }
-
   @override
   void dispose() {
     _tbController.dispose();
@@ -319,7 +298,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 onDateSelected: (date) {
                   setState(() {
                     _hpht = date;
-                    _htp = hitungHTP(date);
+                    _htp = Utils.hitungHTP(date);
                   });
                 },
               ),

@@ -147,4 +147,48 @@ class Utils {
 
     return false;
   }
+
+  static String hitungUsiaKehamilan({
+    required DateTime? hpht,
+    required DateTime? tglKunjungan,
+  }) {
+    final today = tglKunjungan ?? DateTime.now();
+    if (hpht != null) {
+      final selisihHari = today.difference(hpht).inDays;
+
+      if (selisihHari < 0) {
+        return '0 minggu';
+      }
+
+      final minggu = selisihHari ~/ 7;
+      final hari = selisihHari % 7;
+
+      return '$minggu minggu ${hari > 0 ? '$hari hari' : ''}'.trim();
+    }
+    return '-';
+  }
+
+  static DateTime? hitungHTP(DateTime? hpht) {
+    if (hpht != null) {
+      // Tambah 7 hari
+      DateTime tambahHari = hpht.add(const Duration(days: 7));
+
+      // Tambah 9 bulan
+      int bulan = tambahHari.month + 9;
+      int tahun = tambahHari.year;
+
+      if (bulan > 12) {
+        bulan -= 12;
+        tahun += 1;
+      }
+
+      int hari = tambahHari.day;
+      int maxHari = DateTime(tahun, bulan + 1, 0).day;
+      if (hari > maxHari) {
+        hari = maxHari;
+      }
+      return DateTime(tahun, bulan, hari);
+    }
+    return null;
+  }
 }
