@@ -34,8 +34,8 @@ class PilihBumilScreen extends StatelessWidget {
           return Scaffold(
             appBar: PageHeader(
               title: state.filter.showHamilOnly
-                  ? Text("Pilih Ibu Hamil")
-                  : Text('Pilih Pasien'),
+                  ? const Text("Pilih Ibu Hamil")
+                  : const Text("Pilih Pasien"),
               actions: [
                 if (pilihState == 'bumil')
                   IconButton(
@@ -47,7 +47,7 @@ class PilihBumilScreen extends StatelessWidget {
                           ? Icons.pregnant_woman
                           : Icons.filter_alt_outlined,
                       color: state.filter.showHamilOnly
-                          ? Colors.pink
+                          ? Colors.pinkAccent
                           : Colors.grey,
                     ),
                     onPressed: () {
@@ -64,7 +64,10 @@ class PilihBumilScreen extends StatelessWidget {
                   ),
                 if (pilihState == 'kunjungan')
                   IconButton(
-                    icon: const Icon(Icons.add, color: Colors.lightBlueAccent),
+                    icon: const Icon(
+                      Icons.add_circle,
+                      color: Colors.lightBlueAccent,
+                    ),
                     onPressed: () {
                       Navigator.of(context)
                           .pushNamed(AppRouter.checkDataBumil)
@@ -75,110 +78,122 @@ class PilihBumilScreen extends StatelessWidget {
             ),
             body: Column(
               children: [
-                // ===== Search =====
+                // ===== Search Box dalam Card =====
                 Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Nama atau NIK...',
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                  padding: const EdgeInsets.all(12),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    onChanged: (val) {
-                      context.read<SearchBumilCubit>().search(val);
-                    },
+                    elevation: 1,
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Cari nama atau NIK...',
+                        prefixIcon: const Icon(Icons.search),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                        ),
+                      ),
+                      onChanged: (val) {
+                        context.read<SearchBumilCubit>().search(val);
+                      },
+                    ),
                   ),
                 ),
-                // ===== Compact Filter =====
+
+                // ===== Filter Section =====
                 if (state.filter.showHamilOnly)
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
+                      horizontal: 12,
                       vertical: 4,
                     ),
-                    child: Row(
-                      children: [
-                        // Filter Status
-                        Expanded(
-                          child: DropdownButtonFormField<String>(
-                            value: state.filter.statuses.length == 1
-                                ? state.filter.statuses.first
-                                : 'Semua',
-                            decoration: const InputDecoration(
-                              labelText: 'Status',
-                              border: OutlineInputBorder(),
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 12,
-                              ),
-                            ),
-                            items: ['Semua', 'K1', 'K2', 'K3', 'K4', 'K5', 'K6']
-                                .map(
-                                  (s) => DropdownMenuItem(
-                                    value: s,
-                                    child: Text(s),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (val) {
-                              if (val != null) {
-                                context.read<SearchBumilCubit>().setStatus(val);
-                              }
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-
-                        // Filter Month
-                        Expanded(
-                          child: InkWell(
-                            onTap: () async {
-                              final selected = await showMonthYearPicker(
-                                context: context,
-                                locale: const Locale('id', 'ID'),
-                                initialDate:
-                                    state.filter.month ?? DateTime.now(),
-                                firstDate: DateTime(2020),
-                                lastDate: DateTime(2100),
-                              );
-
-                              if (selected != null) {
-                                context.read<SearchBumilCubit>().setMonth(
-                                  selected,
-                                );
-                              }
-                            },
-                            child: InputDecorator(
-                              decoration: const InputDecoration(
-                                labelText: 'Bulan',
-                                border: OutlineInputBorder(),
-                                isDense: true,
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: 10,
-                                  horizontal: 12,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            // Status Chips
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children:
+                                      [
+                                            'Semua',
+                                            'K1',
+                                            'K2',
+                                            'K3',
+                                            'K4',
+                                            'K5',
+                                            'K6',
+                                          ]
+                                          .map(
+                                            (s) => Padding(
+                                              padding: const EdgeInsets.only(
+                                                right: 6,
+                                              ),
+                                              child: ChoiceChip(
+                                                label: Text(s),
+                                                selected: state.filter.statuses
+                                                    .contains(s),
+                                                selectedColor: Colors.pink[100],
+                                                onSelected: (_) {
+                                                  context
+                                                      .read<SearchBumilCubit>()
+                                                      .setStatus(s);
+                                                },
+                                              ),
+                                            ),
+                                          )
+                                          .toList(),
                                 ),
                               ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    state.filter.month != null
-                                        ? '${state.filter.month!.month}/${state.filter.month!.year}'
-                                        : 'Pilih Bulan',
-                                  ),
-                                  const Icon(Icons.calendar_today, size: 18),
-                                ],
+                            ),
+                            const SizedBox(width: 8),
+
+                            // Month picker
+                            OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: () async {
+                                final selected = await showMonthYearPicker(
+                                  context: context,
+                                  locale: const Locale('id', 'ID'),
+                                  initialDate:
+                                      state.filter.month ?? DateTime.now(),
+                                  firstDate: DateTime(2020),
+                                  lastDate: DateTime(2100),
+                                );
+                                if (selected != null) {
+                                  context.read<SearchBumilCubit>().setMonth(
+                                    selected,
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.calendar_today, size: 18),
+                              label: Text(
+                                state.filter.month != null
+                                    ? '${state.filter.month!.month}/${state.filter.month!.year}'
+                                    : 'Bulan',
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
+
+                const SizedBox(height: 4),
+
                 // ===== List Data =====
                 Expanded(
                   child: () {
@@ -191,7 +206,17 @@ class PilihBumilScreen extends StatelessWidget {
                     }
 
                     if (state.filteredList.isEmpty) {
-                      return const Center(child: Text('Data tidak ditemukan.'));
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.search_off, size: 64, color: Colors.grey),
+                          SizedBox(height: 8),
+                          Text(
+                            'Data tidak ditemukan',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      );
                     }
 
                     return RefreshIndicator(
@@ -202,13 +227,33 @@ class PilihBumilScreen extends StatelessWidget {
                         itemBuilder: (context, i) {
                           final bumil = state.filteredList[i];
                           return Card(
+                            elevation: 1,
                             margin: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
                             child: ListTile(
-                              title: Text(bumil.namaIbu),
-                              subtitle: Text('NIK: ${bumil.nikIbu}'),
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.pink[50],
+                                child: const Icon(
+                                  Icons.person,
+                                  color: Colors.pinkAccent,
+                                ),
+                              ),
+                              title: Text(
+                                bumil.namaIbu,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              subtitle: Text(
+                                'NIK: ${bumil.nikIbu}',
+                                style: const TextStyle(fontSize: 13),
+                              ),
                               trailing: const Icon(Icons.chevron_right),
                               onTap: () {
                                 context.read<SelectedBumilCubit>().selectBumil(
