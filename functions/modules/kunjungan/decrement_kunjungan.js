@@ -39,12 +39,14 @@ export const decrementKunjunganCount = onDocumentDeleted(
 
       // pastikan bulan & objek kunjungan ada
       if (!byMonth[currentMonth]) {
-        byMonth[currentMonth] = { kunjungan: {} };
-      } else if (!byMonth[currentMonth].kunjungan) {
-        byMonth[currentMonth].kunjungan = {};
+        byMonth[currentMonth] = { kunjungan: {}, resti: {} };
+      } else {
+        if (!byMonth[currentMonth].kunjungan) byMonth[currentMonth].kunjungan = {};
+        if (!byMonth[currentMonth].resti) byMonth[currentMonth].resti = {};
       }
 
       const kunjungan = byMonth[currentMonth].kunjungan;
+      const resti = byMonth[currentMonth].resti;
 
       // --- Update counts sesuai status ---
       safeDecrement(kunjungan, "total");
@@ -64,6 +66,16 @@ export const decrementKunjunganCount = onDocumentDeleted(
         if (kontrolDokter) safeDecrement(kunjungan, "k1_dokter");
         if (isK1_4t) safeDecrement(kunjungan, "k1_4t");
 
+        // --- Cek tekanan darah untuk resti hipertensi ---
+        if (typeof dataKunjungan.td === "string") {
+          const [sistolStr, diastolStr] = dataKunjungan.td.split("/").map(s => s.trim());
+          const sistol = parseInt(sistolStr, 10);
+          const diastol = parseInt(diastolStr, 10);
+
+          if ((sistol && sistol >= 140) || (diastol && diastol >= 90)) {
+            safeDecrement(resti, "hipertensi");
+          }
+        }
       } else if (status === "k2") {
         safeDecrement(kunjungan, "k2");
 

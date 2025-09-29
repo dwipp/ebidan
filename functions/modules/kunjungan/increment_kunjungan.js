@@ -37,12 +37,14 @@ export const incrementKunjunganCount = onDocumentCreated(
 
       // --- Pastikan bulan dan objek kunjungan sudah ada ---
       if (!byMonth[currentMonth]) {
-        byMonth[currentMonth] = { kunjungan: {} };
-      } else if (!byMonth[currentMonth].kunjungan) {
-        byMonth[currentMonth].kunjungan = {};
+        byMonth[currentMonth] = { kunjungan: {}, resti: {} };
+      } else {
+        if (!byMonth[currentMonth].kunjungan) byMonth[currentMonth].kunjungan = {};
+        if (!byMonth[currentMonth].resti) byMonth[currentMonth].resti = {};
       }
 
       const kunjungan = byMonth[currentMonth].kunjungan;
+      const resti = byMonth[currentMonth].resti;
 
       // --- Update counts sesuai status ---
       safeIncrement(kunjungan, "total");
@@ -61,6 +63,17 @@ export const incrementKunjunganCount = onDocumentCreated(
         if (isUsg) safeIncrement(kunjungan, "k1_usg");
         if (kontrolDokter) safeIncrement(kunjungan, "k1_dokter");
         if (isK1_4t) safeIncrement(kunjungan, "k1_4t");
+
+        // --- Cek tekanan darah untuk resti hipertensi ---
+        if (typeof dataKunjungan.td === "string") {
+          const [sistolStr, diastolStr] = dataKunjungan.td.split("/").map(s => s.trim());
+          const sistol = parseInt(sistolStr, 10);
+          const diastol = parseInt(diastolStr, 10);
+
+          if ((sistol && sistol >= 140) || (diastol && diastol >= 90)) {
+            safeIncrement(resti, "hipertensi");
+          }
+        }
       } else if (status === "k2") {
         safeIncrement(kunjungan, "k2");
       } else if (status === "k3") {

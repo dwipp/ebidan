@@ -40,11 +40,15 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
             k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0, k1_4t:0,
             k5_usg:0, k6_usg:0, k1_murni_usg:0, k1_akses_usg:0, 
             k1_akses_dokter:0, k1_murni_dokter:0,
-          } 
+          },
+          resti: {
+            hipertensi: 0,
+          }
         };
       }
 
       const kunjungan = statsByBidan[idBidan].by_month[monthKey].kunjungan;
+      const resti = statsByBidan[idBidan].by_month[monthKey].resti;
 
       // Hitung sesuai status (pakai safeIncrement)
       safeIncrement(kunjungan, "total");
@@ -76,6 +80,14 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
         safeIncrement(kunjungan, "k6");
         if (periksaUsg) safeIncrement(kunjungan, "k6_usg");
       }
+
+      // ===== Tambahan: Hitung Hipertensi =====
+      if (data.td && typeof data.td === "object") {
+        const { sistolik, diastolik } = data.td;
+        if ((sistolik && sistolik >= 140) || (diastolik && diastolik >= 90)) {
+          safeIncrement(resti, "hipertensi");
+        }
+      }
     });
 
     const batch = db.batch();
@@ -99,7 +111,7 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
           acc[month] = counts;
           return acc;
         }, {});
-      skippedMonths.push(...Object.keys(existing.by_month).filter(month => month < startMonthKey));
+      skippedMonths.push(...Object.keys(existing.by_month || {}).filter(month => month < startMonthKey));
 
       // Merge data baru dari stats
       for (const [month, counts] of Object.entries(stats.by_month)) {
@@ -114,10 +126,14 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
               k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0, k1_4t:0,
               k5_usg:0, k6_usg:0, k1_murni_usg:0, k1_akses_usg:0, 
               k1_akses_dokter:0, k1_murni_dokter:0,
-            } 
+            },
+            resti: {
+              hipertensi: 0,
+            }
           };
         }
         byMonth[month].kunjungan = { ...byMonth[month].kunjungan, ...counts.kunjungan };
+        byMonth[month].resti = { ...byMonth[month].resti, ...counts.resti };
       }
 
       // Urutkan bulan ascending sebelum disimpan
