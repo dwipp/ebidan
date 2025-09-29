@@ -28,13 +28,15 @@ export const decrementKehamilanCount = onDocumentDeleted(
       if (!doc.exists) return;
 
       const data = doc.data();
-      const kehamilan = data.kehamilan || { all_bumil_count: 0 };
       const byMonth = data.by_month || {};
 
       // pastikan struktur by_month ada
       if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
       if (!byMonth[currentMonth].kehamilan) {
-        byMonth[currentMonth].kehamilan = { total: 0, resti_nakes: 0, resti_masyarakat: 0 };
+        byMonth[currentMonth].kehamilan = { total: 0 };
+      }
+      if (!byMonth[currentMonth].resti) {
+        byMonth[currentMonth].resti = { resti_nakes: 0, resti_masyarakat: 0 };
       }
 
       // decrement total
@@ -42,19 +44,15 @@ export const decrementKehamilanCount = onDocumentDeleted(
 
       // decrement sesuai status_resti
       if (kehamilanData.status_resti === "Nakes") {
-        safeDecrement(byMonth[currentMonth].kehamilan, "resti_nakes");
+        safeDecrement(byMonth[currentMonth].resti, "resti_nakes");
       } else if (kehamilanData.status_resti === "Masyarakat") {
-        safeDecrement(byMonth[currentMonth].kehamilan, "resti_masyarakat");
+        safeDecrement(byMonth[currentMonth].resti, "resti_masyarakat");
       }
-
-      // decrement all_bumil_count
-      safeDecrement(kehamilan, "all_bumil_count");
 
       t.set(
         statsRef,
         {
           ...data,
-          kehamilan,
           last_updated_month: currentMonth,
           by_month: byMonth,
         },

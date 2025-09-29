@@ -32,8 +32,8 @@ export const incrementKehamilanCount = onDocumentCreated(
           last_updated_month: currentMonth,
           by_month: {
             [currentMonth]: {
-              kehamilan: {
-                total: 1,
+              kehamilan: { total: 1 },
+              resti: {
                 resti_nakes: kehamilanData.status_resti === "Nakes" ? 1 : 0,
                 resti_masyarakat: kehamilanData.status_resti === "Masyarakat" ? 1 : 0,
               }
@@ -51,7 +51,10 @@ export const incrementKehamilanCount = onDocumentCreated(
       // pastikan struktur by_month ada
       if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
       if (!byMonth[currentMonth].kehamilan) {
-        byMonth[currentMonth].kehamilan = { total: 0, resti_nakes: 0, resti_masyarakat: 0 };
+        byMonth[currentMonth].kehamilan = { total: 0 };
+      }
+      if (!byMonth[currentMonth].resti) {
+        byMonth[currentMonth].resti = { resti_nakes: 0, resti_masyarakat: 0 };
       }
 
       // increment total
@@ -59,9 +62,9 @@ export const incrementKehamilanCount = onDocumentCreated(
 
       // increment resti sesuai status
       if (kehamilanData.status_resti === "Nakes") {
-        safeIncrement(byMonth[currentMonth].kehamilan, "resti_nakes");
+        safeIncrement(byMonth[currentMonth].resti, "resti_nakes");
       } else if (kehamilanData.status_resti === "Masyarakat") {
-        safeIncrement(byMonth[currentMonth].kehamilan, "resti_masyarakat");
+        safeIncrement(byMonth[currentMonth].resti, "resti_masyarakat");
       }
 
       // --- LOGIC BATAS 13 BULAN ---

@@ -39,7 +39,8 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
       // inisialisasi by_month
       if (!statsByBidan[idBidan].by_month[monthKey]) {
         statsByBidan[idBidan].by_month[monthKey] = {
-          kehamilan: { total: 0, resti_nakes: 0, resti_masyarakat: 0 }
+          kehamilan: { total: 0 },
+          resti: { resti_nakes: 0, resti_masyarakat: 0 }
         };
       }
 
@@ -48,9 +49,9 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
 
       // increment sesuai status_resti
       if (data.status_resti === "Nakes") {
-        statsByBidan[idBidan].by_month[monthKey].kehamilan.resti_nakes++;
+        statsByBidan[idBidan].by_month[monthKey].resti.resti_nakes++;
       } else if (data.status_resti === "Masyarakat") {
-        statsByBidan[idBidan].by_month[monthKey].kehamilan.resti_masyarakat++;
+        statsByBidan[idBidan].by_month[monthKey].resti.resti_masyarakat++;
       }
     });
 
@@ -85,14 +86,18 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
           skippedMonths.push(month);
           continue;
         }
+
         if (!byMonth[month]) byMonth[month] = {};
         if (!byMonth[month].kehamilan) {
-          byMonth[month].kehamilan = { total: 0, resti_nakes: 0, resti_masyarakat: 0 };
+          byMonth[month].kehamilan = { total: 0 };
+        }
+        if (!byMonth[month].resti) {
+          byMonth[month].resti = { resti_nakes: 0, resti_masyarakat: 0 };
         }
 
         byMonth[month].kehamilan.total = counts.kehamilan.total ?? 0;
-        byMonth[month].kehamilan.resti_nakes = counts.kehamilan.resti_nakes ?? 0;
-        byMonth[month].kehamilan.resti_masyarakat = counts.kehamilan.resti_masyarakat ?? 0;
+        byMonth[month].resti.resti_nakes = counts.resti?.resti_nakes ?? 0;
+        byMonth[month].resti.resti_masyarakat = counts.resti?.resti_masyarakat ?? 0;
       }
 
       batch.set(ref, {
