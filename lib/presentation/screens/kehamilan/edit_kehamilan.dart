@@ -98,7 +98,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _tbController.text = widget.kehamilan.tb ?? '';
-    _hemoglobinController.text = widget.kehamilan.hemoglobin ?? '';
+    _hemoglobinController.text = widget.kehamilan.hemoglobin.toString();
     _bpjsController.text = widget.kehamilan.bpjs ?? '';
     _noKohortController.text = widget.kehamilan.noKohortIbu ?? '';
     _noRekaMedisController.text = widget.kehamilan.noRekaMedis ?? '';
@@ -138,7 +138,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
 
     final kehamilan = Kehamilan(
       tb: _tbController.text,
-      hemoglobin: _hemoglobinController.text,
+      hemoglobin: num.tryParse(_hemoglobinController.text),
       bpjs: _bpjsController.text,
       noKohortIbu: _noKohortController.text,
       noRekaMedis: _noRekaMedisController.text,

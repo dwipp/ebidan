@@ -74,7 +74,8 @@ class RingkasanBumilScreen extends StatelessWidget {
                 Utils.generateRowLabelValue(
                   context,
                   label: "Usia Ibu",
-                  value: '${usia(bumil!.birthdateIbu!)} tahun',
+                  value: '${usia(bumil!.birthdateIbu!)}',
+                  suffix: 'tahun',
                 ),
               Utils.generateRowLabelValue(
                 context,
@@ -138,11 +139,13 @@ class RingkasanBumilScreen extends StatelessWidget {
                 context,
                 label: "LILA",
                 value: bumil?.latestKunjungan?.lila,
+                suffix: 'cm',
               ),
               Utils.generateRowLabelValue(
                 context,
                 label: "Nilai Hemoglobin",
-                value: bumil?.latestKehamilan?.hemoglobin,
+                value: bumil?.latestKehamilan?.hemoglobin.toString(),
+                suffix: 'g/dL',
               ),
               Utils.generateRowLabelValue(
                 context,

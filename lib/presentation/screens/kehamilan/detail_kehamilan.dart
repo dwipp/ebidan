@@ -157,7 +157,9 @@ class DetailKehamilanScreen extends StatelessWidget {
               Utils.generateRowLabelValue(
                 context,
                 label: "Hemoglobin",
-                value: kehamilan.hemoglobin,
+                value: kehamilan.hemoglobin == null
+                    ? ''
+                    : kehamilan.hemoglobin.toString(),
                 suffix: 'g/dL',
               ),
 

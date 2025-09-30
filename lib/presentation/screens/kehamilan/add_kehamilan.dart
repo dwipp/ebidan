@@ -190,7 +190,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
 
     final kehamilan = Kehamilan(
       tb: _tbController.text,
-      hemoglobin: _hemoglobinController.text,
+      hemoglobin: num.tryParse(_hemoglobinController.text),
       bpjs: _bpjsController.text,
       noKohortIbu: _noKohortController.text,
       noRekaMedis: _noRekaMedisController.text,

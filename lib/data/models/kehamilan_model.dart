@@ -7,7 +7,7 @@ class Kehamilan {
   final DateTime? createdAt;
   final String? gpa;
   final String? hasilLab;
-  final String? hemoglobin;
+  final num? hemoglobin;
   final DateTime? hpht;
   final DateTime? htp;
   final String? idBidan;
