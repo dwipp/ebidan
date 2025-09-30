@@ -36,6 +36,11 @@ export const incrementKehamilanCount = onDocumentCreated(
               resti: {
                 resti_nakes: kehamilanData.status_resti === "Nakes" ? 1 : 0,
                 resti_masyarakat: kehamilanData.status_resti === "Masyarakat" ? 1 : 0,
+                anemia:
+                  kehamilanData.hemoglobin !== undefined &&
+                  Number(kehamilanData.hemoglobin) < 11
+                    ? 1
+                    : 0,
               }
             }
           }
@@ -54,7 +59,18 @@ export const incrementKehamilanCount = onDocumentCreated(
         byMonth[currentMonth].kehamilan = { total: 0 };
       }
       if (!byMonth[currentMonth].resti) {
-        byMonth[currentMonth].resti = { resti_nakes: 0, resti_masyarakat: 0 };
+        byMonth[currentMonth].resti = { resti_nakes: 0, resti_masyarakat: 0, anemia: 0 };
+      } else {
+        // jaga-jaga kalau field baru anemia belum ada
+        if (byMonth[currentMonth].resti.anemia === undefined) {
+          byMonth[currentMonth].resti.anemia = 0;
+        }
+        if (byMonth[currentMonth].resti.resti_nakes === undefined) {
+          byMonth[currentMonth].resti.resti_nakes = 0;
+        }
+        if (byMonth[currentMonth].resti.resti_masyarakat === undefined) {
+          byMonth[currentMonth].resti.resti_masyarakat = 0;
+        }
       }
 
       // increment total
@@ -65,6 +81,14 @@ export const incrementKehamilanCount = onDocumentCreated(
         safeIncrement(byMonth[currentMonth].resti, "resti_nakes");
       } else if (kehamilanData.status_resti === "Masyarakat") {
         safeIncrement(byMonth[currentMonth].resti, "resti_masyarakat");
+      }
+
+      // increment anemia (Hb < 11)
+      if (
+        kehamilanData.hemoglobin !== undefined &&
+        Number(kehamilanData.hemoglobin) < 11
+      ) {
+        safeIncrement(byMonth[currentMonth].resti, "anemia");
       }
 
       // --- LOGIC BATAS 13 BULAN ---
@@ -89,7 +113,9 @@ export const incrementKehamilanCount = onDocumentCreated(
       );
 
       console.log(
-        `Incremented kehamilan count for month: ${currentMonth}, bidan: ${idBidan}, status_resti: ${kehamilanData.status_resti || "-"}`
+        `Incremented kehamilan count for month: ${currentMonth}, bidan: ${idBidan}, status_resti: ${kehamilanData.status_resti || "-"}, anemia: ${
+          kehamilanData.hemoglobin !== undefined && Number(kehamilanData.hemoglobin) < 11 ? "yes" : "no"
+        }`
       );
     });
   }
