@@ -43,6 +43,7 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
           },
           resti: {
             hipertensi: 0,
+            obesitas: 0,
           }
         };
       }
@@ -88,6 +89,15 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
           safeIncrement(resti, "hipertensi");
         }
       }
+
+      // ===== Tambahan: Hitung Obesitas =====
+      if (typeof data.bb === "number" && typeof data.tb === "number" && data.tb > 0) {
+        const tbMeter = data.tb / 100; // konversi cm → m
+        const imt = data.bb / (tbMeter * tbMeter);
+        if (imt >= 25) {
+          safeIncrement(resti, "obesitas");
+        }
+      }
     });
 
     const batch = db.batch();
@@ -129,6 +139,7 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
             },
             resti: {
               hipertensi: 0,
+              obesitas: 0,
             }
           };
         }

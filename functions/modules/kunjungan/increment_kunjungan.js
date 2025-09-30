@@ -74,6 +74,18 @@ export const incrementKunjunganCount = onDocumentCreated(
             safeIncrement(resti, "hipertensi");
           }
         }
+
+        // --- Cek obesitas berdasarkan BMI ---
+        const bb = Number(dataKunjungan.bb); // berat badan (kg)
+        const tbCm = Number(dataKunjungan.tb); // tinggi badan (cm)
+        if (bb > 0 && tbCm > 0) {
+          const tbMeter = tbCm / 100;
+          const bmi = bb / (tbMeter * tbMeter);
+          if (bmi >= 25) {
+            safeIncrement(resti, "obesitas");
+          }
+        }
+
       } else if (status === "k2") {
         safeIncrement(kunjungan, "k2");
       } else if (status === "k3") {
