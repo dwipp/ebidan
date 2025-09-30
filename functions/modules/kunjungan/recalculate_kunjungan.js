@@ -69,6 +69,23 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
         if (isUsg) safeIncrement(kunjungan, "k1_usg");
         if (kontrolDokter) safeIncrement(kunjungan, "k1_dokter");
         if (isK1_4t) safeIncrement(kunjungan, "k1_4t");
+
+        // ===== Tambahan: Hitung Hipertensi =====
+        if (data.td && typeof data.td === "object") {
+          const { sistolik, diastolik } = data.td;
+          if ((sistolik && sistolik >= 140) || (diastolik && diastolik >= 90)) {
+            safeIncrement(resti, "hipertensi");
+          }
+        }
+
+        // ===== Tambahan: Hitung Obesitas =====
+        if (typeof data.bb === "number" && typeof data.tb === "number" && data.tb > 0) {
+          const tbMeter = data.tb / 100; // konversi cm → m
+          const imt = data.bb / (tbMeter * tbMeter);
+          if (imt >= 25) {
+            safeIncrement(resti, "obesitas");
+          }
+        }
       }
       if (status === "k2") safeIncrement(kunjungan, "k2");
       if (status === "k3") safeIncrement(kunjungan, "k3");
@@ -80,23 +97,6 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
       if (status === "k6") {
         safeIncrement(kunjungan, "k6");
         if (periksaUsg) safeIncrement(kunjungan, "k6_usg");
-      }
-
-      // ===== Tambahan: Hitung Hipertensi =====
-      if (data.td && typeof data.td === "object") {
-        const { sistolik, diastolik } = data.td;
-        if ((sistolik && sistolik >= 140) || (diastolik && diastolik >= 90)) {
-          safeIncrement(resti, "hipertensi");
-        }
-      }
-
-      // ===== Tambahan: Hitung Obesitas =====
-      if (typeof data.bb === "number" && typeof data.tb === "number" && data.tb > 0) {
-        const tbMeter = data.tb / 100; // konversi cm → m
-        const imt = data.bb / (tbMeter * tbMeter);
-        if (imt >= 25) {
-          safeIncrement(resti, "obesitas");
-        }
       }
     });
 
