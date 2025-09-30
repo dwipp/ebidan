@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Kunjungan {
   final String id;
-  final String? bb;
+  final num? bb;
+  final num? tb;
   final DateTime? createdAt;
   final String? keluhan;
   final String? lila;
@@ -21,6 +22,7 @@ class Kunjungan {
   Kunjungan({
     required this.id,
     this.bb,
+    this.tb,
     this.createdAt,
     this.keluhan,
     this.lila,
@@ -45,6 +47,7 @@ class Kunjungan {
     return Kunjungan(
       id: id,
       bb: json['bb'],
+      tb: json['tb'],
       createdAt: (json['created_at'] as Timestamp?)?.toDate(),
       keluhan: json['keluhan'],
       lila: json['lila'],
@@ -67,6 +70,7 @@ class Kunjungan {
     return Kunjungan(
       id: id,
       bb: map['bb'],
+      tb: map['tb'],
       createdAt: map['created_at'] != null
           ? DateTime.parse(map['created_at'])
           : null,
@@ -90,6 +94,7 @@ class Kunjungan {
   Map<String, dynamic> toMap() {
     return {
       'bb': bb,
+      'tb': tb,
       'created_at': createdAt?.toIso8601String(),
       'keluhan': keluhan,
       'lila': lila,

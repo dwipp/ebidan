@@ -36,6 +36,7 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
       final docRef = FirebaseFirestore.instance.collection('kunjungan').doc(id);
       final Map<String, dynamic> kunjungan = {
         'bb': data.bb,
+        'tb': data.tb,
         'created_at': data.createdAt,
         'keluhan': data.keluhan,
         'lila': data.lila,

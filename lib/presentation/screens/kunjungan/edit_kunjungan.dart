@@ -84,7 +84,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
     super.didChangeDependencies();
     bumil = context.watch<SelectedBumilCubit>().state;
     kunjungan = context.watch<SelectedKunjunganCubit>().state;
-    bbController.text = kunjungan!.bb!;
+    bbController.text = kunjungan!.bb!.toString();
     keluhanController.text = kunjungan!.keluhan!;
     lilaController.text = kunjungan!.lila!;
     lpController.text = kunjungan!.lp!;
@@ -110,7 +110,8 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
       idBumil: bumil?.idBumil,
       idKehamilan: bumil?.latestKehamilanId,
       keluhan: keluhanController.text,
-      bb: bbController.text,
+      bb: num.tryParse(bbController.text) ?? 0,
+      tb: kunjungan?.tb,
       lila: lilaController.text,
       lp: lpController.text,
       td: tdController.text,

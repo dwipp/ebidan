@@ -71,7 +71,7 @@ class _ReviewKunjunganScreenState extends State<ReviewKunjunganScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildRow("Berat Badan", widget.data.bb ?? '-', suffix: 'kg'),
+              _buildRow("Berat Badan", widget.data.bb.toString(), suffix: 'kg'),
               _buildRow(
                 "Lingkar Lengan Atas (LILA)",
                 widget.data.lila ?? '-',

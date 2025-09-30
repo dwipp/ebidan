@@ -56,7 +56,7 @@ class DetailKunjunganScreen extends StatelessWidget {
               Utils.generateRowLabelValue(
                 context,
                 label: "Berat Badan",
-                value: kunjungan?.bb,
+                value: kunjungan?.bb.toString(),
                 suffix: 'kg',
               ),
               Utils.generateRowLabelValue(
