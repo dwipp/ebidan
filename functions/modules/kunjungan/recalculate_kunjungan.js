@@ -44,6 +44,7 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
           resti: {
             hipertensi: 0,
             obesitas: 0,
+            kek: 0,
           }
         };
       }
@@ -70,22 +71,34 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
         if (kontrolDokter) safeIncrement(kunjungan, "k1_dokter");
         if (isK1_4t) safeIncrement(kunjungan, "k1_4t");
 
-        // ===== Tambahan: Hitung Hipertensi =====
-        if (data.td && typeof data.td === "object") {
-          const { sistolik, diastolik } = data.td;
-          if ((sistolik && sistolik >= 140) || (diastolik && diastolik >= 90)) {
+        // ===== Hitung Resti Hipertensi =====
+        if (typeof data.td === "string") {
+          const [sistolStr, diastolStr] = data.td.split("/").map(s => s.trim());
+          const sistol = parseInt(sistolStr, 10);
+          const diastol = parseInt(diastolStr, 10);
+
+          if ((sistol && sistol >= 140) || (diastol && diastol >= 90)) {
             safeIncrement(resti, "hipertensi");
           }
         }
 
-        // ===== Tambahan: Hitung Obesitas =====
-        if (typeof data.bb === "number" && typeof data.tb === "number" && data.tb > 0) {
-          const tbMeter = data.tb / 100; // konversi cm → m
-          const imt = data.bb / (tbMeter * tbMeter);
-          if (imt >= 25) {
+        // ===== Hitung Resti Obesitas =====
+        const bb = Number(data.bb); // berat badan (kg)
+        const tbCm = Number(data.tb); // tinggi badan (cm)
+        if (bb > 0 && tbCm > 0) {
+          const tbMeter = tbCm / 100; // centimeter to meter
+          const bmi = bb / (tbMeter * tbMeter);
+          if (bmi >= 25) {
             safeIncrement(resti, "obesitas");
           }
         }
+
+        // ===== Hitung Resti KEK (lila<23.5) =====
+        const lila = Number(data.lila);
+        if (!isNaN(lila) && lila < 23.5) {
+          safeIncrement(resti, "kek");
+        }
+
       }
       if (status === "k2") safeIncrement(kunjungan, "k2");
       if (status === "k3") safeIncrement(kunjungan, "k3");
@@ -140,6 +153,7 @@ export const recalculateKunjunganStats = onRequest({ region: REGION }, async (re
             resti: {
               hipertensi: 0,
               obesitas: 0,
+              kek: 0,
             }
           };
         }

@@ -86,6 +86,12 @@ export const incrementKunjunganCount = onDocumentCreated(
           }
         }
 
+        // ===== Hitung Resti KEK (lila<23.5) =====
+        const lila = Number(dataKunjungan.lila);
+        if (!isNaN(lila) && lila < 23.5) {
+          safeIncrement(resti, "kek");
+        }
+
       } else if (status === "k2") {
         safeIncrement(kunjungan, "k2");
       } else if (status === "k3") {
