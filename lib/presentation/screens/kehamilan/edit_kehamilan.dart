@@ -157,6 +157,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
       createdAt: _createdAt,
       idBumil: widget.kehamilan.idBumil,
       resti: collectingResti(),
+      usia: widget.kehamilan.usia,
       id: widget.kehamilan.id,
     );
 
@@ -165,7 +166,9 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
 
   List<String> collectingResti() {
     List<String> resti = [];
-    if (bumil!.age < 20 && bumil!.age > 35) {
+    if (widget.kehamilan.usia != null &&
+        widget.kehamilan.usia! < 20 &&
+        widget.kehamilan.usia! > 35) {
       resti.add('Usia ${bumil!.age} tahun');
     }
     if (bumil!.statisticRiwayat['gravida']! >= 4) {

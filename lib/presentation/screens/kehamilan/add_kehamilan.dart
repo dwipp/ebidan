@@ -209,6 +209,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
       createdAt: _createdAt,
       idBumil: bumil?.idBumil,
       resti: collectingResti(),
+      usia: bumil?.age,
     );
 
     context.read<SubmitKehamilanCubit>().submitKehamilan(kehamilan);

@@ -24,6 +24,7 @@ class Kehamilan {
   final DateTime? tglPeriksaUsg;
   final bool kontrolDokter;
   final bool kunjungan;
+  final num? usia;
   List<Persalinan>? persalinan;
 
   Kehamilan({
@@ -49,6 +50,7 @@ class Kehamilan {
     this.tglPeriksaUsg,
     this.kontrolDokter = false,
     this.kunjungan = false,
+    this.usia,
     this.persalinan,
   });
 
@@ -77,6 +79,7 @@ class Kehamilan {
       tglPeriksaUsg: (json['tgl_periksa_usg'] as Timestamp?)?.toDate(),
       kontrolDokter: json['kontrol_dokter'] ?? false,
       kunjungan: json['kunjungan'] ?? false,
+      usia: json['usia'],
       persalinan: (json['persalinan'] as List?)
           ?.map((e) => Persalinan.fromMap(e as Map<String, dynamic>))
           .toList(),
@@ -112,6 +115,7 @@ class Kehamilan {
           : null,
       kontrolDokter: json['kontrol_dokter'] ?? false,
       kunjungan: json['kunjungan'] ?? false,
+      usia: json['usia'],
       persalinan: (json['persalinan'] as List?)
           ?.map((e) => Persalinan.fromMap(e as Map<String, dynamic>))
           .toList(),
@@ -142,6 +146,7 @@ class Kehamilan {
       'tgl_periksa_usg': tglPeriksaUsg?.toIso8601String(),
       'kontrol_dokter': kontrolDokter,
       'kunjungan': kunjungan,
+      'usia': usia,
       'persalinan': persalinan?.map((e) => e.toMap()).toList(),
     }..removeWhere((key, value) => value == null);
   }
@@ -171,6 +176,7 @@ class Kehamilan {
       'tgl_periksa_usg': tglPeriksaUsg?.toIso8601String(),
       'kontrol_dokter': kontrolDokter,
       'kunjungan': kunjungan,
+      'usia': usia,
       'persalinan': persalinan?.map((e) => e.toMap()).toList(),
     }..removeWhere((key, value) => value == null);
   }
@@ -198,6 +204,7 @@ class Kehamilan {
       'tgl_periksa_usg': tglPeriksaUsg,
       'kontrol_dokter': kontrolDokter,
       'kunjungan': kunjungan,
+      'usia': usia,
       'persalinan': persalinan?.map((e) => e.toFirestore()).toList(),
     }..removeWhere((key, value) => value == null);
   }

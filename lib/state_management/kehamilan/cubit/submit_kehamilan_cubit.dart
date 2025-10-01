@@ -52,6 +52,7 @@ class SubmitKehamilanCubit extends Cubit<SubmitKehamilanState> {
         "created_at": data.createdAt,
         "id_bumil": data.idBumil,
         "resti": data.resti,
+        'usia': data.usia,
       };
       await docRef.set(kehamilan, SetOptions(merge: true));
       final snapshot = await docRef.get(const GetOptions(source: Source.cache));
