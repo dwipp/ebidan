@@ -48,7 +48,16 @@ export const incrementKehamilanCount = onDocumentCreated(
                   kehamilanData.usia !== undefined 
                   ? Number(kehamilanData.usia) > 35 ? 1 : 0 
                   : 0,
-
+                paritas_tinggi: (() => {
+                  if (typeof kehamilanData.gpa === "string") {
+                    const match = kehamilanData.gpa.match(/G(\d+)/i);
+                    if (match) {
+                      const gravida = Number(match[1]);
+                      return !isNaN(gravida) && gravida >= 4 ? 1 : 0;
+                    }
+                  }
+                  return 0;
+                })(),
               }
             }
           }
@@ -67,9 +76,10 @@ export const incrementKehamilanCount = onDocumentCreated(
         byMonth[currentMonth].kehamilan = { total: 0 };
       }
       if (!byMonth[currentMonth].resti) {
-        byMonth[currentMonth].resti = { resti_nakes: 0, resti_masyarakat: 0, anemia: 0, too_young: 0, too_old: 0 };
+        byMonth[currentMonth].resti = { 
+          resti_nakes: 0, resti_masyarakat: 0, anemia: 0, 
+          too_young: 0, too_old: 0, paritas_tinggi: 0 };
       } else {
-        // jaga-jaga kalau field baru anemia belum ada
         if (byMonth[currentMonth].resti.anemia === undefined) {
           byMonth[currentMonth].resti.anemia = 0;
         }
@@ -84,6 +94,9 @@ export const incrementKehamilanCount = onDocumentCreated(
         }
         if (byMonth[currentMonth].resti.too_old === undefined) {
           byMonth[currentMonth].resti.too_old = 0;
+        }
+        if (byMonth[currentMonth].resti.paritas_tinggi === undefined) {
+          byMonth[currentMonth].resti.paritas_tinggi = 0;
         }
       }
 
@@ -117,6 +130,17 @@ export const incrementKehamilanCount = onDocumentCreated(
         }
       }
 
+      // resti paritas_tinggi (G >= 4)
+      if (typeof kehamilanData.gpa === "string") {
+        const match = kehamilanData.gpa.match(/G(\d+)/i);
+        if (match) {
+          const gravida = Number(match[1]);
+          if (!isNaN(gravida) && gravida >= 4) {
+            safeIncrement(byMonth[currentMonth].resti, "paritas_tinggi");
+          }
+        }
+      }
+
       // --- LOGIC BATAS 13 BULAN ---
       const months = Object.keys(byMonth).sort(); // YYYY-MM format -> urut ascending
       if (months.length > 13) {
@@ -141,6 +165,8 @@ export const incrementKehamilanCount = onDocumentCreated(
       console.log(
         `Incremented kehamilan count for month: ${currentMonth}, bidan: ${idBidan}, status_resti: ${kehamilanData.status_resti || "-"}, anemia: ${
           kehamilanData.hemoglobin !== undefined && Number(kehamilanData.hemoglobin) < 11 ? "yes" : "no"
+        }, paritas_tinggi: ${
+          typeof kehamilanData.gpa === "string" && /G(\d+)/i.test(kehamilanData.gpa) && Number(kehamilanData.gpa.match(/G(\d+)/i)[1]) >= 4 ? "yes" : "no"
         }`
       );
     });

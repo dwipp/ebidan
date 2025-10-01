@@ -42,9 +42,9 @@ export const decrementKehamilanCount = onDocumentDeleted(
           anemia: 0,
           too_young: 0,
           too_old: 0,
+          paritas_tinggi: 0,
         };
       } else {
-        // jaga-jaga kalau anemia belum ada
         if (byMonth[currentMonth].resti.anemia === undefined) {
           byMonth[currentMonth].resti.anemia = 0;
         }
@@ -59,6 +59,9 @@ export const decrementKehamilanCount = onDocumentDeleted(
         }
         if (byMonth[currentMonth].resti.too_old === undefined) {
           byMonth[currentMonth].resti.too_old = 0;
+        }
+        if (byMonth[currentMonth].resti.paritas_tinggi === undefined) {
+          byMonth[currentMonth].resti.paritas_tinggi = 0;
         }
       }
 
@@ -92,6 +95,17 @@ export const decrementKehamilanCount = onDocumentDeleted(
         }
       }
 
+      // resti paritas_tinggi (G >= 4)
+      if (typeof kehamilanData.gpa === "string") {
+        const match = kehamilanData.gpa.match(/G(\d+)/i);
+        if (match) {
+          const gravida = Number(match[1]);
+          if (!isNaN(gravida) && gravida >= 4) {
+            safeDecrement(byMonth[currentMonth].resti, "paritas_tinggi");
+          }
+        }
+      }
+
       t.set(
         statsRef,
         {
@@ -108,6 +122,8 @@ export const decrementKehamilanCount = onDocumentDeleted(
       console.log(
         `Decremented kehamilan count for month: ${currentMonth}, bidan: ${idBidan}, status_resti: ${kehamilanData.status_resti || "-"}, anemia: ${
           kehamilanData.hemoglobin !== undefined && Number(kehamilanData.hemoglobin) < 11 ? "yes" : "no"
+        }, paritas_tinggi: ${
+          typeof kehamilanData.gpa === "string" && /G(\d+)/i.test(kehamilanData.gpa) && Number(kehamilanData.gpa.match(/G(\d+)/i)[1]) >= 4 ? "yes" : "no"
         }`
       );
     });

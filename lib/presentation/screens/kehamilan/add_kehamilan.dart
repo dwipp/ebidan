@@ -137,7 +137,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
     if (bumil!.age < 20 || bumil!.age > 35) {
       resti.add('Usia ${bumil!.age} tahun');
     }
-    if (bumil!.statisticRiwayat['gravida']! >= 4) {
+    if (bumil!.statisticRiwayat['gravida']! >= 3) {
       resti.add('Riwayat kehamilan ${bumil?.statisticRiwayat['gravida']}x');
     }
 

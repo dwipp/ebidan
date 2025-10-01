@@ -40,7 +40,9 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
       if (!statsByBidan[idBidan].by_month[monthKey]) {
         statsByBidan[idBidan].by_month[monthKey] = {
           kehamilan: { total: 0 },
-          resti: { resti_nakes: 0, resti_masyarakat: 0, anemia: 0, too_young: 0, too_old: 0 }
+          resti: { 
+            resti_nakes: 0, resti_masyarakat: 0, anemia: 0, 
+            too_young: 0, too_old: 0, paritas_tinggi: 0 }
         };
       }
 
@@ -65,6 +67,17 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
         statsByBidan[idBidan].by_month[monthKey].resti.too_young++;
       }else if (usia > 35) {
         statsByBidan[idBidan].by_month[monthKey].resti.too_old++;
+      }
+      
+      // resti paritas tinggi (gravida >= 4)
+      if (typeof data.gpa === "string") {
+        const match = data.gpa.match(/G(\d+)/i); // ambil angka setelah G
+        if (match) {
+          const gravida = Number(match[1]);
+          if (!isNaN(gravida) && gravida >= 4) {
+            statsByBidan[idBidan].by_month[monthKey].resti.paritas_tinggi++;
+          }
+        }
       }
     });
 
@@ -103,6 +116,9 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
             if (!byMonth[month].resti.too_old) {
               byMonth[month].resti.too_old = 0;
             }
+            if (!byMonth[month].resti.paritas_tinggi) {
+              byMonth[month].resti.paritas_tinggi = 0;
+            }
 
           } else {
             skippedMonths.push(month);
@@ -122,7 +138,10 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
           byMonth[month].kehamilan = { total: 0 };
         }
         if (!byMonth[month].resti) {
-          byMonth[month].resti = { resti_nakes: 0, resti_masyarakat: 0, anemia: 0, too_young: 0, too_old: 0 };
+          byMonth[month].resti = { 
+            resti_nakes: 0, resti_masyarakat: 0, anemia: 0, 
+            too_young: 0, too_old: 0, paritas_tinggi: 0 
+          };
         }
 
         byMonth[month].kehamilan.total = counts.kehamilan.total ?? 0;
@@ -131,6 +150,7 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
         byMonth[month].resti.anemia = counts.resti?.anemia ?? 0;
         byMonth[month].resti.too_young = counts.resti?.too_young ?? 0;
         byMonth[month].resti.too_old = counts.resti?.too_old ?? 0;
+        byMonth[month].resti.paritas_tinggi = counts.resti?.paritas_tinggi ?? 0;
       }
 
       batch.set(ref, {
