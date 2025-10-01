@@ -40,7 +40,7 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
       if (!statsByBidan[idBidan].by_month[monthKey]) {
         statsByBidan[idBidan].by_month[monthKey] = {
           kehamilan: { total: 0 },
-          resti: { resti_nakes: 0, resti_masyarakat: 0, anemia: 0 }
+          resti: { resti_nakes: 0, resti_masyarakat: 0, anemia: 0, too_young: 0, too_old: 0 }
         };
       }
 
@@ -57,6 +57,14 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
       // cek hemoglobin untuk anemia
       if (typeof data.hemoglobin === "number" && data.hemoglobin < 11) {
         statsByBidan[idBidan].by_month[monthKey].resti.anemia++;
+      }
+
+      // resti usia
+      const usia = Number(data.usia);
+      if (usia < 20) {
+        statsByBidan[idBidan].by_month[monthKey].resti.too_young++;
+      }else if (usia > 35) {
+        statsByBidan[idBidan].by_month[monthKey].resti.too_old++;
       }
     });
 
@@ -89,6 +97,13 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
             if (!byMonth[month].resti.resti_nakes) {
               byMonth[month].resti.resti_nakes = 0;
             }
+            if (!byMonth[month].resti.too_young) {
+              byMonth[month].resti.too_young = 0;
+            }
+            if (!byMonth[month].resti.too_old) {
+              byMonth[month].resti.too_old = 0;
+            }
+
           } else {
             skippedMonths.push(month);
           }
@@ -107,13 +122,15 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
           byMonth[month].kehamilan = { total: 0 };
         }
         if (!byMonth[month].resti) {
-          byMonth[month].resti = { resti_nakes: 0, resti_masyarakat: 0, anemia: 0 };
+          byMonth[month].resti = { resti_nakes: 0, resti_masyarakat: 0, anemia: 0, too_young: 0, too_old: 0 };
         }
 
         byMonth[month].kehamilan.total = counts.kehamilan.total ?? 0;
         byMonth[month].resti.resti_nakes = counts.resti?.resti_nakes ?? 0;
         byMonth[month].resti.resti_masyarakat = counts.resti?.resti_masyarakat ?? 0;
         byMonth[month].resti.anemia = counts.resti?.anemia ?? 0;
+        byMonth[month].resti.too_young = counts.resti?.too_young ?? 0;
+        byMonth[month].resti.too_old = counts.resti?.too_old ?? 0;
       }
 
       batch.set(ref, {

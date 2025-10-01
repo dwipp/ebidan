@@ -37,10 +37,18 @@ export const incrementKehamilanCount = onDocumentCreated(
                 resti_nakes: kehamilanData.status_resti === "Nakes" ? 1 : 0,
                 resti_masyarakat: kehamilanData.status_resti === "Masyarakat" ? 1 : 0,
                 anemia:
-                  kehamilanData.hemoglobin !== undefined &&
-                  Number(kehamilanData.hemoglobin) < 11
-                    ? 1
-                    : 0,
+                  kehamilanData.hemoglobin !== undefined 
+                  ? Number(kehamilanData.hemoglobin) < 11 ? 1 : 0
+                  : 0,
+                too_young: 
+                  kehamilanData.usia !== undefined 
+                  ? Number(kehamilanData.usia) < 20 ? 1 : 0 
+                  : 0,
+                too_old: 
+                  kehamilanData.usia !== undefined 
+                  ? Number(kehamilanData.usia) > 35 ? 1 : 0 
+                  : 0,
+
               }
             }
           }
@@ -59,7 +67,7 @@ export const incrementKehamilanCount = onDocumentCreated(
         byMonth[currentMonth].kehamilan = { total: 0 };
       }
       if (!byMonth[currentMonth].resti) {
-        byMonth[currentMonth].resti = { resti_nakes: 0, resti_masyarakat: 0, anemia: 0 };
+        byMonth[currentMonth].resti = { resti_nakes: 0, resti_masyarakat: 0, anemia: 0, too_young: 0, too_old: 0 };
       } else {
         // jaga-jaga kalau field baru anemia belum ada
         if (byMonth[currentMonth].resti.anemia === undefined) {
@@ -70,6 +78,12 @@ export const incrementKehamilanCount = onDocumentCreated(
         }
         if (byMonth[currentMonth].resti.resti_masyarakat === undefined) {
           byMonth[currentMonth].resti.resti_masyarakat = 0;
+        }
+        if (byMonth[currentMonth].resti.too_young === undefined) {
+          byMonth[currentMonth].resti.too_young = 0;
+        }
+        if (byMonth[currentMonth].resti.too_old === undefined) {
+          byMonth[currentMonth].resti.too_old = 0;
         }
       }
 
@@ -89,6 +103,18 @@ export const incrementKehamilanCount = onDocumentCreated(
         Number(kehamilanData.hemoglobin) < 11
       ) {
         safeIncrement(byMonth[currentMonth].resti, "anemia");
+      }
+
+      // resti usia
+      if (kehamilanData.usia !== undefined) {
+        const usia = Number(kehamilanData.usia);
+        if (!isNaN(usia)) {
+          if (usia < 20) {
+            safeIncrement(byMonth[currentMonth].resti, 'too_young');
+          } else if (usia > 35) {
+            safeIncrement(byMonth[currentMonth].resti, 'too_old');
+          }
+        }
       }
 
       // --- LOGIC BATAS 13 BULAN ---

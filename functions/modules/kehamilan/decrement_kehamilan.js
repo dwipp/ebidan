@@ -40,6 +40,8 @@ export const decrementKehamilanCount = onDocumentDeleted(
           resti_nakes: 0,
           resti_masyarakat: 0,
           anemia: 0,
+          too_young: 0,
+          too_old: 0,
         };
       } else {
         // jaga-jaga kalau anemia belum ada
@@ -51,6 +53,12 @@ export const decrementKehamilanCount = onDocumentDeleted(
         }
         if (byMonth[currentMonth].resti.resti_masyarakat === undefined) {
           byMonth[currentMonth].resti.resti_masyarakat = 0;
+        }
+        if (byMonth[currentMonth].resti.too_young === undefined) {
+          byMonth[currentMonth].resti.too_young = 0;
+        }
+        if (byMonth[currentMonth].resti.too_old === undefined) {
+          byMonth[currentMonth].resti.too_old = 0;
         }
       }
 
@@ -71,11 +79,26 @@ export const decrementKehamilanCount = onDocumentDeleted(
       ) {
         safeDecrement(byMonth[currentMonth].resti, "anemia");
       }
+      
+      // resti usia
+      if (kehamilanData.usia !== undefined) {
+        const usia = Number(kehamilanData.usia);
+        if (!isNaN(usia)) {
+          if (usia < 20) {
+            safeDecrement(byMonth[currentMonth].resti, 'too_young');
+          } else if (usia > 35) {
+            safeDecrement(byMonth[currentMonth].resti, 'too_old');
+          }
+        }
+      }
 
       t.set(
         statsRef,
         {
           ...data,
+          kehamilan: {
+            all_bumil_count: safeDecrement(data.kehamilan || { all_bumil_count: 0 }, "all_bumil_count"),
+          },
           last_updated_month: currentMonth,
           by_month: byMonth,
         },
