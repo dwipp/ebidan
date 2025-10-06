@@ -4,6 +4,18 @@ import { db } from "../firebase.js";
 
 const REGION = "asia-southeast2";
 
+// helper kecil untuk aman mengubah berbagai bentuk tanggal ke JS Date atau null
+const toSafeDate = (v) => {
+  if (!v) return null;
+  // Firestore Timestamp
+  if (typeof v?.toDate === "function") return v.toDate();
+  // plain object like { seconds: ..., nanoseconds: ... }
+  if (v.seconds && typeof v.seconds === "number") return new Date(v.seconds * 1000);
+  // fallback: try parse string
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? null : d;
+};
+
 export const recalculateBumilStats = onRequest({ region: REGION }, async (req, res) => {
   try {
     const snapshot = await db.collection("bumil").get();
@@ -43,27 +55,66 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       updateLatest(pasienMonthKey);
       if (data.is_hamil) updateLatest(kehamilanMonthKey);
 
-      // hitung semua pasien
+      // --- Hitung pasien ---
       statsByBidan[idBidan].pasien.all_pasien_count++;
       if (!statsByBidan[idBidan].by_month[pasienMonthKey]) {
-        statsByBidan[idBidan].by_month[pasienMonthKey] = { kehamilan: { total: 0 }, pasien: { total: 0 } };
+        statsByBidan[idBidan].by_month[pasienMonthKey] = { kehamilan: {}, pasien: {}, resti: {} };
       }
-      statsByBidan[idBidan].by_month[pasienMonthKey].pasien.total++;
+      statsByBidan[idBidan].by_month[pasienMonthKey].pasien.total = 
+        (statsByBidan[idBidan].by_month[pasienMonthKey].pasien.total || 0) + 1;
 
-      // jika hamil
+      // --- Jika hamil ---
       if (data.is_hamil) {
         statsByBidan[idBidan].kehamilan.all_bumil_count++;
         if (!statsByBidan[idBidan].by_month[kehamilanMonthKey]) {
-          statsByBidan[idBidan].by_month[kehamilanMonthKey] = { kehamilan: { total: 0 }, pasien: { total: 0 } };
+          statsByBidan[idBidan].by_month[kehamilanMonthKey] = { kehamilan: {}, pasien: {}, resti: {} };
         }
-        statsByBidan[idBidan].by_month[kehamilanMonthKey].kehamilan.total++;
+
+        statsByBidan[idBidan].by_month[kehamilanMonthKey].kehamilan.total = 
+          (statsByBidan[idBidan].by_month[kehamilanMonthKey].kehamilan.total || 0) + 1;
+
+        // --- Hitung resti.jarak_hamil (replace your block with this) ---
+        const latestKehamilan = data.latest_kehamilan;
+        const riwayat = data.riwayat || [];
+
+        let lastBirthDate = null;
+        if (riwayat.length > 0) {
+          // ambil semua tanggal kelahiran yang valid -> urutkan terbaru dulu
+          const birthDates = riwayat
+            .map(r => toSafeDate(r.tgl_lahir))
+            .filter(d => d !== null)
+            .sort((a, b) => b.getTime() - a.getTime());
+
+          if (birthDates.length > 0) {
+            lastBirthDate = birthDates[0];
+          }
+        }
+
+        const latestCreatedAt = toSafeDate(latestKehamilan?.created_at);
+
+        if (lastBirthDate && latestCreatedAt) {
+          const diffMs = latestCreatedAt.getTime() - lastBirthDate.getTime();
+          const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+          const diffYears = diffDays / 365;
+
+          // debug sementara (hapus/komentari setelah verified)
+          console.log(`rekalkulasi: idBidan=${idBidan} lastBirth=${lastBirthDate.toISOString()} latest=${latestCreatedAt.toISOString()} diffYears=${diffYears}`);
+
+          if (diffYears < 2) {
+            if (!statsByBidan[idBidan].by_month[kehamilanMonthKey]) {
+              statsByBidan[idBidan].by_month[kehamilanMonthKey] = { kehamilan: {}, pasien: {}, resti: {} };
+            }
+            statsByBidan[idBidan].by_month[kehamilanMonthKey].resti.jarak_hamil =
+              (statsByBidan[idBidan].by_month[kehamilanMonthKey].resti.jarak_hamil || 0) + 1;
+          }
+        }
+
       }
     });
 
-    // --- Tentukan bulan awal 13 bulan terakhir ---
-    // StartMonthDate = 12 bulan sebelum bulan ini (termasuk bulan ini)
+    // --- Simpan ke Firestore ---
     const now = new Date();
-    const startMonthDate = new Date(now.getFullYear(), now.getMonth() - 12, 1); // Bulan paling awal yang disimpan (YYYY-MM-01)
+    const startMonthDate = new Date(now.getFullYear(), now.getMonth() - 12, 1);
     const startMonthKey = getMonthString(startMonthDate);
 
     const batch = db.batch();
@@ -75,7 +126,7 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       const byMonth = {};
       const skippedMonths = [];
 
-      // gabungkan existing.by_month yang masih dalam 13 bulan terakhir
+      // simpan bulan dalam 13 bulan terakhir
       if (existing.by_month) {
         for (const [month, counts] of Object.entries(existing.by_month)) {
           if (month >= startMonthKey) {
@@ -86,18 +137,17 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
         }
       }
 
-      // tambahkan data baru dari stats
       for (const [month, counts] of Object.entries(stats.by_month)) {
         if (month < startMonthKey) {
           skippedMonths.push(month);
-          continue; // skip bulan di luar 13 bulan terakhir
+          continue;
         }
-        if (!byMonth[month]) byMonth[month] = {};
-        if (!byMonth[month].kehamilan) byMonth[month].kehamilan = { total: 0 };
-        if (!byMonth[month].pasien) byMonth[month].pasien = { total: 0 };
+
+        if (!byMonth[month]) byMonth[month] = { kehamilan: {}, pasien: {}, resti: {} };
 
         byMonth[month].kehamilan.total = counts.kehamilan.total ?? 0;
         byMonth[month].pasien.total = counts.pasien.total ?? 0;
+        byMonth[month].resti.jarak_hamil = counts.resti?.jarak_hamil ?? 0;
       }
 
       batch.set(ref, {
@@ -112,7 +162,7 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
     }
 
     await batch.commit();
-    res.status(200).send({ message: "Recalculation complete", statsByBidan });
+    res.status(200).send({ message: "Recalculation complete with jarak_hamil", statsByBidan });
 
   } catch (error) {
     console.error("Recalculation error:", error);
