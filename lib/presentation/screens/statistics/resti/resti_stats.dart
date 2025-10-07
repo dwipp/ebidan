@@ -19,32 +19,103 @@ class RestiStatsScreen extends StatelessWidget {
     final warningBanner = PremiumWarningBanner.fromContext(context);
 
     final List<Map<String, dynamic>> kategori = [
-      {"label": "Abortus", "value": selectedResti?.abortus},
-      {"label": "Anemia", "value": selectedResti?.anemia},
-      {"label": "Hipertensi", "value": selectedResti?.hipertensi},
-      {"label": "Kekurangan Energi Kronis", "value": selectedResti?.kek},
-      {"label": "Obesitas", "value": selectedResti?.obesitas},
-      {"label": "Paritas Tinggi", "value": selectedResti?.paritasTinggi},
-      {"label": "Pernah Abortus", "value": selectedResti?.pernahAbortus},
-      {"label": "Resti Masyarakat", "value": selectedResti?.restiMasyarakat},
-      {"label": "Resti Nakes", "value": selectedResti?.restiNakes},
-      {"label": "Resiko Panggul Sempit", "value": selectedResti?.tbUnder145},
-      {"label": "Usia Terlalu Muda (<20)", "value": selectedResti?.tooYoung},
-      {"label": "Usia Terlalu Tua (>35)", "value": selectedResti?.tooOld},
+      {
+        "label": "Resti Nakes",
+        "value": selectedResti?.restiNakes,
+        'cross': 1,
+        'main': 1,
+      },
+      {
+        "label": "Resti Masyarakat",
+        "value": selectedResti?.restiMasyarakat,
+        'cross': 2,
+        'main': 1,
+      },
+      {
+        "label": "Usia Terlalu Muda \n(< 20 tahun)",
+        "value": selectedResti?.tooYoung,
+        'cross': 2,
+        'main': 1.7,
+      },
+      {
+        "label": "Hipertensi",
+        "value": selectedResti?.hipertensi,
+        'cross': 1,
+        'main': 0.85,
+      },
+      {
+        "label": "Obesitas",
+        "value": selectedResti?.obesitas,
+        'cross': 1,
+        'main': 0.85,
+      },
+      {
+        "label": "Paritas Tinggi",
+        "value": selectedResti?.paritasTinggi,
+        'cross': 1,
+        'main': 1,
+      },
+      {
+        "label": "Usia Terlalu Tua (> 35 thn)",
+        "value": selectedResti?.tooOld,
+        'cross': 2,
+        'main': 1,
+      },
+      {
+        "label": "Pernah Abortus",
+        "value": selectedResti?.pernahAbortus,
+        'cross': 1,
+        'main': 1.7,
+      },
+      {
+        "label": "Abortus",
+        "value": selectedResti?.abortus,
+        'cross': 1,
+        'main': 0.85,
+      },
+      {
+        "label": "Anemia",
+        "value": selectedResti?.anemia,
+        'cross': 1,
+        'main': 0.85,
+      },
+      {
+        "label": "Resiko Panggul Sempit",
+        "value": selectedResti?.tbUnder145,
+        'cross': 2,
+        'main': 0.85,
+      },
+      {
+        "label": "Kekurangan Energi Kronis (KEK)",
+        "value": selectedResti?.kek,
+        'cross': 3,
+        'main': 1,
+      },
     ];
     final List<Widget> gridItems = [];
 
     gridItems.add(
-      AnimatedDataCard(
-        label: "Total Resti",
-        value: selectedResti?.totalResti ?? 0,
-        isTotal: true,
-        icon: Icons.bar_chart,
+      StaggeredGridTile.count(
+        crossAxisCellCount: 3,
+        mainAxisCellCount: 1,
+        child: AnimatedDataCard(
+          label: "Total Resti",
+          value: selectedResti?.totalResti ?? 0,
+          isTotal: true,
+          icon: Icons.bar_chart,
+        ),
       ),
     );
 
     kategori.forEach((element) {
-      gridItems.add(_buildCardItem(element["label"], element["value"]));
+      gridItems.add(
+        _buildCardItem(
+          element["label"],
+          element["value"],
+          cross: element['cross'],
+          main: element['main'],
+        ),
+      );
     });
 
     return Scaffold(
@@ -65,16 +136,13 @@ class RestiStatsScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               // --- GRID VIEW UNTUK TOTAL & KATEGORI ---
-              MasonryGridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
+              StaggeredGrid.count(
                 crossAxisCount: 3,
                 mainAxisSpacing: 8,
                 crossAxisSpacing: 8,
-                itemCount: gridItems.length,
-                itemBuilder: (context, index) {
-                  return gridItems[index];
-                },
+                children: List.generate(gridItems.length, (i) {
+                  return gridItems[i];
+                }),
               ),
             ],
           ),
@@ -83,18 +151,25 @@ class RestiStatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCardItem(String label, int? value) {
-    return Card(
+  Widget _buildCardItem(
+    String label,
+    int? value, {
+    int cross = 1,
+    num main = 1,
+  }) {
+    final card = Card(
       margin: EdgeInsets.zero,
       color: Colors.blue.shade200,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              label,
+            DefaultTextStyle(
+              textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              child: Text(label),
             ),
             const SizedBox(height: 4),
             Text(
@@ -108,6 +183,12 @@ class RestiStatsScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+
+    return StaggeredGridTile.count(
+      crossAxisCellCount: cross,
+      mainAxisCellCount: main,
+      child: card,
     );
   }
 }
