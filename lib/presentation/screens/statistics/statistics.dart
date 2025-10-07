@@ -29,6 +29,17 @@ class StatisticsScreen extends StatelessWidget {
                 );
               },
             ),
+            MenuButton(
+              icon: Icons.history,
+              title: 'Resti',
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.restiStats,
+                  arguments: {'monthKey': null},
+                );
+              },
+            ),
           ],
         ),
       ),

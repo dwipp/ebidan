@@ -29,6 +29,7 @@ import 'package:ebidan/presentation/screens/auth/register.dart';
 import 'package:ebidan/presentation/screens/statistics/kunjungan/kunjungan_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/kunjungan/list_kunjungan_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/kunjungan/tren_kunjungan_stats.dart';
+import 'package:ebidan/presentation/screens/statistics/resti/resti_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/statistics.dart';
 import 'package:flutter/material.dart';
 import 'package:ebidan/common/exceptions/route_exception.dart';
@@ -74,6 +75,7 @@ class AppRouter {
   static const String kunjunganStats = '/kunjunganstats';
   static const String listKunjunganStats = '/listkunjunganstats';
   static const String trenKunjunganStats = '/trenkunjunganstats';
+  static const String restiStats = '/restistats';
 
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
@@ -185,6 +187,11 @@ class AppRouter {
         );
       case listKunjunganStats:
         return MaterialPageRoute(builder: (_) => ListKunjunganStatsScreen());
+      case restiStats:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => RestiStatsScreen(monthKey: args['monthKey']),
+        );
       default:
         throw const RouteException('Route not found!');
     }

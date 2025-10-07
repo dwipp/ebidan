@@ -75,12 +75,14 @@ class ByMonthStats {
   final PasienByMonth pasien;
   final KunjunganByMonth kunjungan;
   final PersalinanByMonth persalinan;
+  final RestiByMonth resti;
 
   ByMonthStats({
     required this.kehamilan,
     required this.pasien,
     required this.kunjungan,
     required this.persalinan,
+    required this.resti,
   });
 
   factory ByMonthStats.fromMap(Map<String, dynamic> map) {
@@ -89,6 +91,7 @@ class ByMonthStats {
       pasien: PasienByMonth.fromMap(map['pasien']),
       kunjungan: KunjunganByMonth.fromMap(map['kunjungan']),
       persalinan: PersalinanByMonth.fromMap(map['persalinan']),
+      resti: RestiByMonth.fromMap(map['resti']),
     );
   }
 
@@ -97,7 +100,117 @@ class ByMonthStats {
       'kehamilan': kehamilan.toMap(),
       'pasien': pasien.toMap(),
       'kunjungan': kunjungan.toMap(),
+      'resti': resti.toMap(),
     };
+  }
+}
+
+class RestiByMonth {
+  final int abortus;
+  final int anemia;
+  final int bbBayiUnder2500;
+  final int hipertensi;
+  final int jarakHamil;
+  final int kek;
+  final int obesitas;
+  final int paritasTinggi;
+  final int pernahAbortus;
+  final int restiMasyarakat;
+  final int restiNakes;
+  final int tbUnder145;
+  final int tooOld;
+  final int tooYoung;
+
+  RestiByMonth({
+    required this.abortus,
+    required this.anemia,
+    required this.bbBayiUnder2500,
+    required this.hipertensi,
+    required this.jarakHamil,
+    required this.kek,
+    required this.obesitas,
+    required this.paritasTinggi,
+    required this.pernahAbortus,
+    required this.restiMasyarakat,
+    required this.restiNakes,
+    required this.tbUnder145,
+    required this.tooOld,
+    required this.tooYoung,
+  });
+
+  int get totalResti {
+    var total =
+        abortus +
+        anemia +
+        bbBayiUnder2500 +
+        hipertensi +
+        jarakHamil +
+        kek +
+        obesitas +
+        paritasTinggi +
+        pernahAbortus +
+        restiMasyarakat +
+        restiNakes +
+        tbUnder145 +
+        tooOld +
+        tooYoung;
+    return total;
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'abortus': abortus,
+      'anemia': anemia,
+      'bbBayiUnder2500': bbBayiUnder2500,
+      'hipertensi': hipertensi,
+      'jarakHamil': jarakHamil,
+      'kek': kek,
+      'obesitas': obesitas,
+      'paritasTinggi': paritasTinggi,
+      'pernahAbortus': pernahAbortus,
+      'restiMasyarakat': restiMasyarakat,
+      'restiNakes': restiNakes,
+      'tbUnder145': tbUnder145,
+      'tooOld': tooOld,
+      'tooYoung': tooYoung,
+    };
+  }
+
+  factory RestiByMonth.fromMap(Map<String, dynamic>? map) {
+    if (map == null) {
+      return RestiByMonth(
+        abortus: 0,
+        anemia: 0,
+        bbBayiUnder2500: 0,
+        hipertensi: 0,
+        jarakHamil: 0,
+        kek: 0,
+        obesitas: 0,
+        paritasTinggi: 0,
+        pernahAbortus: 0,
+        restiMasyarakat: 0,
+        restiNakes: 0,
+        tbUnder145: 0,
+        tooOld: 0,
+        tooYoung: 0,
+      );
+    }
+    return RestiByMonth(
+      abortus: map['abortus'] ?? 0,
+      anemia: map['anemia'] ?? 0,
+      bbBayiUnder2500: map['bbBayiUnder2500'] ?? 0,
+      hipertensi: map['hipertensi'] ?? 0,
+      jarakHamil: map['jarakHamil'] ?? 0,
+      kek: map['kek'] ?? 0,
+      obesitas: map['obesitas'] ?? 0,
+      paritasTinggi: map['paritasTinggi'] ?? 0,
+      pernahAbortus: map['pernahAbortus'] ?? 0,
+      restiMasyarakat: map['restiMasyarakat'] ?? 0,
+      restiNakes: map['restiNakes'] ?? 0,
+      tbUnder145: map['tbUnder145'] ?? 0,
+      tooOld: map['tooOld'] ?? 0,
+      tooYoung: map['tooYoung'] ?? 0,
+    );
   }
 }
 
