@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/animated_data_card.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
@@ -157,9 +159,21 @@ class RestiStatsScreen extends StatelessWidget {
     int cross = 1,
     num main = 1,
   }) {
+    // Buat warna acak stabil berdasarkan hash dari label
+    // Warna pastel cerah stabil berdasar label
+    final random = Random(label.hashCode);
+    final hue = random.nextInt(360).toDouble();
+    final hsl = HSLColor.fromAHSL(
+      1.0,
+      hue,
+      0.45,
+      0.8,
+    ); // saturasi & lightness disetel lembut
+    final color = hsl.toColor();
+
     final card = Card(
       margin: EdgeInsets.zero,
-      color: Colors.blue.shade200,
+      color: color,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -168,8 +182,8 @@ class RestiStatsScreen extends StatelessWidget {
           children: [
             DefaultTextStyle(
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-              child: Text(label),
+              style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+              child: Text(label, textAlign: TextAlign.center),
             ),
             const SizedBox(height: 4),
             Text(
@@ -177,7 +191,7 @@ class RestiStatsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
-                color: Colors.blue.shade400,
+                color: Colors.black87,
               ),
             ),
           ],
