@@ -12,7 +12,15 @@ export const decrementPasienCount = onDocumentDeleted(
 
     const idBidan = bumilData.id_bidan;
     const statsRef = db.doc(`statistics/${idBidan}`);
-    const currentMonth = getMonthString(new Date());
+    
+    let currentMonth = null;
+    if (bumilData.created_at?.toDate) {
+      currentMonth = getMonthString(bumilData.created_at.toDate());
+    } else if (bumilData.created_at) {
+      currentMonth = getMonthString(new Date(bumilData.created_at));
+    } else {
+      currentMonth = getMonthString(new Date()); // fallback
+    }
 
     await db.runTransaction(async (t) => {
       const doc = await t.get(statsRef);
