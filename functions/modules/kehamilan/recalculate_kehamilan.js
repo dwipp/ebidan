@@ -42,7 +42,7 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
           kehamilan: { total: 0 },
           resti: { 
             resti_nakes: 0, resti_masyarakat: 0, anemia: 0, 
-            too_young: 0, too_old: 0, paritas_tinggi: 0 }
+            too_young: 0, too_old: 0, paritas_tinggi: 0, tb_under_145: 0 }
         };
       }
 
@@ -79,6 +79,13 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
           }
         }
       }
+
+      // resti Risiko panggul sempit (tb < 145)
+      const tb = Number(data.tb);
+      if (tb < 145) {
+        statsByBidan[idBidan].by_month[monthKey].resti.tb_under_145++;
+      }
+
     });
 
     // --- Tentukan bulan awal 13 bulan terakhir ---
@@ -119,6 +126,9 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
             if (!byMonth[month].resti.paritas_tinggi) {
               byMonth[month].resti.paritas_tinggi = 0;
             }
+            if (!byMonth[month].resti.tb_under_145) {
+              byMonth[month].resti.tb_under_145 = 0;
+            }
 
           } else {
             skippedMonths.push(month);
@@ -140,7 +150,7 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
         if (!byMonth[month].resti) {
           byMonth[month].resti = { 
             resti_nakes: 0, resti_masyarakat: 0, anemia: 0, 
-            too_young: 0, too_old: 0, paritas_tinggi: 0 
+            too_young: 0, too_old: 0, paritas_tinggi: 0, tb_under_145: 0 
           };
         }
 
@@ -151,6 +161,7 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
         byMonth[month].resti.too_young = counts.resti?.too_young ?? 0;
         byMonth[month].resti.too_old = counts.resti?.too_old ?? 0;
         byMonth[month].resti.paritas_tinggi = counts.resti?.paritas_tinggi ?? 0;
+        byMonth[month].resti.tb_under_145 = counts.resti?.tb_under_145 ?? 0;
       }
 
       batch.set(ref, {

@@ -43,6 +43,7 @@ export const decrementKehamilanCount = onDocumentDeleted(
           too_young: 0,
           too_old: 0,
           paritas_tinggi: 0,
+          tb_under_145: 0
         };
       } else {
         if (byMonth[currentMonth].resti.anemia === undefined) {
@@ -62,6 +63,9 @@ export const decrementKehamilanCount = onDocumentDeleted(
         }
         if (byMonth[currentMonth].resti.paritas_tinggi === undefined) {
           byMonth[currentMonth].resti.paritas_tinggi = 0;
+        }
+        if (byMonth[currentMonth].resti.tb_under_145 === undefined) {
+          byMonth[currentMonth].resti.tb_under_145 = 0;
         }
       }
 
@@ -103,6 +107,14 @@ export const decrementKehamilanCount = onDocumentDeleted(
           if (!isNaN(gravida) && gravida >= 4) {
             safeDecrement(byMonth[currentMonth].resti, "paritas_tinggi");
           }
+        }
+      }
+      
+      // resti panggul sempit (tb<145)
+      if (kehamilanData.tb !== undefined) {
+        const tb = Number(kehamilanData.tb);
+        if (tb < 145) {
+          safeDecrement(byMonth[currentMonth].resti, "tb_under_145");
         }
       }
 
