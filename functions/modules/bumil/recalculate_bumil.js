@@ -73,13 +73,12 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
         statsByBidan[idBidan].by_month[kehamilanMonthKey].kehamilan.total = 
           (statsByBidan[idBidan].by_month[kehamilanMonthKey].kehamilan.total || 0) + 1;
 
-        // --- Hitung resti.jarak_hamil (replace your block with this) ---
+        // --- Hitung resti.jarak_hamil ---
         const latestKehamilan = data.latest_kehamilan;
         const riwayat = data.riwayat || [];
 
         let lastBirthDate = null;
         if (riwayat.length > 0) {
-          // ambil semua tanggal kelahiran yang valid -> urutkan terbaru dulu
           const birthDates = riwayat
             .map(r => toSafeDate(r.tgl_lahir))
             .filter(d => d !== null)
@@ -97,18 +96,24 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
           const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
           const diffYears = diffDays / 365;
 
-          // debug sementara (hapus/komentari setelah verified)
           console.log(`rekalkulasi: idBidan=${idBidan} lastBirth=${lastBirthDate.toISOString()} latest=${latestCreatedAt.toISOString()} diffYears=${diffYears}`);
 
           if (diffYears < 2) {
-            if (!statsByBidan[idBidan].by_month[kehamilanMonthKey]) {
-              statsByBidan[idBidan].by_month[kehamilanMonthKey] = { kehamilan: {}, pasien: {}, resti: {} };
-            }
             statsByBidan[idBidan].by_month[kehamilanMonthKey].resti.jarak_hamil =
               (statsByBidan[idBidan].by_month[kehamilanMonthKey].resti.jarak_hamil || 0) + 1;
           }
         }
 
+        // === Hitung resti.bb_bayi_under_2500 ===
+        const hasLowWeight = riwayat.some(r => {
+          const bb = Number(r.berat_bayi);
+          return !isNaN(bb) && bb > 0 && bb < 2500;
+        });
+
+        if (hasLowWeight) {
+          statsByBidan[idBidan].by_month[kehamilanMonthKey].resti.bb_bayi_under_2500 =
+            (statsByBidan[idBidan].by_month[kehamilanMonthKey].resti.bb_bayi_under_2500 || 0) + 1;
+        }
       }
     });
 
@@ -126,7 +131,6 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
       const byMonth = {};
       const skippedMonths = [];
 
-      // simpan bulan dalam 13 bulan terakhir
       if (existing.by_month) {
         for (const [month, counts] of Object.entries(existing.by_month)) {
           if (month >= startMonthKey) {
@@ -148,6 +152,7 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
         byMonth[month].kehamilan.total = counts.kehamilan.total ?? 0;
         byMonth[month].pasien.total = counts.pasien.total ?? 0;
         byMonth[month].resti.jarak_hamil = counts.resti?.jarak_hamil ?? 0;
+        byMonth[month].resti.bb_bayi_under_2500 = counts.resti?.bb_bayi_under_2500 ?? 0;
       }
 
       batch.set(ref, {
@@ -162,7 +167,7 @@ export const recalculateBumilStats = onRequest({ region: REGION }, async (req, r
     }
 
     await batch.commit();
-    res.status(200).send({ message: "Recalculation complete with jarak_hamil", statsByBidan });
+    res.status(200).send({ message: "Recalculation complete with jarak_hamil + bb_bayi_under_2500", statsByBidan });
 
   } catch (error) {
     console.error("Recalculation error:", error);
