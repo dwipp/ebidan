@@ -60,8 +60,18 @@ export const incrementKehamilanCount = onDocumentCreated(
                 })(),
                 tb_under_145:
                   kehamilanData.tb !== undefined 
-                    ? Number(kehamilanData.tb) < 145 ? 1 : 0 
-                    : 0,
+                  ? Number(kehamilanData.tb) < 145 ? 1 : 0 
+                  : 0,
+                pernah_abortus:(() => {
+                  if (typeof kehamilanData.gpa === "string") {
+                    const match = kehamilanData.gpa.match(/A(\d+)/i);
+                    if (match) {
+                      const abortus = Number(match[1]);
+                      return !isNaN(abortus) && abortus > 0 ? 1 : 0;
+                    }
+                  }
+                  return 0;
+                })(),
               }
             }
           }
@@ -82,7 +92,8 @@ export const incrementKehamilanCount = onDocumentCreated(
       if (!byMonth[currentMonth].resti) {
         byMonth[currentMonth].resti = { 
           resti_nakes: 0, resti_masyarakat: 0, anemia: 0, 
-          too_young: 0, too_old: 0, paritas_tinggi: 0, tb_under_145: 0 };
+          too_young: 0, too_old: 0, paritas_tinggi: 0, 
+          tb_under_145: 0, pernah_abortus: 0 };
       } else {
         if (byMonth[currentMonth].resti.anemia === undefined) {
           byMonth[currentMonth].resti.anemia = 0;
@@ -104,6 +115,9 @@ export const incrementKehamilanCount = onDocumentCreated(
         }
         if (byMonth[currentMonth].resti.tb_under_145 === undefined) {
           byMonth[currentMonth].resti.tb_under_145 = 0;
+        }
+        if (byMonth[currentMonth].resti.pernah_abortus === undefined) {
+          byMonth[currentMonth].resti.pernah_abortus = 0;
         }
       }
 
@@ -137,13 +151,22 @@ export const incrementKehamilanCount = onDocumentCreated(
         }
       }
 
-      // resti paritas_tinggi (G >= 4)
       if (typeof kehamilanData.gpa === "string") {
-        const match = kehamilanData.gpa.match(/G(\d+)/i);
-        if (match) {
-          const gravida = Number(match[1]);
+        // resti paritas_tinggi (G >= 4)
+        const matchGravida = kehamilanData.gpa.match(/G(\d+)/i);
+        if (matchGravida) {
+          const gravida = Number(matchGravida[1]);
           if (!isNaN(gravida) && gravida >= 4) {
             safeIncrement(byMonth[currentMonth].resti, "paritas_tinggi");
+          }
+        }
+
+        // resti pernah abortus (A > 0)
+        const matchAbortus = kehamilanData.gpa.match(/A(\d+)/i);
+        if (matchAbortus) {
+          const abortus = Number(matchAbortus[1]);
+          if (!isNaN(abortus) && abortus > 0) {
+            safeIncrement(byMonth[currentMonth].resti, "pernah_abortus");
           }
         }
       }

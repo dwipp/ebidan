@@ -42,7 +42,7 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
           kehamilan: { total: 0 },
           resti: { 
             resti_nakes: 0, resti_masyarakat: 0, anemia: 0, 
-            too_young: 0, too_old: 0, paritas_tinggi: 0, tb_under_145: 0 }
+            too_young: 0, too_old: 0, paritas_tinggi: 0, tb_under_145: 0, pernah_abortus: 0 }
         };
       }
 
@@ -69,13 +69,22 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
         statsByBidan[idBidan].by_month[monthKey].resti.too_old++;
       }
       
-      // resti paritas tinggi (gravida >= 4)
       if (typeof data.gpa === "string") {
-        const match = data.gpa.match(/G(\d+)/i); // ambil angka setelah G
-        if (match) {
-          const gravida = Number(match[1]);
+        // resti paritas tinggi (gravida >= 4)
+        const matchGravida = data.gpa.match(/G(\d+)/i); // ambil angka setelah G
+        if (matchGravida) {
+          const gravida = Number(matchGravida[1]);
           if (!isNaN(gravida) && gravida >= 4) {
             statsByBidan[idBidan].by_month[monthKey].resti.paritas_tinggi++;
+          }
+        }
+
+        // resti pernah abortus (abortus > 0)
+        const matchAbortus = data.gpa.match(/A(\d+)/i); // ambil angka setelah A
+        if (matchAbortus) {
+          const abortus = Number(matchAbortus[1]);
+          if (!isNaN(abortus) && abortus > 0) {
+            statsByBidan[idBidan].by_month[monthKey].resti.pernah_abortus++;
           }
         }
       }
@@ -129,6 +138,9 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
             if (!byMonth[month].resti.tb_under_145) {
               byMonth[month].resti.tb_under_145 = 0;
             }
+            if (!byMonth[month].resti.pernah_abortus) {
+              byMonth[month].resti.pernah_abortus = 0;
+            }
 
           } else {
             skippedMonths.push(month);
@@ -150,7 +162,8 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
         if (!byMonth[month].resti) {
           byMonth[month].resti = { 
             resti_nakes: 0, resti_masyarakat: 0, anemia: 0, 
-            too_young: 0, too_old: 0, paritas_tinggi: 0, tb_under_145: 0 
+            too_young: 0, too_old: 0, paritas_tinggi: 0, 
+            tb_under_145: 0, pernah_abortus: 0 
           };
         }
 
@@ -162,6 +175,7 @@ export const recalculateKehamilanStats = onRequest({ region: REGION }, async (re
         byMonth[month].resti.too_old = counts.resti?.too_old ?? 0;
         byMonth[month].resti.paritas_tinggi = counts.resti?.paritas_tinggi ?? 0;
         byMonth[month].resti.tb_under_145 = counts.resti?.tb_under_145 ?? 0;
+        byMonth[month].resti.pernah_abortus = counts.resti?.pernah_abortus ?? 0;
       }
 
       batch.set(ref, {
