@@ -46,13 +46,36 @@ class Utils {
     return DateFormat("d MMMM yyyy, HH:mm", "id_ID").format(date);
   }
 
-  static String formattedYearMonth(String key) {
+  static String formattedDateFromYearMonth(String key) {
     try {
       // key format: yyyy-MM
       final date = DateFormat('yyyy-MM').parse(key);
       return DateFormat('MMMM yyyy', 'id_ID').format(date);
     } catch (e) {
       return key; // fallback kalau parsing gagal
+    }
+  }
+
+  static String formattedYearMonth(DateTime date) {
+    try {
+      return DateFormat('yyyy-MM').format(date).toString();
+    } catch (e) {
+      return '';
+    }
+  }
+
+  // mendapatkan format yyyy-MM dengan date bulan lalu jika tgl 1-7
+  static String getAutoYearMonth() {
+    final now = DateTime.now();
+    if (now.day >= 7) {
+      // tanggal 8–31, pakai bulan ini
+      var date = DateTime(now.year, now.month);
+      return DateFormat('yyyy-MM').format(date).toString();
+    } else {
+      // tanggal 1–7, pakai bulan sebelumnya
+      final prevMonth = DateTime(now.year, now.month - 1);
+      var date = DateTime(prevMonth.year, prevMonth.month);
+      return DateFormat('yyyy-MM').format(date).toString();
     }
   }
 

@@ -156,7 +156,7 @@ class KunjunganStatsScreen extends StatelessWidget {
             children: [
               if (warningBanner != null) warningBanner,
               Text(
-                "Laporan Bulan ${Utils.formattedYearMonth(monthKey ?? stats?.lastUpdatedMonth ?? '')}",
+                "Laporan Bulan ${Utils.formattedDateFromYearMonth(monthKey ?? stats?.lastUpdatedMonth ?? '')}",
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),

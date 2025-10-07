@@ -57,7 +57,7 @@ class RestiStatsScreen extends StatelessWidget {
             children: [
               if (warningBanner != null) warningBanner,
               Text(
-                "Laporan Bulan ${Utils.formattedYearMonth(monthKey ?? stats?.lastUpdatedMonth ?? '')}",
+                "Laporan Bulan ${Utils.formattedDateFromYearMonth(monthKey ?? stats?.lastUpdatedMonth ?? '')}",
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -68,7 +68,7 @@ class RestiStatsScreen extends StatelessWidget {
               MasonryGridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
+                crossAxisCount: 3,
                 mainAxisSpacing: 8,
                 crossAxisSpacing: 8,
                 itemCount: gridItems.length,

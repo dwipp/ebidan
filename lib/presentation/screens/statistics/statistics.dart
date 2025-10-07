@@ -1,3 +1,4 @@
+import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
@@ -25,7 +26,7 @@ class StatisticsScreen extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   AppRouter.kunjunganStats,
-                  arguments: {'monthKey': null},
+                  arguments: {'monthKey': Utils.getAutoYearMonth()},
                 );
               },
             ),
@@ -36,7 +37,7 @@ class StatisticsScreen extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   AppRouter.restiStats,
-                  arguments: {'monthKey': null},
+                  arguments: {'monthKey': Utils.getAutoYearMonth()},
                 );
               },
             ),
