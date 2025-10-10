@@ -181,6 +181,22 @@ class Utils {
     return null;
   }
 
+  static Color generateDistinctColor(String label) {
+    final hash = label.hashCode.abs();
+    // Langkah besar antar hue untuk beda jauh
+    final hueStep = 137.508; // bilangan irasional (golden angle)
+    final hue = (hash * hueStep) % 360;
+
+    final hsl = HSLColor.fromAHSL(
+      1.0,
+      hue,
+      0.6, // saturasi cukup tinggi agar beda mencolok
+      0.65, // lightness sedang agar tetap nyaman
+    );
+
+    return hsl.toColor();
+  }
+
   // ====== WIDGET ======
   static Widget sectionTitle(String title) {
     return Padding(

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/animated_data_card.dart';
@@ -36,8 +34,8 @@ class RestiStatsScreen extends StatelessWidget {
         'main': 1,
       },
       {
-        "label": "Usia Terlalu Muda \n(< 20 tahun)",
-        "value": selectedResti?.tooYoung,
+        "label": "Resiko Panggul Sempit \n(tb < 145 cm)",
+        "value": selectedResti?.tbUnder145,
         'cross': 2,
         'main': 1.7,
       },
@@ -60,20 +58,20 @@ class RestiStatsScreen extends StatelessWidget {
         'main': 1,
       },
       {
-        "label": "Usia Terlalu Tua (> 35 thn)",
-        "value": selectedResti?.tooOld,
+        "label": "Paritas Tinggi (>=4x)",
+        "value": selectedResti?.paritasTinggi,
         'cross': 2,
         'main': 1,
       },
       {
-        "label": "Paritas Tinggi (>=4x)",
-        "value": selectedResti?.paritasTinggi,
+        "label": "Usia Terlalu Tua (> 35 thn)",
+        "value": selectedResti?.tooOld,
         'cross': 2,
         'main': 0.85,
       },
       {
-        "label": "Resiko Panggul Sempit",
-        "value": selectedResti?.tbUnder145,
+        "label": "Usia Terlalu Muda (< 20 thn)",
+        "value": selectedResti?.tooYoung,
         'cross': 2,
         'main': 0.85,
       },
@@ -164,7 +162,7 @@ class RestiStatsScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
-                        AppRouter.trenKunjunganStats,
+                        AppRouter.trenRestiStats,
                         arguments: {
                           'monthKeys': Utils.getLastMonths(
                             stats!.lastUpdatedMonth,
@@ -186,7 +184,7 @@ class RestiStatsScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
-                        AppRouter.trenKunjunganStats,
+                        AppRouter.trenRestiStats,
                         arguments: {
                           'monthKeys': Utils.getLastMonths(
                             stats!.lastUpdatedMonth,
@@ -208,7 +206,7 @@ class RestiStatsScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
-                        AppRouter.trenKunjunganStats,
+                        AppRouter.trenRestiStats,
                         arguments: {
                           'monthKeys': Utils.getLastMonths(
                             stats!.lastUpdatedMonth,
@@ -238,15 +236,16 @@ class RestiStatsScreen extends StatelessWidget {
   }) {
     // Buat warna acak stabil berdasarkan hash dari label
     // Warna pastel cerah stabil berdasar label
-    final random = Random(label.hashCode);
-    final hue = random.nextInt(360).toDouble();
-    final hsl = HSLColor.fromAHSL(
-      1.0,
-      hue,
-      0.45,
-      0.8,
-    ); // saturasi & lightness disetel lembut
-    final color = hsl.toColor();
+    // final random = Random(label.hashCode);
+    // final hue = random.nextInt(360).toDouble();
+    // final hsl = HSLColor.fromAHSL(
+    //   1.0,
+    //   hue,
+    //   0.45,
+    //   0.8,
+    // ); // saturasi & lightness disetel lembut
+    // final color = hsl.toColor();
+    final color = Utils.generateDistinctColor(label);
 
     final card = Card(
       margin: EdgeInsets.zero,
@@ -259,7 +258,7 @@ class RestiStatsScreen extends StatelessWidget {
           children: [
             DefaultTextStyle(
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+              style: TextStyle(fontSize: 14, color: Colors.white),
               child: Text(label, textAlign: TextAlign.center),
             ),
             const SizedBox(height: 4),
@@ -268,7 +267,7 @@ class RestiStatsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
-                color: Colors.black87,
+                color: Colors.white,
               ),
             ),
           ],
