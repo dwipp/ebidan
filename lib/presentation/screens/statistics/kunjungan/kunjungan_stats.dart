@@ -253,7 +253,7 @@ class KunjunganStatsScreen extends StatelessWidget {
                 const SizedBox(height: 32),
               ],
               // --- HISTORY BUTTON ---
-              if (monthKey == null) ...[
+              if (monthKey == Utils.getAutoYearMonth()) ...[
                 SizedBox(
                   width: double.infinity,
                   child: Button(

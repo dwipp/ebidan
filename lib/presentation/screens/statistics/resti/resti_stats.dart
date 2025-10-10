@@ -52,8 +52,8 @@ class RestiStatsScreen extends StatelessWidget {
         'main': 0.85,
       },
       {
-        "label": "Paritas Tinggi",
-        "value": selectedResti?.paritasTinggi,
+        "label": "Anemia",
+        "value": selectedResti?.anemia,
         'cross': 1,
         'main': 1,
       },
@@ -64,21 +64,9 @@ class RestiStatsScreen extends StatelessWidget {
         'main': 1,
       },
       {
-        "label": "Pernah Abortus",
-        "value": selectedResti?.pernahAbortus,
-        'cross': 1,
-        'main': 1.7,
-      },
-      {
-        "label": "Abortus",
-        "value": selectedResti?.abortus,
-        'cross': 1,
-        'main': 0.85,
-      },
-      {
-        "label": "Anemia",
-        "value": selectedResti?.anemia,
-        'cross': 1,
+        "label": "Paritas Tinggi (>=4x)",
+        "value": selectedResti?.paritasTinggi,
+        'cross': 2,
         'main': 0.85,
       },
       {
@@ -86,6 +74,12 @@ class RestiStatsScreen extends StatelessWidget {
         "value": selectedResti?.tbUnder145,
         'cross': 2,
         'main': 0.85,
+      },
+      {
+        "label": "Pernah Abortus",
+        "value": selectedResti?.pernahAbortus,
+        'cross': 1,
+        'main': 1.7,
       },
       {
         "label": "Kekurangan Energi Kronis (KEK)",
@@ -101,7 +95,7 @@ class RestiStatsScreen extends StatelessWidget {
         crossAxisCellCount: 3,
         mainAxisCellCount: 1,
         child: AnimatedDataCard(
-          label: "Total Resti",
+          label: "Total Resti (pasien)",
           value: selectedResti?.totalResti ?? 0,
           isTotal: true,
           icon: Icons.bar_chart,

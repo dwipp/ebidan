@@ -106,7 +106,6 @@ class ByMonthStats {
 }
 
 class RestiByMonth {
-  final int abortus;
   final int anemia;
   final int bbBayiUnder2500;
   final int hipertensi;
@@ -122,7 +121,6 @@ class RestiByMonth {
   final int tooYoung;
 
   RestiByMonth({
-    required this.abortus,
     required this.anemia,
     required this.bbBayiUnder2500,
     required this.hipertensi,
@@ -138,9 +136,9 @@ class RestiByMonth {
     required this.tooYoung,
   });
 
+  // masih salah. total resti harus berasal dari jumlah pasien yang memiliki resiko tinggi
   int get totalResti {
     var total =
-        abortus +
         anemia +
         bbBayiUnder2500 +
         hipertensi +
@@ -159,7 +157,6 @@ class RestiByMonth {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'abortus': abortus,
       'anemia': anemia,
       'bbBayiUnder2500': bbBayiUnder2500,
       'hipertensi': hipertensi,
@@ -179,7 +176,6 @@ class RestiByMonth {
   factory RestiByMonth.fromMap(Map<String, dynamic>? map) {
     if (map == null) {
       return RestiByMonth(
-        abortus: 0,
         anemia: 0,
         bbBayiUnder2500: 0,
         hipertensi: 0,
@@ -196,7 +192,6 @@ class RestiByMonth {
       );
     }
     return RestiByMonth(
-      abortus: map['abortus'] ?? 0,
       anemia: map['anemia'] ?? 0,
       bbBayiUnder2500: map['bbBayiUnder2500'] ?? 0,
       hipertensi: map['hipertensi'] ?? 0,
