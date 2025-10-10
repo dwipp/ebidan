@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/animated_data_card.dart';
+import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/premium_warning_banner.dart';
 import 'package:ebidan/state_management/general/cubit/statistic_cubit.dart';
@@ -115,7 +117,7 @@ class RestiStatsScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: PageHeader(title: Text('Resti')),
+      appBar: PageHeader(title: Text('Statistik Resti')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -140,6 +142,87 @@ class RestiStatsScreen extends StatelessWidget {
                   return gridItems[i];
                 }),
               ),
+              const SizedBox(height: 32),
+              // --- HISTORY BUTTON ---
+              if (monthKey == Utils.getAutoYearMonth()) ...[
+                SizedBox(
+                  width: double.infinity,
+                  child: Button(
+                    isSubmitting: false,
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRouter.listRestiStats);
+                    },
+                    label: "Lihat Riwayat Bulanan",
+                    icon: Icons.history,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: Button(
+                    isSubmitting: false,
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRouter.trenKunjunganStats,
+                        arguments: {
+                          'monthKeys': Utils.getLastMonths(
+                            stats!.lastUpdatedMonth,
+                            3,
+                          ),
+                        },
+                      );
+                    },
+                    label: "Tren 3 Bulan Terakhir",
+                    icon: Icons.trending_up,
+                    secondaryButton: true,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: Button(
+                    isSubmitting: false,
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRouter.trenKunjunganStats,
+                        arguments: {
+                          'monthKeys': Utils.getLastMonths(
+                            stats!.lastUpdatedMonth,
+                            6,
+                          ),
+                        },
+                      );
+                    },
+                    label: "Tren 6 Bulan Terakhir",
+                    icon: Icons.show_chart,
+                    secondaryButton: true,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: Button(
+                    isSubmitting: false,
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRouter.trenKunjunganStats,
+                        arguments: {
+                          'monthKeys': Utils.getLastMonths(
+                            stats!.lastUpdatedMonth,
+                            12,
+                          ),
+                        },
+                      );
+                    },
+                    label: "Tren 1 Tahun Terakhir",
+                    icon: Icons.insert_chart_outlined,
+                    secondaryButton: true,
+                  ),
+                ),
+              ],
             ],
           ),
         ),

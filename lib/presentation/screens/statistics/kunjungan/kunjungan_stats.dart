@@ -11,7 +11,6 @@ import 'package:ebidan/state_management/general/cubit/statistic_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:intl/intl.dart';
 
 class KunjunganStatsScreen extends StatelessWidget {
   final String? monthKey;
@@ -278,7 +277,7 @@ class KunjunganStatsScreen extends StatelessWidget {
                         context,
                         AppRouter.trenKunjunganStats,
                         arguments: {
-                          'monthKeys': _getLastMonths(
+                          'monthKeys': Utils.getLastMonths(
                             stats!.lastUpdatedMonth,
                             3,
                           ),
@@ -300,7 +299,7 @@ class KunjunganStatsScreen extends StatelessWidget {
                         context,
                         AppRouter.trenKunjunganStats,
                         arguments: {
-                          'monthKeys': _getLastMonths(
+                          'monthKeys': Utils.getLastMonths(
                             stats!.lastUpdatedMonth,
                             6,
                           ),
@@ -322,7 +321,7 @@ class KunjunganStatsScreen extends StatelessWidget {
                         context,
                         AppRouter.trenKunjunganStats,
                         arguments: {
-                          'monthKeys': _getLastMonths(
+                          'monthKeys': Utils.getLastMonths(
                             stats!.lastUpdatedMonth,
                             12,
                           ),
@@ -437,18 +436,5 @@ class KunjunganStatsScreen extends StatelessWidget {
     if (label.startsWith("K6")) return Colors.red;
     if (label.contains("Abortus")) return Colors.purple;
     return Colors.grey;
-  }
-
-  // Helper method untuk mendapatkan bulan-bulan terakhir
-  List<String> _getLastMonths(String latestMonth, int count) {
-    final DateFormat formatter = DateFormat("yyyy-MM");
-    DateTime date = DateFormat("yyyy-MM").parse(latestMonth);
-    List<String> months = [];
-
-    for (int i = 0; i < count; i++) {
-      DateTime target = DateTime(date.year, date.month - i, 1);
-      months.add(formatter.format(target));
-    }
-    return months;
   }
 }

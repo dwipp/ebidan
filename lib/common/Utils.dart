@@ -4,36 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Utils {
-  /// Ambil nama route sebelumnya sesuai level.
-  /// level=1 -> 1 level sebelumnya
-  /// level=2 -> 2 level sebelumnya
-  static String? getPreviousRouteName(BuildContext context, {int level = 1}) {
-    final navigator = Navigator.of(context);
-    final routes = <Route<dynamic>>[];
-
-    navigator.popUntil((route) {
-      routes.add(route);
-      return true;
-    });
-
-    final targetIndex = routes.length - 1 - level;
-
-    if (targetIndex >= 0) {
-      return routes[targetIndex].settings.name;
-    }
-    return null;
-  }
-
-  static Widget sectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
+  // ====== DATE ======
   static String formattedDate(DateTime? date) {
     if (date == null) return "-";
     // Format ke bahasa Indonesia: 1 Januari 1990
@@ -99,44 +70,17 @@ class Utils {
     return tahun;
   }
 
-  static Widget generateRowLabelValue(
-    BuildContext context, {
-    required String label,
-    String? value,
-    String suffix = '',
-  }) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            flex: 3,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              color: context.themeColors.onTertiary, // bg label
-              alignment: Alignment.centerLeft,
-              child: Text(
-                label,
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              color: Colors.transparent, // bg value
-              alignment: Alignment.centerLeft,
-              child: Text(
-                (value != null && value.isNotEmpty) ? '$value $suffix' : "-",
-                softWrap: true,
-                maxLines: null,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  // Helper method untuk mendapatkan bulan-bulan terakhir
+  static List<String> getLastMonths(String latestMonth, int count) {
+    final DateFormat formatter = DateFormat("yyyy-MM");
+    DateTime date = DateFormat("yyyy-MM").parse(latestMonth);
+    List<String> months = [];
+
+    for (int i = 0; i < count; i++) {
+      DateTime target = DateTime(date.year, date.month - i, 1);
+      months.add(formatter.format(target));
+    }
+    return months;
   }
 
   static void sortByDateTime<T>(
@@ -150,25 +94,6 @@ class Utils {
 
       return descending ? dateB.compareTo(dateA) : dateA.compareTo(dateB);
     });
-  }
-
-  static Future<bool> hasAnyPendingWrites() async {
-    final collections = ["bumil", "kehamilan", "kunjungan"];
-
-    for (final col in collections) {
-      final snapshot = await FirebaseFirestore.instance
-          .collection(col)
-          .get(const GetOptions(source: Source.cache));
-
-      final hasPending = snapshot.docs.any(
-        (doc) => doc.metadata.hasPendingWrites,
-      );
-      if (hasPending) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   static String hitungUsiaKehamilan({
@@ -213,5 +138,97 @@ class Utils {
       return DateTime(tahun, bulan, hari);
     }
     return null;
+  }
+
+  // ====== MISC ======
+
+  static Future<bool> hasAnyPendingWrites() async {
+    final collections = ["bumil", "kehamilan", "kunjungan"];
+
+    for (final col in collections) {
+      final snapshot = await FirebaseFirestore.instance
+          .collection(col)
+          .get(const GetOptions(source: Source.cache));
+
+      final hasPending = snapshot.docs.any(
+        (doc) => doc.metadata.hasPendingWrites,
+      );
+      if (hasPending) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /// Ambil nama route sebelumnya sesuai level.
+  /// level=1 -> 1 level sebelumnya
+  /// level=2 -> 2 level sebelumnya
+  static String? getPreviousRouteName(BuildContext context, {int level = 1}) {
+    final navigator = Navigator.of(context);
+    final routes = <Route<dynamic>>[];
+
+    navigator.popUntil((route) {
+      routes.add(route);
+      return true;
+    });
+
+    final targetIndex = routes.length - 1 - level;
+
+    if (targetIndex >= 0) {
+      return routes[targetIndex].settings.name;
+    }
+    return null;
+  }
+
+  // ====== WIDGET ======
+  static Widget sectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  static Widget generateRowLabelValue(
+    BuildContext context, {
+    required String label,
+    String? value,
+    String suffix = '',
+  }) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: 3,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              color: context.themeColors.onTertiary, // bg label
+              alignment: Alignment.centerLeft,
+              child: Text(
+                label,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 4,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              color: Colors.transparent, // bg value
+              alignment: Alignment.centerLeft,
+              child: Text(
+                (value != null && value.isNotEmpty) ? '$value $suffix' : "-",
+                softWrap: true,
+                maxLines: null,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

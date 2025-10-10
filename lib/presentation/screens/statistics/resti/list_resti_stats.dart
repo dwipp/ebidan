@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ebidan/state_management/general/cubit/statistic_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 
-class ListKunjunganStatsScreen extends StatelessWidget {
-  const ListKunjunganStatsScreen({super.key});
+class ListRestiStatsScreen extends StatelessWidget {
+  const ListRestiStatsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,11 +13,11 @@ class ListKunjunganStatsScreen extends StatelessWidget {
         context.read<StatisticCubit>().state.statistic?.byMonth ?? {};
 
     return ListStatsScreen(
-      title: "Statistik Kunjungan",
+      title: "Statistik Resti",
       dataMap: statsMap,
-      routeName: AppRouter.kunjunganStats,
-      subtitleBuilder: (key, value) =>
-          "Total kunjungan: ${value.kunjungan.total}",
+      routeName: AppRouter.restiStats,
+      subtitleBuilder: (key, value) => "Total resti: ${value.resti.totalResti}",
+      leadingIcon: Icons.health_and_safety,
     );
   }
 }
