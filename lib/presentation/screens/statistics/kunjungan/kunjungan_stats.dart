@@ -27,21 +27,21 @@ class KunjunganStatsScreen extends StatelessWidget {
 
     final List<Map<String, dynamic>> kategori = [
       {"label": "K1", "value": selectedKunjungan?.k1},
-      {"label": "K1 USG", "value": selectedKunjungan?.k1Usg},
-      {"label": "K1 Skrining Dokter", "value": selectedKunjungan?.k1Dokter},
-      {"label": "K1 dengan 4T", "value": selectedKunjungan?.k14t},
-      {"label": "K1 Murni", "value": selectedKunjungan?.k1Murni},
+      {"label": "K1 MURNI", "value": selectedKunjungan?.k1Murni},
       {
         "label": "K1 Murni Skrining Dokter",
         "value": selectedKunjungan?.k1MurniDokter,
       },
       {"label": "K1 Murni USG", "value": selectedKunjungan?.k1MurniUsg},
-      {"label": "K1 Akses", "value": selectedKunjungan?.k1Akses},
+      {"label": "K1 AKSES", "value": selectedKunjungan?.k1Akses},
       {
         "label": "K1 Akses Skrining Dokter",
         "value": selectedKunjungan?.k1AksesDokter,
       },
       {"label": "K1 Akses USG", "value": selectedKunjungan?.k1AksesUsg},
+      {"label": "K1 USG", "value": selectedKunjungan?.k1Usg},
+      {"label": "K1 Skrining Dokter", "value": selectedKunjungan?.k1Dokter},
+      {"label": "K1 dengan 4T", "value": selectedKunjungan?.k14t},
       {"label": "K2", "value": selectedKunjungan?.k2},
       {"label": "K3", "value": selectedKunjungan?.k3},
       {"label": "K4", "value": selectedKunjungan?.k4},
