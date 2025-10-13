@@ -71,7 +71,7 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     print(
-                      'bumil?.latestKehamilan: ${bumil?.latestKehamilan?.noKohortIbu}',
+                      'bumil?.latestKehamilan: ${bumil?.latestKehamilan?.kunjungan}',
                     );
                     if (bumil?.latestKehamilan != null) {
                       context.read<SelectedKehamilanCubit>().selectKehamilan(

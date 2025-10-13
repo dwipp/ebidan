@@ -162,6 +162,12 @@ class DetailKehamilanScreen extends StatelessWidget {
                     : kehamilan.hemoglobin.toString(),
                 suffix: 'g/dL',
               ),
+              Utils.generateRowLabelValue(
+                context,
+                label: "Total Pemberian SF",
+                value: kehamilan.sfCount?.toString(),
+                suffix: 'tablet',
+              ),
 
               const SizedBox(height: 16),
               const Text(

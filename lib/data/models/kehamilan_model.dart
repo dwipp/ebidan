@@ -25,6 +25,7 @@ class Kehamilan {
   final bool kontrolDokter;
   final bool kunjungan;
   final num? usia;
+  final num? sfCount;
   List<Persalinan>? persalinan;
 
   Kehamilan({
@@ -51,6 +52,7 @@ class Kehamilan {
     this.kontrolDokter = false,
     this.kunjungan = false,
     this.usia,
+    this.sfCount,
     this.persalinan,
   });
 
@@ -80,6 +82,7 @@ class Kehamilan {
       kontrolDokter: json['kontrol_dokter'] ?? false,
       kunjungan: json['kunjungan'] ?? false,
       usia: json['usia'],
+      sfCount: json['sf_count'],
       persalinan: (json['persalinan'] as List?)
           ?.map((e) => Persalinan.fromMap(e as Map<String, dynamic>))
           .toList(),
@@ -116,6 +119,7 @@ class Kehamilan {
       kontrolDokter: json['kontrol_dokter'] ?? false,
       kunjungan: json['kunjungan'] ?? false,
       usia: json['usia'],
+      sfCount: json['sf_count'],
       persalinan: (json['persalinan'] as List?)
           ?.map((e) => Persalinan.fromMap(e as Map<String, dynamic>))
           .toList(),
@@ -147,6 +151,7 @@ class Kehamilan {
       'kontrol_dokter': kontrolDokter,
       'kunjungan': kunjungan,
       'usia': usia,
+      'sf_count': sfCount,
       'persalinan': persalinan?.map((e) => e.toMap()).toList(),
     }..removeWhere((key, value) => value == null);
   }
@@ -177,6 +182,7 @@ class Kehamilan {
       'kontrol_dokter': kontrolDokter,
       'kunjungan': kunjungan,
       'usia': usia,
+      'sf_count': sfCount,
       'persalinan': persalinan?.map((e) => e.toMap()).toList(),
     }..removeWhere((key, value) => value == null);
   }
@@ -205,6 +211,7 @@ class Kehamilan {
       'kontrol_dokter': kontrolDokter,
       'kunjungan': kunjungan,
       'usia': usia,
+      'sf_count': sfCount,
       'persalinan': persalinan?.map((e) => e.toFirestore()).toList(),
     }..removeWhere((key, value) => value == null);
   }

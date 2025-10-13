@@ -47,6 +47,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
   final TextEditingController tfuController = TextEditingController();
   final TextEditingController ukController = TextEditingController();
   final TextEditingController terapiController = TextEditingController();
+  final TextEditingController nextSfController = TextEditingController();
 
   DateTime? _createdAt = DateTime.now();
 
@@ -118,6 +119,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
       tfu: tfuController.text,
       uk: ukController.text,
       terapi: terapiController.text,
+      nextSf: num.tryParse(nextSfController.text) ?? 0,
       planning: planningController.text,
       status: _selectedStatusKunjungan ?? '-',
       createdAt: _createdAt,
@@ -141,6 +143,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
     tfuController.dispose();
     ukController.dispose();
     terapiController.dispose();
+    nextSfController.dispose();
     super.dispose();
   }
 
@@ -258,6 +261,14 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
                   val,
                   _requiredValidator,
                 ),
+              ),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: nextSfController,
+                label: "Pemberian SF",
+                icon: Icons.medication_liquid,
+                isNumber: true,
+                suffixText: 'tablet',
               ),
               const SizedBox(height: 12),
               CustomTextField(

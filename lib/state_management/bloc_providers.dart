@@ -70,6 +70,7 @@ class BlocProviders {
         create: (context) => SubmitKunjunganCubit(
           selectedBumilCubit: context.read<SelectedBumilCubit>(),
           selectedKunjunganCubit: context.read<SelectedKunjunganCubit>(),
+          selectedKehamilanCubit: context.read<SelectedKehamilanCubit>(),
         ),
       ),
       BlocProvider<SubmitPersalinanCubit>(

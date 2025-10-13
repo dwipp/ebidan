@@ -56,6 +56,7 @@ class _KunjunganState extends State<KunjunganScreen> {
   final TextEditingController tfuController = TextEditingController();
   final TextEditingController ukController = TextEditingController();
   final TextEditingController terapiController = TextEditingController();
+  final TextEditingController nextSfController = TextEditingController();
 
   DateTime? _createdAt = DateTime.now();
 
@@ -120,6 +121,7 @@ class _KunjunganState extends State<KunjunganScreen> {
       status: _selectedStatusKunjungan ?? '-',
       createdAt: _createdAt,
       periksaUsg: _selectedPeriksaUsg,
+      nextSf: num.tryParse(nextSfController.text) ?? 0,
     );
 
     Navigator.pushNamed(
@@ -140,6 +142,7 @@ class _KunjunganState extends State<KunjunganScreen> {
     tfuController.dispose();
     ukController.dispose();
     terapiController.dispose();
+    nextSfController.dispose();
     super.dispose();
   }
 
@@ -273,6 +276,17 @@ class _KunjunganState extends State<KunjunganScreen> {
                   val,
                   _requiredStringValidator,
                 ),
+              ),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: nextSfController,
+                label:
+                    !widget.firstTime && bumil?.latestKehamilan?.sfCount != null
+                    ? "Pemberian SF (prev ${bumil?.latestKehamilan?.sfCount ?? 0} tablet)"
+                    : "Pemberian SF",
+                icon: Icons.medication_liquid,
+                isNumber: true,
+                suffixText: 'tablet',
               ),
               const SizedBox(height: 12),
               CustomTextField(

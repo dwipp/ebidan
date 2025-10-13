@@ -18,6 +18,7 @@ class Kunjungan {
   final String? idBidan;
   final String? idBumil;
   final bool? periksaUsg;
+  final num? nextSf;
 
   Kunjungan({
     required this.id,
@@ -37,6 +38,7 @@ class Kunjungan {
     this.idBumil,
     this.idKehamilan,
     this.periksaUsg,
+    this.nextSf,
   });
 
   /// ✅ Dari Firestore (pakai Timestamp)
@@ -62,6 +64,7 @@ class Kunjungan {
       idBumil: json['id_bumil'],
       idKehamilan: json['id_kehamilan'],
       periksaUsg: json['periksa_usg'],
+      nextSf: json['next_sf'],
     );
   }
 
@@ -87,6 +90,7 @@ class Kunjungan {
       idBumil: map['id_bumil'],
       idKehamilan: map['id_kehamilan'],
       periksaUsg: map['periksa_usg'],
+      nextSf: map['next_sf'],
     );
   }
 
@@ -109,6 +113,7 @@ class Kunjungan {
       'id_bumil': idBumil,
       'id_kehamilan': idKehamilan,
       'periksa_usg': periksaUsg,
+      'next_sf': nextSf,
     }..removeWhere((key, value) => value == null);
   }
 }

@@ -108,6 +108,12 @@ class DetailKunjunganScreen extends StatelessWidget {
               ),
               Utils.generateRowLabelValue(
                 context,
+                label: "Pemberian SF",
+                value: kunjungan?.nextSf?.toString(),
+                suffix: 'tablet',
+              ),
+              Utils.generateRowLabelValue(
+                context,
                 label: "Terapi",
                 value: kunjungan?.terapi ?? '-',
               ),

@@ -4,6 +4,7 @@ import 'package:ebidan/state_management/bumil/cubit/search_bumil_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
+import 'package:ebidan/state_management/kehamilan/cubit/selected_kehamilan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:month_year_picker/month_year_picker.dart';
@@ -285,6 +286,13 @@ class PilihBumilScreen extends StatelessWidget {
                                         arguments: {'firstTime': true},
                                       ).then((_) => _refresh(context));
                                     } else {
+                                      if (bumil.latestKehamilan != null) {
+                                        context
+                                            .read<SelectedKehamilanCubit>()
+                                            .selectKehamilan(
+                                              bumil.latestKehamilan!,
+                                            );
+                                      }
                                       Navigator.pushNamed(
                                         context,
                                         AppRouter.updateKehamilan,
