@@ -32,6 +32,7 @@ export const updateKehamilanStats = onDocumentUpdated(
       const byMonth = existing.by_month || {};
       const monthData = byMonth[currentMonth] || {};
       const resti = monthData.resti || {};
+      const sf = monthData.sf || {};
       const kehamilanExisting = existing.kehamilan || {};
 
       let jarakHamil = resti.jarak_hamil || 0;
@@ -50,7 +51,9 @@ export const updateKehamilanStats = onDocumentUpdated(
 
         // resti jarak kehamilan < 2 tahun
         if (lastBirthDate && createdAt) {
-          const diffDays = Math.floor((createdAt.getTime() - lastBirthDate.getTime()) / (1000 * 60 * 60 * 24));
+          const diffDays = Math.floor(
+            (createdAt.getTime() - lastBirthDate.getTime()) / (1000 * 60 * 60 * 24)
+          );
           const diffYears = diffDays / 365;
           console.log(`[updateKehamilanStats] ${after.id_bidan}: diffYears=${diffYears}`);
           if (diffYears < 2) jarakHamil++;
@@ -59,7 +62,9 @@ export const updateKehamilanStats = onDocumentUpdated(
         // resti riwayat untuk berat bayi < 2500
         const hasUnder2500 = riwayat.some((r) => {
           const w = r?.berat_bayi;
-          return w !== undefined && w !== null && !isNaN(Number(w)) && Number(w) < 2500;
+          return (
+            w !== undefined && w !== null && !isNaN(Number(w)) && Number(w) < 2500
+          );
         });
         if (hasUnder2500) bbBayiUnder2500++;
       }
@@ -69,6 +74,21 @@ export const updateKehamilanStats = onDocumentUpdated(
         allBumilCount = Math.max(allBumilCount - 1, 0);
       }
 
+      // === SF Tracking ===
+      const thresholds = [30, 60, 90, 120, 150, 180, 210, 240, 270];
+      const sfCount = latestKehamilan?.sf_count || 0;
+
+      // pastikan semua field terinisialisasi
+      const updatedSf = {};
+      for (const tVal of thresholds) {
+        const currentVal = sf[tVal] || 0;
+        updatedSf[tVal] = currentVal;
+        if (sfCount >= tVal) {
+          updatedSf[tVal] = currentVal + 1;
+        }
+      }
+
+      // === Commit Transaction ===
       t.set(
         statsRef,
         {
@@ -79,6 +99,7 @@ export const updateKehamilanStats = onDocumentUpdated(
                 jarak_hamil: jarakHamil,
                 bb_bayi_under_2500: bbBayiUnder2500,
               },
+              sf: updatedSf,
             },
           },
         },
