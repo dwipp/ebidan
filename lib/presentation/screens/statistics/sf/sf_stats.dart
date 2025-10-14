@@ -20,17 +20,7 @@ class SfStatsScreen extends StatelessWidget {
     final selectedSf = selectedMonth?.sf ?? stats?.lastMonthData?.sf;
     final warningBanner = PremiumWarningBanner.fromContext(context);
 
-    final sfMap = {
-      '30': selectedSf?.sf30 ?? 0,
-      '60': selectedSf?.sf60 ?? 0,
-      '90': selectedSf?.sf90 ?? 0,
-      '120': selectedSf?.sf120 ?? 0,
-      '150': selectedSf?.sf150 ?? 0,
-      '180': selectedSf?.sf180 ?? 0,
-      '210': selectedSf?.sf210 ?? 0,
-      '240': selectedSf?.sf240 ?? 0,
-      '270': selectedSf?.sf270 ?? 0,
-    };
+    final sfMap = selectedSf?.toMap() ?? {};
 
     final monthLabel = Utils.formattedDateFromYearMonth(
       monthKey ?? stats?.lastUpdatedMonth ?? '',
