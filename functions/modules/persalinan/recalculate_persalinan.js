@@ -41,7 +41,8 @@ export const recalculatePersalinanStats = onRequest(
                 tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
                 tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
                 tempat_rumah_dk_klg: 0, cara_normal: 0, cara_vacuum: 0, 
-                cara_forceps: 0, cara_sc: 0
+                cara_forceps: 0, cara_sc: 0, bayi_lahir_hidup: 0, 
+                bayi_lahir_mati: 0, bayi_iufd: 0
               },
               kunjungan: { abortus: 0 },
               resti: { abortus: 0 },
@@ -54,7 +55,8 @@ export const recalculatePersalinanStats = onRequest(
                 tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
                 tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
                 tempat_rumah_dk_klg: 0, cara_normal: 0, cara_vacuum: 0, 
-                cara_forceps: 0, cara_sc: 0
+                cara_forceps: 0, cara_sc: 0, bayi_lahir_hidup: 0, 
+                bayi_lahir_mati: 0, bayi_iufd: 0
               };
             }
             if (!statsByBidan[idBidan].by_month[monthKey].kunjungan) {
@@ -202,6 +204,22 @@ export const recalculatePersalinanStats = onRequest(
             if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "section caesarea (sc)") {
               safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_sc");
             }
+
+            // hitung bayi_lahir_hidup (p.status_bayi === "Lahir Hidup")
+            if (typeof p.status_bayi === "string" && p.status_bayi.trim().toLowerCase() === "lahir hidup") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "bayi_lahir_hidup");
+            }
+
+            // hitung bayi_lahir_mati (p.status_bayi === "Lahir Mati")
+            if (typeof p.status_bayi === "string" && p.status_bayi.trim().toLowerCase() === "lahir mati") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "bayi_lahir_mati");
+            }
+
+            // hitung bayi_iufd (p.status_bayi === "IUFD")
+            if (typeof p.status_bayi === "string" && p.status_bayi.trim().toLowerCase() === "iufd") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "bayi_iufd");
+            }
+
           }
         }
       });
@@ -236,7 +254,8 @@ export const recalculatePersalinanStats = onRequest(
                 tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
                 tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
                 tempat_rumah_dk_klg: 0, cara_normal: 0, cara_vacuum: 0, 
-                cara_forceps: 0, cara_sc: 0
+                cara_forceps: 0, cara_sc: 0, bayi_lahir_hidup: 0, 
+                bayi_lahir_mati: 0, bayi_iufd: 0
               };
             }
           }
@@ -253,7 +272,8 @@ export const recalculatePersalinanStats = onRequest(
                 tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
                 tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
                 tempat_rumah_dk_klg: 0, cara_normal: 0, cara_vacuum: 0, 
-                cara_forceps: 0, cara_sc: 0
+                cara_forceps: 0, cara_sc: 0, bayi_lahir_hidup: 0, 
+                bayi_lahir_mati: 0, bayi_iufd: 0
               }, 
               kunjungan: { abortus: 0 }, 
               resti: { abortus: 0 } 
@@ -277,6 +297,9 @@ export const recalculatePersalinanStats = onRequest(
           byMonth[month].persalinan.cara_vacuum = counts.persalinan.cara_vacuum;
           byMonth[month].persalinan.cara_forceps = counts.persalinan.cara_forceps;
           byMonth[month].persalinan.cara_sc = counts.persalinan.cara_sc;
+          byMonth[month].persalinan.bayi_lahir_hidup = counts.persalinan.bayi_lahir_hidup;
+          byMonth[month].persalinan.bayi_lahir_mati = counts.persalinan.bayi_lahir_mati;
+          byMonth[month].persalinan.bayi_iufd = counts.persalinan.bayi_iufd;
           byMonth[month].kunjungan.abortus = counts.kunjungan.abortus;
           byMonth[month].resti.abortus = counts.resti.abortus;
         }
