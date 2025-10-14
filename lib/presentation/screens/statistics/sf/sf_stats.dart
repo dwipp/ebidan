@@ -34,7 +34,38 @@ class SfStatsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: PageHeader(title: const Text('Statistik SF')),
+      appBar: PageHeader(
+        title: const Text('Statistik SF'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Tentang SF'),
+                  content: const Text(
+                    'SF adalah singkatan dari *Supplement Form*.\n\n'
+                    'Setiap SF menunjukkan jumlah tablet yang diberikan:\n'
+                    '- SF1 = 30 tablet\n'
+                    '- SF2 = 60 tablet\n'
+                    '- SF3 = 90 tablet\n'
+                    '- dan seterusnya.\n\n'
+                    'Data ini digunakan untuk mencatat distribusi suplementasi '
+                    'sesuai standar pemberian tablet tambah darah selama kehamilan.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Tutup'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
