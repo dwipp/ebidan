@@ -146,7 +146,49 @@ class KunjunganStatsScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: const PageHeader(title: Text('Statistik Kunjungan')),
+      appBar: PageHeader(
+        title: Text('Statistik Kunjungan'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Tentang Statistik Kunjungan'),
+                  content: const SingleChildScrollView(
+                    child: Text(
+                      'Statistik Kunjungan digunakan untuk memantau jumlah '
+                      'dan jenis kunjungan ibu hamil berdasarkan tahapan pemeriksaan.\n\n'
+                      'Berikut penjelasannya:\n\n'
+                      '• **Total Kunjungan** — Jumlah keseluruhan kunjungan ibu hamil pada periode tertentu.\n\n'
+                      '• **K1 (Kunjungan Pertama)** — Kunjungan pertama ibu hamil. '
+                      'Biasanya dilakukan sebelum usia kehamilan 12 minggu.\n'
+                      '  - K1 MURNI: Pemeriksaan pertama dalam rentang usia kehamilan 12 minggu atau kurang.\n'
+                      '  - K1 Skrining Dokter / USG: K1 dengan pemeriksaan tambahan.\n'
+                      '  - K1 AKSES: Pemeriksaan pertama di usia kehamilan lebih dari 12 minggu.\n'
+                      '  - K1 dengan 4T: K1 yang memenuhi 4 komponen pemeriksaan dasar (Timbang, Tekanan Darah, Tablet, Test Urin).\n\n'
+                      '• **K2–K6** — Kunjungan lanjutan setelah K1, dilakukan untuk pemantauan rutin '
+                      'perkembangan kehamilan sesuai standar ANC (Antenatal Care).\n'
+                      '  - Tiap kunjungan bisa memiliki subkategori seperti pemeriksaan USG atau skrining dokter.\n\n'
+                      '• **Abortus (0–20 mg)** — Data ibu dengan riwayat keguguran atau kehamilan tidak berlanjut '
+                      'dalam rentang waktu tersebut.\n\n'
+                      'Kunjungan ini membantu bidan memantau kepatuhan ibu hamil '
+                      'terhadap pemeriksaan kehamilan sesuai jadwal ideal (minimal 6 kali selama kehamilan).',
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Tutup'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
