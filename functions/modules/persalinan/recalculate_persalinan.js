@@ -65,114 +65,6 @@ export const recalculatePersalinanStats = onRequest(
             }
           }
 
-          // hitung total persalinan
-          safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "total");
-
-          // hitung tempat_rs (p.tempat === "Rumah Sakit")
-          if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "rumah sakit") {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rs");
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
-          }
-
-          // hitung tempat_rsb (p.tempat === "Rumah Sakit Bersalin")
-          if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "rumah sakit bersalin") {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rsb");
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
-          }
-
-          // hitung tempat_klinik (p.tempat === "Klinik")
-          if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "klinik") {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_klinik");
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
-          }
-
-          // hitung tempat_bpm (p.tempat === "Bidan Praktik Mandiri")
-          if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "bidan praktik mandiri") {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_bpm");
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
-          }
-
-          // hitung tempat_pkm (p.tempat === "Puskesmas")
-          if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "puskesmas") {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_pkm");
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
-          }
-
-          // hitung tempat_poskesdes (p.tempat === "Poskesdes")
-          if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "poskesdes") {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_poskesdes");
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
-          }
-
-          // hitung tempat_polindes (p.tempat === "Polindes")
-          if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "polindes") {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_polindes");
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
-          }
-
-          // hitung tempat_rumah_nakes
-          if (
-            typeof p.tempat === "string" &&
-            p.tempat.trim().toLowerCase() === "rumah" &&
-            typeof p.penolong === "string" &&
-            ["dokter", "bidan", "perawat"].includes(p.penolong.trim().toLowerCase())
-          ) {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rumah_nakes");
-          }
-
-          // hitung tempat_jalan_nakes
-          if (
-            typeof p.tempat === "string" &&
-            p.tempat.trim().toLowerCase() === "jalan" &&
-            typeof p.penolong === "string" &&
-            ["dokter", "bidan", "perawat"].includes(p.penolong.trim().toLowerCase())
-          ) {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_jalan_nakes");
-          }
-
-          // hitung persalinan_nakes
-          const penolong = typeof p.penolong === "string" ? p.penolong.trim().toLowerCase() : "";
-          const tempat = typeof p.tempat === "string" ? p.tempat.trim().toLowerCase() : "";
-
-          const persalinanNakesCount = 
-            (["rumah sakit","rumah sakit bersalin","klinik","bidan praktik mandiri","puskesmas","poskesdes","polindes"].includes(tempat) ? 1 : 0) +
-            (tempat === "rumah" && ["dokter","bidan","perawat"].includes(penolong) ? 1 : 0) +
-            (tempat === "jalan" && ["dokter","bidan","perawat"].includes(penolong) ? 1 : 0);
-
-          if (persalinanNakesCount > 0) {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_nakes", persalinanNakesCount);
-          }
-
-          // hitung tempat_rumah_dk_klg -> dukun / keluarga
-          if (
-            typeof p.tempat === "string" &&
-            p.tempat.trim().toLowerCase() === "rumah" &&
-            typeof p.penolong === "string" &&
-            !["dokter", "bidan", "perawat"].includes(p.penolong.trim().toLowerCase())
-          ) {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rumah_dk_klg");
-          }
-
-          // hitung cara_normal (p.cara === "Spontan Belakang Kepala")
-          if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "spontan belakang kepala") {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_normal");
-          }
-
-          // hitung cara_vacuum (p.cara === "Vacuum Extraction")
-          if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "vacuum extraction") {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_vacuum");
-          }
-
-          // hitung cara_forceps (p.cara === "Forceps Delivery")
-          if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "forceps delivery") {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_forceps");
-          }
-
-          // hitung cara_sc (p.cara === "Section Caesarea (SC)")
-          if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "section caesarea (sc)") {
-            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_sc");
-          }
-
           // --- logika abortus (umur_kehamilan <= 20 minggu TANPA tambahan hari) ---
           if (p.status_bayi === "Abortus") {
             let umurMinggu = null;
@@ -201,6 +93,114 @@ export const recalculatePersalinanStats = onRequest(
             ) {
               safeIncrement(statsByBidan[idBidan].by_month[monthKey].kunjungan, "abortus");
               safeIncrement(statsByBidan[idBidan].by_month[monthKey].resti, "abortus");
+            }
+          }else {
+            // hitung total persalinan
+            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "total");
+
+            // hitung tempat_rs (p.tempat === "Rumah Sakit")
+            if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "rumah sakit") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rs");
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
+            }
+
+            // hitung tempat_rsb (p.tempat === "Rumah Sakit Bersalin")
+            if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "rumah sakit bersalin") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rsb");
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
+            }
+
+            // hitung tempat_klinik (p.tempat === "Klinik")
+            if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "klinik") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_klinik");
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
+            }
+
+            // hitung tempat_bpm (p.tempat === "Bidan Praktik Mandiri")
+            if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "bidan praktik mandiri") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_bpm");
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
+            }
+
+            // hitung tempat_pkm (p.tempat === "Puskesmas")
+            if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "puskesmas") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_pkm");
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
+            }
+
+            // hitung tempat_poskesdes (p.tempat === "Poskesdes")
+            if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "poskesdes") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_poskesdes");
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
+            }
+
+            // hitung tempat_polindes (p.tempat === "Polindes")
+            if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "polindes") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_polindes");
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
+            }
+
+            // hitung tempat_rumah_nakes
+            if (
+              typeof p.tempat === "string" &&
+              p.tempat.trim().toLowerCase() === "rumah" &&
+              typeof p.penolong === "string" &&
+              ["dokter", "bidan", "perawat"].includes(p.penolong.trim().toLowerCase())
+            ) {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rumah_nakes");
+            }
+
+            // hitung tempat_jalan_nakes
+            if (
+              typeof p.tempat === "string" &&
+              p.tempat.trim().toLowerCase() === "jalan" &&
+              typeof p.penolong === "string" &&
+              ["dokter", "bidan", "perawat"].includes(p.penolong.trim().toLowerCase())
+            ) {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_jalan_nakes");
+            }
+
+            // hitung persalinan_nakes
+            const penolong = typeof p.penolong === "string" ? p.penolong.trim().toLowerCase() : "";
+            const tempat = typeof p.tempat === "string" ? p.tempat.trim().toLowerCase() : "";
+
+            const persalinanNakesCount = 
+              (["rumah sakit","rumah sakit bersalin","klinik","bidan praktik mandiri","puskesmas","poskesdes","polindes"].includes(tempat) ? 1 : 0) +
+              (tempat === "rumah" && ["dokter","bidan","perawat"].includes(penolong) ? 1 : 0) +
+              (tempat === "jalan" && ["dokter","bidan","perawat"].includes(penolong) ? 1 : 0);
+
+            if (persalinanNakesCount > 0) {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_nakes", persalinanNakesCount);
+            }
+
+            // hitung tempat_rumah_dk_klg -> dukun / keluarga
+            if (
+              typeof p.tempat === "string" &&
+              p.tempat.trim().toLowerCase() === "rumah" &&
+              typeof p.penolong === "string" &&
+              !["dokter", "bidan", "perawat"].includes(p.penolong.trim().toLowerCase())
+            ) {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rumah_dk_klg");
+            }
+
+            // hitung cara_normal (p.cara === "Spontan Belakang Kepala")
+            if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "spontan belakang kepala") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_normal");
+            }
+
+            // hitung cara_vacuum (p.cara === "Vacuum Extraction")
+            if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "vacuum extraction") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_vacuum");
+            }
+
+            // hitung cara_forceps (p.cara === "Forceps Delivery")
+            if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "forceps delivery") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_forceps");
+            }
+
+            // hitung cara_sc (p.cara === "Section Caesarea (SC)")
+            if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "section caesarea (sc)") {
+              safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_sc");
             }
           }
         }
