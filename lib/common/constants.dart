@@ -19,8 +19,9 @@ class Constants {
 
   static const List<String> caraLahirList = [
     'Spontan Belakang Kepala',
+    'Vacuum Extraction',
+    'Forceps Delivery',
     'Section Caesarea (SC)',
-    'Lainnya',
   ];
 
   static const List<String> caraAbortusList = [
@@ -29,7 +30,12 @@ class Constants {
     'Lainnya',
   ];
 
-  static const List<String> statusBayiList = ['Hidup', 'Mati', 'Abortus'];
+  static const List<String> statusBayiList = [
+    'Lahir Hidup',
+    'Lahir Mati',
+    'IUFD',
+    'Abortus',
+  ];
 
   static const List<String> sexList = ['Laki-laki', 'Perempuan'];
 

@@ -345,8 +345,23 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                             return null;
                           },
                         ),
-                        // Field dengan sub-field 'Lainnya' harus memanggil wrapValidator di dropdown utamanya.
-                        _buildCaraMelahirkanField(data, index),
+                        DropdownField(
+                          key: getKey('cara'),
+                          label: 'Cara Persalinan',
+                          icon: Icons.pregnant_woman,
+                          items: data.statusBayi != "Abortus"
+                              ? Constants.caraLahirList
+                              : Constants.caraAbortusList,
+                          value: data.cara,
+                          onChanged: (newValue) {
+                            setState(() {
+                              data.cara = newValue;
+                            });
+                          },
+                          // Wrap Validator untuk dropdown utama
+                          validator: (val) =>
+                              wrap('cara', val, _requiredObjectValidator),
+                        ),
                         _buildPenolongField(data, index),
                         DropdownField(
                           // **Key Dinamis**
@@ -489,51 +504,6 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
             // Note: Field ini TIDAK menggunakan GlobalKey, sehingga tidak bisa di-scroll-ke.
             // Namun, karena ia hanya muncul saat dropdown "Penolong" valid,
             // kita harus memastikan field ini valid saat disave.
-            validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
-          ),
-      ],
-    );
-  }
-
-  // Cara Melahirkan Field dengan integrasi Validator
-  Widget _buildCaraMelahirkanField(Persalinan data, int index) {
-    bool isLainnya = data.cara == 'Lainnya';
-    GlobalKey? getKey(String fieldName) => _fieldKeys['${fieldName}_$index'];
-    String? wrap(String fieldName, dynamic val, FieldValidator validator) {
-      return _formValidator.wrapValidator(
-        '${fieldName}_$index',
-        val,
-        validator,
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        DropdownField(
-          key: getKey('cara'),
-          label: 'Cara Persalinan',
-          icon: Icons.pregnant_woman,
-          items: data.statusBayi != "Abortus"
-              ? Constants.caraLahirList
-              : Constants.caraAbortusList,
-          value: data.cara,
-          onChanged: (newValue) {
-            setState(() {
-              data.cara = newValue;
-            });
-          },
-          // Wrap Validator untuk dropdown utama
-          validator: (val) => wrap('cara', val, _requiredObjectValidator),
-        ),
-        if (isLainnya) const SizedBox(height: 8),
-        if (isLainnya)
-          CustomTextField(
-            // Tidak perlu GlobalKey baru, cukup gunakan validator yang menargetkan cara
-            label: 'Cara Persalinan Lainnya',
-            icon: Icons.pregnant_woman,
-            onSaved: (val) => data.cara = val,
-            // Validator untuk field Lainnya.
             validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
           ),
       ],
