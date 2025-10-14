@@ -35,13 +35,15 @@ export const recalculatePersalinanStats = onRequest(
 
           if (!statsByBidan[idBidan].by_month[monthKey]) {
             statsByBidan[idBidan].by_month[monthKey] = { 
-              persalinan: { total: 0 },
+              persalinan: { 
+                total: 0, tempat_rs: 0
+              },
               kunjungan: { abortus: 0 },
               resti: { abortus: 0 },
             };
           } else {
             if (!statsByBidan[idBidan].by_month[monthKey].persalinan) {
-              statsByBidan[idBidan].by_month[monthKey].persalinan = { total: 0 };
+              statsByBidan[idBidan].by_month[monthKey].persalinan = { total: 0, tempat_rs: 0 };
             }
             if (!statsByBidan[idBidan].by_month[monthKey].kunjungan) {
               statsByBidan[idBidan].by_month[monthKey].kunjungan = { abortus: 0 };
@@ -53,6 +55,11 @@ export const recalculatePersalinanStats = onRequest(
 
           // hitung total persalinan
           safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "total");
+
+          // hitung tempat_rs (p.tempat === "Rumah Sakit")
+          if (typeof p.tempat === "string" && p.tempat.trim().toLowerCase() === "rumah sakit") {
+            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rs");
+          }
 
           // --- logika abortus (umur_kehamilan <= 20 minggu TANPA tambahan hari) ---
           if (p.status_bayi === "Abortus") {
@@ -111,7 +118,7 @@ export const recalculatePersalinanStats = onRequest(
               if (typeof byMonth[month].resti.abortus !== "number") {
                 byMonth[month].resti.abortus = 0;
               }
-              if (!byMonth[month].persalinan) byMonth[month].persalinan = { total: 0 };
+              if (!byMonth[month].persalinan) byMonth[month].persalinan = { total: 0, tempat_rs: 0 };
             }
           }
         }
@@ -121,13 +128,14 @@ export const recalculatePersalinanStats = onRequest(
           if (month < startMonthKey) continue; // skip bulan lama
           if (!byMonth[month]) {
             byMonth[month] = { 
-              persalinan: { total: 0 }, 
+              persalinan: { total: 0, tempat_rs: 0 }, 
               kunjungan: { abortus: 0 }, 
               resti: { abortus: 0 } 
             };
           }
 
           byMonth[month].persalinan.total = counts.persalinan.total;
+          byMonth[month].persalinan.tempat_rs = counts.persalinan.tempat_rs;
           byMonth[month].kunjungan.abortus = counts.kunjungan.abortus;
           byMonth[month].resti.abortus = counts.resti.abortus;
         }
