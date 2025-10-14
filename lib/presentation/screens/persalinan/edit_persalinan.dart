@@ -1,3 +1,4 @@
+import 'package:ebidan/common/constants.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
@@ -62,30 +63,6 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
   DateTime? _tglPersalinan;
   DateTime? _createdAt;
 
-  final List<String> statusBayiList = ['Hidup', 'Mati', 'Abortus'];
-
-  final List<String> _caraLahirList = [
-    'Spontan Belakang Kepala',
-    'Section Caesarea (SC)',
-    'Lainnya',
-  ];
-
-  final List<String> _caraAbortusList = ['Kuretase', 'Mandiri', 'Lainnya'];
-  final List<String> penolongList = [
-    'Bidan',
-    'Dokter',
-    'Dukun Kampung',
-    'Lainnya',
-  ];
-  final List<String> tempatList = [
-    'Rumah Sakit',
-    'Poskesdes',
-    'Polindes',
-    'Rumah',
-    'Jalan',
-  ];
-  final List<String> sexList = ['Laki-laki', 'Perempuan'];
-
   Kehamilan? kehamilan;
   Persalinan? persalinan;
 
@@ -124,7 +101,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
       _panjangBadanController.text = persalinan!.panjangBadan ?? '';
       _umurKehamilanController.text = persalinan!.umurKehamilan ?? '';
       if (_penolong != null) {
-        if (penolongList.contains(_penolong)) {
+        if (Constants.penolongList.contains(_penolong)) {
           _penolongLainnyaController.text = '';
         } else {
           _penolongLainnyaController.text = _penolong!;
@@ -133,14 +110,14 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
       }
       if (_caraBersalin != null) {
         if (_statusBayi == 'Abortus') {
-          if (_caraAbortusList.contains(_caraBersalin)) {
+          if (Constants.caraAbortusList.contains(_caraBersalin)) {
             _caraLainnyaController.text = '';
           } else {
             _caraLainnyaController.text = _caraBersalin!;
             _caraBersalin = 'Lainnya';
           }
         } else {
-          if (_caraLahirList.contains(_caraBersalin)) {
+          if (Constants.caraLahirList.contains(_caraBersalin)) {
             _caraLainnyaController.text = '';
           } else {
             _caraLainnyaController.text = _caraBersalin!;
@@ -269,7 +246,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                 key: _fieldKeys['statusBayi'], // Tambahkan key
                 label: 'Status Bayi',
                 icon: Icons.child_care,
-                items: statusBayiList,
+                items: Constants.statusBayiList,
                 value: _statusBayi,
                 onChanged: (newValue) {
                   setState(() {
@@ -360,7 +337,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                 key: _fieldKeys['sex'], // Tambahkan key
                 label: 'Jenis Kelamin',
                 icon: Icons.transgender,
-                items: sexList,
+                items: Constants.sexList,
                 value: _sex,
                 onChanged: (newValue) {
                   setState(() {
@@ -385,7 +362,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                 key: _fieldKeys['tempatBersalin'], // Tambahkan key
                 label: 'Tempat Persalinan',
                 icon: Icons.home,
-                items: tempatList,
+                items: Constants.tempatList,
                 value: _tempatBersalin,
                 onChanged: (newValue) {
                   setState(() {
@@ -465,14 +442,14 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
       children: [
         DropdownButtonFormField<String>(
           key: _fieldKeys['penolong'], // Tambahkan key
-          value: _penolong != null && penolongList.contains(_penolong)
+          value: _penolong != null && Constants.penolongList.contains(_penolong)
               ? _penolong
               : null, // hanya value yang ada di list
           decoration: const InputDecoration(
             labelText: 'Penolong',
             prefixIcon: Icon(Icons.person),
           ),
-          items: penolongList.map((String value) {
+          items: Constants.penolongList.map((String value) {
             return DropdownMenuItem<String>(value: value, child: Text(value));
           }).toList(),
           onChanged: (newValue) {
@@ -520,7 +497,9 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
           key: _fieldKeys['caraBersalin'], // Tambahkan key
           label: 'Cara Persalinan',
           icon: Icons.pregnant_woman,
-          items: _statusBayi != "Abortus" ? _caraLahirList : _caraAbortusList,
+          items: _statusBayi != "Abortus"
+              ? Constants.caraLahirList
+              : Constants.caraAbortusList,
           value: _caraBersalin,
           onChanged: (newValue) {
             setState(() {

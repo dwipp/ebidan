@@ -1,3 +1,4 @@
+import 'package:ebidan/common/constants.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
@@ -35,26 +36,6 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
       val == null || (val is String && val.isEmpty) ? 'Wajib dipilih' : null;
 
   List<Map<String, dynamic>> riwayatList = [];
-
-  final List<String> statusBayiList = ['Hidup', 'Mati', 'Abortus'];
-  final List<String> statusKehamilanList = ['Aterm', 'Preterm', 'Postterm'];
-  final List<String> penolongList = [
-    'Bidan',
-    'Dokter',
-    'Dukun Kampung',
-    'Lainnya',
-  ];
-  final List<String> tempatList = [
-    'Rumah Sakit',
-    'Poskesdes',
-    'Polindes',
-    'Rumah',
-    'Jalan',
-  ];
-  final List<String> statusLahirList = [
-    'Spontan Belakang Kepala',
-    'Section Caesarea (SC)',
-  ];
 
   Bumil? bumil;
 
@@ -226,7 +207,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           key: getKey('status_bayi'), // **Key Dinamis**
                           label: 'Status Bayi',
                           icon: Icons.child_care,
-                          items: statusBayiList,
+                          items: Constants.statusBayiList,
                           value: data['status_bayi'].isNotEmpty
                               ? data['status_bayi']
                               : null,
@@ -247,7 +228,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           key: getKey('status_lahir'), // **Key Dinamis**
                           label: 'Status Lahir',
                           icon: Icons.pregnant_woman,
-                          items: statusLahirList,
+                          items: Constants.caraLahirList,
                           value: data['status_lahir'].isNotEmpty
                               ? data['status_lahir']
                               : null,
@@ -273,7 +254,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           key: getKey('status_term'), // **Key Dinamis**
                           label: 'Status Kehamilan',
                           icon: Icons.date_range,
-                          items: statusKehamilanList,
+                          items: Constants.statusKehamilanList,
                           value: data['status_term'].isNotEmpty
                               ? data['status_term']
                               : null,
@@ -299,7 +280,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           key: getKey('tempat'), // **Key Dinamis**
                           label: 'Tempat Persalinan',
                           icon: Icons.home,
-                          items: tempatList,
+                          items: Constants.tempatList,
                           value: data['tempat'].isNotEmpty
                               ? data['tempat']
                               : null,
@@ -352,7 +333,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                 child: BlocConsumer<SubmitRiwayatCubit, SubmitiwayatState>(
                   listener: (context, state) {
                     if (state is SubmitRiwayatSuccess) {
-                      if (riwayatList.isNotEmpty){
+                      if (riwayatList.isNotEmpty) {
                         Snackbar.show(
                           context,
                           message: 'Riwayat berhasil disimpan',
@@ -431,14 +412,14 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
           key: getKey('penolong'), // **Key Dinamis**
           value:
               data['penolong'] != null &&
-                  penolongList.contains(data['penolong'])
+                  Constants.penolongList.contains(data['penolong'])
               ? data['penolong']
               : null, // hanya value yang ada di list
           decoration: const InputDecoration(
             labelText: 'Penolong',
             prefixIcon: Icon(Icons.person),
           ),
-          items: penolongList.map((String value) {
+          items: Constants.penolongList.map((String value) {
             return DropdownMenuItem<String>(value: value, child: Text(value));
           }).toList(),
           onChanged: (newValue) {

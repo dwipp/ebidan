@@ -1,3 +1,4 @@
+import 'package:ebidan/common/constants.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
@@ -40,28 +41,6 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
       val == null || val.isEmpty ? 'Wajib diisi' : null;
   String? _requiredObjectValidator(dynamic val) =>
       val == null || (val is String && val.isEmpty) ? 'Wajib dipilih' : null;
-
-  final List<String> statusBayiList = ['Hidup', 'Mati', 'Abortus'];
-  final List<String> _caraLahirList = [
-    'Spontan Belakang Kepala',
-    'Section Caesarea (SC)',
-    'Lainnya',
-  ];
-  final List<String> _caraAbortusList = ['Kuretase', 'Mandiri', 'Lainnya'];
-  final List<String> penolongList = [
-    'Bidan',
-    'Dokter',
-    'Dukun Kampung',
-    'Lainnya',
-  ];
-  final List<String> tempatList = [
-    'Rumah Sakit',
-    'Poskesdes',
-    'Polindes',
-    'Rumah',
-    'Jalan',
-  ];
-  final List<String> sexList = ['Laki-laki', 'Perempuan'];
 
   Bumil? bumil;
 
@@ -253,7 +232,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                           key: getKey('statusBayi'),
                           label: 'Status Bayi',
                           icon: Icons.child_care,
-                          items: statusBayiList,
+                          items: Constants.statusBayiList,
                           value: data.statusBayi,
                           onChanged: (newValue) {
                             setState(() {
@@ -350,7 +329,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                           key: getKey('sex'),
                           label: 'Jenis Kelamin',
                           icon: Icons.transgender,
-                          items: sexList,
+                          items: Constants.sexList,
                           value: data.sex,
                           onChanged: (newValue) {
                             setState(() {
@@ -374,7 +353,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                           key: getKey('tempat'),
                           label: 'Tempat Persalinan',
                           icon: Icons.home,
-                          items: tempatList,
+                          items: Constants.tempatList,
                           value: data.tempat,
                           onChanged: (newValue) {
                             setState(() {
@@ -485,8 +464,10 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
           key: getKey('penolong'),
           label: 'Penolong',
           icon: Icons.person,
-          items: penolongList,
-          value: data.penolong != null && penolongList.contains(data.penolong)
+          items: Constants.penolongList,
+          value:
+              data.penolong != null &&
+                  Constants.penolongList.contains(data.penolong)
               ? data.penolong
               : null,
           onChanged: (newValue) {
@@ -534,8 +515,8 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
           label: 'Cara Persalinan',
           icon: Icons.pregnant_woman,
           items: data.statusBayi != "Abortus"
-              ? _caraLahirList
-              : _caraAbortusList,
+              ? Constants.caraLahirList
+              : Constants.caraAbortusList,
           value: data.cara,
           onChanged: (newValue) {
             setState(() {

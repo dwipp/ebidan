@@ -1,3 +1,4 @@
+import 'package:ebidan/common/constants.dart';
 import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/data/models/riwayat_model.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
@@ -43,33 +44,14 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
   late FormValidator _formValidator;
 
   String? _statusBayi;
-  final List<String> statusBayiList = ['Hidup', 'Mati', 'Abortus'];
 
   String? _statusKehamilan;
-  final List<String> statusKehamilanList = ['Aterm', 'Preterm', 'Postterm'];
 
   String? _penolong;
-  final List<String> penolongList = [
-    'Bidan',
-    'Dokter',
-    'Dukun Kampung',
-    'Lainnya',
-  ];
 
   String? _tempat;
-  final List<String> tempatList = [
-    'Rumah Sakit',
-    'Poskesdes',
-    'Polindes',
-    'Rumah',
-    'Jalan',
-  ];
 
   String? _statusLahir;
-  final List<String> statusLahirList = [
-    'Spontan Belakang Kepala',
-    'Section Caesarea (SC)',
-  ];
   DateTime? _tglLahir;
   late TextEditingController _beratBayiController;
   late TextEditingController _komplikasiController;
@@ -125,7 +107,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
     _penolong = riwayat?.penolong ?? '';
     _tempat = riwayat?.tempat ?? '';
     if (_penolong != null) {
-      if (penolongList.contains(_penolong)) {
+      if (Constants.penolongList.contains(_penolong)) {
         _penolongLainnyaController.text = '';
       } else {
         _penolongLainnyaController.text = _penolong!;
@@ -218,7 +200,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                 key: _fieldKeys['statusBayi'], // Tambahkan key
                 label: 'Status Bayi',
                 icon: Icons.child_care,
-                items: statusBayiList,
+                items: Constants.statusBayiList,
                 value: _statusBayi,
                 onChanged: (newValue) {
                   setState(() {
@@ -257,7 +239,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                 key: _fieldKeys['statusLahir'], // Tambahkan key
                 label: 'Status Lahir',
                 icon: Icons.pregnant_woman,
-                items: statusLahirList,
+                items: Constants.caraLahirList,
                 value: _statusLahir,
                 onChanged: (newValue) {
                   setState(() {
@@ -280,7 +262,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                 key: _fieldKeys['statusKehamilan'], // Tambahkan key
                 label: 'Status Kehamilan',
                 icon: Icons.date_range,
-                items: statusKehamilanList,
+                items: Constants.statusKehamilanList,
                 value: _statusKehamilan,
                 onChanged: (newValue) {
                   setState(() {
@@ -303,7 +285,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                 key: _fieldKeys['tempat'], // Tambahkan key
                 label: 'Tempat Persalinan',
                 icon: Icons.home,
-                items: tempatList,
+                items: Constants.tempatList,
                 value: _tempat,
                 onChanged: (newValue) {
                   setState(() {
@@ -399,14 +381,14 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
       children: [
         DropdownButtonFormField<String>(
           key: _fieldKeys['penolong'], // Tambahkan key
-          value: _penolong != null && penolongList.contains(_penolong)
+          value: _penolong != null && Constants.penolongList.contains(_penolong)
               ? _penolong
               : null, // hanya value yang ada di list
           decoration: const InputDecoration(
             labelText: 'Penolong',
             prefixIcon: Icon(Icons.person),
           ),
-          items: penolongList.map((String value) {
+          items: Constants.penolongList.map((String value) {
             return DropdownMenuItem<String>(value: value, child: Text(value));
           }).toList(),
           onChanged: (newValue) {
