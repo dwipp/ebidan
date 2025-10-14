@@ -40,7 +40,8 @@ export const recalculatePersalinanStats = onRequest(
                 tempat_klinik: 0, tempat_bpm: 0, tempat_pkm: 0, 
                 tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
                 tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
-                tempat_rumah_dk_klg: 0
+                tempat_rumah_dk_klg: 0, cara_normal: 0, cara_vacuum: 0, 
+                cara_forceps: 0, cara_sc: 0
               },
               kunjungan: { abortus: 0 },
               resti: { abortus: 0 },
@@ -52,7 +53,8 @@ export const recalculatePersalinanStats = onRequest(
                 tempat_klinik: 0, tempat_bpm: 0, tempat_pkm: 0, 
                 tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
                 tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
-                tempat_rumah_dk_klg: 0
+                tempat_rumah_dk_klg: 0, cara_normal: 0, cara_vacuum: 0, 
+                cara_forceps: 0, cara_sc: 0
               };
             }
             if (!statsByBidan[idBidan].by_month[monthKey].kunjungan) {
@@ -151,6 +153,25 @@ export const recalculatePersalinanStats = onRequest(
             safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rumah_dk_klg");
           }
 
+          // hitung cara_normal (p.cara === "Spontan Belakang Kepala")
+          if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "spontan belakang kepala") {
+            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_normal");
+          }
+
+          // hitung cara_vacuum (p.cara === "Vacuum Extraction")
+          if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "vacuum extraction") {
+            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_vacuum");
+          }
+
+          // hitung cara_forceps (p.cara === "Forceps Delivery")
+          if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "forceps delivery") {
+            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_forceps");
+          }
+
+          // hitung cara_sc (p.cara === "Section Caesarea (SC)")
+          if (typeof p.cara === "string" && p.cara.trim().toLowerCase() === "section caesarea (sc)") {
+            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "cara_sc");
+          }
 
           // --- logika abortus (umur_kehamilan <= 20 minggu TANPA tambahan hari) ---
           if (p.status_bayi === "Abortus") {
@@ -214,7 +235,8 @@ export const recalculatePersalinanStats = onRequest(
                 tempat_klinik: 0, tempat_bpm: 0, tempat_pkm: 0, 
                 tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
                 tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
-                tempat_rumah_dk_klg: 0
+                tempat_rumah_dk_klg: 0, cara_normal: 0, cara_vacuum: 0, 
+                cara_forceps: 0, cara_sc: 0
               };
             }
           }
@@ -230,7 +252,8 @@ export const recalculatePersalinanStats = onRequest(
                 tempat_klinik: 0, tempat_bpm: 0, tempat_pkm: 0, 
                 tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
                 tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
-                tempat_rumah_dk_klg: 0
+                tempat_rumah_dk_klg: 0, cara_normal: 0, cara_vacuum: 0, 
+                cara_forceps: 0, cara_sc: 0
               }, 
               kunjungan: { abortus: 0 }, 
               resti: { abortus: 0 } 
@@ -250,6 +273,10 @@ export const recalculatePersalinanStats = onRequest(
           byMonth[month].persalinan.tempat_jalan_nakes = counts.persalinan.tempat_jalan_nakes;
           byMonth[month].persalinan.persalinan_nakes = counts.persalinan.persalinan_nakes;
           byMonth[month].persalinan.tempat_rumah_dk_klg = counts.persalinan.tempat_rumah_dk_klg;
+          byMonth[month].persalinan.cara_normal = counts.persalinan.cara_normal;
+          byMonth[month].persalinan.cara_vacuum = counts.persalinan.cara_vacuum;
+          byMonth[month].persalinan.cara_forceps = counts.persalinan.cara_forceps;
+          byMonth[month].persalinan.cara_sc = counts.persalinan.cara_sc;
           byMonth[month].kunjungan.abortus = counts.kunjungan.abortus;
           byMonth[month].resti.abortus = counts.resti.abortus;
         }
