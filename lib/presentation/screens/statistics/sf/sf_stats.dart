@@ -1,4 +1,5 @@
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/presentation/screens/statistics/widgets/info_button_bar.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/premium_warning_banner.dart';
 import 'package:ebidan/state_management/general/cubit/statistic_cubit.dart';
@@ -35,34 +36,32 @@ class SfStatsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: PageHeader(
-        title: const Text('Statistik SF'),
+        title: const Text('Stats SF'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Tentang SF'),
-                  content: const Text(
-                    'SF adalah singkatan dari *Supplement Form*.\n\n'
-                    'Setiap SF menunjukkan jumlah tablet yang diberikan:\n'
-                    '- SF1 = 30 tablet\n'
-                    '- SF2 = 60 tablet\n'
-                    '- SF3 = 90 tablet\n'
-                    '- dan seterusnya.\n\n'
-                    'Data ini digunakan untuk mencatat distribusi suplementasi '
-                    'sesuai standar pemberian tablet tambah darah selama kehamilan.',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Tutup'),
-                    ),
-                  ],
-                ),
-              );
-            },
+          InfoButtonBar(
+            title: 'Tentang Statistik SF',
+            contentSpans: [
+              const TextSpan(
+                text:
+                    'Statistik SF menampilkan distribusi pemberian Suplemen Fe (Tablet Tambah Darah) kepada ibu hamil.\n\n',
+              ),
+              const TextSpan(
+                text: '• SF1: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(text: 'Setara dengan pemberian 30 tablet.\n'),
+              const TextSpan(
+                text: '• SF2: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text: 'Setara dengan 60 tablet, dan seterusnya.\n\n',
+              ),
+              const TextSpan(
+                text:
+                    'Data ini digunakan untuk memantau kepatuhan konsumsi Suplemen Fe oleh ibu hamil.',
+              ),
+            ],
           ),
         ],
       ),

@@ -266,7 +266,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
               CustomTextField(
                 controller: nextSfController,
                 label: "Pemberian SF",
-                icon: Icons.medication_liquid,
+                icon: Icons.bloodtype,
                 isNumber: true,
                 suffixText: 'tablet',
               ),

@@ -284,7 +284,7 @@ class _KunjunganState extends State<KunjunganScreen> {
                     !widget.firstTime && bumil?.latestKehamilan?.sfCount != null
                     ? "Pemberian SF (prev ${bumil?.latestKehamilan?.sfCount ?? 0} tablet)"
                     : "Pemberian SF",
-                icon: Icons.medication_liquid,
+                icon: Icons.bloodtype,
                 isNumber: true,
                 suffixText: 'tablet',
               ),

@@ -1,6 +1,7 @@
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/animated_data_card.dart';
+import 'package:ebidan/presentation/screens/statistics/widgets/info_button_bar.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/premium_warning_banner.dart';
@@ -115,7 +116,112 @@ class RestiStatsScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: PageHeader(title: Text('Statistik Resti')),
+      appBar: PageHeader(
+        title: Text('Stats Resti'),
+        actions: [
+          InfoButtonBar(
+            title: 'Tentang Statistik Resti',
+            contentSpans: [
+              const TextSpan(
+                text:
+                    'Statistik Resti digunakan untuk menampilkan jumlah ibu hamil yang memiliki faktor risiko tinggi (RESTI) berdasarkan berbagai kategori.\n\n',
+              ),
+              const TextSpan(
+                text: '• Resti Nakes: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Ibu hamil yang dikategorikan risiko tinggi oleh tenaga kesehatan berdasarkan hasil pemeriksaan medis.\n\n',
+              ),
+              const TextSpan(
+                text: '• Resti Masyarakat: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Ibu hamil yang diidentifikasi berisiko tinggi oleh masyarakat (kader, keluarga, atau tokoh setempat).\n\n',
+              ),
+              const TextSpan(
+                text: '• Risiko Panggul Sempit (tb < 145 cm): ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Tinggi badan ibu kurang dari 145 cm, berisiko mengalami kesulitan saat persalinan.\n\n',
+              ),
+              const TextSpan(
+                text: '• Hipertensi: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Tekanan darah tinggi selama kehamilan (≥ 140/90 mmHg), dapat menyebabkan komplikasi seperti preeklamsia.\n\n',
+              ),
+              const TextSpan(
+                text: '• Obesitas: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Ibu dengan indeks massa tubuh ≥ 25, berisiko mengalami komplikasi kehamilan dan persalinan.\n\n',
+              ),
+              const TextSpan(
+                text: '• Anemia: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Kadar hemoglobin rendah (<11 g/dl), dapat menyebabkan kelelahan dan komplikasi janin.\n\n',
+              ),
+              const TextSpan(
+                text: '• Paritas Tinggi (≥ 4x): ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Ibu dengan riwayat melahirkan empat kali atau lebih, berisiko tinggi mengalami komplikasi obstetri.\n\n',
+              ),
+              const TextSpan(
+                text: '• Usia Terlalu Tua (> 35 tahun): ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Kehamilan pada usia lanjut meningkatkan risiko komplikasi bagi ibu dan janin.\n\n',
+              ),
+              const TextSpan(
+                text: '• Usia Terlalu Muda (< 20 tahun): ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Kehamilan pada usia remaja berisiko tinggi terhadap anemia, KEK, dan komplikasi saat melahirkan.\n\n',
+              ),
+              const TextSpan(
+                text: '• Pernah Abortus: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Riwayat keguguran sebelumnya dapat meningkatkan risiko komplikasi pada kehamilan berikutnya.\n\n',
+              ),
+              const TextSpan(
+                text: '• Kekurangan Energi Kronis (KEK): ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Ibu hamil dengan lingkar lengan atas < 23,5 cm, berisiko tinggi mengalami komplikasi kehamilan.\n\n',
+              ),
+              const TextSpan(
+                text:
+                    'Statistik ini membantu Bidan memantau dan memberikan perhatian khusus kepada ibu hamil dengan faktor risiko tinggi agar mendapat penanganan lebih cepat dan tepat.',
+              ),
+            ],
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(

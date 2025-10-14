@@ -3,6 +3,7 @@ import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/animated_data_card.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/donut_chart.dart';
+import 'package:ebidan/presentation/screens/statistics/widgets/info_button_bar.dart';
 import 'package:ebidan/presentation/screens/statistics/widgets/k1_chart.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
@@ -147,45 +148,75 @@ class KunjunganStatsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: PageHeader(
-        title: Text('Statistik Kunjungan'),
+        title: Text('Stats Kunjungan'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Tentang Statistik Kunjungan'),
-                  content: const SingleChildScrollView(
-                    child: Text(
-                      'Statistik Kunjungan digunakan untuk memantau jumlah '
-                      'dan jenis kunjungan ibu hamil berdasarkan tahapan pemeriksaan.\n\n'
-                      'Berikut penjelasannya:\n\n'
-                      '• **Total Kunjungan** — Jumlah keseluruhan kunjungan ibu hamil pada periode tertentu.\n\n'
-                      '• **K1 (Kunjungan Pertama)** — Kunjungan pertama ibu hamil. '
-                      'Biasanya dilakukan sebelum usia kehamilan 12 minggu.\n'
-                      '  - K1 MURNI: Pemeriksaan pertama dalam rentang usia kehamilan 12 minggu atau kurang.\n'
-                      '  - K1 Skrining Dokter / USG: K1 dengan pemeriksaan tambahan.\n'
-                      '  - K1 AKSES: Pemeriksaan pertama di usia kehamilan lebih dari 12 minggu.\n'
-                      '  - K1 dengan 4T: K1 yang memenuhi 4 komponen pemeriksaan dasar (Timbang, Tekanan Darah, Tablet, Test Urin).\n\n'
-                      '• **K2–K6** — Kunjungan lanjutan setelah K1, dilakukan untuk pemantauan rutin '
-                      'perkembangan kehamilan sesuai standar ANC (Antenatal Care).\n'
-                      '  - Tiap kunjungan bisa memiliki subkategori seperti pemeriksaan USG atau skrining dokter.\n\n'
-                      '• **Abortus (0–20 mg)** — Data ibu dengan riwayat keguguran atau kehamilan tidak berlanjut '
-                      'dalam rentang waktu tersebut.\n\n'
-                      'Kunjungan ini membantu bidan memantau kepatuhan ibu hamil '
-                      'terhadap pemeriksaan kehamilan sesuai jadwal ideal (minimal 6 kali selama kehamilan).',
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Tutup'),
-                    ),
-                  ],
-                ),
-              );
-            },
+          InfoButtonBar(
+            title: 'Tentang Statistik Kunjungan',
+            contentSpans: [
+              const TextSpan(
+                text:
+                    'Statistik Kunjungan digunakan untuk memantau jumlah dan jenis kunjungan ibu hamil berdasarkan tahapan pemeriksaan.\n\n',
+              ),
+              const TextSpan(
+                text: '• Total Kunjungan:\n',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Jumlah keseluruhan kunjungan ibu hamil dalam satu bulan.\n\n',
+              ),
+              const TextSpan(
+                text: '• K1 (Kunjungan Pertama):\n',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text: 'Biasanya dilakukan sebelum usia kehamilan 12 minggu.\n',
+              ),
+              const TextSpan(
+                text: '- K1 Murni: ',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+              const TextSpan(
+                text:
+                    'Pemeriksaan pertama dalam rentang usia kehamilan 12 minggu atau kurang.\n',
+              ),
+              const TextSpan(
+                text: '- K1 Akses: ',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+              const TextSpan(
+                text:
+                    'Pemeriksaan pertama di usia kehamilan lebih dari 12 minggu.\n',
+              ),
+              const TextSpan(
+                text: '- K1 dengan 4T: ',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+              const TextSpan(
+                text:
+                    'K1 yang memiliki salah satu faktor risiko dari kategori “4 Terlalu”, yaitu: terlalu muda, terlalu tua, terlalu sering melahirkan, atau terlalu dekat jarak melahirkannya.\n\n',
+              ),
+              const TextSpan(
+                text: '• K2–K6: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Kunjungan lanjutan untuk pemantauan rutin kehamilan sesuai standar ANC (Antenatal Care).\n\n',
+              ),
+              const TextSpan(
+                text: '• Abortus (0–20 mg): ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Kasus keguguran atau kehamilan tidak berlanjut sebelum 20 minggu.\n\n',
+              ),
+              const TextSpan(
+                text:
+                    'Kunjungan ini membantu bidan memantau kepatuhan ibu hamil terhadap pemeriksaan kehamilan sesuai jadwal ideal (minimal 6 kali pemeriksaan selama kehamilan).',
+              ),
+            ],
           ),
         ],
       ),

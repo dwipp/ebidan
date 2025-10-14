@@ -20,7 +20,7 @@ class StatisticsScreen extends StatelessWidget {
           children: [
             if (warningBanner != null) warningBanner,
             MenuButton(
-              icon: Icons.history,
+              icon: Icons.event_note,
               title: 'Kunjungan',
               onTap: () {
                 Navigator.pushNamed(
@@ -31,7 +31,7 @@ class StatisticsScreen extends StatelessWidget {
               },
             ),
             MenuButton(
-              icon: Icons.history,
+              icon: Icons.health_and_safety,
               title: 'Resti',
               onTap: () {
                 Navigator.pushNamed(
@@ -42,8 +42,8 @@ class StatisticsScreen extends StatelessWidget {
               },
             ),
             MenuButton(
-              icon: Icons.medication_liquid,
-              title: 'SF',
+              icon: Icons.bloodtype,
+              title: 'Suplemen Fe',
               onTap: () {
                 Navigator.pushNamed(
                   context,
