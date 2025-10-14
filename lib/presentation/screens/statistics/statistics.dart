@@ -43,7 +43,7 @@ class StatisticsScreen extends StatelessWidget {
             ),
             MenuButton(
               icon: Icons.bloodtype,
-              title: 'Suplemen Fe',
+              title: 'Konsumsi Suplemen Fe',
               onTap: () {
                 Navigator.pushNamed(
                   context,

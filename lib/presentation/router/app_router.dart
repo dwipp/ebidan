@@ -32,7 +32,9 @@ import 'package:ebidan/presentation/screens/statistics/kunjungan/tren_kunjungan_
 import 'package:ebidan/presentation/screens/statistics/resti/list_resti_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/resti/resti_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/resti/tren_resti_stats.dart';
+import 'package:ebidan/presentation/screens/statistics/sf/list_sf_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/sf/sf_stats.dart';
+import 'package:ebidan/presentation/screens/statistics/sf/tren_sf_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/statistics.dart';
 import 'package:flutter/material.dart';
 import 'package:ebidan/common/exceptions/route_exception.dart';
@@ -86,6 +88,8 @@ class AppRouter {
   static const String trenRestiStats = '/trenrestistats';
   // stat SF
   static const String sfStats = '/sfstats';
+  static const String listSfStats = '/listfsstats';
+  static const String trenSfStats = '/trensfstats';
 
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
@@ -213,6 +217,13 @@ class AppRouter {
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => SfStatsScreen(monthKey: args['monthKey']),
+        );
+      case listSfStats:
+        return MaterialPageRoute(builder: (_) => ListSfStatsScreen());
+      case trenSfStats:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => TrenSfStatsScreen(monthKeys: args['monthKeys']),
         );
       default:
         throw const RouteException('Route not found!');
