@@ -41,6 +41,17 @@ class StatisticsScreen extends StatelessWidget {
                 );
               },
             ),
+            MenuButton(
+              icon: Icons.medication_liquid,
+              title: 'SF',
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.sfStats,
+                  arguments: {'monthKey': Utils.getAutoYearMonth()},
+                );
+              },
+            ),
           ],
         ),
       ),

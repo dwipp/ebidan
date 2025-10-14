@@ -190,11 +190,52 @@ class Utils {
     final hsl = HSLColor.fromAHSL(
       1.0,
       hue,
-      0.6, // saturasi cukup tinggi agar beda mencolok
-      0.65, // lightness sedang agar tetap nyaman
+      0.5, // saturasi cukup tinggi agar beda mencolok
+      0.70, // lightness sedang agar tetap nyaman
     );
 
     return hsl.toColor();
+  }
+
+  static Color generateForegroundColor(Color background) {
+    final luminance = background.computeLuminance();
+    final hsl = HSLColor.fromColor(background);
+
+    if (luminance < 0.5) {
+      // background gelap → foreground terang sedikit tone sama
+      return hsl
+          .withLightness(0.9)
+          .withSaturation(0.3)
+          .toColor(); // terang lembut, tidak murni putih
+    } else {
+      // background terang → foreground gelap sedikit tone sama
+      return hsl
+          .withLightness(0.2)
+          .withSaturation(0.4)
+          .toColor(); // gelap tapi masih “nyambung” dengan warna latar
+    }
+  }
+
+  static Color generateHighContrastColor(
+    Color baseColor, {
+    double saturationBoost = 1.6,
+    double lightnessReduce = 0.25,
+  }) {
+    final hsl = HSLColor.fromColor(baseColor);
+
+    final isLight = baseColor.computeLuminance() > 0.5;
+    final newLightness = isLight
+        ? (hsl.lightness - (lightnessReduce + 0.07)).clamp(0.0, 1.0)
+        : (hsl.lightness - lightnessReduce).clamp(0.0, 1.0);
+
+    final newSaturation = isLight
+        ? (hsl.saturation * saturationBoost).clamp(0.0, 1.0)
+        : (hsl.saturation * saturationBoost).clamp(0.0, 1.0);
+
+    return hsl
+        .withSaturation(newSaturation)
+        .withLightness(newLightness)
+        .toColor();
   }
 
   // ====== WIDGET ======

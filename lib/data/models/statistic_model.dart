@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Statistic {
   final KehamilanStats kehamilan;
   final PasienStats pasien;
@@ -76,6 +77,7 @@ class ByMonthStats {
   final KunjunganByMonth kunjungan;
   final PersalinanByMonth persalinan;
   final RestiByMonth resti;
+  final SfByMonth sf;
 
   ByMonthStats({
     required this.kehamilan,
@@ -83,6 +85,7 @@ class ByMonthStats {
     required this.kunjungan,
     required this.persalinan,
     required this.resti,
+    required this.sf,
   });
 
   factory ByMonthStats.fromMap(Map<String, dynamic> map) {
@@ -92,6 +95,7 @@ class ByMonthStats {
       kunjungan: KunjunganByMonth.fromMap(map['kunjungan']),
       persalinan: PersalinanByMonth.fromMap(map['persalinan']),
       resti: RestiByMonth.fromMap(map['resti']),
+      sf: SfByMonth.fromMap(map['sf']),
     );
   }
 
@@ -101,6 +105,60 @@ class ByMonthStats {
       'pasien': pasien.toMap(),
       'kunjungan': kunjungan.toMap(),
       'resti': resti.toMap(),
+      'sf': sf.toMap(),
+    };
+  }
+}
+
+class SfByMonth {
+  final int sf30;
+  final int sf60;
+  final int sf90;
+  final int sf120;
+  final int sf150;
+  final int sf180;
+  final int sf210;
+  final int sf240;
+  final int sf270;
+
+  SfByMonth({
+    this.sf30 = 0,
+    this.sf60 = 0,
+    this.sf90 = 0,
+    this.sf120 = 0,
+    this.sf150 = 0,
+    this.sf180 = 0,
+    this.sf210 = 0,
+    this.sf240 = 0,
+    this.sf270 = 0,
+  });
+
+  factory SfByMonth.fromMap(Map<String, dynamic>? map) {
+    if (map == null) return SfByMonth();
+    return SfByMonth(
+      sf30: map['30'] ?? 0,
+      sf60: map['60'] ?? 0,
+      sf90: map['90'] ?? 0,
+      sf120: map['120'] ?? 0,
+      sf150: map['150'] ?? 0,
+      sf180: map['180'] ?? 0,
+      sf210: map['210'] ?? 0,
+      sf240: map['240'] ?? 0,
+      sf270: map['270'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      '30': sf30,
+      '60': sf60,
+      '90': sf90,
+      '120': sf120,
+      '150': sf150,
+      '180': sf180,
+      '210': sf210,
+      '240': sf240,
+      '270': sf270,
     };
   }
 }

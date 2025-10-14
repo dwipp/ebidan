@@ -245,11 +245,13 @@ class RestiStatsScreen extends StatelessWidget {
     //   0.8,
     // ); // saturasi & lightness disetel lembut
     // final color = hsl.toColor();
-    final color = Utils.generateDistinctColor(label);
+    final bgColor = Utils.generateDistinctColor(label);
+    final fgColor = Utils.generateForegroundColor(bgColor);
+    final valueColor = Utils.generateHighContrastColor(bgColor);
 
     final card = Card(
       margin: EdgeInsets.zero,
-      color: color,
+      color: bgColor,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -258,7 +260,7 @@ class RestiStatsScreen extends StatelessWidget {
           children: [
             DefaultTextStyle(
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.white),
+              style: TextStyle(fontSize: 14, color: fgColor),
               child: Text(label, textAlign: TextAlign.center),
             ),
             const SizedBox(height: 4),
@@ -267,7 +269,7 @@ class RestiStatsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
-                color: Colors.white,
+                color: valueColor,
               ),
             ),
           ],
