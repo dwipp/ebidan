@@ -13,6 +13,7 @@ class Constants {
   static const List<String> penolongList = [
     'Bidan',
     'Dokter',
+    'Perawat',
     'Dukun Kampung',
     'Lainnya',
   ];

@@ -38,7 +38,9 @@ export const recalculatePersalinanStats = onRequest(
               persalinan: { 
                 total: 0, tempat_rs: 0, tempat_rsb: 0, 
                 tempat_klinik: 0, tempat_bpm: 0, tempat_pkm: 0, 
-                tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0
+                tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
+                tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
+                tempat_rumah_dk_klg: 0
               },
               kunjungan: { abortus: 0 },
               resti: { abortus: 0 },
@@ -48,7 +50,9 @@ export const recalculatePersalinanStats = onRequest(
               statsByBidan[idBidan].by_month[monthKey].persalinan = { 
                 total: 0, tempat_rs: 0, tempat_rsb: 0, 
                 tempat_klinik: 0, tempat_bpm: 0, tempat_pkm: 0, 
-                tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0
+                tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
+                tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
+                tempat_rumah_dk_klg: 0
               };
             }
             if (!statsByBidan[idBidan].by_month[monthKey].kunjungan) {
@@ -103,6 +107,50 @@ export const recalculatePersalinanStats = onRequest(
             safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_polindes");
             safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_faskes");
           }
+
+          // hitung tempat_rumah_nakes
+          if (
+            typeof p.tempat === "string" &&
+            p.tempat.trim().toLowerCase() === "rumah" &&
+            typeof p.penolong === "string" &&
+            ["dokter", "bidan", "perawat"].includes(p.penolong.trim().toLowerCase())
+          ) {
+            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rumah_nakes");
+          }
+
+          // hitung tempat_jalan_nakes
+          if (
+            typeof p.tempat === "string" &&
+            p.tempat.trim().toLowerCase() === "jalan" &&
+            typeof p.penolong === "string" &&
+            ["dokter", "bidan", "perawat"].includes(p.penolong.trim().toLowerCase())
+          ) {
+            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_jalan_nakes");
+          }
+
+          // hitung persalinan_nakes
+          const penolong = typeof p.penolong === "string" ? p.penolong.trim().toLowerCase() : "";
+          const tempat = typeof p.tempat === "string" ? p.tempat.trim().toLowerCase() : "";
+
+          const persalinanNakesCount = 
+            (["rumah sakit","rumah sakit bersalin","klinik","bidan praktik mandiri","puskesmas","poskesdes","polindes"].includes(tempat) ? 1 : 0) +
+            (tempat === "rumah" && ["dokter","bidan","perawat"].includes(penolong) ? 1 : 0) +
+            (tempat === "jalan" && ["dokter","bidan","perawat"].includes(penolong) ? 1 : 0);
+
+          if (persalinanNakesCount > 0) {
+            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "persalinan_nakes", persalinanNakesCount);
+          }
+
+          // hitung tempat_rumah_dk_klg -> dukun / keluarga
+          if (
+            typeof p.tempat === "string" &&
+            p.tempat.trim().toLowerCase() === "rumah" &&
+            typeof p.penolong === "string" &&
+            !["dokter", "bidan", "perawat"].includes(p.penolong.trim().toLowerCase())
+          ) {
+            safeIncrement(statsByBidan[idBidan].by_month[monthKey].persalinan, "tempat_rumah_dk_klg");
+          }
+
 
           // --- logika abortus (umur_kehamilan <= 20 minggu TANPA tambahan hari) ---
           if (p.status_bayi === "Abortus") {
@@ -164,7 +212,9 @@ export const recalculatePersalinanStats = onRequest(
               if (!byMonth[month].persalinan) byMonth[month].persalinan = { 
                 total: 0, tempat_rs: 0, tempat_rsb: 0, 
                 tempat_klinik: 0, tempat_bpm: 0, tempat_pkm: 0, 
-                tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0
+                tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
+                tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
+                tempat_rumah_dk_klg: 0
               };
             }
           }
@@ -178,7 +228,9 @@ export const recalculatePersalinanStats = onRequest(
               persalinan: { 
                 total: 0, tempat_rs: 0, tempat_rsb: 0, 
                 tempat_klinik: 0, tempat_bpm: 0, tempat_pkm: 0, 
-                tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0
+                tempat_poskesdes: 0, tempat_polindes: 0, persalinan_faskes: 0,
+                tempat_rumah_nakes: 0, tempat_jalan_nakes: 0, persalinan_nakes: 0,
+                tempat_rumah_dk_klg: 0
               }, 
               kunjungan: { abortus: 0 }, 
               resti: { abortus: 0 } 
@@ -194,6 +246,10 @@ export const recalculatePersalinanStats = onRequest(
           byMonth[month].persalinan.tempat_poskesdes = counts.persalinan.tempat_poskesdes;
           byMonth[month].persalinan.tempat_polindes = counts.persalinan.tempat_polindes;
           byMonth[month].persalinan.persalinan_faskes = counts.persalinan.persalinan_faskes;
+          byMonth[month].persalinan.tempat_rumah_nakes = counts.persalinan.tempat_rumah_nakes;
+          byMonth[month].persalinan.tempat_jalan_nakes = counts.persalinan.tempat_jalan_nakes;
+          byMonth[month].persalinan.persalinan_nakes = counts.persalinan.persalinan_nakes;
+          byMonth[month].persalinan.tempat_rumah_dk_klg = counts.persalinan.tempat_rumah_dk_klg;
           byMonth[month].kunjungan.abortus = counts.kunjungan.abortus;
           byMonth[month].resti.abortus = counts.resti.abortus;
         }
