@@ -50,28 +50,28 @@ class PersalinanStatsScreen extends StatelessWidget {
         'main': 1,
       },
       {
-        "label": "Klinik",
-        "value": selectedPersalinan?.tempatKlinik,
+        "label": "Bidan Praktik Mandiri",
+        "value": selectedPersalinan?.tempatBpm,
         'cross': 2,
         'main': 1.7,
       },
       {
-        "label": "Bidan Praktik Mandiri",
-        "value": selectedPersalinan?.tempatBpm,
+        "label": "Klinik",
+        "value": selectedPersalinan?.tempatKlinik,
+        'cross': 1,
+        'main': 0.85,
+      },
+      {
+        "label": "Polindes",
+        "value": selectedPersalinan?.tempatPolindes,
         'cross': 1,
         'main': 0.85,
       },
       {
         "label": "Puskesmas",
         "value": selectedPersalinan?.tempatPkm,
-        'cross': 1,
-        'main': 1,
-      },
-      {
-        "label": "Polindes",
-        "value": selectedPersalinan?.tempatPolindes,
         'cross': 2,
-        'main': 1,
+        'main': 0.85,
       },
       {
         "label": "Poskesdes",
@@ -92,6 +92,7 @@ class PersalinanStatsScreen extends StatelessWidget {
         _buildCardItem(
           element["label"],
           element["value"],
+          Colors.green.shade100,
           cross: element['cross'],
           main: element['main'],
         ),
@@ -111,25 +112,20 @@ class PersalinanStatsScreen extends StatelessWidget {
         'cross': 2,
         'main': 0.85,
       },
+      {
+        "label": "Rumah dgn DK atau Keluarga",
+        "value": selectedPersalinan?.tempatJalanNakes,
+        'cross': 3,
+        'main': 0.85,
+      },
     ];
-
-    nakes.forEach((element) {
-      gridItems.add(
-        _buildCardItem(
-          element["label"],
-          element["value"],
-          cross: element['cross'],
-          main: element['main'],
-        ),
-      );
-    });
 
     gridItems.add(
       StaggeredGridTile.count(
-        crossAxisCellCount: 3,
-        mainAxisCellCount: 1,
+        crossAxisCellCount: 1,
+        mainAxisCellCount: 1.7,
         child: AnimatedDataCard(
-          label: "Persalinan Nakes",
+          label: "Persalinan\nNakes",
           value: selectedPersalinan?.persalinanNakes ?? 0,
           isTotal: true,
           icon: Icons.bar_chart,
@@ -137,30 +133,42 @@ class PersalinanStatsScreen extends StatelessWidget {
       ),
     );
 
+    nakes.forEach((element) {
+      gridItems.add(
+        _buildCardItem(
+          element["label"],
+          element["value"],
+          Colors.green.shade100,
+          cross: element['cross'],
+          main: element['main'],
+        ),
+      );
+    });
+
     final List<Map<String, dynamic>> caras = [
       {
         "label": "Spontan Belakang Kepala (Normal)",
         "value": selectedPersalinan?.caraNormal,
         'cross': 3,
-        'main': 1,
+        'main': 0.85,
       },
       {
         "label": "Vacuum Extraction",
         "value": selectedPersalinan?.caraVacuum,
-        'cross': 3,
-        'main': 1,
+        'cross': 1,
+        'main': 1.7,
       },
       {
         "label": "Forceps Delivery",
         "value": selectedPersalinan?.caraForceps,
-        'cross': 3,
-        'main': 1,
+        'cross': 2,
+        'main': 0.85,
       },
       {
         "label": "Section Caesarea (SC)",
         "value": selectedPersalinan?.caraSc,
-        'cross': 3,
-        'main': 1,
+        'cross': 2,
+        'main': 0.85,
       },
     ];
 
@@ -169,6 +177,7 @@ class PersalinanStatsScreen extends StatelessWidget {
         _buildCardItem(
           element["label"],
           element["value"],
+          Colors.yellow.shade100,
           cross: element['cross'],
           main: element['main'],
         ),
@@ -201,6 +210,7 @@ class PersalinanStatsScreen extends StatelessWidget {
         _buildCardItem(
           element["label"],
           element["value"],
+          Colors.red.shade100,
           cross: element['cross'],
           main: element['main'],
         ),
@@ -209,106 +219,42 @@ class PersalinanStatsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: PageHeader(
-        title: Text('Stats Resti'),
+        title: Text('Stats Persalinan'),
         actions: [
           InfoButtonBar(
-            title: 'Tentang Statistik Resti',
+            title: 'Tentang Statistik Persalinan',
             contentSpans: [
               const TextSpan(
                 text:
-                    'Statistik Resti digunakan untuk menampilkan jumlah ibu hamil yang memiliki faktor risiko tinggi (RESTI) berdasarkan berbagai kategori.\n\n',
+                    'Statistik Persalinan menampilkan jumlah persalinan berdasarkan tempat, cara persalinan, dan keadaan janin.\n\n',
               ),
               const TextSpan(
-                text: '• Resti Nakes: ',
+                text: '• Tempat Persalinan: ',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const TextSpan(
                 text:
-                    'Ibu hamil yang dikategorikan risiko tinggi oleh tenaga kesehatan berdasarkan hasil pemeriksaan medis.\n\n',
+                    'Lokasi terjadinya persalinan, seperti RS, RSB, Klinik, BPM, Klinik, Puskesmas, Polindes, Poskesdes, atau di rumah dengan tenaga kesehatan maupun keluarga.\n\n',
               ),
               const TextSpan(
-                text: '• Resti Masyarakat: ',
+                text: '• Cara Partus: ',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const TextSpan(
                 text:
-                    'Ibu hamil yang diidentifikasi berisiko tinggi oleh masyarakat (kader, keluarga, atau tokoh setempat).\n\n',
+                    'Metode persalinan yang dilakukan — Normal, Vacuum, Forceps, atau SC (Caesar).\n\n',
               ),
               const TextSpan(
-                text: '• Risiko Panggul Sempit (tb < 145 cm): ',
+                text: '• Keadaan Janin: ',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const TextSpan(
                 text:
-                    'Tinggi badan ibu kurang dari 145 cm, berisiko mengalami kesulitan saat persalinan.\n\n',
-              ),
-              const TextSpan(
-                text: '• Hipertensi: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                    'Menunjukkan hasil akhir kondisi bayi: Lahir Hidup (LH), Lahir Mati (LM), atau IUFD.\n\n',
               ),
               const TextSpan(
                 text:
-                    'Tekanan darah tinggi selama kehamilan (≥ 140/90 mmHg), dapat menyebabkan komplikasi seperti preeklamsia.\n\n',
-              ),
-              const TextSpan(
-                text: '• Obesitas: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const TextSpan(
-                text:
-                    'Ibu dengan indeks massa tubuh ≥ 25, berisiko mengalami komplikasi kehamilan dan persalinan.\n\n',
-              ),
-              const TextSpan(
-                text: '• Anemia: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const TextSpan(
-                text:
-                    'Kadar hemoglobin rendah (<11 g/dl), dapat menyebabkan kelelahan dan komplikasi janin.\n\n',
-              ),
-              const TextSpan(
-                text: '• Paritas Tinggi (≥ 4x): ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const TextSpan(
-                text:
-                    'Ibu dengan riwayat melahirkan empat kali atau lebih, berisiko tinggi mengalami komplikasi obstetri.\n\n',
-              ),
-              const TextSpan(
-                text: '• Usia Terlalu Tua (> 35 tahun): ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const TextSpan(
-                text:
-                    'Kehamilan pada usia lanjut meningkatkan risiko komplikasi bagi ibu dan janin.\n\n',
-              ),
-              const TextSpan(
-                text: '• Usia Terlalu Muda (< 20 tahun): ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const TextSpan(
-                text:
-                    'Kehamilan pada usia remaja berisiko tinggi terhadap anemia, KEK, dan komplikasi saat melahirkan.\n\n',
-              ),
-              const TextSpan(
-                text: '• Pernah Abortus: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const TextSpan(
-                text:
-                    'Riwayat keguguran sebelumnya dapat meningkatkan risiko komplikasi pada kehamilan berikutnya.\n\n',
-              ),
-              const TextSpan(
-                text: '• Kekurangan Energi Kronis (KEK): ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const TextSpan(
-                text:
-                    'Ibu hamil dengan lingkar lengan atas < 23,5 cm, berisiko tinggi mengalami komplikasi kehamilan.\n\n',
-              ),
-              const TextSpan(
-                text:
-                    'Statistik ini membantu Bidan memantau dan memberikan perhatian khusus kepada ibu hamil dengan faktor risiko tinggi agar mendapat penanganan lebih cepat dan tepat.',
+                    'Data ini membantu memantau pola persalinan dan hasil kelahiran di wilayah kerja tenaga kesehatan.',
               ),
             ],
           ),
@@ -428,7 +374,8 @@ class PersalinanStatsScreen extends StatelessWidget {
 
   Widget _buildCardItem(
     String label,
-    int? value, {
+    int? value,
+    Color bgColor, {
     int cross = 1,
     num main = 1,
   }) {
@@ -443,7 +390,7 @@ class PersalinanStatsScreen extends StatelessWidget {
     //   0.8,
     // ); // saturasi & lightness disetel lembut
     // final color = hsl.toColor();
-    final bgColor = Utils.generateDistinctColor(label);
+    // final bgColor = Utils.generateDistinctColor(label);
     final fgColor = Utils.generateForegroundColor(bgColor);
     final valueColor = Utils.generateHighContrastColor(bgColor);
 

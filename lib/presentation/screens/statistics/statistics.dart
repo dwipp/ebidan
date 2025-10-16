@@ -53,7 +53,7 @@ class StatisticsScreen extends StatelessWidget {
               },
             ),
             MenuButton(
-              icon: Icons.health_and_safety,
+              icon: Icons.baby_changing_station,
               title: 'Persalinan',
               onTap: () {
                 Navigator.pushNamed(

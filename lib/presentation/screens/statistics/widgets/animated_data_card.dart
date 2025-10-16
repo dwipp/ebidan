@@ -93,8 +93,8 @@ class _AnimatedDataCardState extends State<AnimatedDataCard>
             ],
             FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text(
-                widget.label,
+              child: DefaultTextStyle(
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 12,
                   color: widget.isTotal ? Colors.blue : Colors.grey[700],
@@ -102,6 +102,7 @@ class _AnimatedDataCardState extends State<AnimatedDataCard>
                       ? FontWeight.bold
                       : FontWeight.w500,
                 ),
+                child: Text(widget.label),
               ),
             ),
             const SizedBox(height: 8),
