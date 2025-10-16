@@ -284,16 +284,121 @@ class KehamilanByMonth {
 
 class PersalinanByMonth {
   final int total;
+  final int tempatRs;
+  final int tempatRsb;
+  final int tempatKlinik;
+  final int tempatBpm;
+  final int tempatPkm;
+  final int tempatPoskesdes;
+  final int tempatPolindes;
+  final int persalinanFaskes;
+  final int tempatRumahNakes;
+  final int tempatJalanNakes;
+  final int persalinanNakes;
+  final int tempatRumahDkKlg;
+  final int caraNormal;
+  final int caraVacuum;
+  final int caraForceps;
+  final int caraSc;
+  final int bayiLahirHidup;
+  final int bayiLahirMati;
+  final int bayiIufd;
 
-  PersalinanByMonth({required this.total});
+  PersalinanByMonth({
+    required this.total,
+    required this.tempatRs,
+    required this.tempatRsb,
+    required this.tempatKlinik,
+    required this.tempatBpm,
+    required this.tempatPkm,
+    required this.tempatPoskesdes,
+    required this.tempatPolindes,
+    required this.persalinanFaskes,
+    required this.tempatRumahNakes,
+    required this.tempatJalanNakes,
+    required this.persalinanNakes,
+    required this.tempatRumahDkKlg,
+    required this.caraNormal,
+    required this.caraVacuum,
+    required this.caraForceps,
+    required this.caraSc,
+    required this.bayiLahirHidup,
+    required this.bayiLahirMati,
+    required this.bayiIufd,
+  });
 
   factory PersalinanByMonth.fromMap(Map<String, dynamic>? map) {
-    if (map == null) return PersalinanByMonth(total: 0);
-    return PersalinanByMonth(total: map['total'] ?? 0);
+    if (map == null) {
+      return PersalinanByMonth(
+        total: 0,
+        tempatRs: 0,
+        tempatRsb: 0,
+        tempatKlinik: 0,
+        tempatBpm: 0,
+        tempatPkm: 0,
+        tempatPoskesdes: 0,
+        tempatPolindes: 0,
+        persalinanFaskes: 0,
+        tempatRumahNakes: 0,
+        tempatJalanNakes: 0,
+        persalinanNakes: 0,
+        tempatRumahDkKlg: 0,
+        caraNormal: 0,
+        caraVacuum: 0,
+        caraForceps: 0,
+        caraSc: 0,
+        bayiLahirHidup: 0,
+        bayiLahirMati: 0,
+        bayiIufd: 0,
+      );
+    }
+    return PersalinanByMonth(
+      total: map['total'] ?? 0,
+      tempatRs: map['tempat_rs'] ?? 0,
+      tempatRsb: map['tempat_rsb'] ?? 0,
+      tempatKlinik: map['tempat_klinik'] ?? 0,
+      tempatBpm: map['tempat_bpm'] ?? 0,
+      tempatPkm: map['tempat_pkm'] ?? 0,
+      tempatPoskesdes: map['tempat_poskesdes'] ?? 0,
+      tempatPolindes: map['tempat_polindes'] ?? 0,
+      persalinanFaskes: map['persalinan_faskes'] ?? 0,
+      tempatRumahNakes: map['tempat_rumah_nakes'] ?? 0,
+      tempatJalanNakes: map['tempat_jalan_nakes'] ?? 0,
+      persalinanNakes: map['persalinan_nakes'] ?? 0,
+      tempatRumahDkKlg: map['tempat_rumah_dk_klg'] ?? 0,
+      caraNormal: map['cara_normal'] ?? 0,
+      caraVacuum: map['cara_vacuum'] ?? 0,
+      caraForceps: map['cara_forceps'] ?? 0,
+      caraSc: map['cara_sc'] ?? 0,
+      bayiLahirHidup: map['bayi_lahir_hidup'] ?? 0,
+      bayiLahirMati: map['bayi_lahir_mati'] ?? 0,
+      bayiIufd: map['bayi_iufd'] ?? 0,
+    );
   }
 
   Map<String, dynamic> toMap() {
-    return {'total': total};
+    return {
+      'total': total,
+      'tempat_rs': tempatRs,
+      'tempat_rsb': tempatRsb,
+      'tempat_klinik': tempatKlinik,
+      'tempat_bpm': tempatBpm,
+      'tempat_pkm': tempatPkm,
+      'tempat_poskesdes': tempatPoskesdes,
+      'tempat_polindes': tempatPolindes,
+      'persalinan_faskes': persalinanFaskes,
+      'tempat_rumah_nakes': tempatRumahNakes,
+      'tempat_jalan_nakes': tempatJalanNakes,
+      'persalinan_nakes': persalinanNakes,
+      'tempat_rumah_dk_klg': tempatRumahDkKlg,
+      'cara_normal': caraNormal,
+      'cara_vacuum': caraVacuum,
+      'cara_forceps': caraForceps,
+      'cara_sc': caraSc,
+      'bayi_lahir_hidup': bayiLahirHidup,
+      'bayi_lahir_mati': bayiLahirMati,
+      'bayi_iufd': bayiIufd,
+    };
   }
 }
 

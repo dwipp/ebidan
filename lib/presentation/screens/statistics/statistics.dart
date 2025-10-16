@@ -52,6 +52,17 @@ class StatisticsScreen extends StatelessWidget {
                 );
               },
             ),
+            MenuButton(
+              icon: Icons.health_and_safety,
+              title: 'Persalinan',
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.persalinanStats,
+                  arguments: {'monthKey': Utils.getAutoYearMonth()},
+                );
+              },
+            ),
           ],
         ),
       ),

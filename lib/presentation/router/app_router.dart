@@ -29,6 +29,7 @@ import 'package:ebidan/presentation/screens/auth/register.dart';
 import 'package:ebidan/presentation/screens/statistics/kunjungan/kunjungan_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/kunjungan/list_kunjungan_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/kunjungan/tren_kunjungan_stats.dart';
+import 'package:ebidan/presentation/screens/statistics/persalinan/persalinan_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/resti/list_resti_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/resti/resti_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/resti/tren_resti_stats.dart';
@@ -90,6 +91,10 @@ class AppRouter {
   static const String sfStats = '/sfstats';
   static const String listSfStats = '/listfsstats';
   static const String trenSfStats = '/trensfstats';
+  // stat persalinan
+  static const String persalinanStats = '/persalinanstats';
+  static const String listPersalinanStats = '/listpersalinanstats';
+  static const String trenPersalinanStats = '/trenpersalinanstats';
 
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
@@ -224,6 +229,11 @@ class AppRouter {
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => TrenSfStatsScreen(monthKeys: args['monthKeys']),
+        );
+      case persalinanStats:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => PersalinanStatsScreen(monthKey: args['monthKey']),
         );
       default:
         throw const RouteException('Route not found!');
