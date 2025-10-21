@@ -36,6 +36,7 @@ class PersalinanStatsScreen extends StatelessWidget {
         ),
       ),
     );
+    gridItems.add(_buildSectionHeader(context, "Tempat Bersalin"));
     final List<Map<String, dynamic>> tempats = [
       {
         "label": "Rumah Sakit",
@@ -65,25 +66,19 @@ class PersalinanStatsScreen extends StatelessWidget {
         "label": "Polindes",
         "value": selectedPersalinan?.tempatPolindes,
         'cross': 1,
-        'main': 0.85,
+        'main': 1.7,
       },
       {
         "label": "Puskesmas",
         "value": selectedPersalinan?.tempatPkm,
-        'cross': 2,
+        'cross': 1,
         'main': 0.85,
       },
       {
         "label": "Poskesdes",
         "value": selectedPersalinan?.tempatPoskesdes,
-        'cross': 2,
-        'main': 0.85,
-      },
-      {
-        "label": "Persalinan Faskes",
-        "value": selectedPersalinan?.persalinanFaskes,
         'cross': 1,
-        'main': 1.7,
+        'main': 0.85,
       },
     ];
 
@@ -98,6 +93,18 @@ class PersalinanStatsScreen extends StatelessWidget {
         ),
       );
     });
+    gridItems.add(
+      StaggeredGridTile.count(
+        crossAxisCellCount: 3,
+        mainAxisCellCount: 1,
+        child: AnimatedDataCard(
+          label: "Persalinan Faskes",
+          value: selectedPersalinan?.persalinanFaskes ?? 0,
+          isTotal: true,
+          icon: Icons.local_hospital,
+        ),
+      ),
+    );
 
     final List<Map<String, dynamic>> nakes = [
       {
@@ -128,7 +135,7 @@ class PersalinanStatsScreen extends StatelessWidget {
           label: "Persalinan\nNakes",
           value: selectedPersalinan?.persalinanNakes ?? 0,
           isTotal: true,
-          icon: Icons.bar_chart,
+          icon: Icons.medical_services,
         ),
       ),
     );
@@ -144,6 +151,8 @@ class PersalinanStatsScreen extends StatelessWidget {
         ),
       );
     });
+
+    gridItems.add(_buildSectionHeader(context, "Cara Bersalin"));
 
     final List<Map<String, dynamic>> caras = [
       {
@@ -183,6 +192,7 @@ class PersalinanStatsScreen extends StatelessWidget {
         ),
       );
     });
+    gridItems.add(_buildSectionHeader(context, "Status Janin"));
 
     final List<Map<String, dynamic>> statusBayis = [
       {
@@ -379,18 +389,6 @@ class PersalinanStatsScreen extends StatelessWidget {
     int cross = 1,
     num main = 1,
   }) {
-    // Buat warna acak stabil berdasarkan hash dari label
-    // Warna pastel cerah stabil berdasar label
-    // final random = Random(label.hashCode);
-    // final hue = random.nextInt(360).toDouble();
-    // final hsl = HSLColor.fromAHSL(
-    //   1.0,
-    //   hue,
-    //   0.45,
-    //   0.8,
-    // ); // saturasi & lightness disetel lembut
-    // final color = hsl.toColor();
-    // final bgColor = Utils.generateDistinctColor(label);
     final fgColor = Utils.generateForegroundColor(bgColor);
     final valueColor = Utils.generateHighContrastColor(bgColor);
 
@@ -426,6 +424,29 @@ class PersalinanStatsScreen extends StatelessWidget {
       crossAxisCellCount: cross,
       mainAxisCellCount: main,
       child: card,
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return StaggeredGridTile.count(
+      crossAxisCellCount: 3,
+      mainAxisCellCount: 0.4,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
