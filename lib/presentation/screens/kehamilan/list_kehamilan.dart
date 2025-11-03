@@ -29,7 +29,7 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<SelectedKehamilanCubit>().clear;
+    context.read<SelectedKehamilanCubit>().clear();
     final bumil = context.watch<SelectedBumilCubit>().state;
     return Scaffold(
       appBar: PageHeader(title: Text("List Kehamilan")),

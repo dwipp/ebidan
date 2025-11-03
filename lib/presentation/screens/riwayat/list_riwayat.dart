@@ -40,7 +40,7 @@ class _ListRiwayatBumilScreenState extends State<ListRiwayatBumilScreen> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<SelectedRiwayatCubit>().clear;
+    context.read<SelectedRiwayatCubit>().clear();
     return Scaffold(
       appBar: PageHeader(
         title: Text("Riwayat Kehamilan"),

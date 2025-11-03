@@ -1,6 +1,7 @@
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/premium_warning_banner.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/get_kunjungan_cubit.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -114,168 +115,187 @@ class _GrafikKunjunganScreenState extends State<GrafikKunjunganScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final warningBanner = PremiumWarningBanner.fromContext(context);
     return Scaffold(
       appBar: const PageHeader(title: Text("Grafik Kunjungan")),
-      body: BlocBuilder<GetKunjunganCubit, GetKunjunganState>(
-        builder: (context, state) {
-          if (state is GetKunjunganLoading) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: context.themeColors.tertiary,
-              ),
-            );
-          } else if (state is GetKunjunganFailure ||
-              state is GetKunjunganEmpty) {
-            return const Center(child: Text("Tidak ada data kunjungan"));
-          } else if (state is GetKunjunganSuccess) {
-            var kunjunganList = _sortByKunjunganStage(state.kunjungans);
+      body: Column(
+        children: [
+          if (warningBanner != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+              child: warningBanner,
+            ),
+          Expanded(
+            child: BlocBuilder<GetKunjunganCubit, GetKunjunganState>(
+              builder: (context, state) {
+                if (state is GetKunjunganLoading) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: context.themeColors.tertiary,
+                    ),
+                  );
+                } else if (state is GetKunjunganFailure ||
+                    state is GetKunjunganEmpty) {
+                  return const Center(child: Text("Tidak ada data kunjungan"));
+                } else if (state is GetKunjunganSuccess) {
+                  var kunjunganList = _sortByKunjunganStage(state.kunjungans);
 
-            final labels = kunjunganList.map((k) => k.status ?? '').toList();
+                  final labels = kunjunganList
+                      .map((k) => k.status ?? '')
+                      .toList();
 
-            Widget chartWidget;
+                  Widget chartWidget;
 
-            if (_selectedMetric == 'td') {
-              final tekanan = _extractTekananDarah(kunjunganList);
+                  if (_selectedMetric == 'td') {
+                    final tekanan = _extractTekananDarah(kunjunganList);
 
-              final sistol = tekanan['sistol']!;
-              final diastol = tekanan['diastol']!;
+                    final sistol = tekanan['sistol']!;
+                    final diastol = tekanan['diastol']!;
 
-              final allZero =
-                  sistol.every((d) => d == 0) && diastol.every((d) => d == 0);
+                    final allZero =
+                        sistol.every((d) => d == 0) &&
+                        diastol.every((d) => d == 0);
 
-              chartWidget = allZero
-                  ? const Center(
-                      child: Text("Data tekanan darah tidak tersedia"),
-                    )
-                  : LineChart(
-                      _buildLineChartData(
-                        labels: labels,
-                        lineBars: [
-                          _buildLineBar(
-                            values: sistol,
-                            color: Colors.redAccent,
-                          ),
-                          _buildLineBar(
-                            values: diastol,
-                            color: Colors.blueAccent,
-                          ),
-                        ],
-                      ),
-                    );
-            } else {
-              final data = _extractSingleMetric(_selectedMetric, kunjunganList);
-              chartWidget = data.every((d) => d == 0)
-                  ? const Center(
-                      child: Text("Data tidak tersedia untuk metrik ini"),
-                    )
-                  : LineChart(
-                      _buildLineChartData(
-                        labels: labels,
-                        lineBars: [
-                          _buildLineBar(
-                            values: data,
-                            color: context.themeColors.primary,
-                          ),
-                        ],
-                      ),
-                    );
-            }
-
-            return Column(
-              children: [
-                // Dropdown Pilih Metrik
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Row(
-                    children: [
-                      const Text(
-                        "Pilih Metrik: ",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          value: _selectedMetric,
-                          items: _metricLabels.entries
-                              .map(
-                                (e) => DropdownMenuItem(
-                                  value: e.key,
-                                  child: Text(e.value),
+                    chartWidget = allZero
+                        ? const Center(
+                            child: Text("Data tekanan darah tidak tersedia"),
+                          )
+                        : LineChart(
+                            _buildLineChartData(
+                              labels: labels,
+                              lineBars: [
+                                _buildLineBar(
+                                  values: sistol,
+                                  color: Colors.redAccent,
                                 ),
-                              )
-                              .toList(),
-                          onChanged: (val) {
-                            if (val == null) return;
-                            setState(() {
-                              _selectedMetric = val;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
+                                _buildLineBar(
+                                  values: diastol,
+                                  color: Colors.blueAccent,
+                                ),
+                              ],
                             ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
+                          );
+                  } else {
+                    final data = _extractSingleMetric(
+                      _selectedMetric,
+                      kunjunganList,
+                    );
+                    chartWidget = data.every((d) => d == 0)
+                        ? const Center(
+                            child: Text("Data tidak tersedia untuk metrik ini"),
+                          )
+                        : LineChart(
+                            _buildLineChartData(
+                              labels: labels,
+                              lineBars: [
+                                _buildLineBar(
+                                  values: data,
+                                  color: context.themeColors.primary,
+                                ),
+                              ],
+                            ),
+                          );
+                  }
+
+                  return Column(
+                    children: [
+                      // Dropdown Pilih Metrik
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: Row(
+                          children: [
+                            const Text(
+                              "Pilih Metrik: ",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                value: _selectedMetric,
+                                items: _metricLabels.entries
+                                    .map(
+                                      (e) => DropdownMenuItem(
+                                        value: e.key,
+                                        child: Text(e.value),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (val) {
+                                  if (val == null) return;
+                                  setState(() {
+                                    _selectedMetric = val;
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Grafik
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    _metricLabels[_selectedMetric]!,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Expanded(child: chartWidget),
+                                  if (_selectedMetric == 'td')
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: const [
+                                          _LegendItem(
+                                            color: Colors.redAccent,
+                                            label: 'Sistol',
+                                          ),
+                                          SizedBox(width: 16),
+                                          _LegendItem(
+                                            color: Colors.blueAccent,
+                                            label: 'Diastol',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-
-                // Grafik
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              _metricLabels[_selectedMetric]!,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Expanded(child: chartWidget),
-                            if (_selectedMetric == 'td')
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    _LegendItem(
-                                      color: Colors.redAccent,
-                                      label: 'Sistol',
-                                    ),
-                                    SizedBox(width: 16),
-                                    _LegendItem(
-                                      color: Colors.blueAccent,
-                                      label: 'Diastol',
-                                    ),
-                                  ],
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }
-          return const SizedBox();
-        },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

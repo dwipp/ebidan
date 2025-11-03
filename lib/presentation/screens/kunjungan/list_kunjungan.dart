@@ -1,9 +1,11 @@
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
+import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/get_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/kunjungan/cubit/selected_kunjungan_cubit.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +23,18 @@ class ListKunjunganScreen extends StatefulWidget {
 class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
   List<Kunjungan> _kunjunganList = [];
   bool _sortDesc = true; // default: terbaru di atas
+  Bidan? user;
 
   @override
   void initState() {
     super.initState();
     context.read<GetKunjunganCubit>().getKunjungan(kehamilanId: widget.docId);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    user = context.watch<UserCubit>().state;
   }
 
   void _toggleSort() {
@@ -41,7 +50,7 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<SelectedKunjunganCubit>().clear;
+    context.read<SelectedKunjunganCubit>().clear();
 
     return Scaffold(
       appBar: PageHeader(
@@ -127,7 +136,37 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
             bottom: 0,
             child: InkWell(
               onTap: () {
-                Navigator.pushNamed(context, AppRouter.grafikKunjungan);
+                if (user != null && !user!.premiumStatus.isPremium) {
+                  // User bukan premium
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text("Akses Premium"),
+                      content: const Text(
+                        "Fitur ini hanya tersedia untuk pengguna premium. "
+                        "Upgrade sekarang untuk membuka akses penuh.",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text("Batal"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(ctx); // tutup dialog
+                            // Navigator.pushNamed(
+                            //   context,
+                            //   AppRouter.subscribe,
+                            // ); // arahkan ke halaman subscribe
+                          },
+                          child: const Text("Upgrade"),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  Navigator.pushNamed(context, AppRouter.grafikKunjungan);
+                }
               },
               child: Container(
                 height: 60,
