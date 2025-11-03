@@ -66,19 +66,19 @@ class PersalinanStatsScreen extends StatelessWidget {
         "label": "Polindes",
         "value": selectedPersalinan?.tempatPolindes,
         'cross': 1,
-        'main': 1.7,
+        'main': 1.85,
       },
       {
         "label": "Puskesmas",
         "value": selectedPersalinan?.tempatPkm,
         'cross': 1,
-        'main': 0.85,
+        'main': 1,
       },
       {
         "label": "Poskesdes",
         "value": selectedPersalinan?.tempatPoskesdes,
         'cross': 1,
-        'main': 0.85,
+        'main': 1,
       },
     ];
 
@@ -302,7 +302,10 @@ class PersalinanStatsScreen extends StatelessWidget {
                   child: Button(
                     isSubmitting: false,
                     onPressed: () {
-                      Navigator.pushNamed(context, AppRouter.listRestiStats);
+                      Navigator.pushNamed(
+                        context,
+                        AppRouter.listPersalinanStats,
+                      );
                     },
                     label: "Lihat Riwayat Bulanan",
                     icon: Icons.history,
@@ -316,7 +319,7 @@ class PersalinanStatsScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
-                        AppRouter.trenRestiStats,
+                        AppRouter.trenPersalinanStats,
                         arguments: {
                           'monthKeys': Utils.getLastMonths(
                             stats!.lastUpdatedMonth,
@@ -338,7 +341,7 @@ class PersalinanStatsScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
-                        AppRouter.trenRestiStats,
+                        AppRouter.trenPersalinanStats,
                         arguments: {
                           'monthKeys': Utils.getLastMonths(
                             stats!.lastUpdatedMonth,
@@ -360,7 +363,7 @@ class PersalinanStatsScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
-                        AppRouter.trenRestiStats,
+                        AppRouter.trenPersalinanStats,
                         arguments: {
                           'monthKeys': Utils.getLastMonths(
                             stats!.lastUpdatedMonth,

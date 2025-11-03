@@ -29,7 +29,9 @@ import 'package:ebidan/presentation/screens/auth/register.dart';
 import 'package:ebidan/presentation/screens/statistics/kunjungan/kunjungan_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/kunjungan/list_kunjungan_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/kunjungan/tren_kunjungan_stats.dart';
+import 'package:ebidan/presentation/screens/statistics/persalinan/list_persalinan_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/persalinan/persalinan_stats.dart';
+import 'package:ebidan/presentation/screens/statistics/persalinan/tren_persalinan_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/resti/list_resti_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/resti/resti_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/resti/tren_resti_stats.dart';
@@ -234,6 +236,14 @@ class AppRouter {
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => PersalinanStatsScreen(monthKey: args['monthKey']),
+        );
+      case listPersalinanStats:
+        return MaterialPageRoute(builder: (_) => ListPersalinanStatsScreen());
+      case trenPersalinanStats:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) =>
+              TrenPersalinanStatsScreen(monthKeys: args['monthKeys']),
         );
       default:
         throw const RouteException('Route not found!');
