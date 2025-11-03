@@ -19,6 +19,7 @@ class _GrafikKunjunganScreenState extends State<GrafikKunjunganScreen> {
     'lp': 'Lingkar Perut (cm)',
     'bb': 'Berat Badan (kg)',
     'lila': 'LILA (cm)',
+    'td': 'Tekanan Darah (mmHg)',
   };
 
   List<Kunjungan> _sortByKunjunganStage(List<Kunjungan> list) {
@@ -30,30 +31,53 @@ class _GrafikKunjunganScreenState extends State<GrafikKunjunganScreen> {
     return list;
   }
 
-  List<double> _extractData(String metric, List<Kunjungan> currentList) {
+  List<double> _extractSingleMetric(
+    String metric,
+    List<Kunjungan> currentList,
+  ) {
     return currentList.map((k) {
       final value = switch (metric) {
         'lp' => k.lp?.toString(),
         'bb' => k.bb?.toString(),
         'lila' => k.lila?.toString(),
-        'tfu' => k.tfu?.toString().replaceAll("cm", "").trim(),
         _ => null,
       };
       return double.tryParse(value ?? '') ?? 0;
     }).toList();
   }
 
+  /// Parse tekanan darah dari format "120/70"
+  Map<String, List<double>> _extractTekananDarah(List<Kunjungan> currentList) {
+    final sistol = <double>[];
+    final diastol = <double>[];
+
+    for (var k in currentList) {
+      final td = k.td?.trim() ?? '';
+      if (td.contains('/')) {
+        final parts = td.split('/');
+        final s = double.tryParse(parts[0].trim()) ?? 0;
+        final d = double.tryParse(parts.length > 1 ? parts[1].trim() : '') ?? 0;
+        sistol.add(s);
+        diastol.add(d);
+      } else {
+        sistol.add(0);
+        diastol.add(0);
+      }
+    }
+
+    return {'sistol': sistol, 'diastol': diastol};
+  }
+
   LineChartData _buildLineChartData({
-    required List<double> values,
+    required List<LineChartBarData> lineBars,
     required List<String> labels,
-    required Color color,
   }) {
     return LineChartData(
-      gridData: FlGridData(show: true, horizontalInterval: 2),
+      gridData: FlGridData(show: true, horizontalInterval: 10),
       borderData: FlBorderData(show: true),
       titlesData: FlTitlesData(
         leftTitles: AxisTitles(
-          sideTitles: SideTitles(showTitles: true, reservedSize: 40),
+          sideTitles: SideTitles(showTitles: true, reservedSize: 45),
         ),
         rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -68,19 +92,23 @@ class _GrafikKunjunganScreenState extends State<GrafikKunjunganScreen> {
           ),
         ),
       ),
-      lineBarsData: [
-        LineChartBarData(
-          spots: [
-            for (int i = 0; i < values.length; i++)
-              FlSpot(i.toDouble(), values[i]),
-          ],
-          isCurved: true,
-          color: color,
-          dotData: FlDotData(show: true),
-          belowBarData: BarAreaData(show: false),
-          barWidth: 3,
-        ),
+      lineBarsData: lineBars,
+    );
+  }
+
+  LineChartBarData _buildLineBar({
+    required List<double> values,
+    required Color color,
+  }) {
+    return LineChartBarData(
+      spots: [
+        for (int i = 0; i < values.length; i++) FlSpot(i.toDouble(), values[i]),
       ],
+      isCurved: true,
+      color: color,
+      dotData: FlDotData(show: true),
+      belowBarData: BarAreaData(show: false),
+      barWidth: 3,
     );
   }
 
@@ -103,7 +131,55 @@ class _GrafikKunjunganScreenState extends State<GrafikKunjunganScreen> {
             var kunjunganList = _sortByKunjunganStage(state.kunjungans);
 
             final labels = kunjunganList.map((k) => k.status ?? '').toList();
-            final data = _extractData(_selectedMetric, kunjunganList);
+
+            Widget chartWidget;
+
+            if (_selectedMetric == 'td') {
+              final tekanan = _extractTekananDarah(kunjunganList);
+
+              final sistol = tekanan['sistol']!;
+              final diastol = tekanan['diastol']!;
+
+              final allZero =
+                  sistol.every((d) => d == 0) && diastol.every((d) => d == 0);
+
+              chartWidget = allZero
+                  ? const Center(
+                      child: Text("Data tekanan darah tidak tersedia"),
+                    )
+                  : LineChart(
+                      _buildLineChartData(
+                        labels: labels,
+                        lineBars: [
+                          _buildLineBar(
+                            values: sistol,
+                            color: Colors.redAccent,
+                          ),
+                          _buildLineBar(
+                            values: diastol,
+                            color: Colors.blueAccent,
+                          ),
+                        ],
+                      ),
+                    );
+            } else {
+              final data = _extractSingleMetric(_selectedMetric, kunjunganList);
+              chartWidget = data.every((d) => d == 0)
+                  ? const Center(
+                      child: Text("Data tidak tersedia untuk metrik ini"),
+                    )
+                  : LineChart(
+                      _buildLineChartData(
+                        labels: labels,
+                        lineBars: [
+                          _buildLineBar(
+                            values: data,
+                            color: context.themeColors.primary,
+                          ),
+                        ],
+                      ),
+                    );
+            }
 
             return Column(
               children: [
@@ -151,43 +227,49 @@ class _GrafikKunjunganScreenState extends State<GrafikKunjunganScreen> {
 
                 // Grafik
                 Expanded(
-                  child: data.every((d) => d == 0)
-                      ? const Center(
-                          child: Text("Data tidak tersedia untuk metrik ini"),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    _metricLabels[_selectedMetric]!,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Expanded(
-                                    child: LineChart(
-                                      _buildLineChartData(
-                                        values: data,
-                                        labels: labels,
-                                        color: context.themeColors.primary,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              _metricLabels[_selectedMetric]!,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
-                          ),
+                            const SizedBox(height: 16),
+                            Expanded(child: chartWidget),
+                            if (_selectedMetric == 'td')
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    _LegendItem(
+                                      color: Colors.redAccent,
+                                      label: 'Sistol',
+                                    ),
+                                    SizedBox(width: 16),
+                                    _LegendItem(
+                                      color: Colors.blueAccent,
+                                      label: 'Diastol',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
                         ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             );
@@ -195,6 +277,24 @@ class _GrafikKunjunganScreenState extends State<GrafikKunjunganScreen> {
           return const SizedBox();
         },
       ),
+    );
+  }
+}
+
+class _LegendItem extends StatelessWidget {
+  final Color color;
+  final String label;
+
+  const _LegendItem({required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(width: 14, height: 14, color: color),
+        const SizedBox(width: 6),
+        Text(label, style: const TextStyle(fontSize: 13)),
+      ],
     );
   }
 }
