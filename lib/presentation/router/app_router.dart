@@ -9,6 +9,7 @@ import 'package:ebidan/presentation/screens/kehamilan/edit_kehamilan.dart';
 import 'package:ebidan/presentation/screens/kehamilan/update_kehamilan.dart';
 import 'package:ebidan/presentation/screens/kunjungan/detail_kunjungan.dart';
 import 'package:ebidan/presentation/screens/kunjungan/edit_kunjungan.dart';
+import 'package:ebidan/presentation/screens/kunjungan/grafik_kunjungan.dart';
 import 'package:ebidan/presentation/screens/persalinan/add_persalinan.dart';
 import 'package:ebidan/presentation/screens/persalinan/detail_persalinan.dart';
 import 'package:ebidan/presentation/screens/persalinan/edit_persalinan.dart';
@@ -68,6 +69,7 @@ class AppRouter {
   static const String reviewKunjungan = '/reviewkunjungan';
   static const String listKunjungan = '/listkunjungan';
   static const String detailKunjungan = '/detailkunjungan';
+  static const String grafikKunjungan = '/grafikkunjungan';
 
   static const String addRiwayat = '/addriwayat';
   static const String listRiwayat = '/listriwayat';
@@ -181,6 +183,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => DetailKunjunganScreen());
       case editKunjungan:
         return MaterialPageRoute(builder: (_) => EditKunjunganScreen());
+      case grafikKunjungan:
+        return MaterialPageRoute(builder: (_) => GrafikKunjunganScreen());
       case addPersalinan:
         return MaterialPageRoute(builder: (_) => AddPersalinanScreen());
       case detailPersalinan:
