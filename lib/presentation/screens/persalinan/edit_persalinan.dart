@@ -32,6 +32,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
   final Map<String, GlobalKey> _fieldKeys = {
     'tglPersalinan': GlobalKey(),
     'statusBayi': GlobalKey(),
+    'statusIbu': GlobalKey(),
     'beratBayi': GlobalKey(),
     'lingkarKepala': GlobalKey(),
     'panjangBadan': GlobalKey(),
@@ -55,6 +56,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
   final _caraLainnyaController = TextEditingController();
 
   String? _statusBayi;
+  String? _statusIbu;
   String? _sex;
   String? _caraBersalin;
   String? _penolong;
@@ -92,6 +94,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
       _tglPersalinan = persalinan!.tglPersalinan;
       _createdAt = persalinan!.createdAt;
       _statusBayi = persalinan!.statusBayi;
+      _statusIbu = persalinan!.statusIbu;
       _sex = persalinan!.sex;
       _caraBersalin = persalinan!.cara;
       _penolong = persalinan!.penolong;
@@ -183,6 +186,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
           : _penolong!,
       sex: _sex,
       statusBayi: _statusBayi,
+      statusIbu: _statusIbu,
       tempat: _tempatBersalin,
       tglPersalinan: _tglPersalinan,
       umurKehamilan: _umurKehamilanController.text.trim(),
@@ -333,6 +337,24 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
               ),
               const SizedBox(height: 16),
               Utils.sectionTitle('Kondisi Persalinan'),
+              DropdownField(
+                key: _fieldKeys['statusIbu'], // Tambahkan key
+                label: 'Status Ibu',
+                icon: Icons.pregnant_woman,
+                items: Constants.statusIbuList,
+                value: _statusIbu,
+                onChanged: (newValue) {
+                  setState(() {
+                    _statusIbu = newValue ?? '';
+                  });
+                },
+                // **Wrap validator**
+                validator: (val) => _formValidator.wrapValidator(
+                  'statusIbu',
+                  val,
+                  _requiredValidator,
+                ),
+              ),
               DropdownField(
                 key: _fieldKeys['sex'], // Tambahkan key
                 label: 'Jenis Kelamin',

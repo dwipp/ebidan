@@ -10,6 +10,7 @@ class Persalinan {
   String? penolong;
   String? sex;
   String? statusBayi;
+  String? statusIbu;
   String? tempat;
   String? umurKehamilan;
   DateTime? tglPersalinan;
@@ -25,6 +26,7 @@ class Persalinan {
     this.penolong,
     this.sex,
     this.statusBayi,
+    this.statusIbu,
     this.tempat,
     this.umurKehamilan,
     this.tglPersalinan,
@@ -51,6 +53,7 @@ class Persalinan {
       "penolong": penolong,
       "sex": sex,
       "status_bayi": statusBayi,
+      "status_ibu": statusIbu,
       "tempat": tempat,
       "umur_kehamilan": umurKehamilanController.text,
       "tgl_persalinan": tglPersalinan?.toIso8601String(),
@@ -69,6 +72,7 @@ class Persalinan {
       "penolong": penolong,
       "sex": sex,
       "status_bayi": statusBayi,
+      "status_ibu": statusIbu,
       "tempat": tempat,
       "umur_kehamilan": umurKehamilanController.text,
       "tgl_persalinan": tglPersalinan,
@@ -87,6 +91,7 @@ class Persalinan {
       penolong: map['penolong'],
       sex: map['sex'],
       statusBayi: map['status_bayi'],
+      statusIbu: map['status_ibu'],
       tempat: map['tempat'],
       umurKehamilan: map['umur_kehamilan']?.toString(),
       tglPersalinan: map['tgl_persalinan'] is DateTime

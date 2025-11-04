@@ -77,6 +77,11 @@ class DetailPersalinanScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Utils.generateRowLabelValue(
                 context,
+                label: "Status Ibu",
+                value: persalinan?.statusIbu ?? "-",
+              ),
+              Utils.generateRowLabelValue(
+                context,
                 label: "Tanggal Persalinan",
                 value: persalinan?.tglPersalinan != null
                     ? Utils.formattedDate(persalinan?.tglPersalinan!)

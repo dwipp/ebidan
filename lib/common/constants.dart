@@ -38,6 +38,8 @@ class Constants {
     'Abortus',
   ];
 
+  static const List<String> statusIbuList = ['Hidup', 'Mati'];
+
   static const List<String> sexList = ['Laki-laki', 'Perempuan'];
 
   static const List<String> statusKehamilanList = [

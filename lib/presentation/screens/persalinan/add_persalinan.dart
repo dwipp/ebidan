@@ -76,6 +76,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
       // Update keys untuk field yang ada
       _updateKeys(newIndex, 'tglPersalinan');
       _updateKeys(newIndex, 'statusBayi');
+      _updateKeys(newIndex, 'statusIbu');
       _updateKeys(newIndex, 'beratLahir');
       _updateKeys(newIndex, 'lingkarKepala');
       _updateKeys(newIndex, 'panjangBadan');
@@ -100,6 +101,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
       for (int i = 0; i < persalinanList.length; i++) {
         _updateKeys(i, 'tglPersalinan');
         _updateKeys(i, 'statusBayi');
+        _updateKeys(i, 'statusIbu');
         _updateKeys(i, 'beratLahir');
         _updateKeys(i, 'lingkarKepala');
         _updateKeys(i, 'panjangBadan');
@@ -324,6 +326,22 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                         ),
                         const SizedBox(height: 16),
                         Utils.sectionTitle('Kondisi Persalinan'),
+                        DropdownField(
+                          // **Key Dinamis**
+                          key: getKey('statusIbu'),
+                          label: 'Status Ibu',
+                          icon: Icons.pregnant_woman,
+                          items: Constants.statusIbuList,
+                          value: data.statusIbu,
+                          onChanged: (newValue) {
+                            setState(() {
+                              data.statusIbu = newValue ?? '';
+                            });
+                          },
+                          // **Wrap Validator**
+                          validator: (val) =>
+                              wrap('statusIbu', val, _requiredObjectValidator),
+                        ),
                         DropdownField(
                           // **Key Dinamis**
                           key: getKey('sex'),
