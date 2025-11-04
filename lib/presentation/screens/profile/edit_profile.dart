@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/common/utility/form_validator.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
+import 'package:ebidan/state_management/auth/cubit/register_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/profile_state.dart';
@@ -39,7 +41,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     'nama': GlobalKey(),
   };
 
+  Map<String, dynamic>? _selectedPuskesmas;
+
   late FormValidator _formValidator;
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +61,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _hpController.text = user?.noHp ?? '';
     _puskesmasController.text = user?.puskesmas ?? '';
     _desaController.text = user?.desa ?? '';
+    _selectedPuskesmas?['ref'] = user?.idPuskesmas ?? '';
+    _selectedPuskesmas?['nama'] = user?.puskesmas ?? '';
   }
 
   // Validator standar untuk wajib diisi
@@ -80,6 +87,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       nip: _nipController.text,
       noHp: _hpController.text,
       puskesmas: _puskesmasController.text,
+      idPuskesmas: _selectedPuskesmas?['ref'] as DocumentReference,
     );
 
     context.read<ProfileCubit>().updateProfile(updatedBidan);
@@ -87,6 +95,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cubitReg = context.read<RegisterCubit>();
     return Scaffold(
       appBar: PageHeader(title: Text('Edit Profile')),
       body: Padding(
@@ -140,16 +149,77 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _formValidator.wrapValidator('hp', val, _requiredValidator),
               ),
               const SizedBox(height: 12),
-              CustomTextField(
-                key: _fieldKeys['puskesmas'], // Tambahkan key
-                controller: _puskesmasController,
-                label: "Puskesmas",
-                icon: Icons.local_hospital,
-                validator: (val) => _formValidator.wrapValidator(
-                  'puskesmas',
-                  val,
-                  _requiredValidator,
-                ),
+              Autocomplete<Map<String, dynamic>>(
+                displayStringForOption: (option) =>
+                    option['nama'], // tetap simpan nama saja untuk hasil pilihan
+                optionsBuilder: (textEditingValue) async {
+                  await cubitReg.searchPuskesmas(textEditingValue.text);
+                  return cubitReg.puskesmasList;
+                },
+                onSelected: (option) {
+                  setState(() {
+                    _selectedPuskesmas = option;
+                    _puskesmasController.text = option['nama'];
+                  });
+                },
+                fieldViewBuilder: (context, controller, focusNode, _) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (_puskesmasController.text.isNotEmpty &&
+                        controller.text != _puskesmasController.text) {
+                      controller.text = _puskesmasController.text;
+                    }
+                  });
+                  focusNode.addListener(() {
+                    if (focusNode.hasFocus) {
+                      Future.delayed(Duration(milliseconds: 300), () {
+                        Scrollable.ensureVisible(
+                          focusNode.context!,
+                          duration: const Duration(milliseconds: 400),
+                          curve: Curves.easeInOut,
+                        );
+                      });
+                    }
+                  });
+                  return TextFormField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    textCapitalization: TextCapitalization.characters,
+                    decoration: const InputDecoration(
+                      labelText: 'Puskesmas',
+                      prefixIcon: Icon(Icons.local_hospital),
+                    ),
+                    validator: (_) =>
+                        _selectedPuskesmas == null ? 'Pilih puskesmas' : null,
+                  );
+                },
+                optionsViewBuilder: (context, onSelected, options) {
+                  return Align(
+                    alignment: Alignment.topLeft,
+                    child: Material(
+                      elevation: 4,
+                      child: SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          itemCount: options.length,
+                          itemBuilder: (context, index) {
+                            final option = options.elementAt(index);
+                            return ListTile(
+                              title: Text(
+                                option['nama'],
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                              subtitle: Text(
+                                '${option['kecamatan'] ?? ''}, ${option['kabupaten'] ?? ''}, ${option['provinsi'] ?? ''}',
+                              ),
+                              onTap: () => onSelected(option),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 12),
               CustomTextField(

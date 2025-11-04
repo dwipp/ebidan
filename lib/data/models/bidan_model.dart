@@ -256,6 +256,7 @@ class MinimumBidan {
   final String nip;
   final String noHp;
   final String puskesmas;
+  final DocumentReference idPuskesmas;
 
   MinimumBidan({
     required this.desa,
@@ -264,5 +265,6 @@ class MinimumBidan {
     required this.nip,
     required this.noHp,
     required this.puskesmas,
+    required this.idPuskesmas,
   });
 }

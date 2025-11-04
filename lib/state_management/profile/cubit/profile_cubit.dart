@@ -56,7 +56,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         'no_hp': updatedBidan.noHp,
         'email': updatedBidan.email,
         'puskesmas': updatedBidan.puskesmas,
-        // 'id_puskesmas': 'updatedBidan.idPuskesmas',
+        'id_puskesmas': updatedBidan.idPuskesmas,
         'desa': updatedBidan.desa,
       });
 
