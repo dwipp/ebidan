@@ -248,3 +248,21 @@ DateTime? _parseDate(dynamic value) {
   if (value is DateTime) return value;
   return null;
 }
+
+class MinimumBidan {
+  final String desa;
+  final String email;
+  final String nama;
+  final String nip;
+  final String noHp;
+  final String puskesmas;
+
+  MinimumBidan({
+    required this.desa,
+    required this.email,
+    required this.nama,
+    required this.nip,
+    required this.noHp,
+    required this.puskesmas,
+  });
+}

@@ -65,10 +65,7 @@ class PilihBumilScreen extends StatelessWidget {
                   ),
                 if (pilihState == 'kunjungan')
                   IconButton(
-                    icon: const Icon(
-                      Icons.add_circle,
-                      color: Colors.lightBlueAccent,
-                    ),
+                    icon: const Icon(Icons.add_circle, color: Colors.cyan),
                     onPressed: () {
                       Navigator.of(context)
                           .pushNamed(AppRouter.checkDataBumil)

@@ -1,9 +1,10 @@
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/browser_launcher.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
-import 'package:ebidan/state_management/auth/cubit/profile_cubit.dart';
+import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +79,7 @@ class ProfileScreen extends StatelessWidget {
                 user: user,
               ),
               const SizedBox(height: 24),
-              _buildUserInfoCard(user),
+              _buildUserInfoCard(context, user),
               const SizedBox(height: 8),
               _buildVersionInfo(),
             ],
@@ -275,7 +276,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildUserInfoCard(Bidan user) {
+  Widget _buildUserInfoCard(BuildContext context, Bidan user) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 2,
@@ -295,6 +296,7 @@ class ProfileScreen extends StatelessWidget {
                   icon: const Icon(Icons.edit),
                   onPressed: () {
                     // Aksi untuk mengedit profil
+                    Navigator.of(context).pushNamed(AppRouter.editProfile);
                   },
                   tooltip: "Edit Profil",
                 ),

@@ -39,4 +39,38 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileFailure(e.toString()));
     }
   }
+
+  Future<void> updateProfile(MinimumBidan updatedBidan) async {
+    emit(ProfileLoading());
+    try {
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) {
+        emit(const ProfileFailure('User belum login'));
+        return;
+      }
+
+      // Update data di Firestore
+      await _firestore.collection('bidan').doc(uid).update({
+        'nama': updatedBidan.nama,
+        'nip': updatedBidan.nip,
+        'no_hp': updatedBidan.noHp,
+        'email': updatedBidan.email,
+        'puskesmas': updatedBidan.puskesmas,
+        // 'id_puskesmas': 'updatedBidan.idPuskesmas',
+        'desa': updatedBidan.desa,
+      });
+
+      // Refresh data lokal + UserCubit
+      final newDoc = await _firestore.collection('bidan').doc(uid).get();
+      final newData = newDoc.data()!;
+      final avatar = _auth.currentUser?.photoURL;
+
+      final refreshedBidan = Bidan.fromFirestore(newData, avatar: avatar);
+      userCubit.loggedInUser(refreshedBidan);
+
+      emit(ProfileLoaded(refreshedBidan));
+    } catch (e) {
+      emit(ProfileFailure(e.toString()));
+    }
+  }
 }

@@ -1,5 +1,5 @@
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
-import 'package:ebidan/state_management/auth/cubit/profile_cubit.dart';
+import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/register_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:ebidan/state_management/bumil/cubit/check_bumil_cubit.dart';
