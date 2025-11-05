@@ -219,8 +219,9 @@ class HomeScreen extends StatelessWidget {
                                       user == null) {
                                     _shouldRegister(context);
                                   } else {
-                                    if (user != null &&
-                                        !user.premiumStatus.isPremium) {
+                                    // if (user != null &&
+                                    //     !user.premiumStatus.isPremium) {
+                                    if (user != null) {
                                       // User bukan premium
                                       showDialog(
                                         context: context,
@@ -241,10 +242,12 @@ class HomeScreen extends StatelessWidget {
                                                 Navigator.pop(
                                                   ctx,
                                                 ); // tutup dialog
-                                                // Navigator.pushNamed(
-                                                //   context,
-                                                //   AppRouter.subscribe,
-                                                // ); // arahkan ke halaman subscribe
+                                                Future.microtask(() {
+                                                  Navigator.pushNamed(
+                                                    context,
+                                                    AppRouter.subs,
+                                                  ); // arahkan ke halaman subscribe
+                                                });
                                               },
                                               child: const Text("Upgrade"),
                                             ),

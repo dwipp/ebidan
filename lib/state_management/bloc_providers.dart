@@ -19,6 +19,7 @@ import 'package:ebidan/state_management/persalinan/cubit/submit_persalinan_cubit
 import 'package:ebidan/state_management/persalinan/cubit/selected_persalinan_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/submit_riwayat_cubit.dart';
 import 'package:ebidan/state_management/riwayat/cubit/selected_riwayat_cubit.dart';
+import 'package:ebidan/state_management/subscription/cubit/subscription_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ebidan/state_management/general/cubit/app_version_cubit.dart';
 
@@ -91,6 +92,7 @@ class BlocProviders {
       BlocProvider<ProfileCubit>(
         create: (context) => ProfileCubit(userCubit: context.read<UserCubit>()),
       ),
+      // BlocProvider<SubscriptionCubit>(create: (context) => SubscriptionCubit()),
       BlocProvider<StatisticCubit>(create: (context) => StatisticCubit()),
       BlocProvider(
         create: (_) => StatisticCubit()..fetchStatistic(),

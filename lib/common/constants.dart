@@ -47,4 +47,13 @@ class Constants {
     'Preterm',
     'Postterm',
   ];
+
+  // subscription constants
+  static const List<String> kProductIds = [
+    'premium_quarterly',
+    'premium_semiannual',
+    'premium_annual',
+  ];
+  // static const String kProductId = 'premium';
+  // static const List<String> kBasePlanIds = ['monthly', 'quarterly', 'yearly'];
 }

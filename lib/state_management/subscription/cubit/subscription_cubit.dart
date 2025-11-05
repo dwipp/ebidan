@@ -1,0 +1,186 @@
+// lib/subscription_cubit.dart
+
+import 'dart:async';
+import 'dart:io';
+
+import 'package:bloc/bloc.dart';
+import 'package:ebidan/common/constants.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+
+part 'subscription_state.dart';
+
+// Asumsikan Anda memiliki mekanisme untuk menyimpan status langganan saat ini
+// Ini harusnya terintegrasi dengan backend Anda untuk verifikasi yang aman.
+// Untuk contoh, kita asumsikan tidak ada langganan lama.
+GooglePlayPurchaseDetails? _currentOldSubscription() {
+  // LOGIC ANDROID: Anda harus mengambil langganan yang aktif saat ini dari server Anda
+  // dan mengembalikannya sebagai GooglePlayPurchaseDetails.
+  // Jika tidak ada langganan lama, kembalikan null.
+  return null;
+}
+
+class SubscriptionCubit extends Cubit<SubscriptionState> {
+  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
+  late StreamSubscription<List<PurchaseDetails>> _purchaseSubscription;
+  List<ProductDetails> _products = [];
+
+  SubscriptionCubit() : super(SubscriptionInitial()) {
+    _listenToPurchaseUpdates();
+    initStoreInfo();
+  }
+
+  void _listenToPurchaseUpdates() {
+    _purchaseSubscription = _inAppPurchase.purchaseStream.listen(
+      (List<PurchaseDetails> purchaseDetailsList) {
+        for (var purchase in purchaseDetailsList) {
+          print('purchase status: ${purchase.status}');
+        }
+        _handlePurchaseUpdates(purchaseDetailsList);
+      },
+      onDone: () {
+        print('_purchaseSubscription.cancel');
+        _purchaseSubscription.cancel();
+      },
+      onError: (Object error) {
+        print('purchase error');
+        if (error is IAPError) {
+          emit(SubscriptionError('Purchase error: ${error.message}'));
+        } else {
+          emit(SubscriptionError('An unknown error occurred during purchase.'));
+        }
+        initStoreInfo(); // Coba inisialisasi ulang
+      },
+    );
+  }
+
+  Future<void> initStoreInfo() async {
+    emit(SubscriptionLoading());
+    final bool isAvailable = await _inAppPurchase.isAvailable();
+
+    if (!isAvailable) {
+      print('satu1');
+      emit(SubscriptionLoaded(products: [], isAvailable: false));
+      return;
+    }
+
+    if (Platform.isIOS) {
+      final InAppPurchaseStoreKitPlatformAddition iosPlatformAddition =
+          _inAppPurchase
+              .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
+      // Opsional: atur delegate jika diperlukan, seperti dalam contoh
+      // await iosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
+    }
+
+    final ProductDetailsResponse productDetailResponse = await _inAppPurchase
+        .queryProductDetails(Constants.kProductIds.toSet());
+
+    if (productDetailResponse.error != null) {
+      emit(SubscriptionError(productDetailResponse.error!.message));
+      return;
+    }
+
+    _products = productDetailResponse.productDetails;
+    print(
+      'satu2: ${_products.map((p) => {'id': p.id, 'lain': p.title}).toList()}',
+    );
+    emit(SubscriptionLoaded(products: _products, isAvailable: isAvailable));
+  }
+
+  void buySubscription(ProductDetails productDetails) async {
+    if (state is! SubscriptionLoaded) return;
+    final currentState = state as SubscriptionLoaded;
+
+    emit(SubscriptionPurchasePending(products: currentState.products));
+
+    late PurchaseParam purchaseParam;
+
+    if (Platform.isAndroid) {
+      final GooglePlayPurchaseDetails? oldSubscription =
+          _currentOldSubscription();
+
+      purchaseParam = GooglePlayPurchaseParam(
+        productDetails: productDetails,
+        changeSubscriptionParam: (oldSubscription != null)
+            ? ChangeSubscriptionParam(
+                oldPurchaseDetails: oldSubscription,
+                // Gunakan ReplacementMode yang sesuai (e.g., WITH_TIME_PRORATION)
+                replacementMode: ReplacementMode.withTimeProration,
+              )
+            : null,
+      );
+    } else {
+      purchaseParam = PurchaseParam(productDetails: productDetails);
+    }
+
+    // Panggil buyNonConsumable untuk langganan
+    await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+  }
+
+  Future<void> _handlePurchaseUpdates(
+    List<PurchaseDetails> purchaseDetailsList,
+  ) async {
+    for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
+      if (purchaseDetails.status == PurchaseStatus.pending) {
+        // Tampilkan UI pending/loading
+        if (state is SubscriptionLoaded) {
+          emit(
+            SubscriptionPurchasePending(
+              products: (state as SubscriptionLoaded).products,
+            ),
+          );
+        }
+      } else if (purchaseDetails.status == PurchaseStatus.error) {
+        // Tangani semua error termasuk cancel
+        final message = (purchaseDetails.error?.code == 'purchase_canceled')
+            ? 'Purchase canceled by user.'
+            : purchaseDetails.error?.message ?? 'Unknown purchase error.';
+
+        emit(SubscriptionError(message));
+
+        // Setelah error, kembali ke loaded agar tombol bisa diaktifkan lagi
+        if (state is SubscriptionError) {
+          emit(SubscriptionLoaded(products: _products, isAvailable: true));
+        }
+      } else if (purchaseDetails.status == PurchaseStatus.purchased ||
+          purchaseDetails.status == PurchaseStatus.restored) {
+        // --- VERIFIKASI PENTING ---
+        // HARUS dilakukan di server nyata
+        final bool valid = await _verifyPurchase(purchaseDetails);
+
+        if (valid) {
+          emit(
+            SubscriptionPurchaseSuccess(
+              purchaseDetails: purchaseDetails,
+              products: _products,
+            ),
+          );
+        } else {
+          emit(SubscriptionError('Invalid purchase verification.'));
+        }
+
+        // Kembalikan ke loaded setelah success
+        emit(SubscriptionLoaded(products: _products, isAvailable: true));
+      }
+
+      // Selesaikan pembelian yang tertunda
+      if (purchaseDetails.pendingCompletePurchase) {
+        await _inAppPurchase.completePurchase(purchaseDetails);
+      }
+    }
+  }
+
+  // Hanya contoh verifikasi, HARUS dilakukan di server nyata.
+  Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) {
+    return Future<bool>.value(true);
+  }
+
+  // Bersihkan stream saat Cubit dibuang
+  @override
+  Future<void> close() {
+    _purchaseSubscription.cancel();
+    return super.close();
+  }
+}
