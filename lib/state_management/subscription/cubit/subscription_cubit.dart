@@ -28,7 +28,6 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
   List<ProductDetails> _products = [];
 
   SubscriptionCubit() : super(SubscriptionInitial()) {
-    _listenToPurchaseUpdates();
     initStoreInfo();
   }
 
@@ -43,6 +42,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
       onDone: () {
         print('_purchaseSubscription.cancel');
         _purchaseSubscription.cancel();
+        emit(SubscriptionPurchaseCancelled());
       },
       onError: (Object error) {
         print('purchase error');
@@ -86,6 +86,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     print(
       'satu2: ${_products.map((p) => {'id': p.id, 'lain': p.title}).toList()}',
     );
+    _listenToPurchaseUpdates();
     emit(SubscriptionLoaded(products: _products, isAvailable: isAvailable));
   }
 
@@ -123,49 +124,56 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     List<PurchaseDetails> purchaseDetailsList,
   ) async {
     for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
-      if (purchaseDetails.status == PurchaseStatus.pending) {
-        // Tampilkan UI pending/loading
-        if (state is SubscriptionLoaded) {
-          emit(
-            SubscriptionPurchasePending(
-              products: (state as SubscriptionLoaded).products,
-            ),
-          );
-        }
-      } else if (purchaseDetails.status == PurchaseStatus.error) {
-        // Tangani semua error termasuk cancel
-        final message = (purchaseDetails.error?.code == 'purchase_canceled')
-            ? 'Purchase canceled by user.'
-            : purchaseDetails.error?.message ?? 'Unknown purchase error.';
+      switch (purchaseDetails.status) {
+        case PurchaseStatus.pending:
+          // Tampilkan loading overlay
+          if (state is SubscriptionLoaded) {
+            emit(
+              SubscriptionPurchasePending(
+                products: (state as SubscriptionLoaded).products,
+              ),
+            );
+          }
+          break;
 
-        emit(SubscriptionError(message));
+        case PurchaseStatus.canceled:
+        case PurchaseStatus.error:
+          // final message = (purchaseDetails.error?.code == 'purchase_canceled')
+          //     ? 'Purchase canceled by user.'
+          //     : purchaseDetails.error?.message ?? 'Unknown purchase error.';
 
-        // Setelah error, kembali ke loaded agar tombol bisa diaktifkan lagi
-        if (state is SubscriptionError) {
+          // // Tampilkan error dulu
+          // emit(SubscriptionError(message));
+          emit(SubscriptionPurchaseCancelled());
+
+          // Load data product lagi
           emit(SubscriptionLoaded(products: _products, isAvailable: true));
-        }
-      } else if (purchaseDetails.status == PurchaseStatus.purchased ||
-          purchaseDetails.status == PurchaseStatus.restored) {
-        // --- VERIFIKASI PENTING ---
-        // HARUS dilakukan di server nyata
-        final bool valid = await _verifyPurchase(purchaseDetails);
+          break;
+        case PurchaseStatus.purchased:
+        case PurchaseStatus.restored:
+          final bool valid = await _verifyPurchase(purchaseDetails);
 
-        if (valid) {
-          emit(
-            SubscriptionPurchaseSuccess(
-              purchaseDetails: purchaseDetails,
-              products: _products,
-            ),
-          );
-        } else {
-          emit(SubscriptionError('Invalid purchase verification.'));
-        }
+          if (valid) {
+            emit(
+              SubscriptionPurchaseSuccess(
+                purchaseDetails: purchaseDetails,
+                products: _products,
+              ),
+            );
+          } else {
+            emit(SubscriptionError('Invalid purchase verification.'));
+          }
 
-        // Kembalikan ke loaded setelah success
-        emit(SubscriptionLoaded(products: _products, isAvailable: true));
+          // Kembalikan ke loaded setelah delay supaya snackbar/feedback bisa muncul
+          await Future.delayed(const Duration(milliseconds: 500));
+          emit(SubscriptionLoaded(products: _products, isAvailable: true));
+          break;
+
+        default:
+          break;
       }
 
-      // Selesaikan pembelian yang tertunda
+      // Selesaikan pembelian tertunda
       if (purchaseDetails.pendingCompletePurchase) {
         await _inAppPurchase.completePurchase(purchaseDetails);
       }

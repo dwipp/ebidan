@@ -1,5 +1,6 @@
 // lib/subscription_screen.dart
 
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -25,24 +26,29 @@ class SubscriptionScreen extends StatelessWidget {
         child: BlocConsumer<SubscriptionCubit, SubscriptionState>(
           listener: (context, state) {
             if (state is SubscriptionError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error: ${state.message}')),
+              Snackbar.show(
+                context,
+                message: 'Error: ${state.message}',
+                type: SnackbarType.error,
               );
             } else if (state is SubscriptionPurchaseSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Subscription Successful!')),
+              Snackbar.show(
+                context,
+                message: 'Subscription berhasil',
+                type: SnackbarType.success,
               );
             }
           },
           builder: (context, state) {
             final cubit = context.read<SubscriptionCubit>();
 
-            // Loading dan initial state
+            List<ProductDetails> products = [];
+            bool isLoading = false;
+
             if (state is SubscriptionLoading || state is SubscriptionInitial) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            // Error state
             if (state is SubscriptionError) {
               return Center(
                 child: Column(
@@ -59,10 +65,6 @@ class SubscriptionScreen extends StatelessWidget {
               );
             }
 
-            // Ambil produk dari state
-            List<ProductDetails> products = [];
-            bool isLoading = false;
-
             if (state is SubscriptionLoaded) {
               products = state.products;
               if (!state.isAvailable) {
@@ -75,9 +77,10 @@ class SubscriptionScreen extends StatelessWidget {
               isLoading = true;
             } else if (state is SubscriptionPurchaseSuccess) {
               products = state.products;
+            } else if (state is SubscriptionPurchaseCancelled) {
+              isLoading = false;
             }
 
-            // Build UI produk
             Widget productList = ListView(
               padding: const EdgeInsets.all(16),
               children: products.map((product) {
@@ -105,7 +108,6 @@ class SubscriptionScreen extends StatelessWidget {
               }).toList(),
             );
 
-            // Overlay loading saat purchase pending
             if (isLoading) {
               return Stack(
                 children: [
@@ -132,9 +134,9 @@ class SubscriptionScreen extends StatelessWidget {
                   ),
                 ],
               );
-            } else {
-              return productList;
             }
+
+            return productList;
           },
         ),
       ),

@@ -24,6 +24,8 @@ class SubscriptionError extends SubscriptionState {
   SubscriptionError(this.message);
 }
 
+class SubscriptionPurchaseCancelled extends SubscriptionState {}
+
 // Saat pembelian sedang diproses (menampilkan loading overlay)
 class SubscriptionPurchasePending extends SubscriptionState {
   final List<ProductDetails> products;
