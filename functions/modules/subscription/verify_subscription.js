@@ -1,22 +1,32 @@
-// functions/handlers/verifySubscription.js
 import { db } from "../firebase.js";
 import { google } from "googleapis";
-import { HttpsError } from "firebase-functions/v2/https";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { defineSecret } from "firebase-functions/params";
 
-export async function verifySubscription(data, context) {
+const GOOGLE_SERVICE_ACCOUNT_JSON = defineSecret("GOOGLE_SERVICE_ACCOUNT_JSON");
+
+
+const REGION = "asia-southeast2";
+
+export const verifySubscription = onCall(
+  { 
+    region: REGION,
+    secrets: [GOOGLE_SERVICE_ACCOUNT_JSON] 
+  }, 
+  async (request) => {
+  const { data, auth } = request;
   const { userId, packageName, productId, purchaseToken } = data;
 
-  if (!context.auth || !userId) {
+  if (!auth || !userId) {
     throw new HttpsError("unauthenticated", "User not authenticated.");
   }
 
   try {
-    const auth = new google.auth.GoogleAuth({
-      credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON),
+    const authClient = await new google.auth.GoogleAuth({
+      credentials: JSON.parse(GOOGLE_SERVICE_ACCOUNT_JSON.value()),
       scopes: ["https://www.googleapis.com/auth/androidpublisher"],
-    });
+    }).getClient();
 
-    const authClient = await auth.getClient();
     const playDeveloper = google.androidpublisher("v3");
 
     const res = await playDeveloper.purchases.subscriptions.get({
@@ -52,16 +62,16 @@ export async function verifySubscription(data, context) {
     await userRef.set(
       {
         subscription: {
-          productId,
-          purchaseToken,
-          orderId: purchase.orderId || null,
-          startDate,
-          expiryDate,
+          product_id: productId,
+          purchase_token: purchaseToken,
+          order_id: purchase.orderId || null,
+          start_date: startDate,
+          expiry_date: expiryDate,
           status,
           platform: "android",
-          autoRenew: purchase.autoRenewing ?? false,
-          lastVerified: now,
-          updatedAt: now,
+          auto_renew: purchase.autoRenewing ?? false,
+          last_verified: now,
+          updated_at: now,
         },
       },
       { merge: true }
@@ -71,14 +81,14 @@ export async function verifySubscription(data, context) {
     await logsRef.add({
       action: "verify",
       timestamp: now,
-      performedBy: "system",
+      performed_by: "system",
       details: {
-        productId,
-        orderId: purchase.orderId || null,
-        purchaseToken,
+        product_id: productId,
+        order_id: purchase.orderId || null,
+        purchase_token: purchaseToken,
         status,
-        expiryDate,
-        autoRenew: purchase.autoRenewing ?? false,
+        expiry_date: expiryDate,
+        auto_renew: purchase.autoRenewing ?? false,
         platform: "android",
       },
     });
@@ -95,8 +105,8 @@ export async function verifySubscription(data, context) {
     return {
       success: true,
       status,
-      expiryDate,
-      autoRenew: purchase.autoRenewing ?? false,
+      expiry_date: expiryDate.getTime(),
+      auto_renew: purchase.autoRenewing ?? false,
     };
   } catch (error) {
     console.error("Error verifying subscription:", error);
@@ -104,4 +114,4 @@ export async function verifySubscription(data, context) {
     if (error instanceof HttpsError) throw error;
     throw new HttpsError("internal", error.message || "Failed to verify subscription.");
   }
-}
+});

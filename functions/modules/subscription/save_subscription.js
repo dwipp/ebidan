@@ -1,11 +1,15 @@
-// functions/handlers/saveSubscription.js
-import { db, FieldValue } from "../firebase.js";
-import { HttpsError } from "firebase-functions/v2/https";
+import { db } from "../firebase.js";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 
-export async function saveSubscription(data, context) {
+const REGION = "asia-southeast2";
+
+export const saveSubscription = onCall(
+  { region: REGION }, 
+  async (request) => {
+  const { data, auth } = request;
   const { userId, productId, purchaseToken, orderId, platform } = data;
 
-  if (!context.auth || !userId) {
+  if (!auth || !userId) {
     throw new HttpsError("unauthenticated", "User not authenticated.");
   }
 
@@ -15,15 +19,15 @@ export async function saveSubscription(data, context) {
     const now = new Date();
 
     const subscriptionData = {
-      productId,
-      purchaseToken,
-      orderId: orderId || null,
+      product_id: productId,
+      purchase_token: purchaseToken,
+      order_id: orderId || null,
       platform: platform || "android",
       status: "pending",
-      startDate: now,
-      expiryDate: null,
-      lastVerified: null,
-      updatedAt: now,
+      start_date: now,
+      expiry_date: null,
+      last_verified: null,
+      updated_at: now,
     };
 
     // 🔄 Simpan atau update data utama subscription
@@ -33,11 +37,11 @@ export async function saveSubscription(data, context) {
     await logsRef.add({
       action: "save",
       timestamp: now,
-      performedBy: "user",
+      performed_by: "user",
       details: {
-        productId,
-        orderId: orderId || null,
-        purchaseToken,
+        product_id: productId,
+        order_id: orderId || null,
+        purchase_token: purchaseToken,
         platform: platform || "android",
         status: "pending",
       },
@@ -57,4 +61,4 @@ export async function saveSubscription(data, context) {
     console.error("Error saving subscription:", error);
     throw new HttpsError("internal", "Failed to save subscription.");
   }
-}
+});

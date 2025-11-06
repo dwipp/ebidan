@@ -8,6 +8,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:ebidan/common/constants.dart';
+import 'package:ebidan/common/utility/subscription_helper.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -30,7 +31,9 @@ GooglePlayPurchaseDetails? _currentOldSubscription() {
 class SubscriptionCubit extends Cubit<SubscriptionState> {
   final UserCubit user;
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
-  final FirebaseFunctions _functions = FirebaseFunctions.instance;
+  final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
+    region: 'asia-southeast2',
+  );
   late StreamSubscription<List<PurchaseDetails>> _purchaseSubscription;
   List<ProductDetails> _products = [];
 
@@ -39,6 +42,9 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
   void _listenToPurchaseUpdates() {
     _purchaseSubscription = _inAppPurchase.purchaseStream.listen(
       (List<PurchaseDetails> purchaseDetailsList) {
+        for (var purchase in purchaseDetailsList) {
+          print('purchase status: ${purchase.status}');
+        }
         _handlePurchaseUpdates(purchaseDetailsList);
       },
       onDone: () {
@@ -51,6 +57,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
         } else {
           emit(SubscriptionError('An unknown error occurred during purchase.'));
         }
+        emit(SubscriptionPurchaseCancelled());
         initStoreInfo(); // Coba inisialisasi ulang
       },
     );
@@ -61,6 +68,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     final bool isAvailable = await _inAppPurchase.isAvailable();
 
     if (!isAvailable) {
+      print('erro SubscriptionLoaded');
       emit(SubscriptionLoaded(products: [], isAvailable: false));
       return;
     }
@@ -77,6 +85,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
         .queryProductDetails(Constants.kProductIds.toSet());
 
     if (productDetailResponse.error != null) {
+      print('erro SubscriptionError');
       emit(SubscriptionError(productDetailResponse.error!.message));
       return;
     }
@@ -90,7 +99,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     // 🔹 Jalankan verifikasi otomatis saat app dibuka
     final subs = user.state?.subscription;
     if (subs?.productId != null && subs?.purchaseToken != null) {
-      await verifySubscriptionOnAppStart(
+      await SubscriptionHelper.verify(
         productId: subs!.productId!,
         purchaseToken: subs.purchaseToken!,
       );
@@ -165,6 +174,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
                 ),
               );
             } catch (e) {
+              print('error: $e');
               emit(SubscriptionError('Gagal menyimpan ke server: $e'));
             }
           } else {
@@ -216,48 +226,10 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
 
     print('✅ Subscription tersimpan di backend.');
 
-    await verifySubscriptionOnAppStart(
+    await SubscriptionHelper.verify(
       productId: purchaseDetails.productID,
       purchaseToken: purchaseToken!,
     );
-  }
-
-  /// 🔹 Jalankan setiap kali app dibuka, untuk memastikan status terkini
-  Future<void> verifySubscriptionOnAppStart({
-    required String productId,
-    required String purchaseToken,
-  }) async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
-
-    try {
-      final callable = _functions.httpsCallable('verifySubscription');
-
-      final result = await callable.call({
-        'userId': uid,
-        'packageName': 'id.ebidan.aos',
-        'productId': productId,
-        'purchaseToken': purchaseToken,
-      });
-
-      final data = result.data;
-      if (data == null) return;
-
-      final subscriptionData = {
-        'status': data['status'],
-        'expiryDate': data['expiryDate'],
-        'autoRenew': data['autoRenew'],
-        'lastVerified': FieldValue.serverTimestamp(),
-      };
-
-      await FirebaseFirestore.instance.collection('bidan').doc(uid).update({
-        'subscription': subscriptionData,
-      });
-
-      print('✅ Subscription diverifikasi dan disimpan ulang.');
-    } catch (e) {
-      print('verifySubscription error: $e');
-    }
   }
 
   // Bersihkan stream saat Cubit dibuang

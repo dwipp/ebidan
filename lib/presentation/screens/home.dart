@@ -1,4 +1,5 @@
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/common/utility/subscription_helper.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
 import 'package:ebidan/presentation/widgets/browser_launcher.dart';
@@ -21,8 +22,26 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    final user = context.read<UserCubit>();
+    final subs = user.state?.subscription;
+    if (subs?.productId != null && subs?.purchaseToken != null) {
+      await SubscriptionHelper.verify(
+        productId: subs!.productId!,
+        purchaseToken: subs.purchaseToken!,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
