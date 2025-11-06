@@ -92,7 +92,10 @@ class BlocProviders {
       BlocProvider<ProfileCubit>(
         create: (context) => ProfileCubit(userCubit: context.read<UserCubit>()),
       ),
-      // BlocProvider<SubscriptionCubit>(create: (context) => SubscriptionCubit()),
+      BlocProvider<SubscriptionCubit>(
+        create: (context) =>
+            SubscriptionCubit(user: context.read<UserCubit>())..initStoreInfo(),
+      ),
       BlocProvider<StatisticCubit>(create: (context) => StatisticCubit()),
       BlocProvider(
         create: (_) => StatisticCubit()..fetchStatistic(),
