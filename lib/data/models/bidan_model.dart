@@ -167,6 +167,9 @@ class Subscription {
   final DateTime? startDate;
   final String status;
   final String type;
+  final String? orderId;
+  final String? productId;
+  final String? purchaseToken;
 
   Subscription({
     this.autoRenew = false,
@@ -174,6 +177,9 @@ class Subscription {
     this.startDate,
     this.status = '',
     this.type = '',
+    this.orderId,
+    this.productId,
+    this.purchaseToken,
   });
 
   factory Subscription.fromJson(Map<String, dynamic> json) {
@@ -183,6 +189,9 @@ class Subscription {
       startDate: _parseDate(json['start_date']),
       status: json['status'] ?? '',
       type: json['type'] ?? '',
+      orderId: json['order_id'] ?? '',
+      productId: json['product_id'] ?? '',
+      purchaseToken: json['purchase_token'] ?? '',
     );
   }
 
@@ -193,6 +202,9 @@ class Subscription {
       if (startDate != null) 'start_date': startDate,
       'status': status,
       'type': type,
+      'order_id': orderId,
+      'product_id': productId,
+      'purchase_token': purchaseToken,
     };
   }
 
@@ -203,6 +215,9 @@ class Subscription {
       if (startDate != null) 'start_date': startDate!.toIso8601String(),
       'status': status,
       'type': type,
+      'order_id': orderId,
+      'product_id': productId,
+      'purchase_token': purchaseToken,
     };
   }
 }

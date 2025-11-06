@@ -1,10 +1,14 @@
 // lib/subscription_cubit.dart
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/common/constants.dart';
+import 'package:ebidan/data/models/bidan_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
@@ -154,6 +158,15 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
           final bool valid = await _verifyPurchase(purchaseDetails);
 
           if (valid) {
+            // simpan ke firestore bidan.
+            // start date
+            // expired date
+            // product id
+            // purchase id
+            // type => quarterly, semiannual, annual
+            // status = active
+            // auto renew
+            await updateBidan(purchaseDetails);
             emit(
               SubscriptionPurchaseSuccess(
                 purchaseDetails: purchaseDetails,
@@ -165,11 +178,8 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
           }
 
           // Kembalikan ke loaded setelah delay supaya snackbar/feedback bisa muncul
-          await Future.delayed(const Duration(milliseconds: 500));
+          // await Future.delayed(const Duration(milliseconds: 500));
           emit(SubscriptionLoaded(products: _products, isAvailable: true));
-          break;
-
-        default:
           break;
       }
 
@@ -183,6 +193,74 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
   // Hanya contoh verifikasi, HARUS dilakukan di server nyata.
   Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) {
     return Future<bool>.value(true);
+  }
+
+  Future<void> updateBidan(PurchaseDetails purchaseDetails) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      emit(SubscriptionError('Pastikan Anda sudah login'));
+      return;
+    }
+    final startDate = DateTime.fromMillisecondsSinceEpoch(
+      int.tryParse(purchaseDetails.transactionDate ?? '') ??
+          DateTime.now().millisecondsSinceEpoch,
+    );
+
+    // Tentukan expiry date berdasarkan product id
+    DateTime expiryDate;
+    String type;
+    switch (purchaseDetails.productID) {
+      case 'subscription_quarterly':
+        expiryDate = startDate.add(const Duration(days: 90));
+        type = 'quarterly';
+        break;
+      case 'subscription_semiannual':
+        expiryDate = startDate.add(const Duration(days: 180));
+        type = 'semiannual';
+        break;
+      case 'subscription_annual':
+        expiryDate = startDate.add(const Duration(days: 365));
+        type = 'annual';
+        break;
+      default:
+        expiryDate = startDate.add(const Duration(days: 90));
+        type = 'quarterly';
+    }
+
+    bool autoRenew = false;
+    String? purchaseToken;
+    String? orderId;
+
+    if (purchaseDetails is GooglePlayPurchaseDetails) {
+      final data = jsonDecode(
+        purchaseDetails.billingClientPurchase.originalJson,
+      );
+      autoRenew = data['autoRenewing'] ?? false;
+      purchaseToken = data['purchaseToken'];
+      orderId = data['orderId'];
+    }
+
+    final sub = Subscription(
+      productId: purchaseDetails.productID,
+      orderId: purchaseDetails.purchaseID ?? orderId ?? '',
+      startDate: startDate,
+      expiryDate: expiryDate,
+      autoRenew: autoRenew,
+      purchaseToken: purchaseToken,
+      type: type,
+      status: 'active',
+    );
+
+    await FirebaseFirestore.instance.collection('bidan').doc(uid).update({
+      'subscription': sub.toFirestore(),
+    });
+
+    emit(
+      SubscriptionPurchaseSuccess(
+        purchaseDetails: purchaseDetails,
+        products: _products,
+      ),
+    );
   }
 
   // Bersihkan stream saat Cubit dibuang

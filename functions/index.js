@@ -12,6 +12,8 @@ import { recalculateKehamilanStats } from "./modules/kehamilan/recalculate_keham
 import { decrementPersalinanCount } from "./modules/persalinan/decrement_persalinan.js";
 import { incrementPersalinanCount } from "./modules/persalinan/increment_persalinan.js";
 import { recalculatePersalinanStats } from "./modules/persalinan/recalculate_persalinan.js";
+import { saveSubscription } from "./modules/subscription/save_subscription.js";
+import { verifySubscription } from "./modules/subscription/verify_subscription.js";
 
 export { 
     incrementPasienCount, 
@@ -26,5 +28,7 @@ export {
     incrementPersalinanCount,
     recalculatePersalinanStats,
     decrementPersalinanCount,
-    recalculateKehamilanStats
+    recalculateKehamilanStats,
+    saveSubscription,
+    verifySubscription
 };
