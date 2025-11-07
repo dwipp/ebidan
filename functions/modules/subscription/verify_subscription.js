@@ -45,7 +45,6 @@ export const verifySubscription = onCall(
     const expiryDate = Number(purchase.expiryTimeMillis);
     const startDate = purchase.startTimeMillis ? Number(purchase.startTimeMillis) : null;
 
-    const cancelReason = purchase.cancelReason;
     let status = "active";
     if (now > expiryDate) {
       status = "expired";
@@ -57,9 +56,7 @@ export const verifySubscription = onCall(
     const logsRef = userRef.collection("subscription_logs");
 
     // 🔄 Update data utama subscription
-    await userRef.set(
-      {
-        subscription: {
+    const subscription = {
           product_id: productId,
           purchase_token: purchaseToken,
           order_id: purchase.orderId || null,
@@ -70,7 +67,10 @@ export const verifySubscription = onCall(
           auto_renew: purchase.autoRenewing ?? false,
           last_verified: now,
           updated_at: now,
-        },
+        }
+    await userRef.set(
+      {
+        subscription,
       },
       { merge: true }
     );
@@ -102,9 +102,7 @@ export const verifySubscription = onCall(
 
     return {
       success: true,
-      status,
-      expiry_date: expiryDate,
-      auto_renew: purchase.autoRenewing ?? false,
+      subscription,
     };
 
   } catch (error) {

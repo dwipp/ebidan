@@ -162,24 +162,28 @@ class Bidan {
 
 /// ---------------- SUBSCRIPTION ----------------
 class Subscription {
-  final bool autoRenew;
-  final DateTime? expiryDate;
-  final DateTime? startDate;
-  final String status;
-  final String type;
-  final String? orderId;
   final String? productId;
   final String? purchaseToken;
+  final String? orderId;
+  final DateTime? startDate;
+  final DateTime? expiryDate;
+  final String status;
+  final String platform;
+  final bool autoRenew;
+  final DateTime? lastVerified;
+  final DateTime? updatedAt;
 
   Subscription({
     this.autoRenew = false,
     this.expiryDate,
     this.startDate,
     this.status = '',
-    this.type = '',
     this.orderId,
     this.productId,
     this.purchaseToken,
+    this.lastVerified,
+    this.platform = '',
+    this.updatedAt,
   });
 
   factory Subscription.fromJson(Map<String, dynamic> json) {
@@ -188,23 +192,28 @@ class Subscription {
       expiryDate: _parseDate(json['expiry_date']),
       startDate: _parseDate(json['start_date']),
       status: json['status'] ?? '',
-      type: json['type'] ?? '',
       orderId: json['order_id'] ?? '',
       productId: json['product_id'] ?? '',
       purchaseToken: json['purchase_token'] ?? '',
+      lastVerified: _parseDate(json['last_verified']),
+      platform: json['platform'] ?? '',
+      updatedAt: _parseDate(json['updated_at']),
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
       'auto_renew': autoRenew,
-      if (expiryDate != null) 'expiry_date': expiryDate,
-      if (startDate != null) 'start_date': startDate,
+      if (expiryDate != null) 'expiry_date': expiryDate!.millisecondsSinceEpoch,
+      if (startDate != null) 'start_date': startDate!.millisecondsSinceEpoch,
       'status': status,
-      'type': type,
       'order_id': orderId,
       'product_id': productId,
       'purchase_token': purchaseToken,
+      if (lastVerified != null)
+        'last_verified': lastVerified!.millisecondsSinceEpoch,
+      'platform': platform,
+      if (updatedAt != null) 'updated_at': updatedAt!.millisecondsSinceEpoch,
     };
   }
 
@@ -214,10 +223,13 @@ class Subscription {
       if (expiryDate != null) 'expiry_date': expiryDate!.toIso8601String(),
       if (startDate != null) 'start_date': startDate!.toIso8601String(),
       'status': status,
-      'type': type,
       'order_id': orderId,
       'product_id': productId,
       'purchase_token': purchaseToken,
+      if (lastVerified != null)
+        'last_verified': lastVerified!.toIso8601String(),
+      'platform': platform,
+      if (updatedAt != null) 'updated_at': updatedAt!.toIso8601String(),
     };
   }
 }
@@ -261,6 +273,7 @@ DateTime? _parseDate(dynamic value) {
   if (value is Timestamp) return value.toDate();
   if (value is String) return DateTime.tryParse(value);
   if (value is DateTime) return value;
+  if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
   return null;
 }
 

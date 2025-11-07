@@ -30,17 +30,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
+  void verifySubs() async {
     final user = context.read<UserCubit>();
     final subs = user.state?.subscription;
     if (subs?.productId != null && subs?.purchaseToken != null) {
       await SubscriptionHelper.verify(
         productId: subs!.productId!,
         purchaseToken: subs.purchaseToken!,
+        user: user,
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    verifySubs();
   }
 
   @override
@@ -238,9 +243,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       user == null) {
                                     _shouldRegister(context);
                                   } else {
-                                    // if (user != null &&
-                                    //     !user.premiumStatus.isPremium) {
-                                    if (user != null) {
+                                    if (user != null &&
+                                        !user.premiumStatus.isPremium) {
                                       // User bukan premium
                                       showDialog(
                                         context: context,

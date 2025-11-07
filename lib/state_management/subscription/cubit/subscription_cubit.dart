@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:ebidan/common/constants.dart';
 import 'package:ebidan/common/utility/subscription_helper.dart';
@@ -14,7 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+// import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 
 part 'subscription_state.dart';
 
@@ -73,13 +72,13 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
       return;
     }
 
-    if (Platform.isIOS) {
+    /*if (Platform.isIOS) {
       final InAppPurchaseStoreKitPlatformAddition iosPlatformAddition =
           _inAppPurchase
               .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
       // Opsional: atur delegate jika diperlukan, seperti dalam contoh
       // await iosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
-    }
+    }*/
 
     final ProductDetailsResponse productDetailResponse = await _inAppPurchase
         .queryProductDetails(Constants.kProductIds.toSet());
@@ -102,6 +101,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
       await SubscriptionHelper.verify(
         productId: subs!.productId!,
         purchaseToken: subs.purchaseToken!,
+        user: user,
       );
     }
 
@@ -229,6 +229,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     await SubscriptionHelper.verify(
       productId: purchaseDetails.productID,
       purchaseToken: purchaseToken!,
+      user: user,
     );
   }
 
