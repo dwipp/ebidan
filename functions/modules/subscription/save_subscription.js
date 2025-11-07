@@ -1,4 +1,4 @@
-import { db } from "../firebase.js";
+import { db, admin } from "../firebase.js";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 
 const REGION = "asia-southeast2";
@@ -16,7 +16,7 @@ export const saveSubscription = onCall(
   try {
     const userRef = db.collection("bidan").doc(userId);
     const logsRef = userRef.collection("subscription_logs");
-    const now = new Date();
+    const now = admin.firestore.Timestamp.now().toMillis();
 
     const subscriptionData = {
       product_id: productId,

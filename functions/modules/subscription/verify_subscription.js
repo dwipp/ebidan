@@ -1,4 +1,4 @@
-import { db } from "../firebase.js";
+import { db, admin } from "../firebase.js";
 import { google } from "googleapis";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
@@ -37,22 +37,20 @@ export const verifySubscription = onCall(
     });
 
     const purchase = res.data;
-    if (!purchase || !purchase.expiryTimeMillis) {
-      throw new HttpsError("not-found", "Subscription data not found.");
+    if (!purchase || !purchase.expiryTimeMillis || !purchase.kind) {
+      throw new HttpsError("not-found", "Invalid or missing subscription data.");
     }
 
-    const now = new Date();
-    const expiryDate = new Date(Number(purchase.expiryTimeMillis));
-    const startDate = purchase.startTimeMillis
-      ? new Date(Number(purchase.startTimeMillis))
-      : null;
+    const now = admin.firestore.Timestamp.now().toMillis();
+    const expiryDate = Number(purchase.expiryTimeMillis);
+    const startDate = purchase.startTimeMillis ? Number(purchase.startTimeMillis) : null;
 
     const cancelReason = purchase.cancelReason;
     let status = "active";
-    if (cancelReason !== undefined) {
-      status = "canceled";
-    } else if (Date.now() > Number(purchase.expiryTimeMillis)) {
+    if (now > expiryDate) {
       status = "expired";
+    } else if (purchase.cancelReason !== undefined || purchase.autoRenewing === false) {
+      status = "canceled";
     }
 
     const userRef = db.collection("bidan").doc(userId);
@@ -105,9 +103,10 @@ export const verifySubscription = onCall(
     return {
       success: true,
       status,
-      expiry_date: expiryDate.getTime(),
+      expiry_date: expiryDate,
       auto_renew: purchase.autoRenewing ?? false,
     };
+
   } catch (error) {
     console.error("Error verifying subscription:", error);
 
