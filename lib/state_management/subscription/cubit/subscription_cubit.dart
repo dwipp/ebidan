@@ -233,6 +233,46 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     );
   }
 
+  // 🔹 Tambahkan fungsi restore tanpa ubah kode lain
+  Future<void> restoreSubscription() async {
+    try {
+      emit(SubscriptionLoading());
+
+      if (Platform.isAndroid) {
+        final InAppPurchaseAndroidPlatformAddition androidAddition =
+            _inAppPurchase
+                .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+
+        final QueryPurchaseDetailsResponse response =
+            await androidAddition.queryPastPurchases();
+
+        if (response.error != null) {
+          emit(SubscriptionError(response.error!.message));
+      emit(SubscriptionLoaded(products: _products, isAvailable: true));
+          return;
+        }
+
+        if (response.pastPurchases.isEmpty) {
+          emit(SubscriptionError("Tidak ada langganan yang ditemukan."));
+      emit(SubscriptionLoaded(products: _products, isAvailable: true));
+          return;
+        }
+
+        for (final purchase in response.pastPurchases) {
+          await _handlePurchaseUpdates([purchase]);
+        }
+
+      } else if (Platform.isIOS) {
+        // Jika nanti ditambahkan dukungan iOS
+        emit(SubscriptionError("Restore belum didukung untuk iOS."));
+      }
+      emit(SubscriptionLoaded(products: _products, isAvailable: true));
+    } catch (e) {
+      emit(SubscriptionError("Gagal memulihkan langganan: $e"));
+      emit(SubscriptionLoaded(products: _products, isAvailable: true));
+    }
+  }
+
   // Bersihkan stream saat Cubit dibuang
   @override
   Future<void> close() {
