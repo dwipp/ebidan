@@ -1,4 +1,5 @@
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,11 +26,12 @@ class SubscriptionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.themeColors;
     final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(
+      appBar: PageHeader(
         title: const Text('Langganan Premium'),
-        elevation: 0,
       ),
       body: BlocConsumer<SubscriptionCubit, SubscriptionState>(
         listener: (context, state) {
@@ -71,27 +73,32 @@ class SubscriptionScreen extends StatelessWidget {
           }
 
           Widget buildCard(ProductDetails product) {
-            // final bool isBest = product.id.contains('annual');
             final bool isBest = product.id.toLowerCase().endsWith('_annual');
+
+            final gradient = isBest
+                ? colors.pinkGradient
+                : colors.blueGradient;
 
             return AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               margin: const EdgeInsets.symmetric(vertical: 8),
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: isBest ? Colors.deepPurple.shade50 : Colors.white,
+                gradient: isBest ? gradient : null,
+                color: isBest ? null : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isBest ? Colors.deepPurple : Colors.grey.shade300,
-                  width: isBest ? 2 : 1,
+                  color: isBest
+                      ? Colors.transparent
+                      : Colors.grey.shade300,
+                  width: isBest ? 0 : 1,
                 ),
                 boxShadow: [
-                  if (isBest)
-                    BoxShadow(
-                      color: Colors.deepPurple.withOpacity(0.15),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
               ),
               child: Column(
@@ -106,7 +113,7 @@ class SubscriptionScreen extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.deepPurple,
+                          color: colors.secondaryContainer,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text(
@@ -124,9 +131,8 @@ class SubscriptionScreen extends StatelessWidget {
                     _getPlanName(product.id),
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight:
-                          isBest ? FontWeight.bold : FontWeight.w600,
-                      color: isBest ? Colors.deepPurple : Colors.black87,
+                      fontWeight: isBest ? FontWeight.bold : FontWeight.w600,
+                      color: isBest ? Colors.white : colors.secondaryContainer,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -134,13 +140,16 @@ class SubscriptionScreen extends StatelessWidget {
                     _getPlanHighlight(product.id),
                     style: TextStyle(
                       fontSize: 14,
-                      color: isBest ? Colors.deepPurple.shade700 : Colors.grey[700],
+                      color: isBest ? Colors.white70 : Colors.grey[700],
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     product.description,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                    style: TextStyle(
+                      color: isBest ? Colors.white70 : Colors.grey[600],
+                      fontSize: 13,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Align(
@@ -150,10 +159,8 @@ class SubscriptionScreen extends StatelessWidget {
                           ? null
                           : () => cubit.buySubscription(product),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isBest
-                            ? Colors.deepPurple
-                            : Colors.deepPurple.shade100,
-                        foregroundColor: isBest ? Colors.white : Colors.deepPurple,
+                        backgroundColor: colors.secondaryContainer,
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 10),
                         shape: RoundedRectangleBorder(
@@ -173,19 +180,26 @@ class SubscriptionScreen extends StatelessWidget {
               ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
-                  const SizedBox(height: 10),
-                  Text(
-                    'Tingkatkan ke Premium ✨',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Nikmati akses penuh fitur eksklusif dan konten profesional untuk bidan.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[700],
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Tingkatkan ke Premium',
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colors.darkGrey,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Nikmati akses penuh fitur eksklusif dan konten profesional untuk bidan.',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.suffixText,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -197,8 +211,8 @@ class SubscriptionScreen extends StatelessWidget {
                       child: Text(
                         'Sudah berlangganan? Pulihkan langganan',
                         style: TextStyle(
-                          color: Colors.deepPurple.shade400,
-                          fontSize: 13,
+                          color: colors.secondaryContainer,
+                          fontSize: 14,
                           decoration: TextDecoration.underline,
                         ),
                       ),
@@ -209,12 +223,12 @@ class SubscriptionScreen extends StatelessWidget {
               ),
               if (isLoading)
                 Container(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withOpacity(0.25),
                   child: const Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        CircularProgressIndicator(color: Colors.purple),
+                        CircularProgressIndicator(),
                         SizedBox(height: 12),
                         Text(
                           'Memproses pembelian...',
