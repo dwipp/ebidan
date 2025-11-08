@@ -70,6 +70,7 @@ class _MainAppState extends State<MainApp> {
             onTertiary: Colors.grey.shade100, // teks/icon di atas tertiary
             onSurface: Colors.black87, // teks default
             brightness: Brightness.light,
+            secondaryContainer: Colors.cyan,
           ),
         ),
         darkTheme: ThemeData(
@@ -86,6 +87,7 @@ class _MainAppState extends State<MainApp> {
             onTertiary: Colors.black26,
             onSurface: Colors.white,
             brightness: Brightness.dark,
+            secondaryContainer: Colors.cyan,
           ),
         ),
         localizationsDelegates: [
