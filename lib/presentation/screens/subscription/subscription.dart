@@ -17,8 +17,18 @@ class SubscriptionScreen extends StatelessWidget {
     return 'Premium Access';
   }
 
+  String _getLifespan(String productId) {
+    if (productId.contains('_annual')) return 'tahun';
+    if (productId.contains('semiannual')) return '6 bulan';
+    if (productId.contains('quarterly')) return '3 bulan';
+    if (productId.contains('monthly')) return 'bulan';
+    return 'bulan';
+  }
+
   String _getPlanHighlight(String productId) {
-    if (productId.contains('_annual')) return '💜 Hemat & paling populer di kalangan bidan!';
+    if (productId.contains('_annual')) {
+      return 'Super Hemat & paling populer di kalangan bidan!';
+    }
     if (productId.contains('semiannual')) return 'Hemat dibanding bulanan';
     if (productId.contains('quarterly')) return 'Coba dulu untuk 3 bulan';
     return 'Langganan fleksibel setiap bulan';
@@ -30,9 +40,7 @@ class SubscriptionScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: PageHeader(
-        title: const Text('Langganan Premium'),
-      ),
+      appBar: PageHeader(title: const Text('Langganan Premium')),
       body: BlocConsumer<SubscriptionCubit, SubscriptionState>(
         listener: (context, state) {
           if (state is SubscriptionError) {
@@ -75,9 +83,7 @@ class SubscriptionScreen extends StatelessWidget {
           Widget buildCard(ProductDetails product) {
             final bool isBest = product.id.toLowerCase().endsWith('_annual');
 
-            final gradient = isBest
-                ? colors.pinkGradient
-                : colors.blueGradient;
+            final gradient = isBest ? colors.pinkGradient : colors.blueGradient;
 
             return AnimatedContainer(
               duration: const Duration(milliseconds: 250),
@@ -85,12 +91,10 @@ class SubscriptionScreen extends StatelessWidget {
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 gradient: isBest ? gradient : null,
-                color: isBest ? null : Colors.white,
+                // color: isBest ? null : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isBest
-                      ? Colors.transparent
-                      : Colors.grey.shade300,
+                  color: isBest ? Colors.transparent : Colors.grey.shade300,
                   width: isBest ? 0 : 1,
                 ),
                 boxShadow: [
@@ -117,7 +121,7 @@ class SubscriptionScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text(
-                          'Paling Populer 💜',
+                          'Paling Populer 💖',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -130,7 +134,7 @@ class SubscriptionScreen extends StatelessWidget {
                   Text(
                     _getPlanName(product.id),
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: isBest ? 26 : 18,
                       fontWeight: isBest ? FontWeight.bold : FontWeight.w600,
                       color: isBest ? Colors.white : colors.secondaryContainer,
                     ),
@@ -162,12 +166,34 @@ class SubscriptionScreen extends StatelessWidget {
                         backgroundColor: colors.secondaryContainer,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 10),
+                          horizontal: 24,
+                          vertical: 10,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: Text(product.price),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.end, // kiri
+                        children: [
+                          Text(
+                            product.price,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'per ${_getLifespan(product.id)}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
