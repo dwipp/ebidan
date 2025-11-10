@@ -1,4 +1,3 @@
-import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/presentation/screens/profile/edit_profile.dart';
 import 'package:ebidan/presentation/screens/profile/profile.dart';
 import 'package:ebidan/presentation/screens/bumil/check_bumil.dart';
@@ -42,6 +41,7 @@ import 'package:ebidan/presentation/screens/statistics/sf/list_sf_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/sf/sf_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/sf/tren_sf_stats.dart';
 import 'package:ebidan/presentation/screens/statistics/statistics.dart';
+import 'package:ebidan/presentation/screens/subscription/subs_status.dart';
 import 'package:ebidan/presentation/screens/subscription/subscription.dart';
 import 'package:flutter/material.dart';
 import 'package:ebidan/common/exceptions/route_exception.dart';
@@ -85,7 +85,9 @@ class AppRouter {
   static const String listPersalinan = '/listpersalinan';
   static const String editPersalinan = '/editpersalinan';
 
+  // subs
   static const String subs = '/subscription';
+  static const String subsStatus = '/subsstatus';
 
   // statistik
   static const String statistics = '/statistics';
@@ -207,6 +209,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => EditPersalinanScreen());
       case subs:
         return MaterialPageRoute(builder: (_) => SubscriptionScreen());
+      case subsStatus:
+        return MaterialPageRoute(builder: (_) => SubscriptionStatusPage());
       case statistics:
         return MaterialPageRoute(builder: (_) => StatisticsScreen());
       case kunjunganStats:

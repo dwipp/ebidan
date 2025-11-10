@@ -6,7 +6,6 @@ import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
@@ -126,17 +125,35 @@ class ProfileScreen extends StatelessWidget {
     IconData icon;
     Widget? descriptionWidget;
 
-    void handleAction(BuildContext context) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Akses ke halaman langganan.")),
-      );
-    }
+    final textTheme = Theme.of(context).textTheme;
 
     final TextStyle actionTextStyle = TextStyle(
       color: context.themeColors.primary,
       fontWeight: FontWeight.w600,
       decoration: TextDecoration.underline,
     );
+
+    Widget _buildInfoSection() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 8),
+          Divider(
+            height: 16,
+            thickness: 0.5,
+            color: context.themeColors.outline.withOpacity(0.3),
+          ),
+          const SizedBox(height: 4),
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, AppRouter.subsStatus),
+            child: Text(
+              "Lihat Detail Billing & Auto Renew",
+              style: actionTextStyle,
+            ),
+          ),
+        ],
+      );
+    }
 
     switch (status.premiumType) {
       case PremiumType.trial:
@@ -149,26 +166,27 @@ class ProfileScreen extends StatelessWidget {
           final now = DateTime.now();
           final daysLeft = expiry.difference(now).inDays;
 
-          if (daysLeft > 7 || daysLeft < 0) {
-            descriptionWidget = Text(
-              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}",
-            );
-          } else {
-            descriptionWidget = RichText(
-              text: TextSpan(
-                style: TextStyle(color: context.themeColors.onSurface),
-                children: <TextSpan>[
-                  TextSpan(text: "Berakhir dalam $daysLeft hari.\n"),
-                  TextSpan(
-                    text: "Klik untuk langganan.",
-                    style: actionTextStyle,
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => handleAction(context),
-                  ),
-                ],
+          descriptionWidget = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                daysLeft >= 0
+                    ? daysLeft == 0
+                          ? "Berakhir hari ini"
+                          : "Berakhir dalam $daysLeft hari (${DateFormat('dd MMMM yyyy').format(expiry)})"
+                    : "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}",
+                style: textTheme.bodyMedium,
               ),
-            );
-          }
+              const SizedBox(height: 6),
+              GestureDetector(
+                onTap: () => Navigator.pushNamed(context, AppRouter.subs),
+                child: Text(
+                  "Klik untuk langganan penuh",
+                  style: actionTextStyle,
+                ),
+              ),
+            ],
+          );
         } else {
           descriptionWidget = const Text("Berakhir pada: Tidak diketahui");
         }
@@ -178,41 +196,41 @@ class ProfileScreen extends StatelessWidget {
         final expiry = user.expiryDate;
         title = "Langganan Premium Aktif";
         color = context.themeColors.premiumBg;
-        icon = Icons.check_circle;
+        icon = Icons.verified;
 
-        if (expiry != null) {
-          final now = DateTime.now();
-          final daysLeft = expiry.difference(now).inDays;
+        descriptionWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (expiry != null) ...[
+              () {
+                final now = DateTime.now();
+                final daysLeft = expiry.difference(now).inDays;
+                String expiryText;
 
-          if (daysLeft > 7 || daysLeft < 0) {
-            descriptionWidget = Text(
-              "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}",
-            );
-          } else {
-            descriptionWidget = RichText(
-              text: TextSpan(
-                style: TextStyle(color: context.themeColors.onSurface),
-                children: <TextSpan>[
-                  TextSpan(text: "Berakhir dalam $daysLeft hari.\n"),
-                  TextSpan(
-                    text: "Klik untuk perpanjang.",
-                    style: actionTextStyle,
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => handleAction(context),
-                  ),
-                ],
-              ),
-            );
-          }
-        } else {
-          descriptionWidget = const Text("Berakhir pada: Tidak diketahui");
-        }
+                if (daysLeft > 0) {
+                  expiryText =
+                      "Berakhir dalam $daysLeft hari (${DateFormat('dd MMMM yyyy').format(expiry)})";
+                } else if (daysLeft == 0) {
+                  expiryText = "Berakhir hari ini";
+                } else {
+                  expiryText =
+                      "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}";
+                }
+
+                return Text(expiryText, style: textTheme.bodyMedium);
+              }(),
+            ] else
+              const Text("Berakhir pada: Tidak diketahui"),
+            const SizedBox(height: 4),
+            _buildInfoSection(),
+          ],
+        );
         break;
 
       default:
         title = "Akses Standar";
         color = context.themeColors.nonPremiumBg;
-        icon = Icons.cancel;
+        icon = Icons.lock_outline;
         descriptionWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -221,7 +239,9 @@ class ProfileScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => handleAction(context),
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRouter.subs);
+                },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: context.themeColors.onPrimary,
                   backgroundColor: context.themeColors.primary,
@@ -260,8 +280,7 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
