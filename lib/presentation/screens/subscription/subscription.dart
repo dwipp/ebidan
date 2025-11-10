@@ -1,56 +1,64 @@
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
+import 'package:ebidan/state_management/subscription/cubit/subscription_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:ebidan/state_management/subscription/cubit/subscription_cubit.dart';
 import 'package:intl/intl.dart';
 
 class SubscriptionScreen extends StatelessWidget {
   const SubscriptionScreen({super.key});
 
-  String _getPlanName(String productId) {
-    if (productId.contains('_annual')) return 'Annual Plan';
-    if (productId.contains('semiannual')) return 'Semi Annual Plan';
-    if (productId.contains('quarterly')) return 'Quarterly Plan';
-    if (productId.contains('monthly')) return 'Monthly Plan';
+  // ================================
+  // MARK: - Helpers
+  // ================================
+  String _getPlanName(String id) {
+    if (id.contains('_annual')) return 'Annual Plan';
+    if (id.contains('semiannual')) return 'Semi Annual Plan';
+    if (id.contains('quarterly')) return 'Quarterly Plan';
+    if (id.contains('monthly')) return 'Monthly Plan';
     return 'Premium Access';
   }
 
-  String _getLifespan(String productId) {
-    if (productId.contains('_annual')) return 'tahun';
-    if (productId.contains('semiannual')) return '6 bulan';
-    if (productId.contains('quarterly')) return '3 bulan';
-    if (productId.contains('monthly')) return 'bulan';
+  String _getLifespan(String id) {
+    if (id.contains('_annual')) return 'tahun';
+    if (id.contains('semiannual')) return '6 bulan';
+    if (id.contains('quarterly')) return '3 bulan';
+    if (id.contains('monthly')) return 'bulan';
     return 'bulan';
   }
 
-  String _getNormalPrice(String productId) {
-    var basicPrice = 50000; // cari cara agar tidak hardcode
-    if (productId.contains('_annual')) basicPrice *= 12;
-    if (productId.contains('semiannual')) basicPrice *= 6;
-    if (productId.contains('quarterly')) basicPrice *= 3;
-    final formatter = NumberFormat.currency(
+  String _getNormalPrice(String id) {
+    num base = 50000; // TODO: sebaiknya nanti ambil dari server / config
+    if (id.contains('_annual')) base *= 12;
+    if (id.contains('semiannual')) base *= 6;
+    if (id.contains('quarterly')) base *= 3;
+    if (id.contains('monthly')) base *= 1;
+
+    return NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',
       decimalDigits: 0,
-    );
-
-    return formatter.format(basicPrice);
+    ).format(base);
   }
 
-  String _getPlanHighlight(String productId) {
-    if (productId.contains('_annual')) {
-      return 'Super Hemat \nPaling populer di kalangan bidan!';
+  String _getPlanHighlight(String id) {
+    if (id.contains('_annual')) {
+      return 'Super Hemat!\nPaling populer di kalangan bidan';
     }
-    if (productId.contains('semiannual')) {
-      return 'Hemat dibanding Quarterly Plan';
+    if (id.contains('semiannual')) {
+      return 'Pilihan cerdas';
     }
-    if (productId.contains('quarterly')) return 'Coba dulu untuk 3 bulan';
+    if (id.contains('quarterly')) {
+      return 'Coba dulu untuk 3 bulan';
+    }
     return 'Langganan fleksibel setiap bulan';
   }
 
+  // ================================
+  // MARK: - UI
+  // ================================
   @override
   Widget build(BuildContext context) {
     final colors = context.themeColors;
@@ -63,7 +71,7 @@ class SubscriptionScreen extends StatelessWidget {
           if (state is SubscriptionError) {
             Snackbar.show(
               context,
-              message: 'Error: ${state.message}',
+              message: state.message,
               type: SnackbarType.error,
             );
           } else if (state is SubscriptionPurchaseSuccess) {
@@ -76,8 +84,8 @@ class SubscriptionScreen extends StatelessWidget {
         },
         builder: (context, state) {
           final cubit = context.read<SubscriptionCubit>();
+          bool isLoading = state is SubscriptionPurchasePending;
           List<ProductDetails> products = [];
-          bool isLoading = false;
 
           if (state is SubscriptionLoading || state is SubscriptionInitial) {
             return const Center(child: CircularProgressIndicator());
@@ -97,9 +105,11 @@ class SubscriptionScreen extends StatelessWidget {
             products = state.products;
           }
 
+          // ================================
+          // MARK: - Build Package Card
+          // ================================
           Widget buildCard(ProductDetails product) {
             final bool isBest = product.id.toLowerCase().endsWith('_annual');
-
             final gradient = isBest ? colors.pinkGradient : colors.blueGradient;
 
             return AnimatedContainer(
@@ -108,11 +118,9 @@ class SubscriptionScreen extends StatelessWidget {
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 gradient: isBest ? gradient : null,
-                // color: isBest ? null : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isBest ? Colors.transparent : Colors.grey.shade300,
-                  width: isBest ? 0 : 1,
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -173,6 +181,8 @@ class SubscriptionScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
+
+                  // ======= BUTTON =======
                   Align(
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(
@@ -189,7 +199,6 @@ class SubscriptionScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        shadowColor: context.themeColors.onSurface,
                         elevation: 1,
                       ),
                       child: Column(
@@ -202,7 +211,7 @@ class SubscriptionScreen extends StatelessWidget {
                               _getNormalPrice(product.id),
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.orange[100],
                                 decoration: TextDecoration.lineThrough,
                                 decorationThickness: 1.5,
                               ),
@@ -211,7 +220,7 @@ class SubscriptionScreen extends StatelessWidget {
                           ],
                           Text(
                             product.price,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -233,12 +242,16 @@ class SubscriptionScreen extends StatelessWidget {
             );
           }
 
+          // ================================
+          // MARK: - Layout
+          // ================================
           return Stack(
             children: [
               ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
-                  Container(
+                  // ======= Header =======
+                  Padding(
                     padding: const EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,7 +265,7 @@ class SubscriptionScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Nikmati akses penuh fitur statistik, laporan bulanan, dan konten profesional untuk bidan.',
+                          'Nikmati fitur lengkap seperti statistik, laporan bulanan, dan konten profesional untuk bidan.',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: colors.suffixText,
                           ),
@@ -260,8 +273,12 @@ class SubscriptionScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+
+                  // ======= Cards =======
                   const SizedBox(height: 4),
                   ...products.map(buildCard),
+
+                  // ======= Restore =======
                   const SizedBox(height: 16),
                   Center(
                     child: GestureDetector(
@@ -276,9 +293,32 @@ class SubscriptionScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // ======= Info Section =======
+                  const SizedBox(height: 36),
+                  Divider(color: Colors.grey.shade300),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Informasi Billing & Pembatalan',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colors.darkGrey,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Langganan diperpanjang otomatis melalui Google Play kecuali dibatalkan sebelum periode berikutnya. '
+                    'Anda dapat mengelola atau membatalkan langganan kapan saja melalui Play Store > Pembayaran & Langganan.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.suffixText,
+                      height: 1.4,
+                    ),
+                  ),
                   const SizedBox(height: 40),
                 ],
               ),
+
+              // ======= Loading Overlay =======
               if (isLoading)
                 Container(
                   color: Colors.black.withOpacity(0.25),
