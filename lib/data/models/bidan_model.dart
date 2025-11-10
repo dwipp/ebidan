@@ -139,7 +139,8 @@ class Bidan {
     }
 
     if (subscription != null &&
-        subscription!.status == 'active' &&
+        (subscription!.status == 'active' ||
+            subscription!.status == 'canceled') &&
         subscription!.expiryDate != null &&
         subscription!.expiryDate!.isAfter(now)) {
       return PremiumStatus(
