@@ -1,15 +1,12 @@
-
 import { db, admin } from "../firebase.js";
 import { google } from "googleapis";
 import { defineSecret } from "firebase-functions/params";
 import { onMessagePublished } from "firebase-functions/v2/pubsub";
 
 const GOOGLE_SERVICE_ACCOUNT_JSON = defineSecret("GOOGLE_SERVICE_ACCOUNT_JSON");
-const RTDN_TOPIC = "subs-rtdn-topic"; // Ganti jika Anda menggunakan nama berbeda
-
+const RTDN_TOPIC = "subs-rtdn-topic"; 
 const REGION = "asia-southeast2";
 
-// 1. Tentukan fungsi Pub/Sub Trigger
 export const handleSubscriptionUpdate = onMessagePublished(
   {
     region: REGION,
@@ -17,49 +14,48 @@ export const handleSubscriptionUpdate = onMessagePublished(
     secrets: [GOOGLE_SERVICE_ACCOUNT_JSON],
   },
   async (event) => {
-    // Pastikan payload notifikasi ada
     if (!event.data.message.data) {
-        console.log("No data in Pub/Sub message.");
-        return;
+      console.log("No data in Pub/Sub message.");
+      return;
     }
 
     try {
-      // 2. Dekode Payload (datanya base64)
+      // 1. Decode payload
       const dataBuffer = Buffer.from(event.data.message.data, "base64");
       const jsonPayload = JSON.parse(dataBuffer.toString());
-      
       const { notificationType, subscriptionNotification } = jsonPayload;
 
       if (!subscriptionNotification) {
-          console.log(`Payload bukan notifikasi langganan. Tipe: ${notificationType}`);
-          return;
-      }
-      
-      const { purchaseToken, packageName, subscriptionId } = subscriptionNotification;
-      
-      console.log(`[RTDN] Notif Tipe: ${notificationType}, Token: ${purchaseToken}`);
-      
-      // Filter notifikasi penting: RENEWED (perpanjangan) atau EXPIRED
-      if (notificationType !== 2 && notificationType !== 3) { // 2=RENEWED, 3=EXPIRED
-          console.log(`Notifikasi tipe ${notificationType} diabaikan.`);
-          return;
+        console.log(`Payload bukan notifikasi langganan. Tipe: ${notificationType}`);
+        return;
       }
 
-      // 3. Cari UserID berdasarkan Purchase Token
-      const userSnap = await db.collection('bidan')
-          .where('subscription.purchase_token', '==', purchaseToken)
-          .limit(1)
-          .get();
-      
-      if (userSnap.empty) {
-          console.error(`User tidak ditemukan dengan purchaseToken: ${purchaseToken}`);
-          return;
+      const { purchaseToken, packageName, subscriptionId } = subscriptionNotification;
+      console.log(`[RTDN] Notif Tipe: ${notificationType}, Token: ${purchaseToken}`);
+
+      // 2. Filter event penting (2=RENEWED, 3=EXPIRED)
+      if (notificationType !== 2 && notificationType !== 3) {
+        console.log(`Notifikasi tipe ${notificationType} diabaikan.`);
+        return;
       }
-      
+
+      // 3. Ambil user berdasarkan purchaseToken
+      const userSnap = await db
+        .collection("bidan")
+        .where("subscription.purchase_token", "==", purchaseToken)
+        .limit(1)
+        .get();
+
+      if (userSnap.empty) {
+        console.error(`User tidak ditemukan dengan purchaseToken: ${purchaseToken}`);
+        return;
+      }
+
       const userId = userSnap.docs[0].id;
       const userRef = db.collection("bidan").doc(userId);
+      const logsRef = userRef.collection("subscription_logs");
 
-      // 4. Panggil Google Play API untuk Verifikasi Terbaru
+      // 4. Verifikasi ke Google Play API
       const authClient = await new google.auth.GoogleAuth({
         credentials: JSON.parse(GOOGLE_SERVICE_ACCOUNT_JSON.value()),
         scopes: ["https://www.googleapis.com/auth/androidpublisher"],
@@ -76,36 +72,64 @@ export const handleSubscriptionUpdate = onMessagePublished(
 
       const purchase = res.data;
       const expiryDate = Number(purchase.expiryTimeMillis);
-      
-      // Tentukan status berdasarkan data Google Play
-      let status = "active";
-      const nowMillis = admin.firestore.Timestamp.now().toMillis();
+      const now = admin.firestore.Timestamp.now();
+      const nowMillis = now.toMillis();
 
+      // 5. Tentukan status
+      let status = "active";
       if (nowMillis > expiryDate) {
-          status = "expired";
+        status = "expired";
       } else if (purchase.cancelReason !== undefined || purchase.autoRenewing === false) {
-          status = "canceled";
+        status = "canceled";
       }
-      
-      // 5. Update Firestore dengan data baru
+
+      // 6. Update data di Firestore
       await userRef.set(
         {
           subscription: {
-            expiry_date: expiryDate, // Ini adalah tanggal terbaru dari Google
-            status: status, 
+            expiry_date: expiryDate,
+            status,
             auto_renew: purchase.autoRenewing ?? false,
             last_verified: nowMillis,
           },
         },
         { merge: true }
       );
-      
-      console.log(`✅ [RTDN] User ${userId} subscription diperbarui. Expire: ${expiryDate}`);
 
-      // Opsional: Tambahkan log ke sub-koleksi subscription_logs
+      // 7. Tentukan tipe log berdasarkan notifikasi
+      let actionType = "verify";
+      if (notificationType === 2) actionType = "renewed";
+      else if (notificationType === 3) actionType = "expired";
+
+      // 8. Tambah log baru
+      await logsRef.add({
+        action: actionType,
+        timestamp: now,
+        performed_by: "system_rtdn",
+        details: {
+          product_id: subscriptionId,
+          order_id: purchase.orderId || null,
+          purchase_token: purchaseToken,
+          status,
+          expiry_date: expiryDate,
+          auto_renew: purchase.autoRenewing ?? false,
+          platform: "android",
+        },
+      });
+
+      // 9. Hapus log lama jika > 50
+      const logsSnap = await logsRef.orderBy("timestamp", "desc").get();
+      if (logsSnap.size > 50) {
+        const oldLogs = logsSnap.docs.slice(50);
+        const batch = db.batch();
+        oldLogs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+      }
+
+      console.log(`✅ [RTDN] User ${userId} subscription diperbarui (${actionType}). Expire: ${expiryDate}`);
 
     } catch (error) {
       console.error("Error memproses notifikasi RTDN:", error);
-      // PENTING: Jangan melempar error di fungsi Pub/Sub, karena akan menyebabkan retry terus-menerus.
     }
-});
+  }
+);
