@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:ebidan/state_management/subscription/cubit/subscription_cubit.dart';
+import 'package:intl/intl.dart';
 
 class SubscriptionScreen extends StatelessWidget {
   const SubscriptionScreen({super.key});
@@ -25,11 +26,27 @@ class SubscriptionScreen extends StatelessWidget {
     return 'bulan';
   }
 
+  String _getNormalPrice(String productId) {
+    var basicPrice = 50000; // cari cara agar tidak hardcode
+    if (productId.contains('_annual')) basicPrice *= 12;
+    if (productId.contains('semiannual')) basicPrice *= 6;
+    if (productId.contains('quarterly')) basicPrice *= 3;
+    final formatter = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
+
+    return formatter.format(basicPrice);
+  }
+
   String _getPlanHighlight(String productId) {
     if (productId.contains('_annual')) {
       return 'Super Hemat & paling populer di kalangan bidan!';
     }
-    if (productId.contains('semiannual')) return 'Hemat dibanding bulanan';
+    if (productId.contains('semiannual')) {
+      return 'Hemat dibanding Quarterly Plan';
+    }
     if (productId.contains('quarterly')) return 'Coba dulu untuk 3 bulan';
     return 'Langganan fleksibel setiap bulan';
   }
@@ -172,19 +189,34 @@ class SubscriptionScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        shadowColor: context.themeColors.onSurface,
+                        elevation: 1,
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.end, // kiri
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
+                          if (!product.id.contains('monthly') &&
+                              !product.id.contains('quarterly')) ...[
+                            Text(
+                              _getNormalPrice(product.id),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white.withOpacity(0.7),
+                                decoration: TextDecoration.lineThrough,
+                                decorationThickness: 1.5,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                          ],
                           Text(
                             product.price,
-                            style: const TextStyle(
-                              fontSize: 16,
+                            style: TextStyle(
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
                           ),
-                          const SizedBox(height: 2),
                           Text(
                             'per ${_getLifespan(product.id)}',
                             style: const TextStyle(
