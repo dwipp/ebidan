@@ -42,7 +42,7 @@ class SubscriptionScreen extends StatelessWidget {
 
   String _getPlanHighlight(String productId) {
     if (productId.contains('_annual')) {
-      return 'Super Hemat & paling populer di kalangan bidan!';
+      return 'Super Hemat \nPaling populer di kalangan bidan!';
     }
     if (productId.contains('semiannual')) {
       return 'Hemat dibanding Quarterly Plan';
