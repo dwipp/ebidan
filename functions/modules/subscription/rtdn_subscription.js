@@ -23,14 +23,20 @@ export const handleSubscriptionUpdate = onMessagePublished(
       // 1. Decode payload
       const dataBuffer = Buffer.from(event.data.message.data, "base64");
       const jsonPayload = JSON.parse(dataBuffer.toString());
-      const { notificationType, subscriptionNotification } = jsonPayload;
+      console.log("[RTDN RAW PAYLOAD]", jsonPayload);
 
-      if (!subscriptionNotification) {
+      // Ambil tipe notifikasi dari subscriptionNotification
+      const subscription = jsonPayload.subscriptionNotification;
+      const notificationType = subscription?.notificationType;
+      const purchaseToken = subscription?.purchaseToken;
+      const packageName = jsonPayload.packageName;
+      const subscriptionId = subscription?.subscriptionId;
+
+      if (!subscription) {
         console.log(`Payload bukan notifikasi langganan. Tipe: ${notificationType}`);
         return;
       }
 
-      const { purchaseToken, packageName, subscriptionId } = subscriptionNotification;
       console.log(`[RTDN] Notif Tipe: ${notificationType}, Token: ${purchaseToken}`);
 
       // 2. Filter event penting (2=RENEWED, 3=EXPIRED)
