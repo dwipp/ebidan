@@ -1,13 +1,18 @@
 
 import { db, admin } from "../firebase.js";
+import { google } from "googleapis";
+import { defineSecret } from "firebase-functions/params";
 import { onMessagePublished } from "firebase-functions/v2/pubsub";
 
 const GOOGLE_SERVICE_ACCOUNT_JSON = defineSecret("GOOGLE_SERVICE_ACCOUNT_JSON");
 const RTDN_TOPIC = "subs-rtdn-topic"; // Ganti jika Anda menggunakan nama berbeda
 
+const REGION = "asia-southeast2";
+
 // 1. Tentukan fungsi Pub/Sub Trigger
 export const handleSubscriptionUpdate = onMessagePublished(
   {
+    region: REGION,
     topic: RTDN_TOPIC,
     secrets: [GOOGLE_SERVICE_ACCOUNT_JSON],
   },
