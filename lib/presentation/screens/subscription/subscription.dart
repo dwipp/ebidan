@@ -207,7 +207,7 @@ class SubscriptionScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -220,7 +220,7 @@ class SubscriptionScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Nikmati akses penuh fitur eksklusif dan konten profesional untuk bidan.',
+                          'Nikmati akses penuh fitur statistik, laporan bulanan, dan konten profesional untuk bidan.',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: colors.suffixText,
                           ),
@@ -228,7 +228,7 @@ class SubscriptionScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 4),
                   ...products.map(buildCard),
                   const SizedBox(height: 16),
                   Center(
@@ -256,10 +256,7 @@ class SubscriptionScreen extends StatelessWidget {
                       children: [
                         CircularProgressIndicator(),
                         SizedBox(height: 12),
-                        Text(
-                          'Memproses pembelian...',
-                          style: TextStyle(color: Colors.black87),
-                        ),
+                        Text('Memproses pembelian...'),
                       ],
                     ),
                   ),
