@@ -32,13 +32,30 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   void verifySubs() async {
-    final user = context.read<UserCubit>();
-    final subs = user.state?.subscription;
-    if (subs?.productId != null && subs?.purchaseToken != null) {
+    final userCubit = context.read<UserCubit>();
+    final subs = userCubit.state?.subscription;
+
+    if (subs?.productId == null || subs?.purchaseToken == null) return;
+
+    final now = DateTime.now();
+    final lastVerified = subs?.lastVerified;
+    const verifyInterval = Duration(hours: 24);
+
+    // Jika belum pernah diverifikasi, langsung verifikasi
+    final needVerify =
+        lastVerified == null || now.difference(lastVerified) > verifyInterval;
+
+    if (needVerify) {
       await SubscriptionHelper.verify(
         productId: subs!.productId!,
         purchaseToken: subs.purchaseToken!,
-        user: user,
+        user: userCubit,
+      );
+      print("[Subs Verify] Performed at $now");
+    } else {
+      final diff = now.difference(lastVerified);
+      print(
+        "[Subs Verify] Skip (last verified ${diff.inHours} jam ${diff.inMinutes % 60} menit lalu)",
       );
     }
   }
@@ -130,7 +147,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Icon(Icons.add),
             ),
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
           body: SafeArea(
             child: Stack(
               children: [
