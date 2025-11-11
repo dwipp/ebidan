@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/extensions.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +26,7 @@ class SubscriptionStatusPage extends StatelessWidget {
         : '-';
 
     final autoRenew = subscription?.autoRenew == true;
+    final status = subscription?.status;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Status Langganan')),
@@ -51,9 +53,22 @@ class SubscriptionStatusPage extends StatelessWidget {
                     children: [
                       const Text('Status Auto Renew'),
                       Text(
-                        autoRenew ? 'Aktif' : 'Tidak aktif',
+                        autoRenew ? 'Active' : 'Non Active',
                         style: TextStyle(
                           color: autoRenew ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Status Langganan'),
+                      Text(
+                        status?.capitalizeFirst() ?? 'Non Active',
+                        style: TextStyle(
+                          color: status == "active" ? Colors.green : Colors.red,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

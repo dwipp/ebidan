@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void verifySubs() async {
     final userCubit = context.read<UserCubit>();
     final subs = userCubit.state?.subscription;
-
+    if (subs?.status == "expired") return;
     if (subs?.productId == null || subs?.purchaseToken == null) return;
 
     final now = DateTime.now();

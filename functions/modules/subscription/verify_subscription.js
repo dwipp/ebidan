@@ -58,7 +58,7 @@ export const verifySubscription = onCall(
     // 🔄 Update data utama subscription
     const subscription = {
           product_id: productId,
-          purchase_token: purchaseToken,
+          purchase_token: status === "expired" ? null : purchaseToken,
           order_id: purchase.orderId || null,
           start_date: startDate,
           expiry_date: expiryDate,
