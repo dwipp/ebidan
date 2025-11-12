@@ -1,8 +1,10 @@
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PremiumWarningBanner extends StatelessWidget {
   final DateTime expiry;
@@ -19,10 +21,13 @@ class PremiumWarningBanner extends StatelessWidget {
     final user = context.watch<UserCubit>().state;
     final expiry = user?.expiryDate;
     final premiumType = user?.premiumType;
+    final isCanceled = user?.isSubsCanceled;
 
     if (expiry == null ||
         premiumType == null ||
         premiumType == PremiumType.none) {
+      return null;
+    } else if (premiumType == PremiumType.subscription && isCanceled == false) {
       return null;
     }
 
@@ -50,8 +55,19 @@ class PremiumWarningBanner extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        onTap: () {
-          debugPrint("perpanjang");
+        onTap: () async {
+          if (premiumType == PremiumType.trial) {
+            Navigator.pushNamed(context, AppRouter.subs);
+          } else {
+            final url = Uri.parse(
+              'https://play.google.com/store/account/subscriptions',
+            );
+            if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+              throw Exception(
+                'Tidak dapat membuka halaman langganan Google Play',
+              );
+            }
+          }
         },
         child: Row(
           children: [
@@ -63,12 +79,14 @@ class PremiumWarningBanner extends StatelessWidget {
                   style: TextStyle(color: context.themeColors.onSurface),
                   children: [
                     TextSpan(
-                      text:
-                          "Akun ${premiumType == PremiumType.trial ? "Trial" : "Premium"} "
-                          "Anda akan berakhir dalam $daysLeft hari. ",
+                      text: premiumType == PremiumType.trial
+                          ? "Masa Trial Anda akan berakhir dalam $daysLeft hari.\n"
+                          : "Langganan Premium Anda akan berakhir dalam $daysLeft hari.\n",
                     ),
                     TextSpan(
-                      text: "Klik untuk perpanjang",
+                      text: premiumType == PremiumType.trial
+                          ? "Dapatkan akses Premium penuh sekarang."
+                          : "Perpanjang otomatis di Google Play sekarang.",
                       style: TextStyle(
                         color: context.themeColors.primary,
                         fontWeight: FontWeight.w600,

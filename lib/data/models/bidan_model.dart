@@ -159,6 +159,7 @@ class Bidan {
 
   PremiumType get premiumType => premiumStatus.premiumType;
   DateTime? get expiryDate => premiumStatus.expiryDate;
+  bool get isSubsCanceled => subscription?.status == 'canceled';
 }
 
 /// ---------------- SUBSCRIPTION ----------------
