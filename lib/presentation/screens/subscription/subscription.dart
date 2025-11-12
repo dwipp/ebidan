@@ -106,6 +106,19 @@ class SubscriptionScreen extends StatelessWidget {
             products = state.products;
           }
 
+          // Sorting products
+          products.sort((a, b) {
+            int getOrder(String id) {
+              if (id.contains('_annual')) return 1;
+              if (id.contains('semiannual')) return 2;
+              if (id.contains('quarterly')) return 3;
+              if (id.contains('monthly')) return 4;
+              return 5;
+            }
+
+            return getOrder(a.id).compareTo(getOrder(b.id));
+          });
+
           // ================================
           // MARK: - Build Package Card
           // ================================
