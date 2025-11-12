@@ -80,6 +80,7 @@ class SubscriptionScreen extends StatelessWidget {
               message: 'Langganan berhasil diaktifkan!',
               type: SnackbarType.success,
             );
+            Navigator.pop(context, true);
           }
         },
         builder: (context, state) {

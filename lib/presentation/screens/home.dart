@@ -291,11 +291,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 Navigator.pop(
                                                   ctx,
                                                 ); // tutup dialog
-                                                Future.microtask(() {
-                                                  Navigator.pushNamed(
-                                                    context,
-                                                    AppRouter.subs,
-                                                  ); // arahkan ke halaman subscribe
+                                                Future.microtask(() async {
+                                                  final subscribed =
+                                                      await Navigator.pushNamed(
+                                                        context,
+                                                        AppRouter.subs,
+                                                      ); // arahkan ke halaman subscribe
+                                                  if (subscribed != null) {
+                                                    if (subscribed == true) {
+                                                      // masuk ke statistik
+                                                      Navigator.pushNamed(
+                                                        context,
+                                                        AppRouter.statistics,
+                                                      );
+                                                    } else {
+                                                      // no action
+                                                    }
+                                                  }
                                                 });
                                               },
                                               child: const Text("Upgrade"),

@@ -154,10 +154,23 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
                         ElevatedButton(
                           onPressed: () {
                             Navigator.pop(ctx); // tutup dialog
-                            // Navigator.pushNamed(
-                            //   context,
-                            //   AppRouter.subscribe,
-                            // ); // arahkan ke halaman subscribe
+                            Future.microtask(() async {
+                              final subscribed = await Navigator.pushNamed(
+                                context,
+                                AppRouter.subs,
+                              ); // arahkan ke halaman subscribe
+                              if (subscribed != null) {
+                                if (subscribed == true) {
+                                  // masuk ke grafik kunjungan
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRouter.grafikKunjungan,
+                                  );
+                                } else {
+                                  // no action
+                                }
+                              }
+                            });
                           },
                           child: const Text("Upgrade"),
                         ),
