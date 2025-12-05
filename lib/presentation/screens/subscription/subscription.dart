@@ -14,10 +14,10 @@ class SubscriptionScreen extends StatelessWidget {
   // MARK: - Helpers
   // ================================
   String _getPlanName(String id) {
-    if (id.contains('_annual')) return 'Annual Plan';
-    if (id.contains('semiannual')) return 'Semi Annual Plan';
-    if (id.contains('quarterly')) return 'Quarterly Plan';
-    if (id.contains('monthly')) return 'Monthly Plan';
+    if (id.contains('_annual')) return 'Tahunan';
+    if (id.contains('semiannual')) return '6 Bulanan';
+    if (id.contains('quarterly')) return '3 Bulanan';
+    if (id.contains('monthly')) return 'Bulanan';
     return 'Premium Access';
   }
 
@@ -109,10 +109,10 @@ class SubscriptionScreen extends StatelessWidget {
           // Sorting products
           products.sort((a, b) {
             int getOrder(String id) {
-              if (id.contains('_annual')) return 1;
-              if (id.contains('semiannual')) return 2;
-              if (id.contains('quarterly')) return 3;
-              if (id.contains('monthly')) return 4;
+              if (id.contains('monthly')) return 1;
+              if (id.contains('_annual')) return 2;
+              if (id.contains('semiannual')) return 3;
+              if (id.contains('quarterly')) return 4;
               return 5;
             }
 
