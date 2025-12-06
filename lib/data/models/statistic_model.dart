@@ -269,16 +269,41 @@ class RestiByMonth {
 
 class KehamilanByMonth {
   final int total;
+  final int abortus;
+  final int restiMasyarakat;
+  final int restiNakes;
 
-  KehamilanByMonth({required this.total});
+  KehamilanByMonth({
+    required this.total,
+    required this.abortus,
+    required this.restiMasyarakat,
+    required this.restiNakes,
+  });
 
   factory KehamilanByMonth.fromMap(Map<String, dynamic>? map) {
-    if (map == null) return KehamilanByMonth(total: 0);
-    return KehamilanByMonth(total: map['total'] ?? 0);
+    if (map == null) {
+      return KehamilanByMonth(
+        total: 0,
+        abortus: 0,
+        restiMasyarakat: 0,
+        restiNakes: 0,
+      );
+    }
+    return KehamilanByMonth(
+      total: map['total'] ?? 0,
+      abortus: map['abortus'] ?? 0,
+      restiMasyarakat: map['resti_masyarakat'] ?? 0,
+      restiNakes: map['resti_nakes'] ?? 0,
+    );
   }
 
   Map<String, dynamic> toMap() {
-    return {'total': total};
+    return {
+      'total': total,
+      'abortus': abortus,
+      'resti_masyarakat': restiMasyarakat,
+      'resti_nakes': restiNakes,
+    };
   }
 }
 

@@ -88,12 +88,6 @@ class StatisticsScreen extends StatelessWidget {
 
                   // await service.generateAndDownload();
                   await service.generateAndPreview(context, bidan);
-
-                  Snackbar.show(
-                    context,
-                    message: 'PDF berhasil di buat.',
-                    type: SnackbarType.success,
-                  );
                 } catch (e) {
                   Snackbar.show(
                     context,
