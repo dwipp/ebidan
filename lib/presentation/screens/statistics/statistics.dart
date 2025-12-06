@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/common/utility/pdf_helper.dart';
@@ -11,7 +9,6 @@ import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:printing/printing.dart';
 
 class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
@@ -96,16 +93,13 @@ class StatisticsScreen extends StatelessWidget {
                   );
 
                   // await service.generateAndDownload();
-                  final pdf = await service.generateAndPreview(bidan);
-                  if (pdf != null) {
-                    previewPdf(context, pdf);
+                  await service.generateAndPreview(context, bidan);
 
-                    Snackbar.show(
-                      context,
-                      message: 'PDF berhasil di buat.',
-                      type: SnackbarType.success,
-                    );
-                  }
+                  Snackbar.show(
+                    context,
+                    message: 'PDF berhasil di buat.',
+                    type: SnackbarType.success,
+                  );
                 } catch (e) {
                   Snackbar.show(
                     context,
@@ -153,15 +147,6 @@ class StatisticsScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  void previewPdf(BuildContext context, Uint8List pdf) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => PdfPreview(build: (format) async => pdf),
       ),
     );
   }

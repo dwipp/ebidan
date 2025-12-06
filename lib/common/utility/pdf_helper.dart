@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:flutter/services.dart';
@@ -196,11 +197,23 @@ class PdfHelper {
   // =============================
   // 6. END-TO-END: Generate + Preview
   // =============================
-  Future<Uint8List?> generateAndPreview(Bidan bidan) async {
+  Future<void> generateAndPreview(BuildContext context, Bidan bidan) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return null;
+    if (uid == null) return;
     final data = await getStatistics(uid);
     final pdfBytes = await generatePdf(bidan: bidan, byMonth: data, uid: uid);
-    return pdfBytes;
+    previewPdf(context, pdfBytes, 'laporan-${bidan.desa.toLowerCase()}');
+  }
+
+  void previewPdf(BuildContext context, Uint8List pdf, String filename) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PdfPreview(
+          build: (format) async => pdf,
+          pdfFileName: "$filename.pdf",
+        ),
+      ),
+    );
   }
 }
