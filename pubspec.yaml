@@ -39,6 +39,8 @@ dependencies:
   # url_strategy: ^0.2.0
   collection: ^1.18.0
   avatar_glow: ^3.0.1
+  pdf: ^3.11.3
+  printing: ^5.14.2
 
 
 dev_dependencies:

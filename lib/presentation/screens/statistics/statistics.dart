@@ -1,10 +1,15 @@
+import 'dart:typed_data';
+
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/common/utility/pdf_helper.dart';
 import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/premium_warning_banner.dart';
+import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
 
 class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
@@ -74,8 +79,34 @@ class StatisticsScreen extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: InkWell(
-              onTap: () {
-                // Navigator.pushNamed(context, AppRouter.grafikKunjungan);
+              onTap: () async {
+                try {
+                  final service = PdfHelper();
+
+                  Snackbar.show(
+                    context,
+                    message: 'Generate PDF...',
+                    type: SnackbarType.general,
+                  );
+
+                  // await service.generateAndDownload();
+                  final pdf = await service.generateAndPreview();
+                  if (pdf != null) {
+                    previewPdf(context, pdf);
+
+                    Snackbar.show(
+                      context,
+                      message: 'PDF berhasil di buat.',
+                      type: SnackbarType.success,
+                    );
+                  }
+                } catch (e) {
+                  Snackbar.show(
+                    context,
+                    message: 'Gagal: $e',
+                    type: SnackbarType.error,
+                  );
+                }
               },
               child: Container(
                 height: 60,
@@ -116,6 +147,15 @@ class StatisticsScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void previewPdf(BuildContext context, Uint8List pdf) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PdfPreview(build: (format) async => pdf),
       ),
     );
   }
