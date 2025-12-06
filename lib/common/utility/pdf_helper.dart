@@ -13,6 +13,86 @@ import 'package:pdf/pdf.dart';
 class PdfHelper {
   final _firestore = FirebaseFirestore.instance;
 
+  final Map<String, String> fieldLabels = {
+    // Kehamilan
+    "kehamilan_total": "Total Kehamilan",
+    "kehamilan_abortus": "Abortus",
+    "kehamilan_resti_masyarakat": "Risiko Masyarakat",
+    "kehamilan_resti_nakes": "Risiko Nakes",
+
+    // Pasien
+    "pasien_total": "Total Pasien",
+
+    // Kunjungan
+    "kunjungan_total": "Total Kunjungan",
+    "kunjungan_abortus": "Abortus",
+    "kunjungan_k1": "K1",
+    "kunjungan_k1_4t": "K1 dengan 4T",
+    "kunjungan_k1_akses": "K1 Akses",
+    "kunjungan_k1_akses_dokter": "K1 Akses Skrining Dokter",
+    "kunjungan_k1_akses_usg": "K1 Akses USG",
+    "kunjungan_k1_murni": "K1 Murni",
+    "kunjungan_k1_murni_dokter": "K1 Murni  Skrining Dokter",
+    "kunjungan_k1_murni_usg": "K1 Murni USG",
+    "kunjungan_k1_usg": "K1 USG",
+    "kunjungan_k1_dokter": "K1 Skrining Dokter",
+    "kunjungan_k2": "K2",
+    "kunjungan_k3": "K3",
+    "kunjungan_k4": "K4",
+    "kunjungan_k5": "K5",
+    "kunjungan_k5_usg": "K5 USG",
+    "kunjungan_k6": "K6",
+    "kunjungan_k6_usg": "K6 USG",
+
+    // Persalinan
+    "persalinan_total": "Total Persalinan",
+    "persalinan_tempat_rs": "RS",
+    "persalinan_tempat_rsb": "RS Bersalin",
+    "persalinan_tempat_klinik": "Klinik",
+    "persalinan_tempat_bpm": "Bidan Praktik Mandiri",
+    "persalinan_tempat_pkm": "Puskesmas",
+    "persalinan_tempat_poskesdes": "Poskesdes",
+    "persalinan_tempat_polindes": "Polindes",
+    "persalinan_persalinan_faskes": "Persalinan Faskes",
+    "persalinan_tempat_rumah_nakes": "Rumah Nakes",
+    "persalinan_tempat_jalan_nakes": "Jalan Nakes",
+    "persalinan_nakes": "Persalinan Nakes",
+    "persalinan_tempat_rumah_dk_klg": "Rumah dgn Dukun atau Keluarga",
+    "persalinan_cara_normal": "Spontan Belakang Kepala (Normal)",
+    "persalinan_cara_vacuum": "Vacuum Extraction",
+    "persalinan_cara_forceps": "Forceps Delivery",
+    "persalinan_cara_sc": "Section Caesarea (SC)",
+    "persalinan_bayi_lahir_hidup": "Bayi Lahir Hidup",
+    "persalinan_bayi_lahir_mati": "Bayi Lahir Mati",
+    "persalinan_bayi_iufd": "IUFD",
+
+    // Resti
+    "resti_anemia": "Anemia",
+    "resti_bb_bayi_under_2500": "BB Bayi < 2500g",
+    "resti_hipertensi": "Hipertensi",
+    "resti_jarak_hamil": "Jarak Kehamilan Tidak Ideal",
+    "resti_kek": "Kekurangan Energi Kronis (KEK)",
+    "resti_obesitas": "Obesitas",
+    "resti_paritas_tinggi": "Paritas Tinggi (>= 4x)",
+    "resti_pernah_abortus": "Pernah Abortus",
+    "resti_resti_masyarakat": "Risiko Masyarakat",
+    "resti_resti_nakes": "Risiko Nakes",
+    "resti_tb_under_145": "Risiko Panggul Sempit (TB < 145 cm)",
+    "resti_too_old": "Usia Terlalu Tua (> 35 tahun)",
+    "resti_too_young": "Usia Terlalu Muda (< 20 tahun)",
+
+    // SF
+    "sf_30": "SF1",
+    "sf_60": "SF2",
+    "sf_90": "SF3",
+    "sf_120": "SF4",
+    "sf_150": "SF5",
+    "sf_180": "SF6",
+    "sf_210": "SF7",
+    "sf_240": "SF8",
+    "sf_270": "SF9",
+  };
+
   // =============================
   // Ambil data dari Firestore → return Statistic
   // =============================
@@ -76,13 +156,22 @@ class PdfHelper {
     ByMonthStats stats,
   ) {
     return [
-      MapEntry("Kehamilan", stats.kehamilan.toMap()),
-      MapEntry("Pasien", stats.pasien.toMap()),
-      MapEntry("Kunjungan", stats.kunjungan.toMap()),
-      MapEntry("Persalinan", stats.persalinan.toMap()),
-      MapEntry("Risiko Tinggi", stats.resti.toMap()),
-      MapEntry("SF", stats.sf.toMap()),
+      MapEntry("Kehamilan", renameKeys("kehamilan", stats.kehamilan.toMap())),
+      MapEntry("Kunjungan", renameKeys("kunjungan", stats.kunjungan.toMap())),
+      MapEntry(
+        "Persalinan",
+        renameKeys("persalinan", stats.persalinan.toMap()),
+      ),
+      MapEntry("Risiko Tinggi", renameKeys("resti", stats.resti.toMap())),
+      MapEntry("Kunsumsi Suplemen Fe", renameKeys("sf", stats.sf.toMap())),
+      MapEntry("Pasien", renameKeys("pasien", stats.pasien.toMap())),
     ];
+  }
+
+  Map<String, dynamic> renameKeys(String prefix, Map<String, dynamic> source) {
+    return source.map((key, value) {
+      return MapEntry("${prefix}_$key", value);
+    });
   }
 
   // =============================
@@ -265,11 +354,15 @@ class PdfHelper {
     return pw.Table(
       border: pw.TableBorder.all(width: 0.5),
       children: map.entries.map((e) {
+        final label =
+            fieldLabels[e.key] ??
+            e.key; // fallback ke key kalau belum dimapping
+
         return pw.TableRow(
           children: [
             pw.Padding(
               padding: const pw.EdgeInsets.all(6),
-              child: pw.Text(e.key),
+              child: pw.Text(label),
             ),
             pw.Padding(
               padding: const pw.EdgeInsets.all(6),

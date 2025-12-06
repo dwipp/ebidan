@@ -216,18 +216,18 @@ class RestiByMonth {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'anemia': anemia,
-      'bbBayiUnder2500': bbBayiUnder2500,
+      'bb_bayi_under_2500': bbBayiUnder2500,
       'hipertensi': hipertensi,
-      'jarakHamil': jarakHamil,
+      'jarak_hamil': jarakHamil,
       'kek': kek,
       'obesitas': obesitas,
-      'paritasTinggi': paritasTinggi,
-      'pernahAbortus': pernahAbortus,
-      'restiMasyarakat': restiMasyarakat,
-      'restiNakes': restiNakes,
-      'tbUnder145': tbUnder145,
-      'tooOld': tooOld,
-      'tooYoung': tooYoung,
+      'paritas_tinggi': paritasTinggi,
+      'pernah_abortus': pernahAbortus,
+      'resti_masyarakat': restiMasyarakat,
+      'resti_nakes': restiNakes,
+      'tb_under_145': tbUnder145,
+      'too_old': tooOld,
+      'too_young': tooYoung,
     };
   }
 
@@ -251,18 +251,18 @@ class RestiByMonth {
     }
     return RestiByMonth(
       anemia: map['anemia'] ?? 0,
-      bbBayiUnder2500: map['bbBayiUnder2500'] ?? 0,
+      bbBayiUnder2500: map['bb_bayi_under_2500'] ?? 0,
       hipertensi: map['hipertensi'] ?? 0,
-      jarakHamil: map['jarakHamil'] ?? 0,
+      jarakHamil: map['jarak_hamil'] ?? 0,
       kek: map['kek'] ?? 0,
       obesitas: map['obesitas'] ?? 0,
-      paritasTinggi: map['paritasTinggi'] ?? 0,
-      pernahAbortus: map['pernahAbortus'] ?? 0,
-      restiMasyarakat: map['restiMasyarakat'] ?? 0,
-      restiNakes: map['restiNakes'] ?? 0,
-      tbUnder145: map['tbUnder145'] ?? 0,
-      tooOld: map['tooOld'] ?? 0,
-      tooYoung: map['tooYoung'] ?? 0,
+      paritasTinggi: map['paritas_tinggi'] ?? 0,
+      pernahAbortus: map['pernah_abortus'] ?? 0,
+      restiMasyarakat: map['resti_masyarakat'] ?? 0,
+      restiNakes: map['resti_nakes'] ?? 0,
+      tbUnder145: map['tb_under_145'] ?? 0,
+      tooOld: map['too_old'] ?? 0,
+      tooYoung: map['too_young'] ?? 0,
     );
   }
 }
@@ -510,8 +510,8 @@ class KunjunganByMonth {
       );
     }
     return KunjunganByMonth(
-      abortus: map['abortus'] ?? 0,
       total: map['total'] ?? 0,
+      abortus: map['abortus'] ?? 0,
       k1: map['k1'] ?? 0,
       k14t: map['k1_4t'] ?? 0,
       k1Akses: map['k1_akses'] ?? 0,
@@ -534,8 +534,8 @@ class KunjunganByMonth {
 
   Map<String, dynamic> toMap() {
     return {
-      'abortus': abortus,
       'total': total,
+      'abortus': abortus,
       'k1': k1,
       'k1_4t': k14t,
       'k1_akses': k1Akses,
