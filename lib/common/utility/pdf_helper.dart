@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/common/utility/extensions.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
@@ -109,9 +110,29 @@ class PdfHelper {
   // =============================
   Future<String?> pickMonthDialog(
     BuildContext context,
-    List<String> months,
+    List<String> months, // format: YYYY-MM
   ) async {
-    String selected = months.isNotEmpty ? months.last : "";
+    final now = DateTime.now();
+
+    // hitung bulan sebelumnya dari hari ini
+    final previousMonth = DateTime(now.year, now.month - 1);
+
+    // filter: hanya bulan <= previousMonth
+    final allowedMonths = months.where((m) {
+      final parts = m.split("-");
+      final y = int.parse(parts[0]);
+      final mo = int.parse(parts[1]);
+      final date = DateTime(y, mo);
+
+      return date.isBefore(
+        DateTime(previousMonth.year, previousMonth.month + 1),
+      );
+    }).toList();
+
+    // sorting biar urut naik
+    allowedMonths.sort((a, b) => a.compareTo(b));
+
+    String selected = allowedMonths.isNotEmpty ? allowedMonths.last : "";
 
     return showDialog<String>(
       context: context,
@@ -122,7 +143,7 @@ class PdfHelper {
             builder: (context, setState) {
               return DropdownButton<String>(
                 value: selected,
-                items: months.map((m) {
+                items: allowedMonths.map((m) {
                   return DropdownMenuItem(
                     value: m,
                     child: Text(Utils.formattedDateFromYearMonth(m)),
@@ -163,7 +184,7 @@ class PdfHelper {
         renameKeys("persalinan", stats.persalinan.toMap()),
       ),
       MapEntry("Risiko Tinggi", renameKeys("resti", stats.resti.toMap())),
-      MapEntry("Kunsumsi Suplemen Fe", renameKeys("sf", stats.sf.toMap())),
+      MapEntry("Konsumsi Suplemen Fe", renameKeys("sf", stats.sf.toMap())),
       MapEntry("Pasien", renameKeys("pasien", stats.pasien.toMap())),
     ];
   }
@@ -223,7 +244,7 @@ class PdfHelper {
   }
 
   // =============================
-  // Generate PDF All Month
+  // Generate PDF All Months
   // =============================
   Future<Uint8List> generatePdf({
     required Bidan bidan,
@@ -236,39 +257,39 @@ class PdfHelper {
     byMonth.forEach((month, stats) {
       final sections = extractSections(stats);
 
-      pdf.addPage(
-        pw.Page(
-          margin: const pw.EdgeInsets.all(24),
-          build: (context) {
-            return pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                _header(bidan, month, logo),
+      for (var entry in sections) {
+        final sectionName = entry.key;
+        final values = entry.value;
 
-                pw.SizedBox(height: 20),
-                pw.Text(
-                  "Bidan: ${bidan.nama}",
-                  style: pw.TextStyle(fontSize: 10),
-                ),
-                pw.Text("NIP: ${bidan.nip}", style: pw.TextStyle(fontSize: 10)),
-                pw.SizedBox(height: 16),
+        pdf.addPage(
+          pw.Page(
+            margin: const pw.EdgeInsets.all(24),
+            build: (context) {
+              return pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  _header(bidan, month, logo),
+                  pw.SizedBox(height: 16),
+                  pw.Text(
+                    "Bidan: ${bidan.nama}",
+                    style: pw.TextStyle(fontSize: 10),
+                  ),
+                  pw.Text(
+                    "NIP: ${bidan.nip}",
+                    style: pw.TextStyle(fontSize: 10),
+                  ),
+                  pw.SizedBox(height: 16),
 
-                ...sections.map((entry) {
-                  return pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      _sectionTitle(entry.key),
-                      pw.SizedBox(height: 6),
-                      _table(entry.value),
-                      pw.SizedBox(height: 20),
-                    ],
-                  );
-                }),
-              ],
-            );
-          },
-        ),
-      );
+                  _sectionTitle(sectionName),
+                  pw.SizedBox(height: 6),
+
+                  _table(values),
+                ],
+              );
+            },
+          ),
+        );
+      }
     });
 
     return pdf.save();
@@ -291,7 +312,15 @@ class PdfHelper {
       ),
       child: pw.Row(
         children: [
-          pw.Container(width: 48, height: 48, child: pw.Image(logo)),
+          pw.Container(
+            width: 48,
+            height: 48,
+            child: pw.ClipRRect(
+              horizontalRadius: 8,
+              verticalRadius: 8,
+              child: pw.Image(logo, fit: pw.BoxFit.cover),
+            ),
+          ),
           pw.SizedBox(width: 12),
           pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -334,10 +363,10 @@ class PdfHelper {
   pw.Widget _sectionTitle(String title) {
     return pw.Container(
       width: double.infinity,
-      padding: const pw.EdgeInsets.symmetric(vertical: 6),
+      padding: const pw.EdgeInsets.symmetric(vertical: 6, horizontal: 6),
       color: PdfColors.pink100,
       child: pw.Text(
-        title.toUpperCase(),
+        title.capitalizeFirst(),
         style: pw.TextStyle(
           fontSize: 14,
           fontWeight: pw.FontWeight.bold,
@@ -416,6 +445,13 @@ class PdfHelper {
       month: selectedMonth,
       uid: uid,
     );
+
+    // generate all months
+    // final pdfBytes = await generatePdf(
+    //   bidan: bidan,
+    //   byMonth: byMonth,
+    //   uid: uid,
+    // );
 
     previewPdf(context, pdfBytes, "laporan-${bidan.desa.toLowerCase()}");
 
