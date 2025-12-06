@@ -86,12 +86,6 @@ class StatisticsScreen extends StatelessWidget {
                   }
                   final service = PdfHelper();
 
-                  Snackbar.show(
-                    context,
-                    message: 'Generate PDF...',
-                    type: SnackbarType.general,
-                  );
-
                   // await service.generateAndDownload();
                   await service.generateAndPreview(context, bidan);
 
