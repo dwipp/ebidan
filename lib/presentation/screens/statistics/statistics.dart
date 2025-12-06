@@ -8,7 +8,9 @@ import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/premium_warning_banner.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
+import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:printing/printing.dart';
 
 class StatisticsScreen extends StatelessWidget {
@@ -81,6 +83,10 @@ class StatisticsScreen extends StatelessWidget {
             child: InkWell(
               onTap: () async {
                 try {
+                  final bidan = context.read<UserCubit>().state;
+                  if (bidan == null) {
+                    return;
+                  }
                   final service = PdfHelper();
 
                   Snackbar.show(
@@ -90,7 +96,7 @@ class StatisticsScreen extends StatelessWidget {
                   );
 
                   // await service.generateAndDownload();
-                  final pdf = await service.generateAndPreview();
+                  final pdf = await service.generateAndPreview(bidan);
                   if (pdf != null) {
                     previewPdf(context, pdf);
 
