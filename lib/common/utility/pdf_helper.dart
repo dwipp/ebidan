@@ -6,7 +6,6 @@ import 'package:printing/printing.dart';
 
 class PdfHelper {
   final _firestore = FirebaseFirestore.instance;
-  // final _storage = FirebaseStorage.instance;
 
   // =============================
   // 1. Ambil data dari Firestore
@@ -105,19 +104,6 @@ class PdfHelper {
       filename: "laporan-statistik-$uid.pdf",
     );
   }
-
-  // =============================
-  // 4. Upload PDF ke Firebase Storage
-  // =============================
-  // Future<String> uploadPdfToStorage(Uint8List pdfBytes, String uid) async {
-  //   final path = "reports/$uid/${DateTime.now().millisecondsSinceEpoch}.pdf";
-
-  //   final ref = _storage.ref(path);
-
-  //   await ref.putData(pdfBytes);
-
-  //   return await ref.getDownloadURL();
-  // }
 
   // =============================
   // 5. END-TO-END: Generate + Download
