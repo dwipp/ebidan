@@ -97,50 +97,38 @@ class PdfHelper {
     final pdf = pw.Document();
     final logo = await imageFromAssetBundle('assets/icons/app_icon.png');
 
-    pdf.addPage(
-      pw.MultiPage(
-        margin: const pw.EdgeInsets.all(24),
-        header: (context) {
-          return _header(bidan, month, logo);
-        },
-        build: (context) {
-          final sections = extractSections(stats);
+    final sections = extractSections(stats);
 
-          return [
-            pw.Column(
+    for (var entry in sections) {
+      final sectionName = entry.key;
+      final values = entry.value;
+
+      pdf.addPage(
+        pw.Page(
+          margin: const pw.EdgeInsets.all(24),
+          build: (context) {
+            return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                ...sections.map((entry) {
-                  // print('entry: ${entry}');
-                  final sectionName = entry.key;
-                  final values = entry.value;
+                _header(bidan, month, logo),
+                pw.SizedBox(height: 16),
+                pw.Text(
+                  "Bidan: ${bidan.nama}",
+                  style: pw.TextStyle(fontSize: 10),
+                ),
+                pw.Text("NIP: ${bidan.nip}", style: pw.TextStyle(fontSize: 10)),
+                pw.SizedBox(height: 16),
 
-                  return pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.SizedBox(height: 16),
-                      pw.Text(
-                        "Bidan: ${bidan.nama}",
-                        style: pw.TextStyle(fontSize: 10),
-                      ),
-                      pw.Text(
-                        "NIP: ${bidan.nip}",
-                        style: pw.TextStyle(fontSize: 10),
-                      ),
-                      pw.SizedBox(height: 16),
-                      _sectionTitle(sectionName),
-                      pw.SizedBox(height: 6),
-                      _table(values),
-                      pw.SizedBox(height: 16),
-                    ],
-                  );
-                }).toList(),
+                _sectionTitle(sectionName),
+                pw.SizedBox(height: 6),
+
+                _table(values),
               ],
-            ),
-          ];
-        },
-      ),
-    );
+            );
+          },
+        ),
+      );
+    }
 
     return pdf.save();
   }
