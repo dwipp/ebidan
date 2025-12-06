@@ -311,6 +311,7 @@ class PdfHelper {
         borderRadius: pw.BorderRadius.circular(6),
       ),
       child: pw.Row(
+        // crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Container(
             width: 48,
@@ -348,9 +349,22 @@ class PdfHelper {
             ],
           ),
           pw.Spacer(),
-          pw.Text(
-            "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
-            style: pw.TextStyle(color: PdfColors.white, fontSize: 11),
+          pw.Container(
+            height: 48,
+            child: pw.Column(
+              mainAxisAlignment: pw.MainAxisAlignment.start,
+              crossAxisAlignment: pw.CrossAxisAlignment.end,
+              children: [
+                pw.Text(
+                  "dibuat pada",
+                  style: pw.TextStyle(color: PdfColors.white, fontSize: 8),
+                ),
+                pw.Text(
+                  "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
+                  style: pw.TextStyle(color: PdfColors.white, fontSize: 8),
+                ),
+              ],
+            ),
           ),
         ],
       ),
