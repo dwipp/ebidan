@@ -49,12 +49,19 @@ class Constants {
   ];
 
   // subscription constants
-  static const List<String> kProductIds = [
-    // 'premium_quarterly',
+  static const List<String> productIds = [
+    'premium_quarterly',
     'premium_semiannual',
     'premium_annual',
     'premium_monthly',
   ];
   // static const String kProductId = 'premium';
   // static const List<String> kBasePlanIds = ['monthly', 'quarterly', 'yearly'];
+
+  static const List<String> productPromoIds = [
+    'premium_monthly',
+    'promo_annual',
+    'promo_semiannual',
+    'promo_quarterly',
+  ];
 }

@@ -1,4 +1,5 @@
 import 'package:ebidan/auth_gate.dart';
+import 'package:ebidan/common/utility/remote_config_helper.dart';
 import 'package:ebidan/firebase_options.dart';
 import 'package:ebidan/state_management/app_bloc_observer.dart';
 import 'package:ebidan/state_management/bloc_providers.dart';
@@ -23,6 +24,8 @@ void main() async {
   } catch (e) {
     print('firebase init error: $e');
   }
+
+  await RemoteConfigHelper.initialize();
 
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
   HydratedBloc.storage = await HydratedStorage.build(

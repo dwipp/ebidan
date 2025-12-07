@@ -21,6 +21,8 @@ class RemoteConfigHelper {
 
   static String get updateUrl => _remoteConfig.getString('update_url');
 
+  static bool get activePromo => _remoteConfig.getBool('active_promo');
+
   static Future<bool> shouldForceUpdate() async {
     final info = await PackageInfo.fromPlatform();
     final currentVersion = int.tryParse(info.buildNumber) ?? 0;

@@ -1,4 +1,5 @@
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/common/utility/remote_config_helper.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/state_management/subscription/cubit/subscription_cubit.dart';
@@ -14,9 +15,15 @@ class SubscriptionScreen extends StatelessWidget {
   // MARK: - Helpers
   // ================================
   String _getPlanName(String id) {
-    if (id.contains('_annual')) return 'Tahunan';
-    if (id.contains('semiannual')) return '6 Bulanan';
-    if (id.contains('quarterly')) return '3 Bulanan';
+    if (id.contains('_annual')) {
+      return RemoteConfigHelper.activePromo ? 'Tahunan Promo' : 'Tahunan';
+    }
+    if (id.contains('semiannual')) {
+      return RemoteConfigHelper.activePromo ? '6 Bulanan Promo' : '6 Bulanan';
+    }
+    if (id.contains('quarterly')) {
+      return RemoteConfigHelper.activePromo ? '3 Bulanan Promo' : '3 Bulanan';
+    }
     if (id.contains('monthly')) return 'Bulanan';
     return 'Premium Access';
   }
@@ -45,13 +52,19 @@ class SubscriptionScreen extends StatelessWidget {
 
   String _getPlanHighlight(String id) {
     if (id.contains('_annual')) {
-      return 'Super Hemat!\nPaling populer di kalangan bidan';
+      return RemoteConfigHelper.activePromo
+          ? 'Hemat Besar!\nHarga spesial terbatas\npilihan favorit para bidan.'
+          : 'Super Hemat!\nPaling populer di kalangan bidan.';
     }
     if (id.contains('semiannual')) {
-      return 'Pilihan cerdas';
+      return RemoteConfigHelper.activePromo
+          ? 'Nilai terbaik!\nDiskon periode menengah, pas untuk pemakaian rutin.'
+          : 'Pilihan cerdas untuk penggunaan jangka menengah.';
     }
     if (id.contains('quarterly')) {
-      return 'Coba dulu untuk 3 bulan';
+      return RemoteConfigHelper.activePromo
+          ? 'Coba lebih lama dengan harga promo!\nFleksibel dan terjangkau.'
+          : 'Coba dulu selama 3 bulan sebelum berkomitmen lebih lama.';
     }
     return 'Langganan fleksibel setiap bulan';
   }
@@ -271,7 +284,9 @@ class SubscriptionScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Tingkatkan ke Premium',
+                          RemoteConfigHelper.activePromo
+                              ? 'Premium Promo'
+                              : 'Tingkatkan ke Premium',
                           style: theme.textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colors.darkGrey,
@@ -279,7 +294,9 @@ class SubscriptionScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Nikmati fitur lengkap seperti statistik, laporan bulanan, dan konten profesional untuk bidan.',
+                          RemoteConfigHelper.activePromo
+                              ? 'Akses lengkap untuk bidan kini lebih terjangkau. Manfaatkan kesempatan spesial ini sebelum berakhir.'
+                              : 'Nikmati fitur lengkap seperti statistik, laporan bulanan, dan konten profesional untuk bidan.',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: colors.suffixText,
                           ),

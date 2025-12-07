@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:ebidan/common/constants.dart';
+import 'package:ebidan/common/utility/remote_config_helper.dart';
 import 'package:ebidan/common/utility/subscription_helper.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -81,7 +82,11 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     }*/
 
     final ProductDetailsResponse productDetailResponse = await _inAppPurchase
-        .queryProductDetails(Constants.kProductIds.toSet());
+        .queryProductDetails(
+          RemoteConfigHelper.activePromo
+              ? Constants.productPromoIds.toSet()
+              : Constants.productIds.toSet(),
+        );
 
     if (productDetailResponse.error != null) {
       print('erro SubscriptionError');
@@ -243,25 +248,24 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
             _inAppPurchase
                 .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
 
-        final QueryPurchaseDetailsResponse response =
-            await androidAddition.queryPastPurchases();
+        final QueryPurchaseDetailsResponse response = await androidAddition
+            .queryPastPurchases();
 
         if (response.error != null) {
           emit(SubscriptionError(response.error!.message));
-      emit(SubscriptionLoaded(products: _products, isAvailable: true));
+          emit(SubscriptionLoaded(products: _products, isAvailable: true));
           return;
         }
 
         if (response.pastPurchases.isEmpty) {
           emit(SubscriptionError("Tidak ada langganan yang ditemukan."));
-      emit(SubscriptionLoaded(products: _products, isAvailable: true));
+          emit(SubscriptionLoaded(products: _products, isAvailable: true));
           return;
         }
 
         for (final purchase in response.pastPurchases) {
           await _handlePurchaseUpdates([purchase]);
         }
-
       } else if (Platform.isIOS) {
         // Jika nanti ditambahkan dukungan iOS
         emit(SubscriptionError("Restore belum didukung untuk iOS."));
