@@ -1,3 +1,4 @@
+import 'package:ebidan/presentation/screens/mode_koordinator/bidan/list_bidan.dart';
 import 'package:ebidan/presentation/screens/profile/edit_profile.dart';
 import 'package:ebidan/presentation/screens/profile/profile.dart';
 import 'package:ebidan/presentation/screens/mode_bidan/bumil/check_bumil.dart';
@@ -107,6 +108,9 @@ class AppRouter {
   static const String persalinanStats = '/persalinanstats';
   static const String listPersalinanStats = '/listpersalinanstats';
   static const String trenPersalinanStats = '/trenpersalinanstats';
+
+  // koordinator
+  static const String listBidan = '/listbidan';
 
   const AppRouter._();
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
@@ -263,6 +267,8 @@ class AppRouter {
           builder: (_) =>
               TrenPersalinanStatsScreen(monthKeys: args['monthKeys']),
         );
+      case listBidan:
+        return MaterialPageRoute(builder: (_) => ListBidanScreen());
       default:
         throw const RouteException('Route not found!');
     }

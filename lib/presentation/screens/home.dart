@@ -179,10 +179,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                       user == null) {
                                     _shouldRegister(context);
                                   } else {
-                                    Navigator.of(context).pushNamed(
-                                      AppRouter.pilihBumil,
-                                      arguments: {'state': 'bumil'},
-                                    );
+                                    if (user?.role == 'bidan') {
+                                      Navigator.of(context).pushNamed(
+                                        AppRouter.pilihBumil,
+                                        arguments: {'state': 'bumil'},
+                                      );
+                                    } else {
+                                      Navigator.of(
+                                        context,
+                                      ).pushNamed(AppRouter.listBidan);
+                                    }
                                   }
                                 },
                                 child: Container(
@@ -205,9 +211,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
-                                        children: const [
+                                        children: [
                                           Text(
-                                            "Kehamilan",
+                                            user?.role == 'bidan'
+                                                ? "Kehamilan"
+                                                : 'Data Bidan',
                                             style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
@@ -230,25 +238,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: _buildStatItem(
                                               icon: Icons.groups,
                                               iconColor: Colors.white,
-                                              label: "Total Ibu Hamil",
+                                              label: user?.role == 'bidan'
+                                                  ? "Total Ibu Hamil"
+                                                  : 'Total bidan terdaftar',
                                               value:
                                                   "${statistic?.kehamilan.allBumilCount ?? 0}",
                                               bgColor: Colors.pink.shade400
                                                   .withOpacity(0.3),
                                             ),
                                           ),
-                                          const SizedBox(width: 16),
-                                          Expanded(
-                                            child: _buildStatItem(
-                                              icon: Icons.pregnant_woman,
-                                              iconColor: Colors.white,
-                                              label: "Bulan Ini",
-                                              value:
-                                                  "${statistic?.lastMonthData?.kehamilan.total ?? 0}",
-                                              bgColor: Colors.teal.shade400
-                                                  .withOpacity(0.3),
+                                          if (user?.role == 'bidan') ...[
+                                            const SizedBox(width: 16),
+                                            Expanded(
+                                              child: _buildStatItem(
+                                                icon: Icons.pregnant_woman,
+                                                iconColor: Colors.white,
+                                                label: "Bulan Ini",
+                                                value:
+                                                    "${statistic?.lastMonthData?.kehamilan.total ?? 0}",
+                                                bgColor: Colors.teal.shade400
+                                                    .withOpacity(0.3),
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ],
                                       ),
                                     ],
