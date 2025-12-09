@@ -23,6 +23,11 @@ class RemoteConfigHelper {
 
   static bool get activePromo => _remoteConfig.getBool('active_promo');
 
+  // mode reviewer
+  static String get reviewerEmail => _remoteConfig.getString('reviewer_email');
+  static String get reviewerPass => _remoteConfig.getString('reviewer_pass');
+  static bool get reviewerActive => _remoteConfig.getBool('reviewer_active');
+
   static Future<bool> shouldForceUpdate() async {
     final info = await PackageInfo.fromPlatform();
     final currentVersion = int.tryParse(info.buildNumber) ?? 0;

@@ -112,12 +112,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       : null,
                   radius: 13,
                   // Jika photoUrl tidak ada, tampilkan ikon default atau inisial nama
-                  child: user?.nama == null
+                  child: user?.photoUrl == null
                       ? Icon(Icons.person, color: context.themeColors.onSurface)
                       : null,
                 ),
                 onPressed: () {
-                  if (user?.photoUrl == null) {
+                  if (user?.nama == null) {
                     LogoutHandler.handleLogout(context);
                   } else {
                     // Navigasi ke halaman profil

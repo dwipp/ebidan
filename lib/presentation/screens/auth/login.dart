@@ -1,4 +1,6 @@
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/common/utility/remote_config_helper.dart';
+import 'package:ebidan/presentation/screens/auth/secret_login_reviewer.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/back_press_cubit.dart';
@@ -69,12 +71,13 @@ class LoginScreen extends StatelessWidget {
                   children: [
                     SizedBox(height: 100),
 
-                    /// Logo aplikasi besar
-                    Image.asset(
-                      'assets/images/logo-ebidan.png',
-                      width: 250,
-                      height: 250,
-                    ),
+                    RemoteConfigHelper.reviewerActive
+                        ? const SecretLoginReviewer()
+                        : Image.asset(
+                            'assets/images/logo-ebidan.png',
+                            width: 250,
+                            height: 250,
+                          ),
 
                     /// Spacer untuk geser tombol lebih ke bawah
                     const SizedBox(height: 100),

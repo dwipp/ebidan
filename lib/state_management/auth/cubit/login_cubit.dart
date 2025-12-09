@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/common/utility/remote_config_helper.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:equatable/equatable.dart';
@@ -67,6 +68,30 @@ class LoginCubit extends Cubit<LoginState> {
     } catch (e) {
       emit(LoginFailure(e.toString()));
     }
+  }
+
+  Future<void> signInForReviewer() async {
+    final userCred = await _auth.signInWithEmailAndPassword(
+      email: RemoteConfigHelper.reviewerEmail,
+      password: RemoteConfigHelper.reviewerPass,
+    );
+    final auth = userCred.user;
+    if (auth == null) {
+      emit(const LoginFailure('User not found'));
+      return;
+    }
+    // cek apakah bidan sudah terdaftar
+    final doc = await _firestore.collection('bidan').doc(auth.uid).get();
+    final isReg = doc.exists;
+
+    // set user yang login di cubit
+    if (isReg) {
+      user.loggedInUser(
+        Bidan.fromFirestore(doc.data()!, avatar: auth.photoURL),
+      );
+    }
+
+    emit(LoginSuccess(auth, isReg));
   }
 
   Future<void> signOut() async {
