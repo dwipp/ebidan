@@ -14,14 +14,14 @@ class RemoteConfigHelper {
     await _remoteConfig.fetchAndActivate();
   }
 
-  static int get forceUpdateVersionCode =>
-      _remoteConfig.getInt('minimum_version_code');
+  // versioning - force update
+  static int get versionMinimum => _remoteConfig.getInt('version_minimum');
+  static String get versionMessage =>
+      _remoteConfig.getString('version_message');
+  static String get versionUrl => _remoteConfig.getString('version_url');
 
-  static String get updateMessage => _remoteConfig.getString('update_message');
-
-  static String get updateUrl => _remoteConfig.getString('update_url');
-
-  static bool get activePromo => _remoteConfig.getBool('active_promo');
+  // promo
+  static bool get promoActive => _remoteConfig.getBool('promo_active');
 
   // mode reviewer
   static String get reviewerEmail => _remoteConfig.getString('reviewer_email');
@@ -31,6 +31,6 @@ class RemoteConfigHelper {
   static Future<bool> shouldForceUpdate() async {
     final info = await PackageInfo.fromPlatform();
     final currentVersion = int.tryParse(info.buildNumber) ?? 0;
-    return currentVersion < forceUpdateVersionCode;
+    return currentVersion < versionMinimum;
   }
 }

@@ -32,10 +32,10 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   void _showForceUpdateDialog(BuildContext context) async {
-    final message = RemoteConfigHelper.updateMessage;
-    final updateUrl = RemoteConfigHelper.updateUrl;
-    final url = updateUrl.isNotEmpty
-        ? updateUrl
+    final message = RemoteConfigHelper.versionMessage;
+    final versionUrl = RemoteConfigHelper.versionUrl;
+    final url = versionUrl.isNotEmpty
+        ? versionUrl
         : 'https://play.google.com/store/apps/details?id=id.ebidan.aos';
 
     showDialog(

@@ -16,13 +16,13 @@ class SubscriptionScreen extends StatelessWidget {
   // ================================
   String _getPlanName(String id) {
     if (id.contains('_annual')) {
-      return RemoteConfigHelper.activePromo ? 'Tahunan Promo' : 'Tahunan';
+      return RemoteConfigHelper.promoActive ? 'Tahunan Promo' : 'Tahunan';
     }
     if (id.contains('semiannual')) {
-      return RemoteConfigHelper.activePromo ? '6 Bulanan Promo' : '6 Bulanan';
+      return RemoteConfigHelper.promoActive ? '6 Bulanan Promo' : '6 Bulanan';
     }
     if (id.contains('quarterly')) {
-      return RemoteConfigHelper.activePromo ? '3 Bulanan Promo' : '3 Bulanan';
+      return RemoteConfigHelper.promoActive ? '3 Bulanan Promo' : '3 Bulanan';
     }
     if (id.contains('monthly')) return 'Bulanan';
     return 'Premium Access';
@@ -52,17 +52,17 @@ class SubscriptionScreen extends StatelessWidget {
 
   String _getPlanHighlight(String id) {
     if (id.contains('_annual')) {
-      return RemoteConfigHelper.activePromo
+      return RemoteConfigHelper.promoActive
           ? 'Hemat Besar!\nHarga spesial terbatas\npilihan favorit para bidan.'
           : 'Super Hemat!\nPaling populer di kalangan bidan.';
     }
     if (id.contains('semiannual')) {
-      return RemoteConfigHelper.activePromo
+      return RemoteConfigHelper.promoActive
           ? 'Nilai terbaik!\nDiskon periode menengah, pas untuk pemakaian rutin.'
           : 'Pilihan cerdas untuk penggunaan jangka menengah.';
     }
     if (id.contains('quarterly')) {
-      return RemoteConfigHelper.activePromo
+      return RemoteConfigHelper.promoActive
           ? 'Coba lebih lama dengan harga promo!\nFleksibel dan terjangkau.'
           : 'Coba dulu selama 3 bulan sebelum berkomitmen lebih lama.';
     }
@@ -284,7 +284,7 @@ class SubscriptionScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          RemoteConfigHelper.activePromo
+                          RemoteConfigHelper.promoActive
                               ? 'Premium Promo'
                               : 'Tingkatkan ke Premium',
                           style: theme.textTheme.headlineSmall?.copyWith(
@@ -294,7 +294,7 @@ class SubscriptionScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          RemoteConfigHelper.activePromo
+                          RemoteConfigHelper.promoActive
                               ? 'Akses lengkap untuk bidan kini lebih terjangkau. Manfaatkan kesempatan spesial ini sebelum berakhir.'
                               : 'Nikmati fitur lengkap seperti statistik, laporan bulanan, dan konten profesional untuk bidan.',
                           style: theme.textTheme.bodyMedium?.copyWith(

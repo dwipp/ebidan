@@ -83,7 +83,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
 
     final ProductDetailsResponse productDetailResponse = await _inAppPurchase
         .queryProductDetails(
-          RemoteConfigHelper.activePromo
+          RemoteConfigHelper.promoActive
               ? Constants.productPromoIds.toSet()
               : Constants.productIds.toSet(),
         );
