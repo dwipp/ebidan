@@ -179,15 +179,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                       user == null) {
                                     _shouldRegister(context);
                                   } else {
-                                    if (user?.role == 'bidan') {
+                                    if (user?.role != 'bidan') {
+                                      Navigator.of(
+                                        context,
+                                      ).pushNamed(AppRouter.listBidan);
+                                    } else {
                                       Navigator.of(context).pushNamed(
                                         AppRouter.pilihBumil,
                                         arguments: {'state': 'bumil'},
                                       );
-                                    } else {
-                                      Navigator.of(
-                                        context,
-                                      ).pushNamed(AppRouter.listBidan);
                                     }
                                   }
                                 },
@@ -213,9 +213,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            user?.role == 'bidan'
-                                                ? "Kehamilan"
-                                                : 'Data Bidan',
+                                            user?.role != 'bidan'
+                                                ? 'Data Bidan'
+                                                : "Kehamilan",
                                             style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
@@ -238,9 +238,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: _buildStatItem(
                                               icon: Icons.groups,
                                               iconColor: Colors.white,
-                                              label: user?.role == 'bidan'
-                                                  ? "Total Ibu Hamil"
-                                                  : 'Total bidan terdaftar',
+                                              label: user?.role != 'bidan'
+                                                  ? 'Total bidan terdaftar'
+                                                  : "Total Ibu Hamil",
                                               value:
                                                   "${statistic?.kehamilan.allBumilCount ?? 0}",
                                               bgColor: Colors.pink.shade400
