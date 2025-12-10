@@ -14,6 +14,38 @@
       },
       "oauth_client": [
         {
+          "client_id": "347784301575-6de43vbreu5opprbq85lvg8c4s8li247.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.ebidan.aos",
+            "certificate_hash": "46f9339d9ccc140a1e9d9fb9c35ebcda4d3bbe37"
+          }
+        },
+        {
+          "client_id": "347784301575-c378i5tpkfiq3ua3vvpk0s4obbgq32u3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.ebidan.aos",
+            "certificate_hash": "d8c9f7ba2323680bfda9fc3f7e88d95558be737e"
+          }
+        },
+        {
+          "client_id": "347784301575-kle0s79nu944stvig67lpf6065h1ru63.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.ebidan.aos",
+            "certificate_hash": "c290edb4e4f9432ba1c06ecb1e918d667b4f9b96"
+          }
+        },
+        {
+          "client_id": "347784301575-qfu82d0co5ob5uchko7a2dbim8urs8cm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.ebidan.aos",
+            "certificate_hash": "bd02f4126acc9d8462ac6746a03498162accf26c"
+          }
+        },
+        {
           "client_id": "347784301575-5p4da7ubhuho5avn8cad4if895debbut.apps.googleusercontent.com",
           "client_type": 3
         }

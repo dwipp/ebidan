@@ -1,0 +1,185 @@
+import { onRequest } from "firebase-functions/v2/https";
+import { getMonthString, parseUK, safeIncrement } from "../helpers.js";
+import { db } from "../firebase.js";
+
+const REGION = "asia-southeast2";
+
+export const recalculateKunjunganStats = onRequest({ region: REGION }, async (req, res) => {
+  try {
+    const snapshot = await db.collection("kunjungan").get();
+    const statsByBidan = {};
+    const latestMonthByBidan = {};
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (!data.id_bidan || !data.status) return;
+
+      const idBidan = data.id_bidan;
+      const status = data.status.toLowerCase();
+      const uk = data.uk ? parseUK(data.uk) : 0;
+      const isUsg = data.tgl_periksa_usg ? true : false;
+      const kontrolDokter = data.kontrol_dokter;
+      const isK1_4t = data.k1_4t === true;
+      const periksaUsg = data.periksa_usg === true;
+
+      if (!statsByBidan[idBidan]) statsByBidan[idBidan] = { by_month: {} };
+
+      // Ambil bulan dari createdAt dokumen
+      const createdAt = data.created_at?.toDate ? data.created_at.toDate() : new Date();
+      const monthKey = getMonthString(createdAt);
+
+      // Update latest month per bidan
+      if (!latestMonthByBidan[idBidan] || monthKey > latestMonthByBidan[idBidan]) {
+        latestMonthByBidan[idBidan] = monthKey;
+      }
+
+      if (!statsByBidan[idBidan].by_month[monthKey]) {
+        statsByBidan[idBidan].by_month[monthKey] = { 
+          kunjungan: { 
+            total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0,
+            k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0, k1_4t:0,
+            k5_usg:0, k6_usg:0, k1_murni_usg:0, k1_akses_usg:0, 
+            k1_akses_dokter:0, k1_murni_dokter:0,
+          },
+          resti: {
+            hipertensi: 0,
+            obesitas: 0,
+            kek: 0,
+          }
+        };
+      }
+
+      const kunjungan = statsByBidan[idBidan].by_month[monthKey].kunjungan;
+      const resti = statsByBidan[idBidan].by_month[monthKey].resti;
+
+      // Hitung sesuai status (pakai safeIncrement)
+      safeIncrement(kunjungan, "total");
+
+      if (status === "k1") {
+        safeIncrement(kunjungan, "k1");
+        if (uk <= 12) {
+          safeIncrement(kunjungan, "k1_murni");
+          if (kontrolDokter) safeIncrement(kunjungan, "k1_murni_dokter");
+          if (isUsg) safeIncrement(kunjungan, "k1_murni_usg");
+        }
+        else {
+          safeIncrement(kunjungan, "k1_akses");
+          if (kontrolDokter) safeIncrement(kunjungan, "k1_akses_dokter");
+          if (isUsg) safeIncrement(kunjungan, "k1_akses_usg");
+        }
+        if (isUsg) safeIncrement(kunjungan, "k1_usg");
+        if (kontrolDokter) safeIncrement(kunjungan, "k1_dokter");
+        if (isK1_4t) safeIncrement(kunjungan, "k1_4t");
+
+        // ===== Hitung Resti Hipertensi =====
+        if (typeof data.td === "string") {
+          const [sistolStr, diastolStr] = data.td.split("/").map(s => s.trim());
+          const sistol = parseInt(sistolStr, 10);
+          const diastol = parseInt(diastolStr, 10);
+
+          if ((sistol && sistol >= 140) || (diastol && diastol >= 90)) {
+            safeIncrement(resti, "hipertensi");
+          }
+        }
+
+        // ===== Hitung Resti Obesitas =====
+        const bb = Number(data.bb); // berat badan (kg)
+        const tbCm = Number(data.tb); // tinggi badan (cm)
+        if (bb > 0 && tbCm > 0) {
+          const tbMeter = tbCm / 100; // centimeter to meter
+          const bmi = bb / (tbMeter * tbMeter);
+          if (bmi >= 25) {
+            safeIncrement(resti, "obesitas");
+          }
+        }
+
+        // ===== Hitung Resti KEK (lila<23.5) =====
+        const lila = Number(data.lila);
+        if (!isNaN(lila) && lila < 23.5) {
+          safeIncrement(resti, "kek");
+        }
+
+      }
+      if (status === "k2") safeIncrement(kunjungan, "k2");
+      if (status === "k3") safeIncrement(kunjungan, "k3");
+      if (status === "k4") safeIncrement(kunjungan, "k4");
+      if (status === "k5") {
+        safeIncrement(kunjungan, "k5");
+        if (periksaUsg) safeIncrement(kunjungan, "k5_usg");
+      }
+      if (status === "k6") {
+        safeIncrement(kunjungan, "k6");
+        if (periksaUsg) safeIncrement(kunjungan, "k6_usg");
+      }
+    });
+
+    const batch = db.batch();
+
+    // Tentukan bulan awal 13 bulan terakhir
+    const now = new Date();
+    const startMonthDate = new Date(now.getFullYear(), now.getMonth() - 12, 1); 
+    const startMonthKey = getMonthString(startMonthDate);
+
+    for (const [idBidan, stats] of Object.entries(statsByBidan)) {
+      const ref = db.doc(`statistics/${idBidan}`);
+      const doc = await ref.get();
+      const existing = doc.exists ? doc.data() : {};
+      let byMonth = existing.by_month || {};
+      const skippedMonths = [];
+
+      // Filter existing.by_month agar tetap dalam 13 bulan terakhir
+      byMonth = Object.entries(byMonth)
+        .filter(([month]) => month >= startMonthKey)
+        .reduce((acc, [month, counts]) => {
+          acc[month] = counts;
+          return acc;
+        }, {});
+      skippedMonths.push(...Object.keys(existing.by_month || {}).filter(month => month < startMonthKey));
+
+      // Merge data baru dari stats
+      for (const [month, counts] of Object.entries(stats.by_month)) {
+        if (month < startMonthKey) {
+          skippedMonths.push(month);
+          continue;
+        }
+        if (!byMonth[month]) {
+          byMonth[month] = { 
+            kunjungan: { 
+              total:0, k1:0, k2:0, k3:0, k4:0, k5:0, k6:0,
+              k1_murni:0, k1_akses:0, k1_usg:0, k1_dokter:0, k1_4t:0,
+              k5_usg:0, k6_usg:0, k1_murni_usg:0, k1_akses_usg:0, 
+              k1_akses_dokter:0, k1_murni_dokter:0,
+            },
+            resti: {
+              hipertensi: 0,
+              obesitas: 0,
+              kek: 0,
+            }
+          };
+        }
+        byMonth[month].kunjungan = { ...byMonth[month].kunjungan, ...counts.kunjungan };
+        byMonth[month].resti = { ...byMonth[month].resti, ...counts.resti };
+      }
+
+      // Urutkan bulan ascending sebelum disimpan
+      byMonth = Object.fromEntries(
+        Object.entries(byMonth).sort(([a], [b]) => a.localeCompare(b))
+      );
+
+      batch.set(ref, { 
+        ...existing, 
+        by_month: byMonth,
+        last_updated_month: latestMonthByBidan[idBidan] || getMonthString(new Date()),
+      }, { merge: true });
+
+      console.log(`Bidan: ${idBidan} | Total bulan tersimpan: ${Object.keys(byMonth).length} | Bulan terbaru: ${latestMonthByBidan[idBidan]} | Bulan di-skip: ${skippedMonths.join(", ")}`);
+    }
+
+    await batch.commit();
+    res.status(200).send({ message: "Kunjungan recalculation complete", statsByBidan });
+
+  } catch (error) {
+    console.error("Recalculation error:", error);
+    res.status(500).send({ error: error.message });
+  }
+});
