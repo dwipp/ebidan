@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/extensions.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
@@ -122,7 +123,9 @@ class _RegisterState extends State<RegisterScreen> {
                 context: context,
                 builder: (_) => AlertDialog(
                   title: const Text('Sukses'),
-                  content: const Text('Bidan berhasil di registrasi'),
+                  content: Text(
+                    '${state.role.capitalizeFirst()} berhasil di registrasi',
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () {
@@ -212,7 +215,7 @@ class _RegisterState extends State<RegisterScreen> {
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.assignment_ind),
                       ),
-                      items: ['bidan', 'admin'].map((role) {
+                      items: ['bidan', 'koordinator'].map((role) {
                         return DropdownMenuItem(value: role, child: Text(role));
                       }).toList(),
                       onChanged: (val) => setState(() => _role = val!),

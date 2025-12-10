@@ -144,7 +144,7 @@ class RegisterCubit extends Cubit<RegisterState> {
           .set(bidan.toFirestore());
       user.loggedInUser(bidan);
 
-      emit(RegisterSuccess());
+      emit(RegisterSuccess(role: role));
     } catch (e) {
       emit(RegisterFailure(e.toString()));
     }

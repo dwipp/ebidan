@@ -11,7 +11,14 @@ class RegisterInitial extends RegisterState {}
 
 class RegisterSubmitting extends RegisterState {}
 
-class RegisterSuccess extends RegisterState {}
+class RegisterSuccess extends RegisterState {
+  final String role;
+
+  const RegisterSuccess({required this.role});
+
+  @override
+  List<Object?> get props => [role];
+}
 
 class RegisterFailure extends RegisterState {
   final String message;

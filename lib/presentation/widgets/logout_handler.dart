@@ -1,6 +1,5 @@
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
-import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +64,7 @@ class LogoutHandler {
     } catch (e) {
       // opsional: tampilkan error kalau gagal logout
       print('Logout error: $e');
-      Snackbar.show(context, message: 'Gagal logout, coba lagi');
+      // Snackbar.show(context, message: 'Gagal logout, coba lagi');
     }
   }
 }
