@@ -45,18 +45,23 @@ class RegisterCubit extends Cubit<RegisterState> {
   }
 
   Future<void> searchPuskesmas(String query) async {
-    if (query.isEmpty) {
-      _puskesmasList = [];
-      emit(RegisterSearchLoaded(_puskesmasList));
-      return;
-    }
+    final cleanedQuery = query
+        .toLowerCase()
+        .replaceAll(RegExp(r'\bpuskesmas\b', caseSensitive: false), '')
+        .trim();
 
-    final kataKunci = query
+    final kataKunci = cleanedQuery
         .toLowerCase()
         .trim()
         .split(RegExp(r'\s+'))
         .where((k) => k.isNotEmpty)
         .toList();
+
+    if (kataKunci.isEmpty) {
+      _puskesmasList = [];
+      emit(RegisterSearchLoaded(_puskesmasList));
+      return;
+    }
 
     try {
       // ambil kandidat dari Firestore (cocok salah satu kata)
