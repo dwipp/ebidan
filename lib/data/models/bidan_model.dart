@@ -28,6 +28,7 @@ class Bidan {
   final String role;
   final Subscription? subscription;
   final Trial trial;
+  final List<String>? bidanIds;
 
   Bidan({
     required this.photoUrl,
@@ -43,6 +44,7 @@ class Bidan {
     required this.role,
     required this.subscription,
     required this.trial,
+    this.bidanIds,
   });
 
   /// ---------------- FROM FIRESTORE ----------------
@@ -66,6 +68,9 @@ class Bidan {
           ? Subscription.fromJson(json['subscription'])
           : null,
       trial: Trial.fromJson(json['trial'] ?? {}),
+      bidanIds: json['bidan_ids'] != null
+          ? List<String>.from(json['bidan_ids'])
+          : null,
     );
   }
 
@@ -84,6 +89,7 @@ class Bidan {
       'role': role,
       if (subscription != null) 'subscription': subscription!.toFirestore(),
       'trial': trial.toFirestore(),
+      'bidan_ids': bidanIds,
     };
   }
 
@@ -105,6 +111,9 @@ class Bidan {
           ? Subscription.fromJson(json['subscription'])
           : null,
       trial: Trial.fromJson(json['trial'] ?? {}),
+      bidanIds: json['bidan_ids'] != null
+          ? List<String>.from(json['bidan_ids'])
+          : null,
     );
   }
 
@@ -123,6 +132,7 @@ class Bidan {
       'role': role,
       if (subscription != null) 'subscription': subscription!.toJson(),
       'trial': trial.toJson(),
+      'bidan_ids': bidanIds,
     };
   }
 

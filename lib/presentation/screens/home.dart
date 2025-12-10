@@ -127,26 +127,29 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          floatingActionButton: AvatarGlow(
-            glowRadiusFactor: 0.7,
-            duration: const Duration(seconds: 3),
-            glowColor: context.themeColors.secondaryContainer,
-            glowShape: BoxShape.circle,
-            child: FloatingActionButton(
-              shape: const CircleBorder(),
-              onPressed: () {
-                if (FirebaseAuth.instance.currentUser != null && user == null) {
-                  _shouldRegister(context);
-                } else {
-                  Navigator.of(context).pushNamed(
-                    AppRouter.pilihBumil,
-                    arguments: {'state': 'kunjungan'},
-                  );
-                }
-              },
-              child: const Icon(Icons.add),
-            ),
-          ),
+          floatingActionButton: user?.role != 'bidan'
+              ? null
+              : AvatarGlow(
+                  glowRadiusFactor: 0.7,
+                  duration: const Duration(seconds: 3),
+                  glowColor: context.themeColors.secondaryContainer,
+                  glowShape: BoxShape.circle,
+                  child: FloatingActionButton(
+                    shape: const CircleBorder(),
+                    onPressed: () {
+                      if (FirebaseAuth.instance.currentUser != null &&
+                          user == null) {
+                        _shouldRegister(context);
+                      } else {
+                        Navigator.of(context).pushNamed(
+                          AppRouter.pilihBumil,
+                          arguments: {'state': 'kunjungan'},
+                        );
+                      }
+                    },
+                    child: const Icon(Icons.add),
+                  ),
+                ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
           body: SafeArea(

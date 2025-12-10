@@ -67,6 +67,7 @@ class SubscriptionHelper {
           role: bidan.role,
           subscription: newSubs,
           trial: bidan.trial,
+          bidanIds: bidan.bidanIds,
         );
         user.loggedInUser(newBidan);
       }

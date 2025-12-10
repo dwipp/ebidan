@@ -1,4 +1,5 @@
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
+import 'package:ebidan/state_management/mode_koordinator/bidan/cubit/get_bidan_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/register_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
@@ -104,6 +105,9 @@ class BlocProviders {
         create: (_) => ConnectivityCubit()..checkNow(),
       ), //. check internet
       BlocProvider<BackPressCubit>(create: (context) => BackPressCubit()),
+      BlocProvider<GetBidanCubit>(
+        create: (context) => GetBidanCubit(user: context.read<UserCubit>()),
+      ),
     ];
   }
 }
