@@ -215,8 +215,7 @@ class _RegisterState extends State<RegisterScreen> {
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.assignment_ind),
                       ),
-                      items: ['bidan'].map((role) {
-                        //, 'koordinator'
+                      items: ['bidan', 'koordinator'].map((role) {
                         return DropdownMenuItem(value: role, child: Text(role));
                       }).toList(),
                       onChanged: (val) => setState(() => _role = val!),
