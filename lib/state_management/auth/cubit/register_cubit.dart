@@ -44,6 +44,7 @@ class RegisterCubit extends Cubit<RegisterState> {
     return _levenshtein(a.toLowerCase(), b.toLowerCase()) <= maxDistance;
   }
 
+  bool isSearchLoading = false;
   Future<void> searchPuskesmas(String query) async {
     final cleanedQuery = query
         .toLowerCase()
@@ -59,10 +60,12 @@ class RegisterCubit extends Cubit<RegisterState> {
 
     if (kataKunci.isEmpty) {
       _puskesmasList = [];
+      isSearchLoading = false;
       emit(RegisterSearchLoaded(_puskesmasList));
       return;
     }
-
+    isSearchLoading = true;
+    emit(RegisterSearchLoading());
     try {
       // ambil kandidat dari Firestore (cocok salah satu kata)
       final snapshot = await FirebaseFirestore.instance
@@ -87,9 +90,12 @@ class RegisterCubit extends Cubit<RegisterState> {
         );
       }).toList();
 
+      isSearchLoading = false;
       emit(RegisterSearchLoaded(_puskesmasList));
     } catch (e) {
-      emit(RegisterFailure('Gagal cari puskesmas: $e'));
+      isSearchLoading = false;
+      // emit(RegisterFailure('data puskesmas tidak ketemu: $e'));
+      emit(RegisterFailure('data puskesmas tidak ketemu'));
     }
   }
 

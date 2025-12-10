@@ -250,9 +250,21 @@ class _RegisterState extends State<RegisterScreen> {
                           controller: controller,
                           focusNode: focusNode,
                           textCapitalization: TextCapitalization.characters,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'Cari Puskesmas',
-                            prefixIcon: Icon(Icons.local_hospital),
+                            prefixIcon: const Icon(Icons.local_hospital),
+                            suffixIcon: cubit.isSearchLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(10),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 4,
+                                      ),
+                                    ),
+                                  )
+                                : null,
                           ),
                           validator: (_) => _selectedPuskesmas == null
                               ? 'Pilih puskesmas'

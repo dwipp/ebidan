@@ -31,3 +31,5 @@ class RegisterSearchLoaded extends RegisterState {
   @override
   List<Object?> get props => [list];
 }
+
+class RegisterSearchLoading extends RegisterState {}
