@@ -15,6 +15,14 @@ import 'package:package_info_plus/package_info_plus.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
+  String _getKategori(Bidan user) {
+    if (user.role.toLowerCase() == 'koordinator') {
+      return user.role;
+    } else {
+      return user.kategoriBidan ?? user.role;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     context.read<ProfileCubit>().getProfile();
@@ -108,7 +116,7 @@ class ProfileScreen extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          user.role,
+          _getKategori(user),
           style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
         ),
       ],
@@ -323,10 +331,30 @@ class ProfileScreen extends StatelessWidget {
             ),
             const Divider(height: 20, thickness: 1),
             _buildInfoRow(Icons.email, "Email", user.email),
-            _buildInfoRow(Icons.badge, "NIP", user.nip),
             _buildInfoRow(Icons.phone, "Nomor HP", user.noHp),
-            _buildInfoRow(Icons.local_hospital, "Puskesmas", user.puskesmas),
-            _buildInfoRow(Icons.location_on, "Desa", user.desa),
+            if (user.role.toLowerCase() == 'bidan') ...[
+              if (user.kategoriBidan?.toLowerCase() == 'bidan desa') ...[
+                _buildInfoRow(Icons.badge, "NIP", user.nip ?? ''),
+                _buildInfoRow(
+                  Icons.local_hospital,
+                  "Puskesmas",
+                  user.puskesmas ?? '',
+                ),
+                _buildInfoRow(Icons.location_on, "Desa", user.desa ?? ''),
+              ] else if (user.kategoriBidan?.toLowerCase() ==
+                  'bidan praktik mandiri') ...[
+                _buildInfoRow(
+                  Icons.badge,
+                  "Nama Praktik",
+                  user.namaPraktik ?? '',
+                ),
+                _buildInfoRow(
+                  Icons.badge,
+                  "Alamat Praktik",
+                  user.alamatPraktik ?? '',
+                ),
+              ],
+            ],
           ],
         ),
       ),

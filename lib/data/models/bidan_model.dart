@@ -18,33 +18,45 @@ class Bidan {
   final String? photoUrl;
   final bool active;
   final DateTime createdAt;
-  final String desa;
   final String email;
-  final String idPuskesmas; // simpan path
   final String nama;
-  final String nip;
   final String noHp;
-  final String puskesmas;
   final String role;
   final Subscription? subscription;
   final Trial trial;
+  final String? kategoriBidan;
+
+  // BPM
+  final String? namaPraktik;
+  final String? alamatPraktik;
+
+  // Bidan Desa/Puskesmas
+  final String? puskesmas;
+  final String? idPuskesmas; // simpan path
+  final String? nip;
+  final String? desa;
+
+  // Bidan Koordinator
   final List<String>? bidanIds;
 
   Bidan({
     required this.photoUrl,
     required this.active,
     required this.createdAt,
-    required this.desa,
+    this.desa,
     required this.email,
-    required this.idPuskesmas,
+    this.idPuskesmas,
     required this.nama,
-    required this.nip,
+    this.nip,
     required this.noHp,
-    required this.puskesmas,
+    this.puskesmas,
     required this.role,
     required this.subscription,
     required this.trial,
     this.bidanIds,
+    this.kategoriBidan,
+    this.namaPraktik,
+    this.alamatPraktik,
   });
 
   /// ---------------- FROM FIRESTORE ----------------
@@ -58,7 +70,7 @@ class Bidan {
       createdAt: (json['created_at'] as Timestamp).toDate(),
       desa: json['desa'] ?? '',
       email: json['email'] ?? '',
-      idPuskesmas: (json['id_puskesmas'] as DocumentReference).path,
+      idPuskesmas: (json['id_puskesmas'] as DocumentReference?)?.path,
       nama: json['nama'] ?? '',
       nip: json['nip'] ?? '',
       noHp: json['no_hp'] ?? '',
@@ -71,6 +83,9 @@ class Bidan {
       bidanIds: json['bidan_ids'] != null
           ? List<String>.from(json['bidan_ids'])
           : null,
+      kategoriBidan: json['kategori_bidan'],
+      namaPraktik: json['nama_praktik'],
+      alamatPraktik: json['alamat_praktik'],
     );
   }
 
@@ -81,7 +96,9 @@ class Bidan {
       'created_at': createdAt,
       'desa': desa,
       'email': email,
-      'id_puskesmas': FirebaseFirestore.instance.doc(idPuskesmas),
+      'id_puskesmas': idPuskesmas != null
+          ? FirebaseFirestore.instance.doc(idPuskesmas!)
+          : null,
       'nama': nama,
       'nip': nip,
       'no_hp': noHp,
@@ -90,6 +107,9 @@ class Bidan {
       if (subscription != null) 'subscription': subscription!.toFirestore(),
       'trial': trial.toFirestore(),
       'bidan_ids': bidanIds,
+      'kategori_bidan': kategoriBidan,
+      'nama_praktik': namaPraktik,
+      'alamat_praktik': alamatPraktik,
     };
   }
 
@@ -114,6 +134,9 @@ class Bidan {
       bidanIds: json['bidan_ids'] != null
           ? List<String>.from(json['bidan_ids'])
           : null,
+      kategoriBidan: json['kategori_bidan'],
+      namaPraktik: json['nama_praktik'],
+      alamatPraktik: json['alamat_praktik'],
     );
   }
 
@@ -133,6 +156,9 @@ class Bidan {
       if (subscription != null) 'subscription': subscription!.toJson(),
       'trial': trial.toJson(),
       'bidan_ids': bidanIds,
+      'kategori_bidan': kategoriBidan,
+      'nama_praktik': namaPraktik,
+      'alamat_praktik': alamatPraktik,
     };
   }
 
