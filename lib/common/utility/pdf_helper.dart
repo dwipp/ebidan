@@ -132,7 +132,26 @@ class PdfHelper {
     // sorting biar urut naik
     allowedMonths.sort((a, b) => a.compareTo(b));
 
-    String selected = allowedMonths.isNotEmpty ? allowedMonths.last : "";
+    if (allowedMonths.isEmpty) {
+      await showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Data Belum Siap"),
+          content: const Text(
+            "Belum ada data yang siap untuk dijadikan Laporan PDF.\n\nCoba lagi di awal bulan depan.",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+      return null;
+    }
+
+    String selected = allowedMonths.last;
 
     return showDialog<String>(
       context: context,
