@@ -332,28 +332,28 @@ class ProfileScreen extends StatelessWidget {
             const Divider(height: 20, thickness: 1),
             _buildInfoRow(Icons.email, "Email", user.email),
             _buildInfoRow(Icons.phone, "Nomor HP", user.noHp),
-            if (user.role.toLowerCase() == 'bidan') ...[
-              if (user.kategoriBidan?.toLowerCase() == 'bidan desa') ...[
-                _buildInfoRow(Icons.badge, "NIP", user.nip ?? ''),
-                _buildInfoRow(
-                  Icons.local_hospital,
-                  "Puskesmas",
-                  user.puskesmas ?? '',
-                ),
-                _buildInfoRow(Icons.location_on, "Desa", user.desa ?? ''),
-              ] else if (user.kategoriBidan?.toLowerCase() ==
-                  'bidan praktik mandiri') ...[
-                _buildInfoRow(
-                  Icons.badge,
-                  "Nama Praktik",
-                  user.namaPraktik ?? '',
-                ),
-                _buildInfoRow(
-                  Icons.badge,
-                  "Alamat Praktik",
-                  user.alamatPraktik ?? '',
-                ),
+            if (user.kategoriBidan?.toLowerCase() == 'bidan desa' ||
+                user.role.toLowerCase() == 'koordinator') ...[
+              _buildInfoRow(Icons.badge, "NIP", user.nip ?? '-'),
+              _buildInfoRow(
+                Icons.local_hospital,
+                "Puskesmas",
+                user.puskesmas ?? '-',
+              ),
+              if (user.role.toLowerCase() == 'bidan') ...[
+                _buildInfoRow(Icons.location_on, "Desa", user.desa ?? '-'),
               ],
+            ] else ...[
+              _buildInfoRow(
+                Icons.house_sharp,
+                "Nama Praktik",
+                user.namaPraktik ?? '-',
+              ),
+              _buildInfoRow(
+                Icons.near_me,
+                "Alamat Praktik",
+                user.alamatPraktik ?? '-',
+              ),
             ],
           ],
         ),
