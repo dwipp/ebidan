@@ -143,7 +143,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   bool _isBPM(Bidan? user) {
     if (user?.role.toLowerCase() == 'bidan' &&
-        user?.kategoriBidan?.toLowerCase() == 'bidan praktik mandiri') {
+        user?.kategoriBidan?.toLowerCase() == 'praktik mandiri bidan') {
       return true;
     } else {
       return false;

@@ -26,7 +26,7 @@ class Bidan {
   final Trial trial;
   final String? kategoriBidan;
 
-  // BPM
+  // PMB
   final String? namaPraktik;
   final String? alamatPraktik;
 

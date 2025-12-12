@@ -111,7 +111,7 @@ class _RegisterState extends State<RegisterScreen> {
 
   bool _isBPM() {
     if (_role.toLowerCase() == 'bidan' &&
-        _bidanKind.toLowerCase() == 'bidan praktik mandiri') {
+        _bidanKind.toLowerCase() == 'praktik mandiri bidan') {
       return true;
     } else {
       return false;
@@ -262,7 +262,7 @@ class _RegisterState extends State<RegisterScreen> {
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.assignment_ind),
                         ),
-                        items: ['Bidan Desa', 'Bidan Praktik Mandiri'].map((
+                        items: ['Bidan Desa', 'Praktik Mandiri Bidan'].map((
                           role,
                         ) {
                           return DropdownMenuItem(

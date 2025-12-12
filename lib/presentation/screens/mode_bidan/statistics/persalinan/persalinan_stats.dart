@@ -51,7 +51,7 @@ class PersalinanStatsScreen extends StatelessWidget {
         'main': 1,
       },
       {
-        "label": "Bidan Praktik Mandiri",
+        "label": "Praktik Mandiri Bidan",
         "value": selectedPersalinan?.tempatBpm,
         'cross': 2,
         'main': 1.7,
