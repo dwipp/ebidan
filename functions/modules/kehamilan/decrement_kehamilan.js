@@ -13,14 +13,14 @@ export const decrementKehamilanCount = onDocumentDeleted(
     const idBidan = kehamilanData.id_bidan;
     const statsRef = db.doc(`statistics/${idBidan}`);
 
-    // ambil bulan dari created_at kehamilan
+    // Tentukan bulan dari created_at
     let currentMonth;
     if (kehamilanData.created_at?.toDate) {
       currentMonth = getMonthString(kehamilanData.created_at.toDate());
     } else if (kehamilanData.created_at) {
       currentMonth = getMonthString(new Date(kehamilanData.created_at));
     } else {
-      currentMonth = getMonthString(new Date()); // fallback
+      currentMonth = getMonthString(new Date());
     }
 
     await db.runTransaction(async (t) => {
@@ -30,11 +30,13 @@ export const decrementKehamilanCount = onDocumentDeleted(
       const data = doc.data();
       const byMonth = data.by_month || {};
 
-      // pastikan struktur by_month ada
+      // Pastikan struktur bulan & kategori selalu ada (identik dengan increment)
       if (!byMonth[currentMonth]) byMonth[currentMonth] = {};
+
       if (!byMonth[currentMonth].kehamilan) {
         byMonth[currentMonth].kehamilan = { total: 0 };
       }
+
       if (!byMonth[currentMonth].resti) {
         byMonth[currentMonth].resti = {
           resti_nakes: 0,
@@ -44,99 +46,91 @@ export const decrementKehamilanCount = onDocumentDeleted(
           too_old: 0,
           paritas_tinggi: 0,
           tb_under_145: 0,
-          pernah_abortus: 0
+          pernah_abortus: 0,
         };
-      } else {
-        if (byMonth[currentMonth].resti.anemia === undefined) {
-          byMonth[currentMonth].resti.anemia = 0;
-        }
-        if (byMonth[currentMonth].resti.resti_nakes === undefined) {
-          byMonth[currentMonth].resti.resti_nakes = 0;
-        }
-        if (byMonth[currentMonth].resti.resti_masyarakat === undefined) {
-          byMonth[currentMonth].resti.resti_masyarakat = 0;
-        }
-        if (byMonth[currentMonth].resti.too_young === undefined) {
-          byMonth[currentMonth].resti.too_young = 0;
-        }
-        if (byMonth[currentMonth].resti.too_old === undefined) {
-          byMonth[currentMonth].resti.too_old = 0;
-        }
-        if (byMonth[currentMonth].resti.paritas_tinggi === undefined) {
-          byMonth[currentMonth].resti.paritas_tinggi = 0;
-        }
-        if (byMonth[currentMonth].resti.tb_under_145 === undefined) {
-          byMonth[currentMonth].resti.tb_under_145 = 0;
-        }
-        if (byMonth[currentMonth].resti.pernah_abortus === undefined) {
-          byMonth[currentMonth].resti.pernah_abortus = 0;
-        }
       }
 
-      // decrement total
+      // Normalisasi agar tidak undefined
+      const resti = byMonth[currentMonth].resti;
+      const ensure = (field) => {
+        if (resti[field] === undefined) resti[field] = 0;
+      };
+
+      [
+        "resti_nakes",
+        "resti_masyarakat",
+        "anemia",
+        "too_young",
+        "too_old",
+        "paritas_tinggi",
+        "tb_under_145",
+        "pernah_abortus",
+      ].forEach((f) => ensure(f));
+
+      // ========== DECREMENT LOGIC ==========
       safeDecrement(byMonth[currentMonth].kehamilan, "total");
 
-      // decrement sesuai status_resti
+      // status resti
       if (kehamilanData.status_resti === "Nakes") {
-        safeDecrement(byMonth[currentMonth].resti, "resti_nakes");
+        safeDecrement(resti, "resti_nakes");
       } else if (kehamilanData.status_resti === "Masyarakat") {
-        safeDecrement(byMonth[currentMonth].resti, "resti_masyarakat");
+        safeDecrement(resti, "resti_masyarakat");
       }
 
-      // decrement anemia (Hb < 11)
+      // anemia
       if (
         kehamilanData.hemoglobin !== undefined &&
         Number(kehamilanData.hemoglobin) < 11
       ) {
-        safeDecrement(byMonth[currentMonth].resti, "anemia");
+        safeDecrement(resti, "anemia");
       }
-      
-      // resti usia
+
+      // usia
       if (kehamilanData.usia !== undefined) {
         const usia = Number(kehamilanData.usia);
         if (!isNaN(usia)) {
-          if (usia < 20) {
-            safeDecrement(byMonth[currentMonth].resti, 'too_young');
-          } else if (usia > 35) {
-            safeDecrement(byMonth[currentMonth].resti, 'too_old');
-          }
+          if (usia < 20) safeDecrement(resti, "too_young");
+          else if (usia > 35) safeDecrement(resti, "too_old");
         }
       }
 
+      // gpa
       if (typeof kehamilanData.gpa === "string") {
-        // resti paritas_tinggi (G >= 4)
-        const matchGravida = kehamilanData.gpa.match(/G(\d+)/i);
-        if (matchGravida) {
-          const gravida = Number(matchGravida[1]);
+        const matchG = kehamilanData.gpa.match(/G(\d+)/i);
+        if (matchG) {
+          const gravida = Number(matchG[1]);
           if (!isNaN(gravida) && gravida >= 4) {
-            safeDecrement(byMonth[currentMonth].resti, "paritas_tinggi");
+            safeDecrement(resti, "paritas_tinggi");
           }
         }
 
-        // resti pernah abortus (A > 0)
-        const matchAbortus = kehamilanData.gpa.match(/A(\d+)/i);
-        if (matchAbortus) {
-          const abortus = Number(matchAbortus[1]);
+        const matchA = kehamilanData.gpa.match(/A(\d+)/i);
+        if (matchA) {
+          const abortus = Number(matchA[1]);
           if (!isNaN(abortus) && abortus > 0) {
-            safeDecrement(byMonth[currentMonth].resti, "pernah_abortus");
+            safeDecrement(resti, "pernah_abortus");
           }
         }
       }
-      
-      // resti panggul sempit (tb<145)
+
+      // tb
       if (kehamilanData.tb !== undefined) {
         const tb = Number(kehamilanData.tb);
-        if (tb < 145) {
-          safeDecrement(byMonth[currentMonth].resti, "tb_under_145");
+        if (!isNaN(tb) && tb < 145) {
+          safeDecrement(resti, "tb_under_145");
         }
       }
 
+      // update Firestore
       t.set(
         statsRef,
         {
           ...data,
           kehamilan: {
-            all_bumil_count: safeDecrement(data.kehamilan || { all_bumil_count: 0 }, "all_bumil_count"),
+            all_bumil_count: safeDecrement(
+              data.kehamilan || { all_bumil_count: 0 },
+              "all_bumil_count"
+            ),
           },
           last_updated_month: currentMonth,
           by_month: byMonth,
@@ -145,11 +139,7 @@ export const decrementKehamilanCount = onDocumentDeleted(
       );
 
       console.log(
-        `Decremented kehamilan count for month: ${currentMonth}, bidan: ${idBidan}, status_resti: ${kehamilanData.status_resti || "-"}, anemia: ${
-          kehamilanData.hemoglobin !== undefined && Number(kehamilanData.hemoglobin) < 11 ? "yes" : "no"
-        }, paritas_tinggi: ${
-          typeof kehamilanData.gpa === "string" && /G(\d+)/i.test(kehamilanData.gpa) && Number(kehamilanData.gpa.match(/G(\d+)/i)[1]) >= 4 ? "yes" : "no"
-        }`
+        `Decrement kehamilan - bidan: ${idBidan}, month: ${currentMonth}`
       );
     });
   }
