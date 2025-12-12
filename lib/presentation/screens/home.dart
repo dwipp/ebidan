@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          floatingActionButton: user?.role != 'bidan'
+          floatingActionButton: user?.role.toLowerCase() != 'bidan'
               ? null
               : AvatarGlow(
                   glowRadiusFactor: 0.7,
@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       user == null) {
                                     _shouldRegister(context);
                                   } else {
-                                    if (user?.role != 'bidan') {
+                                    if (user?.role.toLowerCase() != 'bidan') {
                                       Navigator.of(
                                         context,
                                       ).pushNamed(AppRouter.listBidan);
@@ -216,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            user?.role != 'bidan'
+                                            user?.role.toLowerCase() != 'bidan'
                                                 ? 'Data Bidan'
                                                 : "Kehamilan",
                                             style: TextStyle(
@@ -241,7 +241,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: _buildStatItem(
                                               icon: Icons.groups,
                                               iconColor: Colors.white,
-                                              label: user?.role != 'bidan'
+                                              label:
+                                                  user?.role.toLowerCase() !=
+                                                      'bidan'
                                                   ? 'Total bidan terdaftar'
                                                   : "Total Ibu Hamil",
                                               value:
@@ -250,7 +252,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   .withOpacity(0.3),
                                             ),
                                           ),
-                                          if (user?.role == 'bidan') ...[
+                                          if (user?.role.toLowerCase() ==
+                                              'bidan') ...[
                                             const SizedBox(width: 16),
                                             Expanded(
                                               child: _buildStatItem(
