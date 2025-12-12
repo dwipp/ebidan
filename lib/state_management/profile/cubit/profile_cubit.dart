@@ -58,6 +58,8 @@ class ProfileCubit extends Cubit<ProfileState> {
         'puskesmas': updatedBidan.puskesmas,
         'id_puskesmas': updatedBidan.idPuskesmas,
         'desa': updatedBidan.desa,
+        'nama_praktik': updatedBidan.namaPraktik,
+        'alamat_praktik': updatedBidan.alamatPraktik,
       });
 
       // Refresh data lokal + UserCubit

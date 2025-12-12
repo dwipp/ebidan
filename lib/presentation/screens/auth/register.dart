@@ -378,6 +378,9 @@ class _RegisterState extends State<RegisterScreen> {
                           label: 'Desa',
                           icon: Icons.house,
                           controller: _desaController,
+                          validator: (val) => _isBidanDesa() && val!.isEmpty
+                              ? 'Wajib diisi'
+                              : null,
                         ),
                       ],
                     ] else ...[

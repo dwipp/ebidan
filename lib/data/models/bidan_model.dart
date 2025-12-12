@@ -316,21 +316,25 @@ DateTime? _parseDate(dynamic value) {
 }
 
 class MinimumBidan {
-  final String desa;
+  final String? desa;
   final String email;
   final String nama;
-  final String nip;
+  final String? nip;
   final String noHp;
-  final String puskesmas;
-  final DocumentReference idPuskesmas;
+  final String? puskesmas;
+  final DocumentReference? idPuskesmas;
+  final String? namaPraktik;
+  final String? alamatPraktik;
 
   MinimumBidan({
-    required this.desa,
+    this.desa,
     required this.email,
     required this.nama,
-    required this.nip,
+    this.nip,
     required this.noHp,
-    required this.puskesmas,
-    required this.idPuskesmas,
+    this.puskesmas,
+    this.idPuskesmas,
+    this.namaPraktik,
+    this.alamatPraktik,
   });
 }
