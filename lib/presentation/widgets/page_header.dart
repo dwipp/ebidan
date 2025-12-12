@@ -46,18 +46,25 @@ class PageHeader extends StatelessWidget implements PreferredSizeWidget {
 
                 return Row(
                   children: [
-                    connected
-                        ? Image.asset(
-                            'assets/icons/ic_online_mode.png',
-                            width: 24,
-                            height: 24,
-                            color: context.themeColors.tertiary,
-                          )
-                        : Image.asset(
-                            'assets/icons/ic_offline_mode.png',
-                            width: 24,
-                            height: 24,
-                          ),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      transitionBuilder: (child, anim) =>
+                          FadeTransition(opacity: anim, child: child),
+                      child: connected
+                          ? Image.asset(
+                              'assets/icons/ic_online_mode.png',
+                              key: const ValueKey('online'),
+                              width: 24,
+                              height: 24,
+                              color: context.themeColors.tertiary,
+                            )
+                          : Image.asset(
+                              'assets/icons/ic_offline_mode.png',
+                              key: const ValueKey('offline'),
+                              width: 24,
+                              height: 24,
+                            ),
+                    ),
                     if (onlyNetwork) const SizedBox(width: 12),
                   ],
                 );
