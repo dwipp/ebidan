@@ -41,6 +41,20 @@ class Statistic {
   ByMonthStats? get lastMonthData {
     return byMonth[lastUpdatedMonth];
   }
+
+  Statistic copyWith({
+    KehamilanStats? kehamilan,
+    PasienStats? pasien,
+    String? lastUpdatedMonth,
+    Map<String, ByMonthStats>? byMonth,
+  }) {
+    return Statistic(
+      kehamilan: kehamilan ?? this.kehamilan,
+      pasien: pasien ?? this.pasien,
+      lastUpdatedMonth: lastUpdatedMonth ?? this.lastUpdatedMonth,
+      byMonth: byMonth ?? this.byMonth,
+    );
+  }
 }
 
 class KehamilanStats {
@@ -55,6 +69,10 @@ class KehamilanStats {
   Map<String, dynamic> toMap() {
     return {'all_bumil_count': allBumilCount};
   }
+
+  KehamilanStats copyWith({int? allBumilCount}) {
+    return KehamilanStats(allBumilCount: allBumilCount ?? this.allBumilCount);
+  }
 }
 
 class PasienStats {
@@ -68,6 +86,10 @@ class PasienStats {
 
   Map<String, dynamic> toMap() {
     return {'all_pasien_count': allPasienCount};
+  }
+
+  PasienStats copyWith({int? allPasienCount}) {
+    return PasienStats(allPasienCount: allPasienCount ?? this.allPasienCount);
   }
 }
 
@@ -107,6 +129,24 @@ class ByMonthStats {
       'resti': resti.toMap(),
       'sf': sf.toMap(),
     };
+  }
+
+  ByMonthStats copyWith({
+    KehamilanByMonth? kehamilan,
+    PasienByMonth? pasien,
+    KunjunganByMonth? kunjungan,
+    PersalinanByMonth? persalinan,
+    RestiByMonth? resti,
+    SfByMonth? sf,
+  }) {
+    return ByMonthStats(
+      kehamilan: kehamilan ?? this.kehamilan,
+      pasien: pasien ?? this.pasien,
+      kunjungan: kunjungan ?? this.kunjungan,
+      persalinan: persalinan ?? this.persalinan,
+      resti: resti ?? this.resti,
+      sf: sf ?? this.sf,
+    );
   }
 }
 

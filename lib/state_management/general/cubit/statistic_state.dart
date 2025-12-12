@@ -1,11 +1,16 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'statistic_cubit.dart';
 
-sealed class StatisticState extends Equatable {
+class StatisticState extends Equatable {
   final Statistic? statistic;
   const StatisticState({required this.statistic});
 
   @override
   List<Object?> get props => [statistic];
+
+  StatisticState copyWith({Statistic? statistic}) {
+    return StatisticState(statistic: statistic ?? this.statistic);
+  }
 }
 
 final class StatisticInitial extends StatisticState {
