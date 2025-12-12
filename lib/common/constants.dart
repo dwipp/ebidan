@@ -3,7 +3,7 @@ class Constants {
     'Rumah Sakit',
     'Rumah Sakit Bersalin',
     'Klinik',
-    'Bidan Praktik Mandiri',
+    'Praktik Mandiri Bidan',
     'Puskesmas',
     'Poskesdes',
     'Polindes',
