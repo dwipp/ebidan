@@ -36,22 +36,28 @@ class PageHeader extends StatelessWidget implements PreferredSizeWidget {
             ),
       title: title,
       actions: [
-        if (!(hideNetworkStatus))
-          // indikator network
+        if (!hideNetworkStatus)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
               builder: (context, state) {
                 final connected = state.connected;
                 final onlyNetwork = actions == null || actions!.isEmpty;
+
                 return Row(
                   children: [
-                    Icon(
-                      connected ? Icons.wifi : Icons.wifi_off,
-                      color: connected
-                          ? context.themeColors.tertiary
-                          : context.themeColors.error,
-                    ),
+                    connected
+                        ? Image.asset(
+                            'assets/icons/ic_online_mode.png',
+                            width: 24,
+                            height: 24,
+                            color: context.themeColors.tertiary,
+                          )
+                        : Image.asset(
+                            'assets/icons/ic_offline_mode.png',
+                            width: 24,
+                            height: 24,
+                          ),
                     if (onlyNetwork) const SizedBox(width: 12),
                   ],
                 );
