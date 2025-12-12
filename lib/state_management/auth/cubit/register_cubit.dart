@@ -107,7 +107,10 @@ class RegisterCubit extends Cubit<RegisterState> {
     required String email,
     required String role,
     required String desa,
-    required Map<String, dynamic> selectedPuskesmas,
+    required String bidanKind,
+    required String alamatPraktik,
+    required String namaPraktik,
+    required Map<String, dynamic>? selectedPuskesmas,
   }) async {
     final auth = FirebaseAuth.instance.currentUser;
     if (auth == null) {
@@ -118,19 +121,24 @@ class RegisterCubit extends Cubit<RegisterState> {
     emit(RegisterSubmitting());
 
     try {
-      final puskesmasRef = selectedPuskesmas['ref'] as DocumentReference;
+      final puskesmasRef = selectedPuskesmas != null
+          ? selectedPuskesmas['ref'] as DocumentReference
+          : null;
       final bidan = Bidan(
         photoUrl: auth.photoURL,
         active: true,
         createdAt: DateTime.now(),
         desa: desa,
         email: email,
-        idPuskesmas: puskesmasRef.path,
+        idPuskesmas: puskesmasRef?.path,
         nama: nama,
         nip: nip,
         noHp: noHp,
-        puskesmas: selectedPuskesmas['nama'],
+        puskesmas: selectedPuskesmas?['nama'],
         role: role,
+        kategoriBidan: bidanKind,
+        namaPraktik: namaPraktik,
+        alamatPraktik: alamatPraktik,
         subscription: Subscription(),
         trial: Trial(
           expiryDate: DateTime.now().add(const Duration(days: 30)),

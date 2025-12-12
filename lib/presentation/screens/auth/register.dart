@@ -1,4 +1,3 @@
-import 'package:ebidan/common/utility/extensions.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
@@ -25,11 +24,14 @@ class _RegisterState extends State<RegisterScreen> {
   final _noHpController = TextEditingController();
   final _emailController = TextEditingController();
   final _desaController = TextEditingController();
+  final _namaPraktikController = TextEditingController();
+  final _alamatPraktikController = TextEditingController();
   final _puskesmasTextController = TextEditingController();
 
   final _scrollController = ScrollController();
 
-  String _role = 'bidan';
+  String _role = 'Bidan';
+  String _bidanKind = 'Bidan Desa';
   Map<String, dynamic>? _selectedPuskesmas;
 
   User? user = FirebaseAuth.instance.currentUser;
@@ -53,6 +55,8 @@ class _RegisterState extends State<RegisterScreen> {
     _noHpController.dispose();
     _nipController.dispose();
     _namaController.dispose();
+    _namaPraktikController.dispose();
+    _alamatPraktikController.dispose();
     super.dispose();
   }
 
@@ -70,7 +74,11 @@ class _RegisterState extends State<RegisterScreen> {
   }
 
   void _submitForm(BuildContext context) {
-    if (!_formKey.currentState!.validate() || _selectedPuskesmas == null) {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if ((_isKoordinator() || _isBidanDesa()) && _selectedPuskesmas == null) {
       return;
     }
 
@@ -81,8 +89,41 @@ class _RegisterState extends State<RegisterScreen> {
       email: _emailController.text,
       role: _role,
       desa: _desaController.text,
-      selectedPuskesmas: _selectedPuskesmas!,
+      selectedPuskesmas: _selectedPuskesmas,
+      bidanKind: _bidanKind,
+      namaPraktik: _namaPraktikController.text,
+      alamatPraktik: _alamatPraktikController.text,
     );
+  }
+
+  bool _isKoordinator() {
+    return _role.toLowerCase() == 'koordinator';
+  }
+
+  bool _isBidanDesa() {
+    if (_role.toLowerCase() == 'bidan' &&
+        _bidanKind.toLowerCase() == 'bidan desa') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool _isBPM() {
+    if (_role.toLowerCase() == 'bidan' &&
+        _bidanKind.toLowerCase() == 'bidan praktik mandiri') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  String _getKategori() {
+    if (_role.toLowerCase() == 'koordinator') {
+      return _role;
+    } else {
+      return _bidanKind;
+    }
   }
 
   @override
@@ -123,9 +164,7 @@ class _RegisterState extends State<RegisterScreen> {
                 context: context,
                 builder: (_) => AlertDialog(
                   title: const Text('Sukses'),
-                  content: Text(
-                    '${state.role.capitalizeFirst()} berhasil di registrasi',
-                  ),
+                  content: Text('${_getKategori()} berhasil di registrasi'),
                   actions: [
                     TextButton(
                       onPressed: () {
@@ -175,12 +214,6 @@ class _RegisterState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 12),
                     CustomTextField(
-                      label: 'NIP',
-                      icon: Icons.badge,
-                      controller: _nipController,
-                    ),
-                    const SizedBox(height: 12),
-                    CustomTextField(
                       label: 'No HP',
                       icon: Icons.phone,
                       controller: _noHpController,
@@ -215,102 +248,157 @@ class _RegisterState extends State<RegisterScreen> {
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.assignment_ind),
                       ),
-                      items: ['bidan'].map((role) {
-                        //, 'koordinator'
+                      items: ['Bidan', 'Koordinator'].map((role) {
                         return DropdownMenuItem(value: role, child: Text(role));
                       }).toList(),
                       onChanged: (val) => setState(() => _role = val!),
                     ),
 
+                    if (_role.toLowerCase() == 'bidan') ...[
+                      const SizedBox(height: 16),
+                      _buildSectionTitle('Kategori Bidan'),
+                      DropdownButtonFormField<String>(
+                        value: _bidanKind,
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.assignment_ind),
+                        ),
+                        items: ['Bidan Desa', 'Bidan Praktik Mandiri'].map((
+                          role,
+                        ) {
+                          return DropdownMenuItem(
+                            value: role,
+                            child: Text(role),
+                          );
+                        }).toList(),
+                        onChanged: (val) => setState(() => _bidanKind = val!),
+                      ),
+                    ],
+
                     const SizedBox(height: 16),
-                    _buildSectionTitle('Puskesmas'),
-                    Autocomplete<Map<String, dynamic>>(
-                      displayStringForOption: (option) =>
-                          option['nama'], // tetap simpan nama saja untuk hasil pilihan
-                      optionsBuilder: (textEditingValue) async {
-                        await cubit.searchPuskesmas(textEditingValue.text);
-                        return cubit.puskesmasList;
-                      },
-                      onSelected: (option) {
-                        setState(() {
-                          _selectedPuskesmas = option;
-                          _puskesmasTextController.text = option['nama'];
-                        });
-                      },
-                      fieldViewBuilder: (context, controller, focusNode, _) {
-                        focusNode.addListener(() {
-                          if (focusNode.hasFocus) {
-                            Future.delayed(Duration(milliseconds: 300), () {
-                              Scrollable.ensureVisible(
-                                focusNode.context!,
-                                duration: const Duration(milliseconds: 400),
-                                curve: Curves.easeInOut,
-                              );
-                            });
-                          }
-                        });
-                        _puskesmasTextController.value = controller.value;
-                        return TextFormField(
-                          controller: controller,
-                          focusNode: focusNode,
-                          textCapitalization: TextCapitalization.characters,
-                          decoration: InputDecoration(
-                            labelText: 'Cari Puskesmas',
-                            prefixIcon: const Icon(Icons.local_hospital),
-                            suffixIcon: cubit.isSearchLoading
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(10),
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 4,
+                    _buildSectionTitle('Misc'),
+
+                    if (_bidanKind.toLowerCase() == 'bidan desa' ||
+                        _role.toLowerCase() == 'koordinator') ...[
+                      CustomTextField(
+                        label: 'NIP',
+                        icon: Icons.badge,
+                        controller: _nipController,
+                        validator: (val) => _isBidanDesa() && val!.isEmpty
+                            ? 'Wajib diisi'
+                            : null,
+                      ),
+                      const SizedBox(height: 12),
+                      Autocomplete<Map<String, dynamic>>(
+                        displayStringForOption: (option) =>
+                            option['nama'], // tetap simpan nama saja untuk hasil pilihan
+                        optionsBuilder: (textEditingValue) async {
+                          await cubit.searchPuskesmas(textEditingValue.text);
+                          return cubit.puskesmasList;
+                        },
+                        onSelected: (option) {
+                          setState(() {
+                            _selectedPuskesmas = option;
+                            _puskesmasTextController.text = option['nama'];
+                          });
+                        },
+                        fieldViewBuilder: (context, controller, focusNode, _) {
+                          focusNode.addListener(() {
+                            if (focusNode.hasFocus) {
+                              Future.delayed(Duration(milliseconds: 300), () {
+                                Scrollable.ensureVisible(
+                                  focusNode.context!,
+                                  duration: const Duration(milliseconds: 400),
+                                  curve: Curves.easeInOut,
+                                );
+                              });
+                            }
+                          });
+                          _puskesmasTextController.value = controller.value;
+                          return TextFormField(
+                            controller: controller,
+                            focusNode: focusNode,
+                            textCapitalization: TextCapitalization.characters,
+                            decoration: InputDecoration(
+                              labelText: 'Cari Puskesmas',
+                              prefixIcon: const Icon(Icons.local_hospital),
+                              suffixIcon: cubit.isSearchLoading
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(10),
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 4,
+                                        ),
                                       ),
-                                    ),
-                                  )
+                                    )
+                                  : null,
+                            ),
+                            validator: (_) =>
+                                (_isKoordinator() || _isBidanDesa()) &&
+                                    _selectedPuskesmas == null
+                                ? 'Pilih puskesmas'
                                 : null,
-                          ),
-                          validator: (_) => _selectedPuskesmas == null
-                              ? 'Pilih puskesmas'
-                              : null,
-                        );
-                      },
-                      optionsViewBuilder: (context, onSelected, options) {
-                        return Align(
-                          alignment: Alignment.topLeft,
-                          child: Material(
-                            elevation: 4,
-                            child: SizedBox(
-                              height: 200,
-                              child: ListView.builder(
-                                padding: EdgeInsets.zero,
-                                itemCount: options.length,
-                                itemBuilder: (context, index) {
-                                  final option = options.elementAt(index);
-                                  return ListTile(
-                                    title: Text(
-                                      option['nama'],
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
+                          );
+                        },
+                        optionsViewBuilder: (context, onSelected, options) {
+                          return Align(
+                            alignment: Alignment.topLeft,
+                            child: Material(
+                              elevation: 4,
+                              child: SizedBox(
+                                height: 200,
+                                child: ListView.builder(
+                                  padding: EdgeInsets.zero,
+                                  itemCount: options.length,
+                                  itemBuilder: (context, index) {
+                                    final option = options.elementAt(index);
+                                    return ListTile(
+                                      title: Text(
+                                        option['nama'],
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
-                                    ),
-                                    subtitle: Text(
-                                      '${option['kecamatan'] ?? ''}, ${option['kabupaten'] ?? ''}, ${option['provinsi'] ?? ''}',
-                                    ),
-                                    onTap: () => onSelected(option),
-                                  );
-                                },
+                                      subtitle: Text(
+                                        '${option['kecamatan'] ?? ''}, ${option['kabupaten'] ?? ''}, ${option['provinsi'] ?? ''}',
+                                      ),
+                                      onTap: () => onSelected(option),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                    CustomTextField(
-                      label: 'Desa',
-                      icon: Icons.house,
-                      controller: _desaController,
-                    ),
+                          );
+                        },
+                      ),
+                      if (_role.toLowerCase() == 'bidan') ...[
+                        const SizedBox(height: 12),
+                        CustomTextField(
+                          label: 'Desa',
+                          icon: Icons.house,
+                          controller: _desaController,
+                          validator: (val) => _isBidanDesa() && val!.isEmpty
+                              ? 'Wajib diisi'
+                              : null,
+                        ),
+                      ],
+                    ] else ...[
+                      CustomTextField(
+                        label: 'Nama Praktik',
+                        icon: Icons.house_sharp,
+                        controller: _namaPraktikController,
+                        textCapitalization: TextCapitalization.words,
+                        validator: (val) =>
+                            _isBPM() && val!.isEmpty ? 'Wajib diisi' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      CustomTextField(
+                        label: 'Alamat Praktik',
+                        icon: Icons.near_me,
+                        controller: _alamatPraktikController,
+                      ),
+                    ],
 
                     const SizedBox(height: 24),
                     SizedBox(

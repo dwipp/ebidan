@@ -1,17 +1,23 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 class RemoteConfigHelper {
   static final _remoteConfig = FirebaseRemoteConfig.instance;
 
   static Future<void> initialize() async {
+    final hasConnection = await InternetConnection().hasInternetAccess;
     await _remoteConfig.setConfigSettings(
       RemoteConfigSettings(
         fetchTimeout: const Duration(seconds: 10),
         minimumFetchInterval: const Duration(hours: 12),
       ),
     );
-    await _remoteConfig.fetchAndActivate();
+    if (hasConnection) {
+      await _remoteConfig.fetchAndActivate();
+    } else {
+      await _remoteConfig.activate();
+    }
   }
 
   // versioning - force update
