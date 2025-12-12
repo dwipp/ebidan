@@ -50,14 +50,14 @@ class PdfHelper {
     "persalinan_tempat_rs": "RS",
     "persalinan_tempat_rsb": "RS Bersalin",
     "persalinan_tempat_klinik": "Klinik",
-    "persalinan_tempat_bpm": "Bidan Praktik Mandiri",
+    "persalinan_tempat_bpm": "Praktik Mandiri Bidan",
     "persalinan_tempat_pkm": "Puskesmas",
     "persalinan_tempat_poskesdes": "Poskesdes",
     "persalinan_tempat_polindes": "Polindes",
     "persalinan_persalinan_faskes": "Persalinan Faskes",
     "persalinan_tempat_rumah_nakes": "Rumah Nakes",
     "persalinan_tempat_jalan_nakes": "Jalan Nakes",
-    "persalinan_nakes": "Persalinan Nakes",
+    "persalinan_persalinan_nakes": "Persalinan Nakes",
     "persalinan_tempat_rumah_dk_klg": "Rumah dgn Dukun atau Keluarga",
     "persalinan_cara_normal": "Spontan Belakang Kepala (Normal)",
     "persalinan_cara_vacuum": "Vacuum Extraction",
@@ -346,7 +346,9 @@ class PdfHelper {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text(
-                "Laporan Desa ${bidan.desa}",
+                bidan.kategoriBidan?.toLowerCase() == 'bidan desa'
+                    ? "Laporan Desa ${bidan.desa}"
+                    : 'Laporan PMB ${bidan.namaPraktik}',
                 style: pw.TextStyle(
                   color: PdfColors.white,
                   fontSize: 18,
@@ -354,7 +356,9 @@ class PdfHelper {
                 ),
               ),
               pw.Text(
-                "Puskesmas ${bidan.puskesmas}",
+                bidan.kategoriBidan?.toLowerCase() == 'bidan desa'
+                    ? "Puskesmas ${bidan.puskesmas}"
+                    : bidan.nama,
                 style: pw.TextStyle(
                   color: PdfColors.white,
                   fontSize: 14,
