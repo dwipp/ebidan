@@ -466,8 +466,10 @@ class PdfHelper {
     //   byMonth: byMonth,
     //   uid: uid,
     // );
-
-    previewPdf(context, pdfBytes, "laporan-${bidan.desa.toLowerCase()}");
+    final filename = bidan.kategoriBidan?.toLowerCase() == 'bidan desa'
+        ? 'laporan ${bidan.desa?.toLowerCase()}'
+        : 'laporan ${bidan.namaPraktik?.toLowerCase()}';
+    previewPdf(context, pdfBytes, filename);
 
     Snackbar.show(
       context,
