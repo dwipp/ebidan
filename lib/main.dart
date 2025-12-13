@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/auth_gate.dart';
 import 'package:ebidan/common/utility/remote_config_helper.dart';
 import 'package:ebidan/firebase_options.dart';
@@ -24,6 +25,9 @@ void main() async {
   } catch (e) {
     print('firebase init error: $e');
   }
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+  );
 
   await RemoteConfigHelper.initialize();
 
