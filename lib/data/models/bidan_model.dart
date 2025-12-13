@@ -70,7 +70,9 @@ class Bidan {
       createdAt: (json['created_at'] as Timestamp).toDate(),
       desa: json['desa'] ?? '',
       email: json['email'] ?? '',
-      idPuskesmas: (json['id_puskesmas'] as DocumentReference?)?.path,
+      idPuskesmas: json['id_puskesmas'] is DocumentReference
+          ? (json['id_puskesmas'] as DocumentReference).path
+          : null,
       nama: json['nama'] ?? '',
       nip: json['nip'] ?? '',
       noHp: json['no_hp'] ?? '',
