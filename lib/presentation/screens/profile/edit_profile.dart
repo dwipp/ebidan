@@ -68,7 +68,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _hpController.text = user?.noHp ?? '';
     _puskesmasController.text = user?.puskesmas ?? '';
     _desaController.text = user?.desa ?? '';
-    _selectedPuskesmas = {'ref': user?.idPuskesmas, 'nama': user?.puskesmas};
+    _selectedPuskesmas = {
+      'ref': user?.idPuskesmas != null
+          ? FirebaseFirestore.instance.doc(user!.idPuskesmas!)
+          : null,
+      'nama': user?.puskesmas,
+    };
     _namaPraktikController.text = user?.namaPraktik ?? '';
     _alamatPraktikController.text = user?.alamatPraktik ?? '';
   }
