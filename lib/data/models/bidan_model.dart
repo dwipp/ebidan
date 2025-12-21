@@ -89,9 +89,7 @@ class Bidan {
           : null,
       trial: Trial.fromJson(json['trial'] ?? {}),
       premiumSource: json['premium_source'] ?? '',
-      premiumUntil:
-          (json['premium_until'] as Timestamp?)?.toDate() ??
-          DateTime.fromMillisecondsSinceEpoch(0),
+      premiumUntil: _parseDate(json['premium_until']),
       bidanIds: json['bidan_ids'] != null
           ? List<String>.from(json['bidan_ids'])
           : null,
@@ -119,7 +117,7 @@ class Bidan {
       if (subscription != null) 'subscription': subscription!.toFirestore(),
       'trial': trial.toFirestore(),
       'premium_source': premiumSource,
-      'premium_until': premiumUntil,
+      'premium_until': premiumUntil?.millisecondsSinceEpoch,
       'bidan_ids': bidanIds,
       'kategori_bidan': kategoriBidan,
       'nama_praktik': namaPraktik,
