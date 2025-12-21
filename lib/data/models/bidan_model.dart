@@ -26,7 +26,7 @@ class Bidan {
 
   // premium
   final String? premiumSource;
-  final DateTime? premiumUntil;
+  DateTime? premiumUntil;
   final Subscription? subscription;
   final Trial trial;
 
