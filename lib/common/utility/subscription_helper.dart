@@ -39,9 +39,12 @@ class SubscriptionHelper {
       // update UserCubit disini
       var bidan = user.state;
       if (bidan != null) {
+        final accessDuration = DateTime.fromMillisecondsSinceEpoch(
+          subs['expiry_date'],
+        );
         final newSubs = Subscription(
           autoRenew: subs['auto_renew'] ?? false,
-          expiryDate: DateTime.fromMillisecondsSinceEpoch(subs['expiry_date']),
+          expiryDate: accessDuration,
           status: subs['status'],
           lastVerified: DateTime.fromMillisecondsSinceEpoch(
             subs['last_verified'],
@@ -68,6 +71,8 @@ class SubscriptionHelper {
           subscription: newSubs,
           trial: bidan.trial,
           bidanIds: bidan.bidanIds,
+          premiumUntil: accessDuration,
+          premiumSource: PremiumType.subscription.name,
         );
         user.loggedInUser(newBidan);
       }

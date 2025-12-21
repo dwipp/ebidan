@@ -22,9 +22,13 @@ class Bidan {
   final String nama;
   final String noHp;
   final String role;
+  final String? kategoriBidan;
+
+  // premium
+  final String? premiumSource;
+  final DateTime? premiumUntil;
   final Subscription? subscription;
   final Trial trial;
-  final String? kategoriBidan;
 
   // PMB
   final String? namaPraktik;
@@ -51,12 +55,14 @@ class Bidan {
     required this.noHp,
     this.puskesmas,
     required this.role,
-    required this.subscription,
-    required this.trial,
     this.bidanIds,
     this.kategoriBidan,
     this.namaPraktik,
     this.alamatPraktik,
+    required this.premiumSource,
+    required this.premiumUntil,
+    required this.subscription,
+    required this.trial,
   });
 
   /// ---------------- FROM FIRESTORE ----------------
@@ -82,6 +88,10 @@ class Bidan {
           ? Subscription.fromJson(json['subscription'])
           : null,
       trial: Trial.fromJson(json['trial'] ?? {}),
+      premiumSource: json['premium_source'] ?? '',
+      premiumUntil:
+          (json['premium_until'] as Timestamp?)?.toDate() ??
+          DateTime.fromMillisecondsSinceEpoch(0),
       bidanIds: json['bidan_ids'] != null
           ? List<String>.from(json['bidan_ids'])
           : null,
@@ -108,6 +118,8 @@ class Bidan {
       'role': role,
       if (subscription != null) 'subscription': subscription!.toFirestore(),
       'trial': trial.toFirestore(),
+      'premium_source': premiumSource,
+      'premium_until': premiumUntil,
       'bidan_ids': bidanIds,
       'kategori_bidan': kategoriBidan,
       'nama_praktik': namaPraktik,
@@ -133,6 +145,8 @@ class Bidan {
           ? Subscription.fromJson(json['subscription'])
           : null,
       trial: Trial.fromJson(json['trial'] ?? {}),
+      premiumSource: json['premium_source'] ?? '',
+      premiumUntil: _parseDate(json['premium_until']) ?? DateTime.now(),
       bidanIds: json['bidan_ids'] != null
           ? List<String>.from(json['bidan_ids'])
           : null,
@@ -155,6 +169,8 @@ class Bidan {
       'no_hp': noHp,
       'puskesmas': puskesmas,
       'role': role,
+      'premium_until': premiumUntil?.toIso8601String(),
+      'premium_source': premiumSource,
       if (subscription != null) 'subscription': subscription!.toJson(),
       'trial': trial.toJson(),
       'bidan_ids': bidanIds,
@@ -168,25 +184,48 @@ class Bidan {
   PremiumStatus get premiumStatus {
     final now = DateTime.now();
 
-    if (trial.expiryDate.isAfter(now)) {
+    if (premiumUntil != null && premiumUntil!.isAfter(now)) {
+      var premiumType = PremiumType.none;
+      switch (premiumSource) {
+        case 'subscription':
+          premiumType = PremiumType.subscription;
+          break;
+        case 'trial':
+          premiumType = PremiumType.trial;
+          break;
+        default:
+          premiumType = PremiumType.none;
+          break;
+      }
       return PremiumStatus(
         isPremium: true,
-        premiumType: PremiumType.trial,
-        expiryDate: trial.expiryDate,
+        premiumType: premiumType,
+        expiryDate: premiumUntil,
       );
     }
 
-    if (subscription != null &&
-        (subscription!.status == 'active' ||
-            subscription!.status == 'canceled') &&
-        subscription!.expiryDate != null &&
-        subscription!.expiryDate!.isAfter(now)) {
-      return PremiumStatus(
-        isPremium: true,
-        premiumType: PremiumType.subscription,
-        expiryDate: subscription!.expiryDate,
-      );
-    }
+    // logic lama, sudah tidak dipakai
+    /*else {
+      if (trial.expiryDate.isAfter(now)) {
+        return PremiumStatus(
+          isPremium: true,
+          premiumType: PremiumType.trial,
+          expiryDate: trial.expiryDate,
+        );
+      }
+
+      if (subscription != null &&
+          (subscription!.status == 'active' ||
+              subscription!.status == 'canceled') &&
+          subscription!.expiryDate != null &&
+          subscription!.expiryDate!.isAfter(now)) {
+        return PremiumStatus(
+          isPremium: true,
+          premiumType: PremiumType.subscription,
+          expiryDate: subscription!.expiryDate,
+        );
+      }
+    }*/
 
     return PremiumStatus(
       isPremium: false,
