@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum PremiumType { none, trial, subscription }
@@ -235,6 +236,50 @@ class Bidan {
   PremiumType get premiumType => premiumStatus.premiumType;
   DateTime? get expiryDate => premiumStatus.expiryDate;
   bool get isSubsCanceled => subscription?.status == 'canceled';
+
+  Bidan copyWith({
+    String? photoUrl,
+    bool? active,
+    DateTime? createdAt,
+    String? email,
+    String? nama,
+    String? noHp,
+    String? role,
+    String? kategoriBidan,
+    String? premiumSource,
+    DateTime? premiumUntil,
+    Subscription? subscription,
+    Trial? trial,
+    String? namaPraktik,
+    String? alamatPraktik,
+    String? puskesmas,
+    String? idPuskesmas,
+    String? nip,
+    String? desa,
+    List<String>? bidanIds,
+  }) {
+    return Bidan(
+      photoUrl: photoUrl ?? this.photoUrl,
+      active: active ?? this.active,
+      createdAt: createdAt ?? this.createdAt,
+      email: email ?? this.email,
+      nama: nama ?? this.nama,
+      noHp: noHp ?? this.noHp,
+      role: role ?? this.role,
+      kategoriBidan: kategoriBidan ?? this.kategoriBidan,
+      premiumSource: premiumSource ?? this.premiumSource,
+      premiumUntil: premiumUntil ?? this.premiumUntil,
+      subscription: subscription ?? this.subscription,
+      trial: trial ?? this.trial,
+      namaPraktik: namaPraktik ?? this.namaPraktik,
+      alamatPraktik: alamatPraktik ?? this.alamatPraktik,
+      puskesmas: puskesmas ?? this.puskesmas,
+      idPuskesmas: idPuskesmas ?? this.idPuskesmas,
+      nip: nip ?? this.nip,
+      desa: desa ?? this.desa,
+      bidanIds: bidanIds ?? this.bidanIds,
+    );
+  }
 }
 
 /// ---------------- SUBSCRIPTION ----------------

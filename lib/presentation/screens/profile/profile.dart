@@ -1,10 +1,11 @@
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/data/models/access_code_model.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/browser_launcher.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
-import 'package:ebidan/presentation/widgets/textfield.dart';
+import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/access_code_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:flutter/foundation.dart';
@@ -354,8 +355,9 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showAccessCodeBottomSheet(BuildContext parentContext, Bidan user) {
-    final TextEditingController controller = TextEditingController();
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+    final controller = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    parentContext.read<AccessCodeCubit>().reset();
 
     showModalBottomSheet(
       context: parentContext,
@@ -373,66 +375,72 @@ class ProfileScreen extends StatelessWidget {
           ),
           child: Form(
             key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade400,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const Text(
-                  "Masukkan Kode Akses",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  "Kode akan menambahkan durasi akses premium Anda",
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-                ),
-                const SizedBox(height: 16),
+            child: BlocConsumer<AccessCodeCubit, AccessCodeState>(
+              listener: (context, state) {
+                if (state is AccessCodeSuccess) {
+                  Navigator.pop(context);
 
-                /// INPUT + VALIDATOR
-                BlocConsumer<AccessCodeCubit, AccessCodeState>(
-                  listener: (context, state) {
-                    if (state is AccessCodeSuccess) {
-                      Navigator.pop(context);
-
-                      // Tampilkan popup pakai parent context
-                      showDialog(
-                        context: parentContext,
-                        builder: (_) => AlertDialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          title: const Text("Berhasil"),
-                          content: Text("${state.accessName}\n${state.desc}"),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(parentContext).pop();
-                                // need to reload profile UI
-                              },
-
-                              child: const Text("OK"),
-                            ),
-                          ],
+                  showDialog(
+                    context: parentContext,
+                    builder: (_) => AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      title: const Text("Berhasil"),
+                      content: Text("${state.accessName}\n${state.desc}"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(parentContext).pop();
+                            parentContext.read<ProfileCubit>().getProfile();
+                          },
+                          child: const Text("OK"),
                         ),
-                      );
-                    }
-                  },
-                  builder: (context, state) {
-                    return TextFormField(
+                      ],
+                    ),
+                  );
+                }
+              },
+              builder: (context, state) {
+                final isLoading = state is AccessCodeLoading;
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade400,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      "Masukkan Kode Akses",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      "Kode akan menambahkan durasi akses premium Anda",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    TextFormField(
                       controller: controller,
                       autofocus: true,
                       textCapitalization: TextCapitalization.characters,
+                      enabled: !isLoading,
                       validator: (value) {
                         final code = value?.trim() ?? '';
 
@@ -440,15 +448,9 @@ class ProfileScreen extends StatelessWidget {
                           return "Kode tidak boleh kosong";
                         }
 
-                        /// RULE BISNIS UTAMA
                         if (user.premiumSource ==
                             PremiumType.subscription.name) {
                           return "Tidak berlaku untuk pengguna berlangganan.";
-                        }
-
-                        if (state is AccessCodeFailure) {
-                          print(state.message);
-                          return state.message;
                         }
 
                         return null;
@@ -459,35 +461,65 @@ class ProfileScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
 
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final isValid = formKey.currentState?.validate() ?? false;
+                    if (state is AccessCodeFailure)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4, left: 12),
+                        child: Text(
+                          state.message,
+                          style: TextStyle(
+                            color: context.themeColors.error,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
 
-                      if (!isValid) return;
+                    const SizedBox(height: 16),
 
-                      final code = controller.text.trim();
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                context.read<AccessCodeCubit>().reset();
+                                final isValid =
+                                    formKey.currentState?.validate() ?? false;
+                                if (!isValid) return;
 
-                      context.read<AccessCodeCubit>().redeemAccessCode(code);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.themeColors.primary,
-                      foregroundColor: context.themeColors.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                                context
+                                    .read<AccessCodeCubit>()
+                                    .redeemAccessCode(
+                                      controller.text.trim(),
+                                      connectivity: context
+                                          .read<ConnectivityCubit>()
+                                          .state,
+                                    );
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.themeColors.primary,
+                          foregroundColor: context.themeColors.onPrimary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text("Gunakan Kode"),
                       ),
                     ),
-                    child: const Text("Gunakan Kode"),
-                  ),
-                ),
-                const SizedBox(height: 8),
-              ],
+                    const SizedBox(height: 8),
+                  ],
+                );
+              },
             ),
           ),
         );
