@@ -190,7 +190,7 @@ class ProfileScreen extends StatelessWidget {
     switch (status.premiumType) {
       case PremiumType.trial:
         final expiry = user.expiryDate;
-        title = "Trial Aktif";
+        title = "Akses Gratis";
         color = context.themeColors.trialBg;
         icon = Icons.star;
 
@@ -342,7 +342,7 @@ class ProfileScreen extends StatelessWidget {
         ),
         subtitle: Text(
           isEligible
-              ? "Masukkan kode untuk tambah durasi premium"
+              ? "Masukkan kode untuk menambah Akses Gratis"
               : "Tidak tersedia untuk langganan aktif",
         ),
         trailing: const Icon(Icons.chevron_right),
@@ -428,7 +428,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      "Kode akan menambahkan durasi akses premium Anda",
+                      "Kode akan menambahkan durasi Akses Gratis Anda",
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey.shade600,
