@@ -92,6 +92,8 @@ export const handleSubscriptionUpdate = onMessagePublished(
       // 6. Update data di Firestore
       await userRef.set(
         {
+          premium_source: "subscription",
+          premium_until: expiryDate,
           subscription: {
             expiry_date: expiryDate,
             status,
