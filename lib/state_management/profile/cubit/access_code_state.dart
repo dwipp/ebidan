@@ -12,10 +12,10 @@ class AccessCodeInitial extends AccessCodeState {}
 class AccessCodeLoading extends AccessCodeState {}
 
 class AccessCodeSuccess extends AccessCodeState {
-  final String accessName;
+  final String title;
   final String desc;
 
-  const AccessCodeSuccess({required this.accessName, required this.desc});
+  const AccessCodeSuccess({required this.title, required this.desc});
 }
 
 class AccessCodeFailure extends AccessCodeState {

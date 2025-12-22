@@ -95,10 +95,7 @@ class AccessCodeCubit extends Cubit<AccessCodeState> {
       }
 
       emit(
-        AccessCodeSuccess(
-          accessName: accessCode.accessName,
-          desc: accessCode.desc,
-        ),
+        AccessCodeSuccess(title: accessCode.msgTitle, desc: accessCode.msgDesc),
       );
     } catch (e) {
       emit(

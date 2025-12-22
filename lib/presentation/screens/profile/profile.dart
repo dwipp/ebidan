@@ -386,8 +386,8 @@ class ProfileScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      title: const Text("Berhasil"),
-                      content: Text("${state.accessName}\n${state.desc}"),
+                      title: Text(state.title),
+                      content: Text(state.desc),
                       actions: [
                         TextButton(
                           onPressed: () {
