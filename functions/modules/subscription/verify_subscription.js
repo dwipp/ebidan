@@ -70,6 +70,8 @@ export const verifySubscription = onCall(
         }
     await userRef.set(
       {
+        premium_source: "subscription",
+        premium_until: expiryDate,
         subscription,
       },
       { merge: true }

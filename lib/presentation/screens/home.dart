@@ -17,6 +17,7 @@ import 'package:ebidan/state_management/mode_bidan/kehamilan/cubit/selected_keha
 import 'package:ebidan/state_management/mode_bidan/kunjungan/cubit/selected_kunjungan_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/persalinan/cubit/selected_persalinan_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/riwayat/cubit/selected_riwayat_cubit.dart';
+import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<ProfileCubit>().getProfile();
     verifySubs();
   }
 
