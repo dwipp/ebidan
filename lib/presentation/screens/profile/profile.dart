@@ -1,5 +1,4 @@
 import 'package:ebidan/common/utility/app_colors.dart';
-import 'package:ebidan/data/models/access_code_model.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/browser_launcher.dart';
