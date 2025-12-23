@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "ebidan-91a0e"
-  }
+    "default": "ebidan-91a0e",
+    "ebidan-prod": "ebidan-91a0e",
+    "ebidan-dev": "ebidan-dev"
+  },
+  "targets": {},
+  "etags": {}
 }
