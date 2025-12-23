@@ -124,6 +124,8 @@ class RegisterCubit extends Cubit<RegisterState> {
       final puskesmasRef = selectedPuskesmas != null
           ? selectedPuskesmas['ref'] as DocumentReference
           : null;
+      final now = DateTime.now();
+      final accessDuration = now.add(const Duration(days: 30));
       final bidan = Bidan(
         photoUrl: auth.photoURL,
         active: true,
@@ -140,11 +142,9 @@ class RegisterCubit extends Cubit<RegisterState> {
         namaPraktik: namaPraktik,
         alamatPraktik: alamatPraktik,
         subscription: Subscription(),
-        trial: Trial(
-          expiryDate: DateTime.now().add(const Duration(days: 30)),
-          startDate: DateTime.now(),
-          used: true,
-        ),
+        trial: Trial(expiryDate: accessDuration, startDate: now, used: true),
+        premiumUntil: accessDuration,
+        premiumSource: PremiumType.trial.name,
       );
       await FirebaseFirestore.instance
           .collection('bidan')

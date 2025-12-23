@@ -80,7 +80,7 @@ class PremiumWarningBanner extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: premiumType == PremiumType.trial
-                          ? "Masa Trial Anda akan berakhir dalam $daysLeft hari.\n"
+                          ? "Akses Gratis Anda akan berakhir dalam $daysLeft hari.\n"
                           : "Langganan Premium Anda akan berakhir dalam $daysLeft hari.\n",
                     ),
                     TextSpan(
