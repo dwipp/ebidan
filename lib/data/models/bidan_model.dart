@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum PremiumType { none, trial, subscription }
@@ -22,9 +23,13 @@ class Bidan {
   final String nama;
   final String noHp;
   final String role;
+  final String? kategoriBidan;
+
+  // premium
+  final String? premiumSource;
+  DateTime? premiumUntil;
   final Subscription? subscription;
   final Trial trial;
-  final String? kategoriBidan;
 
   // PMB
   final String? namaPraktik;
@@ -51,12 +56,14 @@ class Bidan {
     required this.noHp,
     this.puskesmas,
     required this.role,
-    required this.subscription,
-    required this.trial,
     this.bidanIds,
     this.kategoriBidan,
     this.namaPraktik,
     this.alamatPraktik,
+    required this.premiumSource,
+    required this.premiumUntil,
+    required this.subscription,
+    required this.trial,
   });
 
   /// ---------------- FROM FIRESTORE ----------------
@@ -70,7 +77,9 @@ class Bidan {
       createdAt: (json['created_at'] as Timestamp).toDate(),
       desa: json['desa'] ?? '',
       email: json['email'] ?? '',
-      idPuskesmas: (json['id_puskesmas'] as DocumentReference?)?.path,
+      idPuskesmas: json['id_puskesmas'] is DocumentReference
+          ? (json['id_puskesmas'] as DocumentReference).path
+          : null,
       nama: json['nama'] ?? '',
       nip: json['nip'] ?? '',
       noHp: json['no_hp'] ?? '',
@@ -80,6 +89,8 @@ class Bidan {
           ? Subscription.fromJson(json['subscription'])
           : null,
       trial: Trial.fromJson(json['trial'] ?? {}),
+      premiumSource: json['premium_source'] ?? '',
+      premiumUntil: _parseDate(json['premium_until']),
       bidanIds: json['bidan_ids'] != null
           ? List<String>.from(json['bidan_ids'])
           : null,
@@ -106,6 +117,8 @@ class Bidan {
       'role': role,
       if (subscription != null) 'subscription': subscription!.toFirestore(),
       'trial': trial.toFirestore(),
+      'premium_source': premiumSource,
+      'premium_until': premiumUntil?.millisecondsSinceEpoch,
       'bidan_ids': bidanIds,
       'kategori_bidan': kategoriBidan,
       'nama_praktik': namaPraktik,
@@ -131,6 +144,8 @@ class Bidan {
           ? Subscription.fromJson(json['subscription'])
           : null,
       trial: Trial.fromJson(json['trial'] ?? {}),
+      premiumSource: json['premium_source'] ?? '',
+      premiumUntil: _parseDate(json['premium_until']) ?? DateTime.now(),
       bidanIds: json['bidan_ids'] != null
           ? List<String>.from(json['bidan_ids'])
           : null,
@@ -153,6 +168,8 @@ class Bidan {
       'no_hp': noHp,
       'puskesmas': puskesmas,
       'role': role,
+      'premium_until': premiumUntil?.toIso8601String(),
+      'premium_source': premiumSource,
       if (subscription != null) 'subscription': subscription!.toJson(),
       'trial': trial.toJson(),
       'bidan_ids': bidanIds,
@@ -166,25 +183,48 @@ class Bidan {
   PremiumStatus get premiumStatus {
     final now = DateTime.now();
 
-    if (trial.expiryDate.isAfter(now)) {
+    if (premiumUntil != null && premiumUntil!.isAfter(now)) {
+      var premiumType = PremiumType.none;
+      switch (premiumSource) {
+        case 'subscription':
+          premiumType = PremiumType.subscription;
+          break;
+        case 'trial':
+          premiumType = PremiumType.trial;
+          break;
+        default:
+          premiumType = PremiumType.none;
+          break;
+      }
       return PremiumStatus(
         isPremium: true,
-        premiumType: PremiumType.trial,
-        expiryDate: trial.expiryDate,
+        premiumType: premiumType,
+        expiryDate: premiumUntil,
       );
     }
 
-    if (subscription != null &&
-        (subscription!.status == 'active' ||
-            subscription!.status == 'canceled') &&
-        subscription!.expiryDate != null &&
-        subscription!.expiryDate!.isAfter(now)) {
-      return PremiumStatus(
-        isPremium: true,
-        premiumType: PremiumType.subscription,
-        expiryDate: subscription!.expiryDate,
-      );
-    }
+    // logic lama, sudah tidak dipakai
+    /*else {
+      if (trial.expiryDate.isAfter(now)) {
+        return PremiumStatus(
+          isPremium: true,
+          premiumType: PremiumType.trial,
+          expiryDate: trial.expiryDate,
+        );
+      }
+
+      if (subscription != null &&
+          (subscription!.status == 'active' ||
+              subscription!.status == 'canceled') &&
+          subscription!.expiryDate != null &&
+          subscription!.expiryDate!.isAfter(now)) {
+        return PremiumStatus(
+          isPremium: true,
+          premiumType: PremiumType.subscription,
+          expiryDate: subscription!.expiryDate,
+        );
+      }
+    }*/
 
     return PremiumStatus(
       isPremium: false,
@@ -196,6 +236,50 @@ class Bidan {
   PremiumType get premiumType => premiumStatus.premiumType;
   DateTime? get expiryDate => premiumStatus.expiryDate;
   bool get isSubsCanceled => subscription?.status == 'canceled';
+
+  Bidan copyWith({
+    String? photoUrl,
+    bool? active,
+    DateTime? createdAt,
+    String? email,
+    String? nama,
+    String? noHp,
+    String? role,
+    String? kategoriBidan,
+    String? premiumSource,
+    DateTime? premiumUntil,
+    Subscription? subscription,
+    Trial? trial,
+    String? namaPraktik,
+    String? alamatPraktik,
+    String? puskesmas,
+    String? idPuskesmas,
+    String? nip,
+    String? desa,
+    List<String>? bidanIds,
+  }) {
+    return Bidan(
+      photoUrl: photoUrl ?? this.photoUrl,
+      active: active ?? this.active,
+      createdAt: createdAt ?? this.createdAt,
+      email: email ?? this.email,
+      nama: nama ?? this.nama,
+      noHp: noHp ?? this.noHp,
+      role: role ?? this.role,
+      kategoriBidan: kategoriBidan ?? this.kategoriBidan,
+      premiumSource: premiumSource ?? this.premiumSource,
+      premiumUntil: premiumUntil ?? this.premiumUntil,
+      subscription: subscription ?? this.subscription,
+      trial: trial ?? this.trial,
+      namaPraktik: namaPraktik ?? this.namaPraktik,
+      alamatPraktik: alamatPraktik ?? this.alamatPraktik,
+      puskesmas: puskesmas ?? this.puskesmas,
+      idPuskesmas: idPuskesmas ?? this.idPuskesmas,
+      nip: nip ?? this.nip,
+      desa: desa ?? this.desa,
+      bidanIds: bidanIds ?? this.bidanIds,
+    );
+  }
 }
 
 /// ---------------- SUBSCRIPTION ----------------

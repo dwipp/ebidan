@@ -14,7 +14,8 @@ import { incrementPersalinanCount } from "./modules/persalinan/increment_persali
 import { recalculatePersalinanStats } from "./modules/persalinan/recalculate_persalinan.js";
 import { saveSubscription } from "./modules/subscription/save_subscription.js";
 import { verifySubscription } from "./modules/subscription/verify_subscription.js";
-import {handleSubscriptionUpdate} from "./modules/subscription/rtdn_subscription.js";
+import { handleSubscriptionUpdate } from "./modules/subscription/rtdn_subscription.js";
+import { migratePremiumUntil } from "./modules/subscription/migrate_premium_until.js";
 
 export { 
     incrementPasienCount, 
@@ -32,5 +33,6 @@ export {
     recalculateKehamilanStats,
     saveSubscription,
     verifySubscription,
-    handleSubscriptionUpdate
+    handleSubscriptionUpdate,
+    migratePremiumUntil
 };

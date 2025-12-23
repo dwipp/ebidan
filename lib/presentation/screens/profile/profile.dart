@@ -4,6 +4,8 @@ import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/browser_launcher.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
+import 'package:ebidan/state_management/profile/cubit/access_code_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +87,11 @@ class ProfileScreen extends StatelessWidget {
                 status: user.premiumStatus,
                 user: user,
               ),
-              const SizedBox(height: 24),
+              if (user.premiumSource != PremiumType.subscription.name) ...[
+                const SizedBox(height: 16),
+                _buildAccessCodeTrigger(context, user),
+              ],
+              const SizedBox(height: 16),
               _buildUserInfoCard(context, user),
               const SizedBox(height: 8),
               _buildVersionInfo(),
@@ -97,29 +103,46 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildProfileHeader(Bidan user) {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 50,
-          backgroundColor: Colors.blue.shade100,
-          backgroundImage: user.photoUrl != null
-              ? NetworkImage(user.photoUrl!) as ImageProvider
-              : null,
-          child: user.photoUrl == null
-              ? const Icon(Icons.person, size: 50, color: Colors.blueGrey)
-              : null,
-        ),
-        const SizedBox(height: 16),
-        Text(
-          user.nama,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          _getKategori(user),
-          style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(left: 12, right: 12),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 35,
+            backgroundColor: Colors.blue.shade100,
+            backgroundImage: user.photoUrl != null
+                ? NetworkImage(user.photoUrl!)
+                : null,
+            child: user.photoUrl == null
+                ? const Icon(Icons.person, size: 28, color: Colors.blueGrey)
+                : null,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user.nama,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _getKategori(user),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -141,7 +164,7 @@ class ProfileScreen extends StatelessWidget {
       decoration: TextDecoration.underline,
     );
 
-    Widget _buildInfoSection() {
+    Widget buildInfoSection() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -166,7 +189,7 @@ class ProfileScreen extends StatelessWidget {
     switch (status.premiumType) {
       case PremiumType.trial:
         final expiry = user.expiryDate;
-        title = "Trial Aktif";
+        title = "Akses Gratis";
         color = context.themeColors.trialBg;
         icon = Icons.star;
 
@@ -230,7 +253,7 @@ class ProfileScreen extends StatelessWidget {
             ] else
               const Text("Berakhir pada: Tidak diketahui"),
             const SizedBox(height: 4),
-            _buildInfoSection(),
+            buildInfoSection(),
           ],
         );
         break;
@@ -300,6 +323,206 @@ class ProfileScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAccessCodeTrigger(BuildContext context, Bidan user) {
+    final bool isEligible =
+        user.premiumStatus.premiumType != PremiumType.subscription;
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 1,
+      child: ListTile(
+        leading: Icon(Icons.vpn_key, color: context.themeColors.primary),
+        title: const Text(
+          "Punya Kode Akses?",
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(
+          isEligible
+              ? "Masukkan kode untuk menambah Akses Gratis"
+              : "Tidak tersedia untuk langganan aktif",
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        enabled: isEligible,
+        onTap: isEligible
+            ? () => _showAccessCodeBottomSheet(context, user)
+            : null,
+      ),
+    );
+  }
+
+  void _showAccessCodeBottomSheet(BuildContext parentContext, Bidan user) {
+    final controller = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    parentContext.read<AccessCodeCubit>().reset();
+
+    showModalBottomSheet(
+      context: parentContext,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          child: Form(
+            key: formKey,
+            child: BlocConsumer<AccessCodeCubit, AccessCodeState>(
+              listener: (context, state) {
+                if (state is AccessCodeSuccess) {
+                  Navigator.pop(context);
+
+                  showDialog(
+                    context: parentContext,
+                    builder: (_) => AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      title: Text(state.title),
+                      content: Text(state.desc),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(parentContext).pop();
+                            parentContext.read<ProfileCubit>().getProfile();
+                          },
+                          child: const Text("OK"),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+              builder: (context, state) {
+                final isLoading = state is AccessCodeLoading;
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade400,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      "Masukkan Kode Akses",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      "Kode akan menambahkan durasi Akses Gratis Anda",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: controller,
+                      autofocus: true,
+                      textCapitalization: TextCapitalization.characters,
+                      enabled: !isLoading,
+                      validator: (value) {
+                        final code = value?.trim() ?? '';
+
+                        if (code.isEmpty) {
+                          return "Kode tidak boleh kosong";
+                        }
+
+                        if (user.premiumSource ==
+                            PremiumType.subscription.name) {
+                          return "Tidak berlaku untuk pengguna berlangganan.";
+                        }
+
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        hintText: "XXXXXX",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+
+                    if (state is AccessCodeFailure)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4, left: 12),
+                        child: Text(
+                          state.message,
+                          style: TextStyle(
+                            color: context.themeColors.error,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+
+                    const SizedBox(height: 16),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                context.read<AccessCodeCubit>().reset();
+                                final isValid =
+                                    formKey.currentState?.validate() ?? false;
+                                if (!isValid) return;
+
+                                context
+                                    .read<AccessCodeCubit>()
+                                    .redeemAccessCode(
+                                      controller.text.trim(),
+                                      connectivity: context
+                                          .read<ConnectivityCubit>()
+                                          .state,
+                                    );
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.themeColors.primary,
+                          foregroundColor: context.themeColors.onPrimary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text("Gunakan Kode"),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
