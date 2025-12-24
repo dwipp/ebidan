@@ -46,10 +46,6 @@ jobs:
             mkdir -p android/app/src/prod
             echo '${{ secrets.GOOGLE_SERVICES_JSON_PROD }}' > android/app/src/prod/google-services.json
 
-      - run: |
-            ls android/app
-            cat android/key.properties
-
       - name: Build App Bundle
         run: flutter build appbundle --release --flavor prod
 
@@ -57,7 +53,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJson: ${{ secrets.PLAY_STORE_JSON_KEY }}
-          packageName: com.nama.app
-          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          packageName: id.ebidan.aos
+          releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
           track: internal
           status: completed
