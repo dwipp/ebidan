@@ -3,7 +3,7 @@ name: Deploy to Play Store
 on:
   push:
     branches:
-      - dev_env
+      - master
 
 jobs:
   build-and-deploy:
