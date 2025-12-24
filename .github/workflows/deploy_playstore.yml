@@ -38,6 +38,11 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+    
+      - name: Create google-services.json (prod)
+        run: |
+            mkdir -p android/app/src/prod
+            echo '${{ secrets.GOOGLE_SERVICES_JSON_PROD }}' > android/app/src/prod/google-services.json
 
       - name: Build App Bundle
         run: flutter build appbundle --release --flavor prod
