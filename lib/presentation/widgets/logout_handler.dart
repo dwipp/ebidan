@@ -53,7 +53,12 @@ class LogoutHandler {
       // tunggu logout selesai
       await context.read<LoginCubit>().signOut();
       await context.read<UserCubit>().clearAll();
-      FirebaseMessaging.instance.unsubscribeFromTopic('all');
+      final messaging = FirebaseMessaging.instance;
+      await messaging.unsubscribeFromTopic('all');
+      await messaging.unsubscribeFromTopic('bidan');
+      await messaging.unsubscribeFromTopic('bidan_desa');
+      await messaging.unsubscribeFromTopic('pmb');
+      await messaging.unsubscribeFromTopic('koordinator');
 
       // pastikan context masih mounted
       if (!context.mounted) return;

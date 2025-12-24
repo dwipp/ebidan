@@ -31,6 +31,8 @@ import { saveSubscription } from "./modules/subscription/save_subscription.js";
 import { verifySubscription } from "./modules/subscription/verify_subscription.js";
 import { handleSubscriptionUpdate } from "./modules/subscription/rtdn_subscription.js";
 import { migratePremiumUntil } from "./modules/subscription/migrate_premium_until.js";
+import { weeklyWednesdayBroadcast } from "./modules/notification/broadcast_notif.js";
+import { monthlyReportBroadcast } from "./modules/notification/broadcast_notif.js";
 
 export { 
     incrementPasienCount, 
@@ -49,5 +51,7 @@ export {
     saveSubscription,
     verifySubscription,
     handleSubscriptionUpdate,
-    migratePremiumUntil
+    migratePremiumUntil,
+    weeklyWednesdayBroadcast,
+    monthlyReportBroadcast
 };
