@@ -19,6 +19,7 @@ import 'package:ebidan/state_management/mode_bidan/persalinan/cubit/selected_per
 import 'package:ebidan/state_management/mode_bidan/riwayat/cubit/selected_riwayat_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,8 +65,33 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _requestNotifPermission();
     context.read<ProfileCubit>().getProfile();
     verifySubs();
+  }
+
+  Future<void> _requestNotifPermission() async {
+    final messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.getNotificationSettings();
+
+    if (settings.authorizationStatus == AuthorizationStatus.notDetermined) {
+      settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    }
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+        settings.authorizationStatus == AuthorizationStatus.provisional) {
+      // ambil token
+      final token = await messaging.getToken();
+      print('FCM Token: $token');
+
+      // WAJIB untuk broadcast
+      await messaging.subscribeToTopic('all');
+    }
   }
 
   @override
