@@ -49,10 +49,14 @@ jobs:
       - name: Build App Bundle
         run: flutter build appbundle --release --flavor prod
 
+      - name: Create service account json
+        run: |
+          echo '${{ secrets.PLAY_STORE_JSON_KEY }}' > service-account.json
+
       - name: Upload to Play Store
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJson: ${{ secrets.PLAY_STORE_JSON_KEY }}
+          serviceAccountJson: service-account.json
           packageName: id.ebidan.aos
           releaseFiles: build/app/outputs/bundle/prodRelease/app-prod-release.aab
           track: internal
