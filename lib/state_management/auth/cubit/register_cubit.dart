@@ -4,6 +4,7 @@ import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:equatable/equatable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 part 'register_state.dart';
 
@@ -151,6 +152,18 @@ class RegisterCubit extends Cubit<RegisterState> {
           .doc(auth.uid)
           .set(bidan.toFirestore());
       user.loggedInUser(bidan);
+      final messaging = FirebaseMessaging.instance;
+      if (bidan.role.toLowerCase() == 'bidan') {
+        await messaging.subscribeToTopic('bidan');
+        if (bidan.kategoriBidan?.toLowerCase() == 'bidan desa') {
+          await messaging.subscribeToTopic('bidan_desa');
+        } else if (bidan.kategoriBidan?.toLowerCase() ==
+            'praktik mandiri bidan') {
+          await messaging.subscribeToTopic('pmb');
+        }
+      } else if (bidan.role.toLowerCase() == 'koordinator') {
+        await messaging.subscribeToTopic('koordinator');
+      }
 
       emit(RegisterSuccess(role: role));
     } catch (e) {

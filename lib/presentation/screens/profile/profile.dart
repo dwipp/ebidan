@@ -208,14 +208,16 @@ class ProfileScreen extends StatelessWidget {
                     : "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}",
                 style: textTheme.bodyMedium,
               ),
-              const SizedBox(height: 6),
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(context, AppRouter.subs),
-                child: Text(
-                  "Klik untuk langganan penuh",
-                  style: actionTextStyle,
+              if (daysLeft <= 7) ...[
+                const SizedBox(height: 6),
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, AppRouter.subs),
+                  child: Text(
+                    "Klik untuk langganan penuh",
+                    style: actionTextStyle,
+                  ),
                 ),
-              ),
+              ],
             ],
           );
         } else {

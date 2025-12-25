@@ -14,7 +14,7 @@ import 'package:flutter/foundation.dart'
 ///   options: DefaultFirebaseOptions.currentPlatform,
 /// );
 /// ```
-class DefaultFirebaseOptions {
+class DefaultFirebaseOptionsProd {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       throw UnsupportedError(
@@ -63,7 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '347784301575',
     projectId: 'ebidan-91a0e',
     storageBucket: 'ebidan-91a0e.firebasestorage.app',
-    iosClientId: '347784301575-rr0pgmi2sg52nnpa9960074n8bk7sa70.apps.googleusercontent.com',
+    iosClientId:
+        '347784301575-rr0pgmi2sg52nnpa9960074n8bk7sa70.apps.googleusercontent.com',
     iosBundleId: 'id.ebidan.ios',
   );
 }
