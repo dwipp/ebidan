@@ -58,9 +58,20 @@ class LoginCubit extends Cubit<LoginState> {
 
       // set user yang login di cubit
       if (isReg) {
-        user.loggedInUser(
-          Bidan.fromFirestore(doc.data()!, avatar: auth.photoURL),
-        );
+        final bidan = Bidan.fromFirestore(doc.data()!, avatar: auth.photoURL);
+        user.loggedInUser(bidan);
+        final messaging = FirebaseMessaging.instance;
+        if (bidan.role.toLowerCase() == 'bidan') {
+          await messaging.subscribeToTopic('bidan');
+          if (bidan.kategoriBidan?.toLowerCase() == 'bidan desa') {
+            await messaging.subscribeToTopic('bidan_desa');
+          } else if (bidan.kategoriBidan?.toLowerCase() ==
+              'praktik mandiri bidan') {
+            await messaging.subscribeToTopic('pmb');
+          }
+        } else if (bidan.role.toLowerCase() == 'koordinator') {
+          await messaging.subscribeToTopic('koordinator');
+        }
       }
 
       emit(LoginSuccess(auth, isReg));
