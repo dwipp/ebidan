@@ -34,8 +34,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   void verifySubs() async {
     final userCubit = context.read<UserCubit>();
+    final user = userCubit.state;
     final subs = userCubit.state?.subscription;
-    if (subs?.status == "expired") return;
+    if (user?.premiumSource != PremiumType.subscription.name) return;
+    if (subs?.status == "expired" || subs?.status == "") return;
     if (subs?.productId == null || subs?.purchaseToken == null) return;
 
     final now = DateTime.now();
