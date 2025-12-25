@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/app_env.dart';
 import 'package:ebidan/auth_gate.dart';
 import 'package:ebidan/common/utility/remote_config_helper.dart';
-import 'package:ebidan/firebase_options.dart';
+import 'package:ebidan/env.dart';
+import 'package:ebidan/firebase_dev_options.dart';
+import 'package:ebidan/firebase_prod_options.dart';
 import 'package:ebidan/state_management/app_bloc_observer.dart';
 import 'package:ebidan/state_management/bloc_providers.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
@@ -19,9 +22,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    await initFirebase();
   } catch (e) {
     print('firebase init error: $e');
   }
@@ -41,6 +42,19 @@ void main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((value) => runApp(MainApp()));
+}
+
+Future<void> initFirebase() async {
+  // resolveEnv();
+  if (appEnv == AppEnv.prod) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptionsProd.currentPlatform,
+    );
+  } else {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptionsDev.currentPlatform,
+    );
+  }
 }
 
 class MainApp extends StatelessWidget {

@@ -2,6 +2,7 @@ import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -52,6 +53,12 @@ class LogoutHandler {
       // tunggu logout selesai
       await context.read<LoginCubit>().signOut();
       await context.read<UserCubit>().clearAll();
+      final messaging = FirebaseMessaging.instance;
+      await messaging.unsubscribeFromTopic('all');
+      await messaging.unsubscribeFromTopic('bidan');
+      await messaging.unsubscribeFromTopic('bidan_desa');
+      await messaging.unsubscribeFromTopic('pmb');
+      await messaging.unsubscribeFromTopic('koordinator');
 
       // pastikan context masih mounted
       if (!context.mounted) return;

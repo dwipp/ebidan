@@ -3,6 +3,7 @@ import 'package:ebidan/common/utility/remote_config_helper.dart';
 import 'package:ebidan/presentation/screens/auth/login.dart';
 import 'package:ebidan/presentation/screens/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,7 +18,32 @@ class _AuthGateState extends State<AuthGate> {
   @override
   void initState() {
     super.initState();
+    _requestNotifPermission();
     _checkForceUpdate();
+  }
+
+  Future<void> _requestNotifPermission() async {
+    final messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.getNotificationSettings();
+
+    if (settings.authorizationStatus == AuthorizationStatus.notDetermined) {
+      settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    }
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+        settings.authorizationStatus == AuthorizationStatus.provisional) {
+      // ambil token
+      final token = await messaging.getToken();
+      print('FCM Token: $token');
+
+      // WAJIB untuk broadcast
+      await messaging.subscribeToTopic('all');
+    }
   }
 
   Future<void> _checkForceUpdate() async {

@@ -1,4 +1,19 @@
 // index.js
+import dotenv from "dotenv";
+
+const projectId = process.env.GCLOUD_PROJECT;
+
+// environment by dotenv
+if (projectId === "ebidan-dev") {
+  dotenv.config({ path: ".env.dev" });
+} else {
+  dotenv.config({ path: ".env.prod" });
+}
+
+if (!process.env.APP_ENV) {
+  throw new Error("APP_ENV is not set");
+}
+
 import { incrementPasienCount } from "./modules/bumil/increment_pasien.js";
 import { decrementPasienCount } from "./modules/bumil/decrement_pasien.js";
 import { recalculateBumilStats } from "./modules/bumil/recalculate_bumil.js";
@@ -16,6 +31,8 @@ import { saveSubscription } from "./modules/subscription/save_subscription.js";
 import { verifySubscription } from "./modules/subscription/verify_subscription.js";
 import { handleSubscriptionUpdate } from "./modules/subscription/rtdn_subscription.js";
 import { migratePremiumUntil } from "./modules/subscription/migrate_premium_until.js";
+import { weeklyWednesdayBroadcast } from "./modules/notification/broadcast_notif.js";
+import { monthlyReportBroadcast } from "./modules/notification/broadcast_notif.js";
 
 export { 
     incrementPasienCount, 
@@ -34,5 +51,7 @@ export {
     saveSubscription,
     verifySubscription,
     handleSubscriptionUpdate,
-    migratePremiumUntil
+    migratePremiumUntil,
+    weeklyWednesdayBroadcast,
+    monthlyReportBroadcast
 };
