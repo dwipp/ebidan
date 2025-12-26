@@ -4,7 +4,6 @@ import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/common/utility/subscription_helper.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
-import 'package:ebidan/presentation/widgets/browser_launcher.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
