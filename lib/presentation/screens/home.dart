@@ -1,6 +1,7 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/common/utility/remote_config_helper.dart';
 import 'package:ebidan/common/utility/subscription_helper.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
@@ -68,6 +69,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     context.read<ProfileCubit>().getProfile();
     verifySubs();
+    _checkAppVersionInPlaystore();
+  }
+
+  Future<void> _checkAppVersionInPlaystore() async {
+    await RemoteConfigHelper.shouldShowUpdateAnnouncement(context);
   }
 
   @override
