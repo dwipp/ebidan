@@ -296,28 +296,34 @@ class Utils {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FloatingActionButton.small(
-          heroTag: "complaintWa",
-          backgroundColor: context.themeColors.complaintWa,
-          onPressed: () {
-            final auth = FirebaseAuth.instance.currentUser;
-            if (auth == null) return;
-            final message =
-                "Halo eBidan,\nsaya ${user.nama}\n(UID: ${auth.uid}),\n"
-                "ingin menyampaikan keluhan sebagai berikut:\n\n";
+        if (user.premiumUntil != null &&
+            user.premiumUntil!.isAfter(
+              DateTime.now().add(const Duration(days: 1)),
+            )) ...[
+          FloatingActionButton.small(
+            heroTag: "complaintWa",
+            backgroundColor: context.themeColors.complaintWa,
+            onPressed: () {
+              final auth = FirebaseAuth.instance.currentUser;
+              if (auth == null) return;
+              final message =
+                  "Halo eBidan,\nsaya ${user.nama}\n(UID: ${auth.uid}),\n"
+                  "ingin menyampaikan keluhan sebagai berikut:\n\n";
 
-            final url =
-                "https://wa.me/628991904891?text=${Uri.encodeComponent(message)}";
+              final url =
+                  "https://wa.me/628991904891?text=${Uri.encodeComponent(message)}";
 
-            BrowserLauncher.openInApp(url);
-          },
-          child: Image.asset(
-            'assets/icons/ic_wa.png',
-            width: 24,
-            height: 24,
-            color: Colors.white,
+              BrowserLauncher.openInApp(url);
+            },
+            child: Image.asset(
+              'assets/icons/ic_wa.png',
+              width: 24,
+              height: 24,
+              color: Colors.white,
+            ),
           ),
-        ),
+        ],
+
         SizedBox(height: 4),
         FloatingActionButton.small(
           heroTag: "complaintFab",
