@@ -1,4 +1,5 @@
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/common/utility/subscription_helper.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
@@ -422,17 +423,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Positioned(
                   bottom: 16,
-                  left: 16,
-                  child: FloatingActionButton.small(
-                    heroTag: "complaintFab",
-                    backgroundColor: context.themeColors.complaint,
-                    onPressed: () {
-                      BrowserLauncher.openInApp(
-                        "https://forms.gle/2SR34kx1xjMgA3G27",
-                      );
-                    },
-                    child: const Icon(Icons.feedback, color: Colors.white),
-                  ),
+                  right: 16,
+                  child: user != null
+                      ? Utils.floatingComplaint(context, user)
+                      : SizedBox(),
                 ),
               ],
             ),

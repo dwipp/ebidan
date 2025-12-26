@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/data/models/bidan_model.dart';
+import 'package:ebidan/presentation/widgets/browser_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -286,6 +289,45 @@ class Utils {
           ),
         ],
       ),
+    );
+  }
+
+  static Widget floatingComplaint(BuildContext context, Bidan user) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        FloatingActionButton.small(
+          heroTag: "complaintWa",
+          backgroundColor: context.themeColors.complaintWa,
+          onPressed: () {
+            final auth = FirebaseAuth.instance.currentUser;
+            if (auth == null) return;
+            final message =
+                "Halo eBidan,\nsaya ${user.nama}\n(UID: ${auth.uid}),\n"
+                "ingin menyampaikan keluhan sebagai berikut:\n\n";
+
+            final url =
+                "https://wa.me/628991904891?text=${Uri.encodeComponent(message)}";
+
+            BrowserLauncher.openInApp(url);
+          },
+          child: Image.asset(
+            'assets/icons/ic_wa.png',
+            width: 24,
+            height: 24,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 4),
+        FloatingActionButton.small(
+          heroTag: "complaintFab",
+          backgroundColor: context.themeColors.complaint,
+          onPressed: () {
+            BrowserLauncher.openInApp("https://forms.gle/2SR34kx1xjMgA3G27");
+          },
+          child: const Icon(Icons.feedback, color: Colors.white),
+        ),
+      ],
     );
   }
 }
