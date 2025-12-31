@@ -1,3 +1,4 @@
+import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/common/utility/remote_config_helper.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
@@ -50,23 +51,78 @@ class SubscriptionScreen extends StatelessWidget {
     ).format(base);
   }
 
-  String _getPlanHighlight(String id) {
-    if (id.contains('_annual')) {
+  String _getPlanHighlight(ProductDetails product) {
+    if (product.id.contains('_annual')) {
       return RemoteConfigHelper.promoActive
-          ? 'Hemat Besar!\nHarga spesial terbatas\npilihan favorit para bidan.'
-          : 'Super Hemat!\nPaling populer di kalangan bidan.';
+          ? 'Hemat Besar!\nHarga spesial terbatas\npilihan favorit para bidan.\nCukup keluarkan ${_priceConvertToMonthly(product.rawPrice, monthCounter: 12)}/bulan.'
+          : 'Super Hemat! Paling populer di kalangan bidan.\nCukup keluarkan ${_priceConvertToMonthly(product.rawPrice, monthCounter: 12)}/bulan.';
     }
-    if (id.contains('semiannual')) {
+    if (product.id.contains('semiannual')) {
       return RemoteConfigHelper.promoActive
-          ? 'Nilai terbaik!\nDiskon periode menengah, pas untuk pemakaian rutin.'
-          : 'Pilihan cerdas untuk penggunaan jangka menengah.';
+          ? 'Nilai terbaik!\nDiskon periode menengah, pas untuk pemakaian rutin.\nHanya ${_priceConvertToMonthly(product.rawPrice, monthCounter: 6)}/bulan.'
+          : 'Pilihan cerdas untuk penggunaan jangka menengah.\nLebih hemat, hanya ${_priceConvertToMonthly(product.rawPrice, monthCounter: 6)}/bulan.';
     }
-    if (id.contains('quarterly')) {
+    if (product.id.contains('quarterly')) {
       return RemoteConfigHelper.promoActive
           ? 'Coba lebih lama dengan harga promo!\nFleksibel dan terjangkau.'
           : 'Coba dulu selama 3 bulan sebelum berkomitmen lebih lama.';
     }
     return 'Langganan fleksibel setiap bulan';
+  }
+
+  String _priceConvertToMonthly(double price, {required int monthCounter}) {
+    final unitPrice = price / monthCounter;
+    final unitPriceString = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(unitPrice);
+    return unitPriceString;
+  }
+
+  Widget buildRichTextWithBoldPrice(
+    BuildContext context,
+    String text,
+    ProductDetails product,
+  ) {
+    final bool isBest = product.id.toLowerCase().endsWith('_annual');
+    var monthCounter = 1;
+    if (product.id.contains('_annual')) {
+      monthCounter = 12;
+    } else if (product.id.contains('semiannual')) {
+      monthCounter = 6;
+    } else if (product.id.contains('quarterly')) {
+      monthCounter = 3;
+    }
+    final unitPrice = _priceConvertToMonthly(
+      product.rawPrice,
+      monthCounter: monthCounter,
+    );
+    final start = text.indexOf(unitPrice);
+
+    if (start == -1) {
+      // fallback kalau tidak ketemu
+      return Text(text);
+    }
+
+    final end = start + unitPrice.length;
+
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(
+          fontSize: 14,
+          color: isBest ? Colors.white70 : Colors.grey[700],
+        ),
+        children: [
+          TextSpan(text: text.substring(0, start)),
+          TextSpan(
+            text: text.substring(start, end),
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
+          TextSpan(text: text.substring(end)),
+        ],
+      ),
+    );
   }
 
   // ================================
@@ -192,12 +248,10 @@ class SubscriptionScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    _getPlanHighlight(product.id),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isBest ? Colors.white70 : Colors.grey[700],
-                    ),
+                  buildRichTextWithBoldPrice(
+                    context,
+                    _getPlanHighlight(product),
+                    product,
                   ),
                   const SizedBox(height: 8),
                   Text(
