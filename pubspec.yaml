@@ -43,6 +43,7 @@ dependencies:
   avatar_glow: ^3.0.1
   pdf: ^3.11.3
   printing: ^5.14.2
+  flutter_markdown_plus: ^1.0.7
 
 
 dev_dependencies:

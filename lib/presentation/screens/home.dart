@@ -188,15 +188,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if (!showBanner) return const SizedBox.shrink();
 
                                 return BannerHome(
-                                  title: "Statistik Lengkap untuk Bidan",
+                                  title: "Garansi Uang Kembali",
                                   subtitle:
-                                      "Pantau performa bulanan dengan grafik ringkas",
-                                  icon: Icons.bar_chart,
+                                      "Sudah subscribe dan merasa tidak cocok? 100% uang mu kembali",
                                   gradient: context.themeColors.blueGradient,
                                   onTap: () {
                                     Navigator.pushNamed(
                                       context,
-                                      AppRouter.subs,
+                                      AppRouter.bannerContent,
                                     );
                                   },
                                   onClose: () {

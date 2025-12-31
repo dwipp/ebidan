@@ -4,7 +4,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 class BannerHome extends StatelessWidget {
   final String title;
   final String subtitle;
-  final IconData icon;
   final VoidCallback? onTap;
   final VoidCallback? onClose;
   final Gradient gradient;
@@ -13,7 +12,6 @@ class BannerHome extends StatelessWidget {
     super.key,
     required this.title,
     required this.subtitle,
-    required this.icon,
     this.onTap,
     this.onClose,
     required this.gradient,
@@ -43,14 +41,6 @@ class BannerHome extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(icon, color: Colors.white, size: 28),
-                  ),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
