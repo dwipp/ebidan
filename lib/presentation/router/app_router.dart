@@ -44,7 +44,7 @@ import 'package:ebidan/presentation/screens/mode_bidan/statistics/sf/tren_sf_sta
 import 'package:ebidan/presentation/screens/mode_bidan/statistics/statistics.dart';
 import 'package:ebidan/presentation/screens/mode_bidan/subscription/subs_status.dart';
 import 'package:ebidan/presentation/screens/mode_bidan/subscription/subscription.dart';
-import 'package:ebidan/presentation/widgets/banner_content_page.dart';
+import 'package:ebidan/presentation/screens/banner/banner_content_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ebidan/common/exceptions/route_exception.dart';
 import 'package:ebidan/presentation/screens/mode_bidan/bumil/add_bumil.dart';

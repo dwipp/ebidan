@@ -1,5 +1,6 @@
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
-import 'package:ebidan/state_management/general/cubit/banner_cubit.dart';
+import 'package:ebidan/state_management/banner/cubit/banner_cubit.dart';
+import 'package:ebidan/state_management/banner/cubit/get_banner_cubit.dart';
 import 'package:ebidan/state_management/mode_koordinator/bidan/cubit/get_bidan_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/access_code_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
@@ -115,6 +116,7 @@ class BlocProviders {
             AccessCodeCubit(userCubit: context.read<UserCubit>()),
       ),
       BlocProvider<BannerCubit>(create: (_) => BannerCubit()..load()),
+      BlocProvider<GetBannerCubit>(create: (context) => GetBannerCubit()),
     ];
   }
 }
