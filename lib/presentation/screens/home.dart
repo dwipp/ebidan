@@ -187,20 +187,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (context, showBanner) {
                                 if (!showBanner) return const SizedBox.shrink();
 
-                                return BannerHome(
-                                  title: "Garansi Uang Kembali",
-                                  subtitle:
-                                      "Sudah subscribe dan merasa tidak cocok? 100% uang mu kembali",
-                                  gradient: context.themeColors.blueGradient,
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      AppRouter.bannerContent,
-                                    );
-                                  },
-                                  onClose: () {
-                                    context.read<BannerCubit>().dismiss();
-                                  },
+                                return StaggeredGridTile.fit(
+                                  crossAxisCellCount: 4,
+                                  child: BannerHome(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRouter.bannerContent,
+                                      );
+                                    },
+                                    onClose: () {
+                                      context.read<BannerCubit>().dismiss();
+                                    },
+                                  ),
                                 );
                               },
                             ),
