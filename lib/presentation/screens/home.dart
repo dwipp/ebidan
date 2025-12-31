@@ -5,11 +5,13 @@ import 'package:ebidan/common/utility/remote_config_helper.dart';
 import 'package:ebidan/common/utility/subscription_helper.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
+import 'package:ebidan/presentation/widgets/banner_home.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/summary_chart.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
+import 'package:ebidan/state_management/general/cubit/banner_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/general/cubit/back_press_cubit.dart';
@@ -181,6 +183,29 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 12,
                           children: [
+                            BlocBuilder<BannerCubit, bool>(
+                              builder: (context, showBanner) {
+                                if (!showBanner) return const SizedBox.shrink();
+
+                                return BannerHome(
+                                  title: "Statistik Lengkap untuk Bidan",
+                                  subtitle:
+                                      "Pantau performa bulanan dengan grafik ringkas",
+                                  icon: Icons.bar_chart,
+                                  gradient: context.themeColors.blueGradient,
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      AppRouter.subs,
+                                    );
+                                  },
+                                  onClose: () {
+                                    context.read<BannerCubit>().dismiss();
+                                  },
+                                );
+                              },
+                            ),
+
                             // Card Bumil (Total + Bulan Ini)
                             StaggeredGridTile.fit(
                               crossAxisCellCount: 4,
@@ -420,6 +445,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             ),
+                            SizedBox(height: 24),
                           ],
                         );
                       },
