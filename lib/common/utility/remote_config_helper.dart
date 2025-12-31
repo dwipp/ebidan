@@ -34,6 +34,7 @@ class RemoteConfigHelper {
 
   // promo
   static bool get promoActive => _remoteConfig.getBool('promo_active');
+  static int get showBannerDays => _remoteConfig.getInt('show_banner_days');
 
   // mode reviewer
   static String get reviewerEmail => _remoteConfig.getString('reviewer_email');
