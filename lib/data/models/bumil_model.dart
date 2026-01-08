@@ -42,8 +42,8 @@ class Bumil {
   bool latestKehamilanPersalinan;
   bool latestKehamilanKunjungan;
   Kehamilan? latestKehamilan;
-  final String? latestKunjunganId;
-  final Kunjungan? latestKunjungan;
+  String? latestKunjunganId;
+  Kunjungan? latestKunjungan;
 
   Bumil({
     required this.idBumil,

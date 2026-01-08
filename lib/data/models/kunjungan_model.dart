@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/common/Utils.dart';
 
 class Kunjungan {
   final String id;
@@ -50,7 +50,7 @@ class Kunjungan {
       id: id,
       bb: json['bb'],
       tb: json['tb'],
-      createdAt: (json['created_at'] as Timestamp?)?.toDate(),
+      createdAt: Utils.toDateTime(json['created_at']),
       keluhan: json['keluhan'],
       lila: json['lila'],
       lp: json['lp'],

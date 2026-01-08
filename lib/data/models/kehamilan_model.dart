@@ -15,7 +15,7 @@ class Kehamilan {
   final String? kontrasepsiSebelumHamil;
   final String? noKohortIbu;
   final String? noRekaMedis;
-  final List<String>? resti;
+  List<String>? resti;
   final String? riwayatAlergi;
   final String? riwayatPenyakit;
   final String? statusResti;
@@ -23,9 +23,9 @@ class Kehamilan {
   final String? tb;
   final DateTime? tglPeriksaUsg;
   final bool kontrolDokter;
-  final bool kunjungan;
+  bool kunjungan;
   final num? usia;
-  final num? sfCount;
+  num? sfCount;
   List<Persalinan>? persalinan;
 
   Kehamilan({
