@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/data/models/persalinan_model.dart';
 
 class Kehamilan {
@@ -61,12 +61,12 @@ class Kehamilan {
     return Kehamilan(
       id: id,
       bpjs: json['bpjs'],
-      createdAt: (json['created_at'] as Timestamp?)?.toDate(),
+      createdAt: Utils.toDateTime(json['created_at']),
       gpa: json['gpa'],
       hasilLab: json['hasil_lab'],
       hemoglobin: json['hemoglobin'],
-      hpht: (json['hpht'] as Timestamp?)?.toDate(),
-      htp: (json['htp'] as Timestamp?)?.toDate(),
+      hpht: Utils.toDateTime(json['hpht']),
+      htp: Utils.toDateTime(json['htp']),
       idBidan: json['id_bidan'],
       idBumil: json['id_bumil'],
       kontrasepsiSebelumHamil: json['kontrasepsi_sebelum_hamil'],
@@ -78,7 +78,7 @@ class Kehamilan {
       statusResti: json['status_resti'],
       statusTt: json['status_tt'],
       tb: json['tb'],
-      tglPeriksaUsg: (json['tgl_periksa_usg'] as Timestamp?)?.toDate(),
+      tglPeriksaUsg: Utils.toDateTime(json['tgl_periksa_usg']),
       kontrolDokter: json['kontrol_dokter'] ?? false,
       kunjungan: json['kunjungan'] ?? false,
       usia: json['usia'],

@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/data/models/riwayat_model.dart';
@@ -35,13 +35,13 @@ class Bumil {
   final DateTime? createdAt;
   List<Riwayat>? riwayat;
 
-  final bool isHamil;
-  final String? latestKehamilanId;
-  final DateTime? latestKehamilanHpht;
-  final List<String>? latestKehamilanResti;
-  final bool latestKehamilanPersalinan;
-  final bool latestKehamilanKunjungan;
-  final Kehamilan? latestKehamilan;
+  bool isHamil;
+  String? latestKehamilanId;
+  DateTime? latestKehamilanHpht;
+  List<String>? latestKehamilanResti;
+  bool latestKehamilanPersalinan;
+  bool latestKehamilanKunjungan;
+  Kehamilan? latestKehamilan;
   final String? latestKunjunganId;
   final Kunjungan? latestKunjungan;
 
@@ -102,17 +102,17 @@ class Bumil {
       agamaSuami: map['agama_suami'] ?? '',
       bloodIbu: map['blood_ibu'] ?? '',
       bloodSuami: map['blood_suami'] ?? '',
-      birthdateIbu: _toDateTime(map['birthdate_ibu']),
-      birthdateSuami: _toDateTime(map['birthdate_suami']),
+      birthdateIbu: Utils.toDateTime(map['birthdate_ibu']),
+      birthdateSuami: Utils.toDateTime(map['birthdate_suami']),
       jobIbu: map['job_ibu'] ?? '',
       jobSuami: map['job_suami'] ?? '',
       pendidikanIbu: map['pendidikan_ibu'] ?? '',
       pendidikanSuami: map['pendidikan_suami'] ?? '',
-      createdAt: _toDateTime(map['created_at']),
+      createdAt: Utils.toDateTime(map['created_at']),
       riwayat: riwayat,
       isHamil: map['is_hamil'] ?? false,
       latestKehamilanId: map['latest_kehamilan_id'],
-      latestKehamilanHpht: _toDateTime(map['latest_kehamilan_hpht']),
+      latestKehamilanHpht: Utils.toDateTime(map['latest_kehamilan_hpht']),
       latestKehamilanKunjungan: map['latest_kehamilan_kunjungan'] ?? false,
       latestKehamilanPersalinan: map['latest_kehamilan_persalinan'] ?? false,
       latestKehamilanResti: map['latest_kehamilan_resti'] != null
@@ -264,14 +264,6 @@ class Bumil {
       'latest_kunjungan_id': latestKunjunganId,
       'latest_kunjungan': latestKunjungan?.toMap(),
     };
-  }
-
-  /// Utility agar Timestamp/String bisa jadi DateTime
-  static DateTime? _toDateTime(dynamic value) {
-    if (value == null) return null;
-    if (value is Timestamp) return value.toDate();
-    if (value is String) return DateTime.tryParse(value);
-    return null;
   }
 
   /// ====== Getter Utility ======
