@@ -139,7 +139,7 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
 
     try {
       // simpan ke Firestore
-      await FirebaseFirestore.instance
+      FirebaseFirestore.instance
           .collection('bumil')
           .doc(currentBumil.idBumil)
           .update({
