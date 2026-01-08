@@ -1,7 +1,9 @@
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/common/utility/remote_config_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-enum SnackbarType { success, error, general }
+enum SnackbarType { success, error, general, updateApp }
 
 class Snackbar {
   static OverlayEntry? _overlayEntry;
@@ -21,6 +23,7 @@ class Snackbar {
     final color = switch (type) {
       SnackbarType.error => context.themeColors.error,
       SnackbarType.success => context.themeColors.tertiary,
+      SnackbarType.updateApp => context.themeColors.secondary,
       SnackbarType.general => context.themeColors.darkGrey,
     };
 
@@ -29,8 +32,8 @@ class Snackbar {
         return _AnimatedSnackbar(
           message: message,
           color: color,
+          type: type,
           onDismissed: () {
-            // Hapus overlay setelah animasi selesai
             if (_overlayEntry != null) {
               _overlayEntry!.remove();
               _overlayEntry = null;
@@ -47,11 +50,13 @@ class Snackbar {
 class _AnimatedSnackbar extends StatefulWidget {
   final String message;
   final Color color;
+  final SnackbarType type;
   final VoidCallback onDismissed;
 
   const _AnimatedSnackbar({
     required this.message,
     required this.color,
+    required this.type,
     required this.onDismissed,
   });
 
@@ -68,6 +73,7 @@ class _AnimatedSnackbarState extends State<_AnimatedSnackbar>
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -80,10 +86,9 @@ class _AnimatedSnackbarState extends State<_AnimatedSnackbar>
 
     _controller.forward();
 
-    // Atur timer untuk memulai animasi kembali (slide-out)
-    Future.delayed(Duration(seconds: 3)).then((_) {
+    Future.delayed(const Duration(seconds: 3)).then((_) {
+      if (!mounted) return;
       _controller.reverse().then((_) {
-        // Panggil callback setelah animasi selesai
         widget.onDismissed();
       });
     });
@@ -102,6 +107,20 @@ class _AnimatedSnackbarState extends State<_AnimatedSnackbar>
     super.dispose();
   }
 
+  void _onUpdateAppPressed() async {
+    final versionUrl = RemoteConfigHelper.versionUrl;
+    final url = versionUrl.isNotEmpty
+        ? versionUrl
+        : 'https://play.google.com/store/apps/details?id=id.ebidan.aos';
+    try {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } catch (_) {}
+
+    _controller.reverse().then((_) {
+      widget.onDismissed();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -118,14 +137,39 @@ class _AnimatedSnackbarState extends State<_AnimatedSnackbar>
             padding: EdgeInsets.only(
               left: 16,
               right: 16,
-              top: MediaQuery.of(context).padding.top + 14,
+              top: MediaQuery.of(context).padding.top,
             ),
-            child: Center(
-              child: Text(
-                widget.message,
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.message,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                if (widget.type == SnackbarType.updateApp)
+                  TextButton(
+                    onPressed: _onUpdateAppPressed,
+                    style: TextButton.styleFrom(
+                      side: const BorderSide(color: Colors.white),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 6,
+                      ),
+                    ),
+                    child: const Text(
+                      'UPDATE',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
