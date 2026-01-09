@@ -80,6 +80,21 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
       // 3. Eksekusi Batch
       batch.commit();
 
+      // lokal
+      // update persalinan di dalam doc kehamilan
+      var currentKehamilan = selectedKehamilanCubit.state;
+      if (currentKehamilan != null) {
+        currentKehamilan.persalinan = persalinans;
+        selectedKehamilanCubit.selectKehamilan(currentKehamilan);
+      }
+
+      // update riwayat di dalam doc bumil
+      var currentBumil = selectedBumilCubit.state;
+      if (currentBumil != null) {
+        currentBumil.riwayat = riwayats;
+        selectedBumilCubit.selectBumil(currentBumil);
+      }
+
       emit(AddPersalinanSuccess());
     } catch (e) {
       emit(AddPersalinanFailure(e.toString()));
