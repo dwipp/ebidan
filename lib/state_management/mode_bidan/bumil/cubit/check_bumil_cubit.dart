@@ -38,4 +38,8 @@ class CheckBumilCubit extends Cubit<CheckBumilState> {
       emit(CheckBumilError(message: e.toString()));
     }
   }
+
+  void reset() {
+    emit(CheckBumilInitial());
+  }
 }

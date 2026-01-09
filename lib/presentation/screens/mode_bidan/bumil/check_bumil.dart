@@ -20,6 +20,15 @@ class _CheckBumilScreenState extends State<CheckBumilScreen> {
   final _nikController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    context.read<CheckBumilCubit>().reset();
+    _nikController.addListener(() {
+      context.read<CheckBumilCubit>().reset();
+    });
+  }
+
+  @override
   void dispose() {
     _nikController.dispose();
     super.dispose();

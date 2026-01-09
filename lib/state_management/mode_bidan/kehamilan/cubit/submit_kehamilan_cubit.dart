@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/kehamilan/cubit/selected_kehamilan_cubit.dart';
@@ -25,12 +24,18 @@ class SubmitKehamilanCubit extends Cubit<SubmitKehamilanState> {
     }
 
     emit(AddKehamilanLoading());
-    print('data.id: ${data.id}');
+    // print('data.id: ${data.id}');
     try {
+      final batch = FirebaseFirestore.instance.batch();
+
       final id =
           data.id ??
           FirebaseFirestore.instance.collection('kehamilan').doc().id;
       final docRef = FirebaseFirestore.instance.collection('kehamilan').doc(id);
+      final docRefBumil = FirebaseFirestore.instance
+          .collection('bumil')
+          .doc(data.idBumil);
+
       final Map<String, dynamic> kehamilan = {
         "tb": data.tb,
         "hemoglobin": data.hemoglobin,
@@ -54,33 +59,40 @@ class SubmitKehamilanCubit extends Cubit<SubmitKehamilanState> {
         "resti": data.resti,
         'usia': data.usia,
       };
-      await docRef.set(kehamilan, SetOptions(merge: true));
-      final snapshot = await docRef.get(const GetOptions(source: Source.cache));
-      final newKehamilan = Kehamilan.fromFirestore(id, snapshot.data()!);
-      selectedKehamilanCubit.selectKehamilan(newKehamilan);
 
-      final docRefBumil = FirebaseFirestore.instance
-          .collection('bumil')
-          .doc(newKehamilan.idBumil);
-      await docRefBumil.update({
+      // 1. Tambahkan ke batch
+      batch.set(docRef, kehamilan, SetOptions(merge: true));
+
+      // 2. Update status Bumil di batch yang sama
+      final updateBumilData = {
         'is_hamil': true,
         'latest_kehamilan_id': id,
         'latest_kehamilan_hpht': data.hpht,
         'latest_kehamilan_resti': data.resti,
-        'latest_kehamilan': newKehamilan.toFirestore(),
+        'latest_kehamilan': kehamilan,
         'latest_kehamilan_persalinan': false,
         'latest_kehamilan_kunjungan': false,
-      });
-      final snapshotBumil = await docRefBumil.get(
-        const GetOptions(source: Source.cache),
-      );
+      };
+      batch.update(docRefBumil, updateBumilData);
 
-      final newBumil = Bumil.fromMap(
-        newKehamilan.idBumil!,
-        snapshotBumil.data()!,
-      );
+      // 3. Commit batch (Ini akan tersimpan di local cache dulu jika offline)
+      batch.commit();
 
-      selectedBumilCubit.selectBumil(newBumil);
+      // Update State UI
+      final newKehamilan = Kehamilan.fromFirestore(id, kehamilan);
+      selectedKehamilanCubit.selectKehamilan(newKehamilan);
+
+      var currentBumil = selectedBumilCubit.state;
+      if (currentBumil != null) {
+        currentBumil.isHamil = true;
+        currentBumil.latestKehamilanId = id;
+        currentBumil.latestKehamilanHpht = data.hpht;
+        currentBumil.latestKehamilanResti = data.resti;
+        currentBumil.latestKehamilan = newKehamilan;
+        currentBumil.latestKehamilanPersalinan = false;
+        currentBumil.latestKehamilanKunjungan = false;
+        selectedBumilCubit.selectBumil(currentBumil);
+      }
 
       emit(AddKehamilanSuccess(idKehamilan: id, firstTime: true));
     } catch (e) {

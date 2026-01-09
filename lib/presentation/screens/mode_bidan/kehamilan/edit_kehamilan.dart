@@ -98,7 +98,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _tbController.text = widget.kehamilan.tb ?? '';
-    _hemoglobinController.text = widget.kehamilan.hemoglobin.toString();
+    _hemoglobinController.text = '${widget.kehamilan.hemoglobin ?? ''}';
     _bpjsController.text = widget.kehamilan.bpjs ?? '';
     _noKohortController.text = widget.kehamilan.noKohortIbu ?? '';
     _noRekaMedisController.text = widget.kehamilan.noRekaMedis ?? '';

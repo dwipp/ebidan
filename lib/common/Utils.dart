@@ -8,6 +8,15 @@ import 'package:intl/intl.dart';
 
 class Utils {
   // ====== DATE ======
+
+  /// Utility agar Timestamp/String bisa jadi DateTime
+  static DateTime? toDateTime(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
   static String formattedDate(DateTime? date) {
     if (date == null) return "-";
     // Format ke bahasa Indonesia: 1 Januari 1990

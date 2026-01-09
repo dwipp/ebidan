@@ -187,13 +187,13 @@ export const incrementKehamilanCount = onDocumentCreated(
         console.log(`Month limit exceeded. Deleted oldest month: ${oldestMonth} for bidan: ${idBidan}`);
       }
 
+      safeIncrement(kehamilan, "all_bumil_count")
+
       t.set(
         statsRef,
         {
           ...data,
-          kehamilan: {
-            all_bumil_count: safeIncrement(kehamilan, "all_bumil_count"),
-          },
+          kehamilan: kehamilan,
           last_updated_month: currentMonth,
           by_month: byMonth,
         },

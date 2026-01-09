@@ -131,13 +131,14 @@ export const decrementKehamilanCount = onDocumentDeleted(
         }
       }
 
+      const kehamilan = data.kehamilan ?? { all_bumil_count: 0 };
+      safeDecrement(kehamilan, "all_bumil_count");
+
       t.set(
         statsRef,
         {
           ...data,
-          kehamilan: {
-            all_bumil_count: safeDecrement(data.kehamilan || { all_bumil_count: 0 }, "all_bumil_count"),
-          },
+          kehamilan: kehamilan,
           last_updated_month: currentMonth,
           by_month: byMonth,
         },

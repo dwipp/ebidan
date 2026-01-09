@@ -1,7 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ebidan/data/models/bumil_model.dart';
-import 'package:ebidan/data/models/kehamilan_model.dart';
 import 'package:ebidan/data/models/kunjungan_model.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/kehamilan/cubit/selected_kehamilan_cubit.dart';
@@ -34,10 +32,24 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
     emit(AddKunjunganLoading());
 
     try {
+      final batch = FirebaseFirestore.instance.batch();
+
+      // 1. Inisialisasi ID dan Reference
       final id = data.id.isNotEmpty
           ? data.id
           : FirebaseFirestore.instance.collection('kunjungan').doc().id;
-      final docRef = FirebaseFirestore.instance.collection('kunjungan').doc(id);
+
+      final docRefKunjungan = FirebaseFirestore.instance
+          .collection('kunjungan')
+          .doc(id);
+      final docRefKehamilan = FirebaseFirestore.instance
+          .collection('kehamilan')
+          .doc(data.idKehamilan);
+      final docRefBumil = FirebaseFirestore.instance
+          .collection('bumil')
+          .doc(data.idBumil);
+
+      // 2. Persiapan Data Kunjungan
       final Map<String, dynamic> kunjungan = {
         'bb': data.bb,
         'tb': data.tb,
@@ -58,86 +70,103 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
         'periksa_usg': data.periksaUsg,
       };
 
+      // 3. Logika Bisnis & Risiko
       var kehamilan = selectedKehamilanCubit.state;
+      List<String> resti = [];
+
       if (firstTime) {
-        kunjungan['tgl_periksa_usg'] = selectedBumilCubit
-            .state
-            ?.latestKehamilan
-            ?.tglPeriksaUsg; //tglPeriksaUsg;
+        kunjungan['tgl_periksa_usg'] =
+            selectedBumilCubit.state?.latestKehamilan?.tglPeriksaUsg;
         kunjungan['kontrol_dokter'] =
             selectedBumilCubit.state?.latestKehamilan?.kontrolDokter;
 
         var bumil = selectedBumilCubit.state;
         kehamilan ??= bumil?.latestKehamilan;
-        final ageRisk = bumil!.age < 20 || bumil.age > 35;
-        final gravidaRisk = bumil.statisticRiwayat['gravida']! >= 4;
-        final jarakRisk =
-            (bumil.statisticRiwayat['gravida']! > 0) &&
-            _cekJarakKehamilan(bumil.latestRiwayat?.tglLahir);
 
-        kunjungan['k1_4t'] = ageRisk || gravidaRisk || jarakRisk;
+        if (bumil != null) {
+          final ageRisk = bumil.age < 20 || bumil.age > 35;
+          final gravidaRisk = (bumil.statisticRiwayat['gravida'] ?? 0) >= 4;
+          final jarakRisk =
+              (bumil.statisticRiwayat['gravida'] ?? 0) > 0 &&
+              _cekJarakKehamilan(bumil.latestRiwayat?.tglLahir);
+
+          kunjungan['k1_4t'] = ageRisk || gravidaRisk || jarakRisk;
+
+          // Analisis Resti berdasarkan input kunjungan saat ini
+          if (data.td != null && data.td!.contains('/')) {
+            List<String> parts = data.td!.split("/");
+            if (parts.length == 2) {
+              int sistolik = int.tryParse(parts[0]) ?? 0;
+              int diastolik = int.tryParse(parts[1]) ?? 0;
+              if (sistolik >= 140 || diastolik >= 90) {
+                resti.add('Hipertensi dalam kehamilan ${data.td} mmHg');
+              }
+            }
+          }
+          if (data.lila != null) {
+            final lilaValue = num.tryParse(data.lila!) ?? 0;
+            if (lilaValue < 23.5 && lilaValue > 0) {
+              resti.add('Kekurangan Energi Kronis (lila: ${data.lila} cm)');
+            }
+          }
+        }
       }
 
-      await docRef.set(kunjungan, SetOptions(merge: true));
-      final snapshot = await docRef.get(const GetOptions(source: Source.cache));
-      final newKunjungan = Kunjungan.fromFirestore(snapshot.data()!, id: id);
-      selectedKunjunganCubit.selectKunjungan(newKunjungan);
+      // 4. Masukkan operasi Kunjungan ke Batch
+      batch.set(docRefKunjungan, kunjungan, SetOptions(merge: true));
 
+      // 5. Update Dokumen Kehamilan
       final Map<String, dynamic> updatedKehamilan = {
         'sf_count': (kehamilan?.sfCount ?? 0) + (data.nextSf ?? 0),
         'kunjungan': true,
       };
-      final Map<String, dynamic> bumilKunjungan = {};
-      List<String> resti = [];
-      if (firstTime == true) {
-        if (data.td != null && data.td!.contains('/')) {
-          List<String> parts = data.td!.split("/");
-          if (parts.length == 2) {
-            int sistolik = int.parse(parts[0]);
-            int diastolik = int.parse(parts[1]);
-
-            if (sistolik >= 140 || diastolik >= 90) {
-              resti.add('Hipertensi dalam kehamilan ${data.td} mmHg');
-            }
-          }
-        }
-        if (data.lila != null) {
-          if (num.parse(data.lila!) < 23.5) {
-            resti.add('Kekurangan Energi Kronis (lila: ${data.lila} cm)');
-          }
-        }
-        if (resti.isNotEmpty) {
-          updatedKehamilan['resti'] = FieldValue.arrayUnion(resti);
-        }
+      if (firstTime && resti.isNotEmpty) {
+        updatedKehamilan['resti'] = FieldValue.arrayUnion(resti);
       }
-      bumilKunjungan['latest_kehamilan_kunjungan'] = true;
-      bumilKunjungan['latest_kehamilan.kunjungan'] = true;
+      batch.update(docRefKehamilan, updatedKehamilan);
 
-      final docRefKehamilan = FirebaseFirestore.instance
-          .collection('kehamilan')
-          .doc(data.idKehamilan);
-      await docRefKehamilan.update(updatedKehamilan);
-      final snapshotKehamilan = await docRefKehamilan.get(
-        const GetOptions(source: Source.cache),
-      );
-      final newKehamilan = Kehamilan.fromFirestore(
-        data.idKehamilan!,
-        snapshotKehamilan.data()!,
-      );
-      selectedKehamilanCubit.selectKehamilan(newKehamilan);
+      // 6. Update Dokumen Bumil
+      // Kita gunakan dot notation untuk update field spesifik di dalam Map latest_kehamilan
+      final Map<String, dynamic> bumilUpdate = {
+        'latest_kehamilan_kunjungan': true,
+        'latest_kunjungan_id': id,
+        'latest_kunjungan': kunjungan,
+        'latest_kehamilan.kunjungan': true,
+        'latest_kehamilan.sf_count':
+            (kehamilan?.sfCount ?? 0) + (data.nextSf ?? 0),
+      };
+      if (firstTime && resti.isNotEmpty) {
+        // Sinkronisasi field resti di objek bumil jika ada perubahan
+        bumilUpdate['latest_kehamilan_resti'] = FieldValue.arrayUnion(resti);
+        bumilUpdate['latest_kehamilan.resti'] = FieldValue.arrayUnion(resti);
+      }
+      batch.update(docRefBumil, bumilUpdate);
 
-      bumilKunjungan['latest_kunjungan_id'] = id;
-      bumilKunjungan['latest_kunjungan'] = kunjungan;
-      bumilKunjungan['latest_kehamilan'] = newKehamilan.toFirestore();
-      final docRefBumil = FirebaseFirestore.instance
-          .collection('bumil')
-          .doc(data.idBumil);
-      await docRefBumil.update(bumilKunjungan);
-      final snapshotBumil = await docRefBumil.get(
-        const GetOptions(source: Source.cache),
+      // 7. COMMIT BATCH (Tersimpan di local cache dulu jika offline)
+      batch.commit();
+
+      selectedKunjunganCubit.selectKunjungan(
+        Kunjungan.fromFirestore(kunjungan, id: id),
       );
-      final newBumil = Bumil.fromMap(data.idBumil!, snapshotBumil.data()!);
-      selectedBumilCubit.selectBumil(newBumil);
+
+      if (kehamilan != null) {
+        kehamilan.sfCount = (kehamilan.sfCount ?? 0) + (data.nextSf ?? 0);
+        kehamilan.kunjungan = true;
+        if (firstTime && resti.isNotEmpty) {
+          kehamilan.resti = resti;
+        }
+        selectedKehamilanCubit.selectKehamilan(kehamilan);
+      }
+
+      var bumil = selectedBumilCubit.state;
+      if (bumil != null) {
+        bumil.latestKehamilanKunjungan = true;
+        bumil.latestKunjunganId = id;
+        bumil.latestKunjungan = selectedKunjunganCubit.state;
+        bumil.latestKehamilanResti = resti;
+        bumil.latestKehamilan = kehamilan;
+        selectedBumilCubit.selectBumil(bumil);
+      }
 
       emit(AddKunjunganSuccess());
     } catch (e) {

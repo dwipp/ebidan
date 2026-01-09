@@ -95,7 +95,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
     ukController.text = kunjungan!.uk!;
     terapiController.text = kunjungan!.terapi ?? '';
     _selectedStatusKunjungan = kunjungan?.status ?? '';
-    _createdAt = kunjungan!.createdAt!;
+    _createdAt = kunjungan!.createdAt ?? DateTime.now();
   }
 
   Future<void> _saveData() async {
