@@ -47,6 +47,7 @@ export const monthlyReportBroadcast = onSchedule(
     schedule: "1 of month 09:00",
     timeZone: TIMEZONE,
     region: REGION,
+    retryCount: 0,
   },
   async () => {
     const now = new Date();
