@@ -400,7 +400,7 @@ class _AddPersalinanState extends State<AddPersalinanScreen> {
                         DatePickerFormField(
                           labelText: 'Tanggal Pembuatan Data (Auto)',
                           prefixIcon: Icons.calendar_view_day,
-                          initialValue: data.createdAt,
+                          value: data.createdAt,
                           context: context,
                           onDateSelected: (date) {
                             setState(() => data.createdAt = date);

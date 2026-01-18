@@ -54,6 +54,7 @@ export const weeklySundayBroadcast = onSchedule(
     schedule: "every sunday 19:00",
     timeZone: TIMEZONE,
     region: REGION,
+    retryCount: 0,
   },
   async () => {
     const now = new Date();

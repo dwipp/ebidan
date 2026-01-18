@@ -1,6 +1,9 @@
+import 'package:ebidan/common/Utils.dart';
+import 'package:ebidan/common/exceptions/string.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
+import 'package:ebidan/presentation/widgets/ktp_camera.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
@@ -11,10 +14,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // Import FormValidator
 import 'package:ebidan/common/utility/form_validator.dart';
+import 'package:ktp_extractor/models/ktp_model.dart';
 
 class AddBumilScreen extends StatefulWidget {
   final String nikIbu;
-  const AddBumilScreen({Key? key, required this.nikIbu}) : super(key: key);
+  KtpModel? ktpIbu;
+  KtpModel? ktpSuami;
+  AddBumilScreen({super.key, required this.nikIbu, this.ktpIbu});
 
   @override
   State<AddBumilScreen> createState() => _AddBumilState();
@@ -133,9 +139,97 @@ class _AddBumilState extends State<AddBumilScreen> {
   void initState() {
     context.read<SubmitBumilCubit>().setInitial();
     _nikIbuController.text = widget.nikIbu;
+    populateIbuDataFromKTP();
+    _kkIbuController.addListener(() {
+      final text = _kkIbuController.text;
+      if (_kkSuamiController.text != text) {
+        _kkSuamiController.value = _kkSuamiController.value.copyWith(
+          text: text,
+          selection: TextSelection.collapsed(offset: text.length),
+        );
+      }
+    });
     // **PERUBAHAN 3: Inisialisasi FormValidator**
     _formValidator = FormValidator(fieldKeys: _fieldKeys);
     super.initState();
+  }
+
+  String buildFullAddress({
+    String? address,
+    String? rt,
+    String? rw,
+    String? subDistrict,
+    String? district,
+    String? city,
+    String? province,
+  }) {
+    final parts = <String>[];
+
+    void add(String? value) {
+      if (value != null && value.trim().isNotEmpty) {
+        parts.add(value.trim());
+      }
+    }
+
+    add(address);
+    if (rt != null || rw != null) {
+      final rtRw = [
+        if (rt != null && rt.trim().isNotEmpty) 'RT ${rt.trim()}',
+        if (rw != null && rw.trim().isNotEmpty) 'RW ${rw.trim()}',
+      ].join('/');
+      if (rtRw.isNotEmpty) parts.add(rtRw);
+    }
+    add(subDistrict);
+    add(district);
+    add(city);
+    add(province);
+
+    return parts.join(', ').capitalizeWords();
+  }
+
+  void populateIbuDataFromKTP() {
+    if (widget.ktpIbu != null) {
+      _namaIbuController.text = (widget.ktpIbu!.name ?? '').capitalizeWords();
+
+      _alamatController.text = buildFullAddress(
+        address: widget.ktpIbu!.address,
+        city: widget.ktpIbu!.city,
+        district: widget.ktpIbu!.district,
+        province: widget.ktpIbu!.province,
+        rt: widget.ktpIbu!.rt,
+        rw: widget.ktpIbu!.rw,
+        subDistrict: widget.ktpIbu!.subDistrict,
+      );
+      _jobIbuController.text = (widget.ktpIbu!.occupation ?? '')
+          .capitalizeWords();
+      _birthdateIbu = Utils.parseDateKTP(widget.ktpIbu!.birthDay);
+      _selectedAgamaIbu = matchAgama(widget.ktpIbu!.religion ?? '', _agamaList);
+    }
+  }
+
+  void populateSuamiDataFromKTP() {
+    if (widget.ktpSuami != null) {
+      _nikSuamiController.text = (widget.ktpSuami!.nik ?? '').capitalizeWords();
+      _namaSuamiController.text = (widget.ktpSuami!.name ?? '')
+          .capitalizeWords();
+      _jobSuamiController.text = (widget.ktpSuami!.occupation ?? '')
+          .capitalizeWords();
+      _birthdateSuami = Utils.parseDateKTP(widget.ktpSuami!.birthDay);
+      _selectedAgamaSuami = matchAgama(
+        widget.ktpSuami!.religion ?? '',
+        _agamaList,
+      );
+    }
+  }
+
+  String? matchAgama(String agama, List<String> agamaList) {
+    final normalized = agama.trim().toLowerCase();
+    for (final item in agamaList) {
+      if (item.toLowerCase() == normalized) {
+        return item; // return sesuai versi list
+      }
+    }
+    return null;
   }
 
   void _submitForm() {
@@ -204,6 +298,50 @@ class _AddBumilState extends State<AddBumilScreen> {
                 children: [
                   _buildSectionTitle('Data Ibu'),
                   CustomTextField(
+                    key: _fieldKeys['nikIbu'],
+                    label: 'NIK Ibu',
+                    icon: Icons.badge,
+                    controller: _nikIbuController,
+                    isNumber: true,
+                    maxLength: 16,
+                    suffixIcon: IconButton(
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => KtpCameraScreen(
+                              onCaptured: (KtpModel ktp) async {
+                                widget.ktpIbu = ktp;
+                                setState(() {
+                                  _nikIbuController.text = ktp.nik ?? '';
+                                  populateIbuDataFromKTP();
+                                });
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.camera_alt_outlined),
+                    ),
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'nikIbu',
+                      val,
+                      _validateNIK,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // KK Ibu tidak wajib
+                  CustomTextField(
+                    label: 'KK Ibu',
+                    icon: Icons.credit_card,
+                    controller: _kkIbuController,
+                    isNumber: true,
+                    maxLength: 16,
+                    validator: _validateKK,
+                  ),
+                  const SizedBox(height: 12),
+                  CustomTextField(
                     key: _fieldKeys['namaIbu'],
                     label: 'Nama Ibu',
                     icon: Icons.person,
@@ -268,31 +406,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  CustomTextField(
-                    key: _fieldKeys['nikIbu'],
-                    label: 'NIK Ibu',
-                    icon: Icons.badge,
-                    controller: _nikIbuController,
-                    isNumber: true,
-                    maxLength: 16,
-                    // **Ganti panggilan validator**
-                    validator: (val) => _formValidator.wrapValidator(
-                      'nikIbu',
-                      val,
-                      _validateNIK,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // KK Ibu tidak wajib
-                  CustomTextField(
-                    label: 'KK Ibu',
-                    icon: Icons.credit_card,
-                    controller: _kkIbuController,
-                    isNumber: true,
-                    maxLength: 16,
-                    validator: _validateKK,
-                  ),
-                  const SizedBox(height: 12),
+
                   DropdownField(
                     key: _fieldKeys['pendidikanIbu'],
                     label: 'Pendidikan Ibu',
@@ -316,11 +430,12 @@ class _AddBumilState extends State<AddBumilScreen> {
                     key: _fieldKeys['tanggalLahirIbu'],
                     labelText: 'Tanggal Lahir Ibu',
                     prefixIcon: Icons.calendar_today,
-                    initialValue: _birthdateIbu,
+                    value: _birthdateIbu,
                     initialDate: DateTime(DateTime.now().year - 20),
                     context: context,
                     onDateSelected: (date) {
                       setState(() {
+                        print('tgl lahir asli: $date');
                         _birthdateIbu = date;
                       });
                     },
@@ -334,6 +449,49 @@ class _AddBumilState extends State<AddBumilScreen> {
 
                   const SizedBox(height: 16),
                   _buildSectionTitle('Data Suami'),
+                  CustomTextField(
+                    key: _fieldKeys['nikSuami'],
+                    label: 'NIK Suami',
+                    icon: Icons.badge,
+                    controller: _nikSuamiController,
+                    isNumber: true,
+                    maxLength: 16,
+                    suffixIcon: IconButton(
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => KtpCameraScreen(
+                              onCaptured: (KtpModel ktp) async {
+                                widget.ktpSuami = ktp;
+                                setState(() {
+                                  populateSuamiDataFromKTP();
+                                });
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.camera_alt_outlined),
+                    ),
+                    // **Ganti panggilan validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'nikSuami',
+                      val,
+                      _validateNIK,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // KK Suami tidak wajib
+                  CustomTextField(
+                    label: 'KK Suami',
+                    icon: Icons.credit_card,
+                    controller: _kkSuamiController,
+                    isNumber: true,
+                    maxLength: 16,
+                    validator: _validateKK,
+                  ),
+                  const SizedBox(height: 12),
                   CustomTextField(
                     key: _fieldKeys['namaSuami'],
                     label: 'Nama Suami',
@@ -399,44 +557,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  CustomTextField(
-                    key: _fieldKeys['nikSuami'],
-                    label: 'NIK Suami',
-                    icon: Icons.badge,
-                    controller: _nikSuamiController,
-                    isNumber: true,
-                    maxLength: 16,
-                    // **Ganti panggilan validator**
-                    validator: (val) => _formValidator.wrapValidator(
-                      'nikSuami',
-                      val,
-                      _validateNIK,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // KK Suami tidak wajib
-                  CustomTextField(
-                    label: 'KK Suami',
-                    icon: Icons.credit_card,
-                    controller: _kkSuamiController,
-                    isNumber: true,
-                    maxLength: 16,
-                    validator: _validateKK,
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.copy),
-                      onPressed: () {
-                        setState(() {
-                          _kkSuamiController.text = _kkIbuController.text;
-                        });
-                        Snackbar.show(
-                          context,
-                          message: 'No KK Suami sama dengan No KK Ibu',
-                          type: SnackbarType.general,
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 12),
+
                   DropdownField(
                     key: _fieldKeys['pendidikanSuami'],
                     label: 'Pendidikan Suami',
@@ -460,7 +581,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     key: _fieldKeys['tanggalLahirSuami'],
                     labelText: 'Tanggal Lahir Suami',
                     prefixIcon: Icons.calendar_today,
-                    initialValue: _birthdateSuami,
+                    value: _birthdateSuami,
                     initialDate: DateTime(DateTime.now().year - 20),
                     context: context,
                     onDateSelected: (date) {

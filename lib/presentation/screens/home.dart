@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
@@ -27,6 +29,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -78,6 +81,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _checkAppVersionInPlaystore() async {
     await RemoteConfigHelper.shouldShowUpdateAnnouncement(context);
+  }
+
+  Future<File> assetToFile(String assetPath) async {
+    final byteData = await rootBundle.load(assetPath);
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/ktp.jpeg');
+
+    await file.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+
+    return file;
   }
 
   @override

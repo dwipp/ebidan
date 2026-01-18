@@ -220,7 +220,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                 key: _fieldKeys['tglLahir'], // Tambahkan key
                 labelText: 'Tanggal Lahir',
                 prefixIcon: Icons.calendar_today,
-                initialValue: _tglLahir,
+                value: _tglLahir,
                 initialDate: _tglLahir,
                 context: context,
                 onDateSelected: (date) {

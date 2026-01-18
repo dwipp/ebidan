@@ -167,7 +167,7 @@ class _AddRiwayatBumilState extends State<AddRiwayatBumilScreen> {
                           key: getKey('tgl_lahir'), // **Key Dinamis**
                           labelText: 'Tanggal Lahir',
                           prefixIcon: Icons.calendar_today,
-                          initialValue: data['tgl_lahir'],
+                          value: data['tgl_lahir'],
                           initialDate: DateTime(DateTime.now().year - 1),
                           context: context,
                           onDateSelected: (date) {
