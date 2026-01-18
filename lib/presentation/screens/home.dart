@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
@@ -6,9 +8,9 @@ import 'package:ebidan/common/utility/subscription_helper.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
 import 'package:ebidan/presentation/screens/banner/banner_home.dart';
+import 'package:ebidan/presentation/widgets/ktp_camera.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
-import 'package:ebidan/presentation/widgets/scan_ktp.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/summary_chart.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
@@ -28,6 +30,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:ktp_extractor/ktp_extractor.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -81,6 +85,16 @@ class _HomeScreenState extends State<HomeScreen> {
     await RemoteConfigHelper.shouldShowUpdateAnnouncement(context);
   }
 
+  Future<File> assetToFile(String assetPath) async {
+    final byteData = await rootBundle.load(assetPath);
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/ktp.jpeg');
+
+    await file.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+
+    return file;
+  }
+
   @override
   Widget build(BuildContext context) {
     context.read<StatisticCubit>().fetchStatistic();
@@ -120,29 +134,39 @@ class _HomeScreenState extends State<HomeScreen> {
               // IconButton untuk menampilkan foto profil user
               IconButton(
                 onPressed: () async {
-                  final result = await Navigator.push(
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      fullscreenDialog: true,
-                      builder: (ctx) => KtpCameraScanner(
-                        onResult: (ktp) {
-                          if (Navigator.canPop(ctx)) {
-                            Navigator.pop(ctx, ktp);
-                          }
+                      builder: (_) => KtpCameraScreen(
+                        onCaptured: (File image) async {
+                          // ⬇️ image KTP hasil foto
+                          // panggil fungsi OCR kamu
+                          // File imageFile = await assetToFile(
+                          //   'assets/images/ktp.jpeg',
+                          // );
+
+                          // Crop the image to the KTP area (optional but recommended)
+                          File? croppedImage =
+                              await KtpExtractor.cropImageForKtp(image);
+
+                          // Use the cropped image for extraction if available
+                          File imageToProcess = croppedImage ?? image;
+
+                          // Extract KTP information
+                          KtpModel ktpData = await KtpExtractor.extractKtp(
+                            imageToProcess,
+                          );
+
+                          // Access the extracted data
+                          print('NIK: ${ktpData.nik}');
+                          print('Name: ${ktpData.name}');
+                          print('Birth Date: ${ktpData.birthDay}');
+                          print('Address: ${ktpData.address}');
+                          // final data = await scanKtp(image);
                         },
                       ),
                     ),
                   );
-
-                  if (result != null && result is KtpModel) {
-                    debugPrint("NIK: ${result.nik}");
-                    debugPrint("Nama: ${result.nama}");
-                    debugPrint("Alamat: ${result.alamat}");
-
-                    // contoh: isi form otomatis
-                    // nikController.text = result.nik;
-                    // namaController.text = result.nama;
-                  }
                 },
                 icon: Icon(Icons.camera),
               ),
