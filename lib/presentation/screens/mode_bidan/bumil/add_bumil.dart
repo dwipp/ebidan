@@ -222,14 +222,14 @@ class _AddBumilState extends State<AddBumilScreen> {
     }
   }
 
-  String matchAgama(String agama, List<String> agamaList) {
+  String? matchAgama(String agama, List<String> agamaList) {
     final normalized = agama.trim().toLowerCase();
     for (final item in agamaList) {
       if (item.toLowerCase() == normalized) {
         return item; // return sesuai versi list
       }
     }
-    return '';
+    return null;
   }
 
   void _submitForm() {
