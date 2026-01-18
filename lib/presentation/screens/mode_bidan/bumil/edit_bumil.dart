@@ -328,7 +328,7 @@ class _EditBumilState extends State<EditBumilScreen> {
                     key: _fieldKeys['tanggalLahirIbu'], // Tambahkan key
                     labelText: 'Tanggal Lahir Ibu',
                     prefixIcon: Icons.calendar_today,
-                    initialValue: _birthdateIbu,
+                    value: _birthdateIbu,
                     initialDate: DateTime(DateTime.now().year - 20),
                     context: context,
                     onDateSelected: (date) {
@@ -452,7 +452,7 @@ class _EditBumilState extends State<EditBumilScreen> {
                     key: _fieldKeys['tanggalLahirSuami'], // Tambahkan key
                     labelText: 'Tanggal Lahir Suami',
                     prefixIcon: Icons.calendar_today,
-                    initialValue: _birthdateSuami,
+                    value: _birthdateSuami,
                     initialDate: DateTime(DateTime.now().year - 20),
                     context: context,
                     onDateSelected: (date) {

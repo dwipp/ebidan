@@ -401,7 +401,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
               DatePickerFormField(
                 labelText: 'Tanggal Pembuatan Data',
                 prefixIcon: Icons.calendar_view_day,
-                initialValue: _createdAt,
+                value: _createdAt,
                 context: context,
                 readOnly: true,
                 onDateSelected: (date) {

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:flutter/material.dart';
 import 'package:ktp_extractor/ktp_extractor.dart';
 
@@ -228,16 +229,21 @@ class _ResultOverlay extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: Button(
+                    isSubmitting: false,
                     onPressed: onRetry,
-                    child: const Text('Foto Ulang'),
+                    label: 'Ulangi',
+                    icon: Icons.camera_alt_outlined,
+                    secondaryButton: true,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: ElevatedButton(
+                  child: Button(
+                    isSubmitting: false,
                     onPressed: onConfirm,
-                    child: const Text('Gunakan Data'),
+                    label: 'Gunakan Data',
+                    icon: Icons.add_card_rounded,
                   ),
                 ),
               ],

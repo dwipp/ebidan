@@ -227,7 +227,7 @@ class _EditKunjunganState extends State<EditKunjunganScreen> {
               DatePickerFormField(
                 labelText: 'Tanggal Kunjungan',
                 prefixIcon: Icons.calendar_view_day,
-                initialValue: _createdAt,
+                value: _createdAt,
                 context: context,
                 readOnly: true,
                 onDateSelected: (date) {

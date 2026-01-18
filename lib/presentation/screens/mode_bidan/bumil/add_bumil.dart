@@ -430,7 +430,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     key: _fieldKeys['tanggalLahirIbu'],
                     labelText: 'Tanggal Lahir Ibu',
                     prefixIcon: Icons.calendar_today,
-                    initialValue: _birthdateIbu,
+                    value: _birthdateIbu,
                     initialDate: DateTime(DateTime.now().year - 20),
                     context: context,
                     onDateSelected: (date) {
@@ -490,19 +490,6 @@ class _AddBumilState extends State<AddBumilScreen> {
                     isNumber: true,
                     maxLength: 16,
                     validator: _validateKK,
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.copy),
-                      onPressed: () {
-                        setState(() {
-                          _kkSuamiController.text = _kkIbuController.text;
-                        });
-                        Snackbar.show(
-                          context,
-                          message: 'No KK Suami sama dengan No KK Ibu',
-                          type: SnackbarType.general,
-                        );
-                      },
-                    ),
                   ),
                   const SizedBox(height: 12),
                   CustomTextField(
@@ -594,7 +581,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     key: _fieldKeys['tanggalLahirSuami'],
                     labelText: 'Tanggal Lahir Suami',
                     prefixIcon: Icons.calendar_today,
-                    initialValue: _birthdateSuami,
+                    value: _birthdateSuami,
                     initialDate: DateTime(DateTime.now().year - 20),
                     context: context,
                     onDateSelected: (date) {

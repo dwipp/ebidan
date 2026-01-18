@@ -309,7 +309,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 labelText: 'Hari Taksiran Persalinan (HTP)',
                 prefixIcon: Icons.event,
                 context: context,
-                initialValue: _htp,
+                value: _htp,
                 readOnly: true,
                 lastDate: DateTime(
                   DateTime.now().year + 1,
