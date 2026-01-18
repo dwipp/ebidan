@@ -46,6 +46,25 @@ jobs:
             mkdir -p android/app/src/prod
             echo '${{ secrets.GOOGLE_SERVICES_JSON_PROD }}' > android/app/src/prod/google-services.json
 
+      - name: Create firebase options (prod)
+        run: |
+          mkdir -p lib/configs
+          cat <<EOF > lib/configs/firebase_prod_options.dart
+          import 'package:firebase_core/firebase_core.dart';
+
+          class DefaultFirebaseOptionsProd {
+            static FirebaseOptions get currentPlatform {
+              return const FirebaseOptions(
+                apiKey: "${{ secrets.FIREBASE_API_KEY_PROD }}",
+                appId: "${{ secrets.FIREBASE_APP_ID_PROD }}",
+                messagingSenderId: "${{ secrets.FIREBASE_SENDER_ID_PROD }}",
+                projectId: "${{ secrets.FIREBASE_PROJECT_ID_PROD }}",
+                storageBucket: "${{ secrets.FIREBASE_STORAGE_BUCKET_PROD }}",
+              );
+            }
+          }
+          EOF
+
       - name: Build App Bundle
         run: flutter build appbundle --release --flavor prod
 
