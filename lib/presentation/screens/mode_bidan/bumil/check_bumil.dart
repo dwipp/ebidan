@@ -1,5 +1,6 @@
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
+import 'package:ebidan/presentation/widgets/ktp_camera.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
@@ -7,6 +8,7 @@ import 'package:ebidan/state_management/mode_bidan/bumil/cubit/check_bumil_cubit
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ktp_extractor/models/ktp_model.dart';
 
 class CheckBumilScreen extends StatefulWidget {
   const CheckBumilScreen({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class CheckBumilScreen extends StatefulWidget {
 class _CheckBumilScreenState extends State<CheckBumilScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nikController = TextEditingController();
+  KtpModel? _ktp;
 
   @override
   void initState() {
@@ -68,6 +71,24 @@ class _CheckBumilScreenState extends State<CheckBumilScreen> {
                 controller: _nikController,
                 isNumber: true,
                 maxLength: 16,
+                suffixIcon: IconButton(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => KtpCameraScreen(
+                          onCaptured: (KtpModel ktp) async {
+                            _ktp = ktp;
+                            setState(() {
+                              _nikController.text = ktp.nik ?? '';
+                            });
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.camera),
+                ),
                 validator: _validateNIK,
               ),
               const SizedBox(height: 24),
@@ -92,7 +113,7 @@ class _CheckBumilScreenState extends State<CheckBumilScreen> {
                       Navigator.pushReplacementNamed(
                         context,
                         AppRouter.addBumil,
-                        arguments: {'nikIbu': _nikController.text},
+                        arguments: {'nikIbu': _nikController.text, 'ktp': _ktp},
                       );
                     }
                   },

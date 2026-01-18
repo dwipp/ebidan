@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:ktp_extractor/ktp_extractor.dart';
 
 class KtpCameraScreen extends StatefulWidget {
-  final Function(File image) onCaptured;
+  final Function(KtpModel ktp) onCaptured;
 
   const KtpCameraScreen({super.key, required this.onCaptured});
 
@@ -15,6 +16,9 @@ class KtpCameraScreen extends StatefulWidget {
 class _KtpCameraScreenState extends State<KtpCameraScreen> {
   CameraController? _controller;
   bool _isReady = false;
+  KtpModel? _ktpResult;
+  bool _showResult = false;
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -61,7 +65,20 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
 
           // Overlay frame KTP
           _KtpOverlay(),
-
+          if (_showResult && _ktpResult != null)
+            _ResultOverlay(
+              data: _ktpResult!,
+              onConfirm: () {
+                widget.onCaptured(_ktpResult!);
+                Navigator.pop(context);
+              },
+              onRetry: () {
+                setState(() {
+                  _showResult = false;
+                  _ktpResult = null;
+                });
+              },
+            ),
           // Tombol shutter
           Positioned(
             bottom: 30,
@@ -81,9 +98,35 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
   }
 
   Future<void> _capture() async {
-    final file = await _controller!.takePicture();
-    widget.onCaptured(File(file.path));
-    Navigator.pop(context);
+    if (_isProcessing) return;
+
+    setState(() => _isProcessing = true);
+
+    final picture = await _controller!.takePicture();
+    final file = File(picture.path);
+
+    // Panggil OCR KTP kamu
+    // final result = await scanKtp(file);
+    // contoh result: { nik, nama, alamat }
+    File? croppedImage = await KtpExtractor.cropImageForKtp(file);
+
+    // Use the cropped image for extraction if available
+    File imageToProcess = croppedImage ?? file;
+
+    // Extract KTP information
+    KtpModel ktpData = await KtpExtractor.extractKtp(imageToProcess);
+
+    // Access the extracted data
+    print('NIK: ${ktpData.nik}');
+    print('Name: ${ktpData.name}');
+    print('Birth Date: ${ktpData.birthDay}');
+    print('Address: ${ktpData.address}');
+
+    setState(() {
+      _ktpResult = ktpData;
+      _showResult = true;
+      _isProcessing = false;
+    });
   }
 }
 
@@ -131,6 +174,79 @@ class _KtpOverlay extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _ResultOverlay extends StatelessWidget {
+  final KtpModel data;
+  final VoidCallback onConfirm;
+  final VoidCallback onRetry;
+
+  const _ResultOverlay({
+    required this.data,
+    required this.onConfirm,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+      child: Container(
+        color: Colors.black.withOpacity(0.7),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _row('NIK', data.nik),
+            _row('Nama', data.name),
+            _row('Alamat', data.address),
+
+            const SizedBox(height: 24),
+
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: onRetry,
+                    child: const Text('Foto Ulang'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: onConfirm,
+                    child: const Text('Gunakan Data'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _row(String label, String? value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(label, style: const TextStyle(color: Colors.white70)),
+          ),
+          Expanded(
+            child: Text(
+              value ?? '-',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -64,7 +64,6 @@ flutter:
   assets:
     - assets/icons/
     - assets/images/
-    # - assets/images/ktp.jpeg
 
 flutter_icons:
   android: true

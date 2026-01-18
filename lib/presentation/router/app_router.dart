@@ -137,7 +137,8 @@ class AppRouter {
       case addBumil:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => AddBumilScreen(nikIbu: args['nikIbu']),
+          builder: (_) =>
+              AddBumilScreen(nikIbu: args['nikIbu'], ktpIbu: args['ktp']),
         );
       case dataBumil:
         return MaterialPageRoute(builder: (_) => DataBumilScreen());

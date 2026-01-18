@@ -23,6 +23,29 @@ class Utils {
     return DateFormat("d MMMM yyyy", "id_ID").format(date);
   }
 
+  static DateTime? parseDateKTP(String? tanggal) {
+    if (tanggal == null) return null;
+    try {
+      final parts = tanggal.split('-');
+      if (parts.length != 3) return null;
+
+      final day = int.parse(parts[0]);
+      final month = int.parse(parts[1]);
+      final year = int.parse(parts[2]);
+
+      final dt = DateTime(year, month, day);
+
+      // validasi tanggal palsu (misal 32-13-1991)
+      if (dt.day != day || dt.month != month || dt.year != year) {
+        return null;
+      }
+
+      return dt;
+    } catch (_) {
+      return null;
+    }
+  }
+
   static String formattedDateTime(DateTime? date) {
     if (date == null) return "-";
     // Format ke bahasa Indonesia: 1 Januari 1990

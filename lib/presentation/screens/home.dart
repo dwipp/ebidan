@@ -8,7 +8,6 @@ import 'package:ebidan/common/utility/subscription_helper.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
 import 'package:ebidan/presentation/screens/banner/banner_home.dart';
-import 'package:ebidan/presentation/widgets/ktp_camera.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
@@ -30,7 +29,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:ktp_extractor/ktp_extractor.dart';
 import 'package:path_provider/path_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -132,44 +130,6 @@ class _HomeScreenState extends State<HomeScreen> {
             hideBackButton: true,
             actions: [
               // IconButton untuk menampilkan foto profil user
-              IconButton(
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => KtpCameraScreen(
-                        onCaptured: (File image) async {
-                          // ⬇️ image KTP hasil foto
-                          // panggil fungsi OCR kamu
-                          // File imageFile = await assetToFile(
-                          //   'assets/images/ktp.jpeg',
-                          // );
-
-                          // Crop the image to the KTP area (optional but recommended)
-                          File? croppedImage =
-                              await KtpExtractor.cropImageForKtp(image);
-
-                          // Use the cropped image for extraction if available
-                          File imageToProcess = croppedImage ?? image;
-
-                          // Extract KTP information
-                          KtpModel ktpData = await KtpExtractor.extractKtp(
-                            imageToProcess,
-                          );
-
-                          // Access the extracted data
-                          print('NIK: ${ktpData.nik}');
-                          print('Name: ${ktpData.name}');
-                          print('Birth Date: ${ktpData.birthDay}');
-                          print('Address: ${ktpData.address}');
-                          // final data = await scanKtp(image);
-                        },
-                      ),
-                    ),
-                  );
-                },
-                icon: Icon(Icons.camera),
-              ),
               IconButton(
                 icon: CircleAvatar(
                   backgroundColor: context.themeColors.surface,
