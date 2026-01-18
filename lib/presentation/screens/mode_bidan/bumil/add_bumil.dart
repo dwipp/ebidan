@@ -140,29 +140,81 @@ class _AddBumilState extends State<AddBumilScreen> {
     context.read<SubmitBumilCubit>().setInitial();
     _nikIbuController.text = widget.nikIbu;
     populateIbuDataFromKTP();
+    _kkIbuController.addListener(() {
+      final text = _kkIbuController.text;
+      if (_kkSuamiController.text != text) {
+        _kkSuamiController.value = _kkSuamiController.value.copyWith(
+          text: text,
+          selection: TextSelection.collapsed(offset: text.length),
+        );
+      }
+    });
     // **PERUBAHAN 3: Inisialisasi FormValidator**
     _formValidator = FormValidator(fieldKeys: _fieldKeys);
     super.initState();
   }
 
+  String buildFullAddress({
+    String? address,
+    String? rt,
+    String? rw,
+    String? subDistrict,
+    String? district,
+    String? city,
+    String? province,
+  }) {
+    final parts = <String>[];
+
+    void add(String? value) {
+      if (value != null && value.trim().isNotEmpty) {
+        parts.add(value.trim());
+      }
+    }
+
+    add(address);
+    if (rt != null || rw != null) {
+      final rtRw = [
+        if (rt != null && rt.trim().isNotEmpty) 'RT ${rt.trim()}',
+        if (rw != null && rw.trim().isNotEmpty) 'RW ${rw.trim()}',
+      ].join('/');
+      if (rtRw.isNotEmpty) parts.add(rtRw);
+    }
+    add(subDistrict);
+    add(district);
+    add(city);
+    add(province);
+
+    return parts.join(', ').capitalizeWords();
+  }
+
   void populateIbuDataFromKTP() {
     if (widget.ktpIbu != null) {
       _namaIbuController.text = (widget.ktpIbu!.name ?? '').capitalizeWords();
-      _alamatController.text = (widget.ktpIbu!.address ?? '').capitalizeWords();
+
+      _alamatController.text = buildFullAddress(
+        address: widget.ktpIbu!.address,
+        city: widget.ktpIbu!.city,
+        district: widget.ktpIbu!.district,
+        province: widget.ktpIbu!.province,
+        rt: widget.ktpIbu!.rt,
+        rw: widget.ktpIbu!.rw,
+        subDistrict: widget.ktpIbu!.subDistrict,
+      );
       _jobIbuController.text = (widget.ktpIbu!.occupation ?? '')
           .capitalizeWords();
-      _birthdateIbu = Utils.parseDateKTP((widget.ktpIbu!.birthDay));
+      _birthdateIbu = Utils.parseDateKTP(widget.ktpIbu!.birthDay);
       _selectedAgamaIbu = matchAgama(widget.ktpIbu!.religion ?? '', _agamaList);
     }
   }
 
   void populateSuamiDataFromKTP() {
     if (widget.ktpSuami != null) {
+      _nikSuamiController.text = (widget.ktpSuami!.nik ?? '').capitalizeWords();
       _namaSuamiController.text = (widget.ktpSuami!.name ?? '')
           .capitalizeWords();
-      _jobIbuController.text = (widget.ktpSuami!.occupation ?? '')
+      _jobSuamiController.text = (widget.ktpSuami!.occupation ?? '')
           .capitalizeWords();
-      _birthdateSuami = Utils.parseDateKTP((widget.ktpSuami!.birthDay));
+      _birthdateSuami = Utils.parseDateKTP(widget.ktpSuami!.birthDay);
       _selectedAgamaSuami = matchAgama(
         widget.ktpSuami!.religion ?? '',
         _agamaList,
@@ -261,6 +313,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                               onCaptured: (KtpModel ktp) async {
                                 widget.ktpIbu = ktp;
                                 setState(() {
+                                  _nikIbuController.text = ktp.nik ?? '';
                                   populateIbuDataFromKTP();
                                 });
                               },
@@ -268,7 +321,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                           ),
                         );
                       },
-                      icon: Icon(Icons.camera),
+                      icon: Icon(Icons.camera_alt_outlined),
                     ),
                     // **Ganti panggilan validator**
                     validator: (val) => _formValidator.wrapValidator(
@@ -382,6 +435,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     context: context,
                     onDateSelected: (date) {
                       setState(() {
+                        print('tgl lahir asli: $date');
                         _birthdateIbu = date;
                       });
                     },
@@ -418,7 +472,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                           ),
                         );
                       },
-                      icon: Icon(Icons.camera),
+                      icon: Icon(Icons.camera_alt_outlined),
                     ),
                     // **Ganti panggilan validator**
                     validator: (val) => _formValidator.wrapValidator(

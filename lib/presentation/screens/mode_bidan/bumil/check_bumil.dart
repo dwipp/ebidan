@@ -87,7 +87,7 @@ class _CheckBumilScreenState extends State<CheckBumilScreen> {
                       ),
                     );
                   },
-                  icon: Icon(Icons.camera),
+                  icon: Icon(Icons.camera_alt_outlined),
                 ),
                 validator: _validateNIK,
               ),
