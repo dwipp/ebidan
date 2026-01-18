@@ -95,6 +95,25 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
               ),
             ),
           ],
+          if (_isProcessing)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.6),
+                child: const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(color: Colors.white),
+                      SizedBox(height: 12),
+                      Text(
+                        'Memproses KTP...',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -105,31 +124,27 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
 
     setState(() => _isProcessing = true);
 
-    final picture = await _controller!.takePicture();
-    final file = File(picture.path);
+    try {
+      final picture = await _controller!.takePicture();
+      final file = File(picture.path);
 
-    // Panggil OCR KTP kamu
-    // final result = await scanKtp(file);
-    // contoh result: { nik, nama, alamat }
-    File? croppedImage = await KtpExtractor.cropImageForKtp(file);
+      File? croppedImage = await KtpExtractor.cropImageForKtp(file);
+      File imageToProcess = croppedImage ?? file;
 
-    // Use the cropped image for extraction if available
-    File imageToProcess = croppedImage ?? file;
+      final ktpData = await KtpExtractor.extractKtp(imageToProcess);
 
-    // Extract KTP information
-    KtpModel ktpData = await KtpExtractor.extractKtp(imageToProcess);
-
-    // Access the extracted data
-    print('NIK: ${ktpData.nik}');
-    print('Name: ${ktpData.name}');
-    print('Birth Date: ${ktpData.birthDay}');
-    print('Address: ${ktpData.address}');
-
-    setState(() {
-      _ktpResult = ktpData;
-      _showResult = true;
-      _isProcessing = false;
-    });
+      setState(() {
+        _ktpResult = ktpData;
+        _showResult = true;
+      });
+    } catch (e) {
+      debugPrint('KTP scan error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Gagal memproses KTP')));
+    } finally {
+      setState(() => _isProcessing = false);
+    }
   }
 }
 
