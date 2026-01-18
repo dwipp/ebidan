@@ -63,8 +63,6 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
         children: [
           CameraPreview(_controller!),
 
-          // Overlay frame KTP
-          _KtpOverlay(),
           if (_showResult && _ktpResult != null)
             _ResultOverlay(
               data: _ktpResult!,
@@ -78,20 +76,25 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
                   _ktpResult = null;
                 });
               },
-            ),
-          // Tombol shutter
-          Positioned(
-            bottom: 30,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: FloatingActionButton(
-                backgroundColor: Colors.white,
-                onPressed: _capture,
-                child: const Icon(Icons.camera_alt, color: Colors.black),
+            )
+          else ...[
+            // Overlay frame KTP
+            _KtpOverlay(),
+
+            // Tombol shutter
+            Positioned(
+              bottom: 30,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: FloatingActionButton(
+                  backgroundColor: Colors.white,
+                  onPressed: _capture,
+                  child: const Icon(Icons.camera_alt, color: Colors.black),
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -196,11 +199,14 @@ class _ResultOverlay extends StatelessWidget {
         color: Colors.black.withOpacity(0.7),
         padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             _row('NIK', data.nik),
             _row('Nama', data.name),
             _row('Alamat', data.address),
+            _row('Tanggal Lahir', data.birthDay),
+            _row('Agama', data.religion),
+            _row('Pekerjaan', data.occupation),
 
             const SizedBox(height: 24),
 
