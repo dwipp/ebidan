@@ -8,6 +8,7 @@ import 'package:ebidan/data/models/statistic_model.dart';
 import 'package:ebidan/presentation/screens/banner/banner_home.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
+import 'package:ebidan/presentation/widgets/scan_ktp.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/summary_chart.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
@@ -117,6 +118,34 @@ class _HomeScreenState extends State<HomeScreen> {
             hideBackButton: true,
             actions: [
               // IconButton untuk menampilkan foto profil user
+              IconButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (ctx) => KtpCameraScanner(
+                        onResult: (ktp) {
+                          if (Navigator.canPop(ctx)) {
+                            Navigator.pop(ctx, ktp);
+                          }
+                        },
+                      ),
+                    ),
+                  );
+
+                  if (result != null && result is KtpModel) {
+                    debugPrint("NIK: ${result.nik}");
+                    debugPrint("Nama: ${result.nama}");
+                    debugPrint("Alamat: ${result.alamat}");
+
+                    // contoh: isi form otomatis
+                    // nikController.text = result.nik;
+                    // namaController.text = result.nama;
+                  }
+                },
+                icon: Icon(Icons.camera),
+              ),
               IconButton(
                 icon: CircleAvatar(
                   backgroundColor: context.themeColors.surface,

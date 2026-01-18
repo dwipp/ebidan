@@ -45,6 +45,10 @@ dependencies:
   printing: ^5.14.2
   flutter_markdown_plus: ^1.0.7
 
+  # ktp scanner
+  camera: ^0.11.2
+  google_mlkit_text_recognition: ^0.15.0
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:
