@@ -85,13 +85,9 @@
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 -keepattributes SourceFile,LineNumberTable
 
-# Keep all ML Kit text recognition classes
+# Keep semua ML Kit Text Recognition classes
 -keep class com.google.mlkit.vision.text.** { *; }
 -keep class com.google.mlkit.** { *; }
 
-# Prevent stripping of language options
--keep class com.google.mlkit.vision.text.chinese.** { *; }
--keep class com.google.mlkit.vision.text.japanese.** { *; }
--keep class com.google.mlkit.vision.text.korean.** { *; }
--keep class com.google.mlkit.vision.text.devanagari.** { *; }
-
+# Optional: jika ada dependencies internal yang di-strip, keep juga
+-dontwarn com.google.mlkit.**
