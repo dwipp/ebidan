@@ -68,7 +68,7 @@ class PilihBumilScreen extends StatelessWidget {
                     icon: const Icon(Icons.add_circle, color: Colors.cyan),
                     onPressed: () {
                       Navigator.of(context)
-                          .pushNamed(AppRouter.checkDataBumil)
+                          .pushNamed(AppRouter.addBumil)
                           .then((_) => _refresh(context));
                     },
                   ),

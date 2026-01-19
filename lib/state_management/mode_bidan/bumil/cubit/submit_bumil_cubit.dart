@@ -27,6 +27,23 @@ class SubmitBumilCubit extends Cubit<SubmitBumilState> {
       return;
     }
 
+    if (bumil.nikIbu.isNotEmpty) {
+      final registered = await isNikRegistered(
+        nik: bumil.nikIbu,
+        uid: user.uid,
+      );
+      if (registered) {
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            isSuccess: false,
+            error: 'NIK Ibu sudah terdaftar.',
+          ),
+        );
+        return;
+      }
+    }
+
     try {
       final bumilId = bumil.idBumil.isNotEmpty
           ? bumil.idBumil
@@ -72,6 +89,30 @@ class SubmitBumilCubit extends Cubit<SubmitBumilState> {
           error: e.toString(),
         ),
       );
+    }
+  }
+
+  Future<bool> isNikRegistered({
+    required String nik,
+    required String uid,
+  }) async {
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      final snapshot = await firestore
+          .collection('bumil')
+          .where('id_bidan', isEqualTo: uid)
+          .where('nik_ibu', isEqualTo: nik.trim())
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
     }
   }
 

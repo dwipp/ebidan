@@ -17,10 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ebidan/common/utility/form_validator.dart';
 
 class AddBumilScreen extends StatefulWidget {
-  final String nikIbu;
-  KtpModel? ktpIbu;
-  KtpModel? ktpSuami;
-  AddBumilScreen({super.key, required this.nikIbu, this.ktpIbu});
+  AddBumilScreen({super.key});
 
   @override
   State<AddBumilScreen> createState() => _AddBumilState();
@@ -66,6 +63,9 @@ class _AddBumilState extends State<AddBumilScreen> {
   final _nikSuamiController = TextEditingController();
   final _kkIbuController = TextEditingController();
   final _kkSuamiController = TextEditingController();
+
+  KtpModel? _ktpIbu;
+  KtpModel? _ktpSuami;
 
   DateTime? _birthdateIbu;
   DateTime? _birthdateSuami;
@@ -118,7 +118,7 @@ class _AddBumilState extends State<AddBumilScreen> {
       val == null ? 'Wajib dipilih' : null;
 
   String? _validateNIK(dynamic val) {
-    if (val == null || val.isEmpty) return 'Wajib diisi';
+    if (val == null || val.isEmpty) return null;
     if (!RegExp(r'^\d{16}$').hasMatch(val)) return 'Harus 16 digit angka';
     return null;
   }
@@ -138,7 +138,7 @@ class _AddBumilState extends State<AddBumilScreen> {
   @override
   void initState() {
     context.read<SubmitBumilCubit>().setInitial();
-    _nikIbuController.text = widget.nikIbu;
+    // _nikIbuController.text = _nikIbu;
     populateIbuDataFromKTP();
     _kkIbuController.addListener(() {
       final text = _kkIbuController.text;
@@ -188,37 +188,32 @@ class _AddBumilState extends State<AddBumilScreen> {
   }
 
   void populateIbuDataFromKTP() {
-    if (widget.ktpIbu != null) {
-      _namaIbuController.text = (widget.ktpIbu!.name ?? '').capitalizeWords();
+    if (_ktpIbu != null) {
+      _namaIbuController.text = (_ktpIbu!.name ?? '').capitalizeWords();
 
       _alamatController.text = buildFullAddress(
-        address: widget.ktpIbu!.address,
-        city: widget.ktpIbu!.city,
-        district: widget.ktpIbu!.district,
-        province: widget.ktpIbu!.province,
-        rt: widget.ktpIbu!.rt,
-        rw: widget.ktpIbu!.rw,
-        subDistrict: widget.ktpIbu!.subDistrict,
+        address: _ktpIbu!.address,
+        city: _ktpIbu!.city,
+        district: _ktpIbu!.district,
+        province: _ktpIbu!.province,
+        rt: _ktpIbu!.rt,
+        rw: _ktpIbu!.rw,
+        subDistrict: _ktpIbu!.subDistrict,
       );
-      _jobIbuController.text = (widget.ktpIbu!.occupation ?? '')
-          .capitalizeWords();
-      _birthdateIbu = Utils.parseDateKTP(widget.ktpIbu!.birthDay);
-      _selectedAgamaIbu = matchAgama(widget.ktpIbu!.religion ?? '', _agamaList);
+      _jobIbuController.text = (_ktpIbu!.occupation ?? '').capitalizeWords();
+      _birthdateIbu = Utils.parseDateKTP(_ktpIbu!.birthDay);
+      _selectedAgamaIbu = matchAgama(_ktpIbu!.religion ?? '', _agamaList);
     }
   }
 
   void populateSuamiDataFromKTP() {
-    if (widget.ktpSuami != null) {
-      _nikSuamiController.text = (widget.ktpSuami!.nik ?? '').capitalizeWords();
-      _namaSuamiController.text = (widget.ktpSuami!.name ?? '')
+    if (_ktpSuami != null) {
+      _nikSuamiController.text = (_ktpSuami!.nik ?? '').capitalizeWords();
+      _namaSuamiController.text = (_ktpSuami!.name ?? '').capitalizeWords();
+      _jobSuamiController.text = (_ktpSuami!.occupation ?? '')
           .capitalizeWords();
-      _jobSuamiController.text = (widget.ktpSuami!.occupation ?? '')
-          .capitalizeWords();
-      _birthdateSuami = Utils.parseDateKTP(widget.ktpSuami!.birthDay);
-      _selectedAgamaSuami = matchAgama(
-        widget.ktpSuami!.religion ?? '',
-        _agamaList,
-      );
+      _birthdateSuami = Utils.parseDateKTP(_ktpSuami!.birthDay);
+      _selectedAgamaSuami = matchAgama(_ktpSuami!.religion ?? '', _agamaList);
     }
   }
 
@@ -311,7 +306,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                           MaterialPageRoute(
                             builder: (_) => KtpCameraScreen(
                               onCaptured: (KtpModel ktp) async {
-                                widget.ktpIbu = ktp;
+                                _ktpIbu = ktp;
                                 setState(() {
                                   _nikIbuController.text = ktp.nik ?? '';
                                   populateIbuDataFromKTP();
@@ -463,7 +458,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                           MaterialPageRoute(
                             builder: (_) => KtpCameraScreen(
                               onCaptured: (KtpModel ktp) async {
-                                widget.ktpSuami = ktp;
+                                _ktpSuami = ktp;
                                 setState(() {
                                   populateSuamiDataFromKTP();
                                 });
