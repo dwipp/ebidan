@@ -68,7 +68,7 @@ class PilihBumilScreen extends StatelessWidget {
                     icon: const Icon(Icons.add_circle, color: Colors.cyan),
                     onPressed: () {
                       Navigator.of(context)
-                          .pushNamed(AppRouter.checkDataBumil)
+                          .pushNamed(AppRouter.addBumil)
                           .then((_) => _refresh(context));
                     },
                   ),
@@ -249,7 +249,7 @@ class PilihBumilScreen extends StatelessWidget {
                                 ),
                               ),
                               subtitle: Text(
-                                'NIK: ${bumil.nikIbu}',
+                                'NIK: ${bumil.nikIbu.isNotEmpty ? bumil.nikIbu : '-'}',
                                 style: const TextStyle(fontSize: 13),
                               ),
                               trailing: const Icon(Icons.chevron_right),

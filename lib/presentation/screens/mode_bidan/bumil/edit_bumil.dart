@@ -222,6 +222,30 @@ class _EditBumilState extends State<EditBumilScreen> {
                 children: [
                   _buildSectionTitle('Data Ibu'),
                   CustomTextField(
+                    key: _fieldKeys['nikIbu'], // Tambahkan key
+                    label: 'NIK Ibu',
+                    icon: Icons.badge,
+                    controller: _nikIbuController,
+                    isNumber: true,
+                    maxLength: 16,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'nikIbu',
+                      val,
+                      _validateNIK,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  CustomTextField(
+                    label: 'KK Ibu',
+                    icon: Icons.credit_card,
+                    controller: _kkIbuController,
+                    isNumber: true,
+                    maxLength: 16,
+                    validator: _validateKK,
+                  ),
+                  const SizedBox(height: 12),
+                  CustomTextField(
                     key: _fieldKeys['namaIbu'], // Tambahkan key
                     label: 'Nama Ibu',
                     icon: Icons.person,
@@ -281,30 +305,6 @@ class _EditBumilState extends State<EditBumilScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  CustomTextField(
-                    key: _fieldKeys['nikIbu'], // Tambahkan key
-                    label: 'NIK Ibu',
-                    icon: Icons.badge,
-                    controller: _nikIbuController,
-                    isNumber: true,
-                    maxLength: 16,
-                    // **Wrap validator**
-                    validator: (val) => _formValidator.wrapValidator(
-                      'nikIbu',
-                      val,
-                      _validateNIK,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  CustomTextField(
-                    label: 'KK Ibu',
-                    icon: Icons.credit_card,
-                    controller: _kkIbuController,
-                    isNumber: true,
-                    maxLength: 16,
-                    validator: _validateKK,
-                  ),
-                  const SizedBox(height: 12),
                   DropdownField(
                     key: _fieldKeys['pendidikanIbu'], // Tambahkan key
                     label: 'Pendidikan Ibu',
@@ -346,6 +346,30 @@ class _EditBumilState extends State<EditBumilScreen> {
 
                   const SizedBox(height: 16),
                   _buildSectionTitle('Data Suami'),
+                  CustomTextField(
+                    key: _fieldKeys['nikSuami'], // Tambahkan key
+                    label: 'NIK Suami',
+                    icon: Icons.badge,
+                    controller: _nikSuamiController,
+                    isNumber: true,
+                    maxLength: 16,
+                    // **Wrap validator**
+                    validator: (val) => _formValidator.wrapValidator(
+                      'nikSuami',
+                      val,
+                      _validateNIK,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  CustomTextField(
+                    label: 'KK Suami',
+                    icon: Icons.credit_card,
+                    controller: _kkSuamiController,
+                    isNumber: true,
+                    maxLength: 16,
+                    validator: _validateKK,
+                  ),
+                  const SizedBox(height: 12),
                   CustomTextField(
                     key: _fieldKeys['namaSuami'], // Tambahkan key
                     label: 'Nama Suami',
@@ -403,30 +427,6 @@ class _EditBumilState extends State<EditBumilScreen> {
                       val,
                       _requiredValidator,
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  CustomTextField(
-                    key: _fieldKeys['nikSuami'], // Tambahkan key
-                    label: 'NIK Suami',
-                    icon: Icons.badge,
-                    controller: _nikSuamiController,
-                    isNumber: true,
-                    maxLength: 16,
-                    // **Wrap validator**
-                    validator: (val) => _formValidator.wrapValidator(
-                      'nikSuami',
-                      val,
-                      _validateNIK,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  CustomTextField(
-                    label: 'KK Suami',
-                    icon: Icons.credit_card,
-                    controller: _kkSuamiController,
-                    isNumber: true,
-                    maxLength: 16,
-                    validator: _validateKK,
                   ),
                   const SizedBox(height: 12),
                   DropdownField(

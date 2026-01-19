@@ -6,7 +6,6 @@ import 'package:ebidan/state_management/profile/cubit/access_code_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/register_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
-import 'package:ebidan/state_management/mode_bidan/bumil/cubit/check_bumil_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/submit_bumil_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/search_bumil_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/selected_bumil_cubit.dart';
@@ -51,11 +50,6 @@ class BlocProviders {
       BlocProvider<SearchBumilCubit>(create: (context) => SearchBumilCubit()),
       BlocProvider<SubmitBumilCubit>(
         create: (context) => SubmitBumilCubit(
-          selectedBumilCubit: context.read<SelectedBumilCubit>(),
-        ),
-      ),
-      BlocProvider<CheckBumilCubit>(
-        create: (context) => CheckBumilCubit(
           selectedBumilCubit: context.read<SelectedBumilCubit>(),
         ),
       ),

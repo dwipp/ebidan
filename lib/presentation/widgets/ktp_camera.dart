@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:ebidan/common/utility/ktp_extractor.dart';
+import 'package:ebidan/data/models/ktp_model.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:flutter/material.dart';
-import 'package:ktp_extractor/ktp_extractor.dart';
 
 class KtpCameraScreen extends StatefulWidget {
   final Function(KtpModel ktp) onCaptured;
