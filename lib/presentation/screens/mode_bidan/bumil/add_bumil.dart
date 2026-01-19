@@ -1,5 +1,6 @@
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/exceptions/string.dart';
+import 'package:ebidan/data/models/ktp_model.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/date_picker_field.dart';
 import 'package:ebidan/presentation/widgets/dropdown_field.dart';
@@ -14,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // Import FormValidator
 import 'package:ebidan/common/utility/form_validator.dart';
-import 'package:ktp_extractor/models/ktp_model.dart';
 
 class AddBumilScreen extends StatefulWidget {
   final String nikIbu;

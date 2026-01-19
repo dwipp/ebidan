@@ -1,3 +1,4 @@
+import 'package:ebidan/data/models/ktp_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/ktp_camera.dart';
@@ -8,7 +9,6 @@ import 'package:ebidan/state_management/mode_bidan/bumil/cubit/check_bumil_cubit
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ktp_extractor/models/ktp_model.dart';
 
 class CheckBumilScreen extends StatefulWidget {
   const CheckBumilScreen({Key? key}) : super(key: key);
