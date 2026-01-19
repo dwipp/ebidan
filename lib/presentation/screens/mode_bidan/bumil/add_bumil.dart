@@ -598,6 +598,7 @@ class _AddBumilState extends State<AddBumilScreen> {
                     key: _fieldKeys['alamat'],
                     label: 'Alamat',
                     icon: Icons.home,
+                    isMultiline: true,
                     controller: _alamatController,
                     // **Ganti panggilan validator**
                     validator: (val) => _formValidator.wrapValidator(
