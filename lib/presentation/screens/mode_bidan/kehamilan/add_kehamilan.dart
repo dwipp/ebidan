@@ -296,6 +296,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 labelText: 'Hari Pertama Haid Terakhir (HPHT)',
                 prefixIcon: Icons.date_range,
                 context: context,
+                value: _hpht,
                 onDateSelected: (date) {
                   setState(() {
                     _hpht = date;
@@ -391,6 +392,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 labelText: 'Tanggal Terima Buku KIA',
                 prefixIcon: Icons.calendar_view_day,
                 context: context,
+                value: _createdAt,
                 onDateSelected: (date) {
                   setState(() => _createdAt = date);
                   final jarakTahun = Utils.hitungJarakTahun(
@@ -440,6 +442,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                 labelText: 'Tanggal Periksa USG',
                 prefixIcon: Icons.calendar_today,
                 context: context,
+                value: _tglPeriksaUsg,
                 onDateSelected: (date) {
                   setState(() => _tglPeriksaUsg = date);
                 },
