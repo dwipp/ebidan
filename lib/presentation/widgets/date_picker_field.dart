@@ -7,7 +7,7 @@ class DatePickerFormField extends FormField<DateTime> {
     Key? key,
     required String labelText,
     required IconData prefixIcon,
-    DateTime? value,
+    required DateTime? value,
     DateTime? initialDate,
     DateTime? lastDate,
     required BuildContext context,
