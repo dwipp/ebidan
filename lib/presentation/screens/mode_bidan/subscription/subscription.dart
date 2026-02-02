@@ -1,7 +1,9 @@
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/common/utility/remote_config_helper.dart';
+import 'package:ebidan/data/models/wording_model.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
+import 'package:ebidan/state_management/general/cubit/wording_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/subscription/cubit/subscription_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,37 +38,135 @@ class SubscriptionScreen extends StatelessWidget {
     return 'bulan';
   }
 
-  String _getNormalPrice(String id) {
-    num base = 50000; // TODO: sebaiknya nanti ambil dari server / config
-    if (id.contains('_annual')) base *= 12;
-    if (id.contains('semiannual')) base *= 6;
-    if (id.contains('quarterly')) base *= 3;
-    if (id.contains('monthly')) base *= 1;
+  String _getNormalPrice({required String id, required num basePrice}) {
+    if (id.contains('_annual')) basePrice *= 12;
+    if (id.contains('semiannual')) basePrice *= 6;
+    if (id.contains('quarterly')) basePrice *= 3;
+    if (id.contains('monthly')) basePrice *= 1;
 
     return NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',
       decimalDigits: 0,
-    ).format(base);
+    ).format(basePrice);
   }
 
-  String _getPlanHighlight(ProductDetails product) {
+  String _getDiscountPercentage({
+    required String id,
+    required num basePrice,
+    required num currentPrice,
+  }) {
+    num totalBase = basePrice;
+
+    if (id.contains('_annual')) totalBase *= 12;
+    if (id.contains('semiannual')) totalBase *= 6;
+    if (id.contains('quarterly')) totalBase *= 3;
+    if (id.contains('monthly')) totalBase *= 1;
+
+    final percent = 100 - (currentPrice / totalBase * 100);
+
+    return '${percent.round()}%';
+  }
+
+  String _getPlanHighlight(
+    ProductDetails product,
+    WordingSubscription? wording,
+  ) {
     if (product.id.contains('_annual')) {
       return RemoteConfigHelper.promoActive
-          ? 'Hemat Besar!\nHarga spesial terbatas\npilihan favorit para bidan.\nCukup keluarkan ${_priceConvertToMonthly(product.rawPrice, monthCounter: 12)}/bulan.'
+          ? wording != null
+                ? normalizeNewLine(
+                    wording.promoAnnual,
+                    price: _priceConvertToMonthly(
+                      product.rawPrice,
+                      monthCounter: 12,
+                    ),
+                    discountPercentage: _getDiscountPercentage(
+                      id: product.id,
+                      basePrice: wording.basePrice,
+                      currentPrice: product.rawPrice,
+                    ),
+                  )
+                : 'Hemat Besar!\nHarga spesial terbatas\npilihan favorit para bidan.\nCukup keluarkan ${_priceConvertToMonthly(product.rawPrice, monthCounter: 12)}/bulan.'
+          : wording != null
+          ? normalizeNewLine(
+              wording.premiumAnnual,
+              price: _priceConvertToMonthly(product.rawPrice, monthCounter: 12),
+              discountPercentage: _getDiscountPercentage(
+                id: product.id,
+                basePrice: wording.basePrice,
+                currentPrice: product.rawPrice,
+              ),
+            )
           : 'Super Hemat! Paling populer di kalangan bidan.\nCukup keluarkan ${_priceConvertToMonthly(product.rawPrice, monthCounter: 12)}/bulan.';
     }
     if (product.id.contains('semiannual')) {
       return RemoteConfigHelper.promoActive
-          ? 'Nilai terbaik!\nDiskon periode menengah, pas untuk pemakaian rutin.\nHanya ${_priceConvertToMonthly(product.rawPrice, monthCounter: 6)}/bulan.'
+          ? wording != null
+                ? normalizeNewLine(
+                    wording.promoSemiannual,
+                    price: _priceConvertToMonthly(
+                      product.rawPrice,
+                      monthCounter: 6,
+                    ),
+                    discountPercentage: _getDiscountPercentage(
+                      id: product.id,
+                      basePrice: wording.basePrice,
+                      currentPrice: product.rawPrice,
+                    ),
+                  )
+                : 'Nilai terbaik!\nDiskon periode menengah, pas untuk pemakaian rutin.\nHanya ${_priceConvertToMonthly(product.rawPrice, monthCounter: 6)}/bulan.'
+          : wording != null
+          ? normalizeNewLine(
+              wording.premiumSemiannual,
+              price: _priceConvertToMonthly(product.rawPrice, monthCounter: 6),
+              discountPercentage: _getDiscountPercentage(
+                id: product.id,
+                basePrice: wording.basePrice,
+                currentPrice: product.rawPrice,
+              ),
+            )
           : 'Pilihan cerdas untuk penggunaan jangka menengah.\nLebih hemat, hanya ${_priceConvertToMonthly(product.rawPrice, monthCounter: 6)}/bulan.';
     }
     if (product.id.contains('quarterly')) {
       return RemoteConfigHelper.promoActive
-          ? 'Coba lebih lama dengan harga promo!\nFleksibel dan terjangkau.'
+          ? wording != null
+                ? normalizeNewLine(
+                    wording.promoQuarterly,
+                    price: _priceConvertToMonthly(
+                      product.rawPrice,
+                      monthCounter: 3,
+                    ),
+                    discountPercentage: _getDiscountPercentage(
+                      id: product.id,
+                      basePrice: wording.basePrice,
+                      currentPrice: product.rawPrice,
+                    ),
+                  )
+                : 'Coba lebih lama dengan harga promo!\nFleksibel dan terjangkau.'
+          : wording != null
+          ? normalizeNewLine(
+              wording.premiumQuarterly,
+              price: _priceConvertToMonthly(product.rawPrice, monthCounter: 3),
+              discountPercentage: _getDiscountPercentage(
+                id: product.id,
+                basePrice: wording.basePrice,
+                currentPrice: product.rawPrice,
+              ),
+            )
           : 'Coba dulu selama 3 bulan sebelum berkomitmen lebih lama.';
     }
-    return 'Langganan fleksibel setiap bulan';
+    return wording != null
+        ? normalizeNewLine(
+            wording.premiumMonthly,
+            price: '',
+            discountPercentage: _getDiscountPercentage(
+              id: product.id,
+              basePrice: wording.basePrice,
+              currentPrice: product.rawPrice,
+            ),
+          )
+        : 'Langganan fleksibel setiap bulan.';
   }
 
   String _priceConvertToMonthly(double price, {required int monthCounter}) {
@@ -190,7 +290,10 @@ class SubscriptionScreen extends StatelessWidget {
           // ================================
           // MARK: - Build Package Card
           // ================================
-          Widget buildCard(ProductDetails product) {
+          Widget buildCard(
+            ProductDetails product,
+            WordingSubscription? wording,
+          ) {
             final bool isBest = product.id.toLowerCase().endsWith('_annual');
             final gradient = isBest ? colors.pinkGradient : colors.blueGradient;
 
@@ -249,7 +352,7 @@ class SubscriptionScreen extends StatelessWidget {
                   const SizedBox(height: 6),
                   buildRichTextWithBoldPrice(
                     context,
-                    _getPlanHighlight(product),
+                    _getPlanHighlight(product, wording),
                     product,
                   ),
                   const SizedBox(height: 8),
@@ -285,10 +388,12 @@ class SubscriptionScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          if (!product.id.contains('monthly') &&
-                              !product.id.contains('quarterly')) ...[
+                          if (!product.id.contains('monthly')) ...[
                             Text(
-                              _getNormalPrice(product.id),
+                              _getNormalPrice(
+                                id: product.id,
+                                basePrice: wording?.basePrice ?? 35000,
+                              ),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.orange[100],
@@ -325,102 +430,134 @@ class SubscriptionScreen extends StatelessWidget {
           // ================================
           // MARK: - Layout
           // ================================
-          return Stack(
-            children: [
-              ListView(
-                padding: const EdgeInsets.all(20),
+          return BlocBuilder<WordingCubit, WordingState>(
+            builder: (context, state) {
+              WordingSubscription? wording;
+              if (state is WordingSuccess) {
+                wording = state.wordingSubscription;
+              }
+              return Stack(
                 children: [
-                  // ======= Header =======
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          RemoteConfigHelper.promoActive
-                              ? 'Premium Promo'
-                              : 'Tingkatkan ke Premium',
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colors.darkGrey,
+                  ListView(
+                    padding: const EdgeInsets.all(20),
+                    children: [
+                      // ======= Header =======
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              RemoteConfigHelper.promoActive
+                                  ? 'Premium Promo'
+                                  : 'Tingkatkan ke Premium',
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colors.darkGrey,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              RemoteConfigHelper.promoActive
+                                  ? wording != null
+                                        ? normalizeNewLine(
+                                            wording.promoHeader,
+                                            price: '',
+                                            discountPercentage: '',
+                                          )
+                                        : 'Akses lengkap untuk bidan kini lebih terjangkau. Manfaatkan kesempatan spesial ini sebelum berakhir.'
+                                  : wording != null
+                                  ? normalizeNewLine(
+                                      wording.premiumHeader,
+                                      price: '',
+                                      discountPercentage: '',
+                                    )
+                                  : 'Nikmati fitur lengkap seperti statistik, laporan bulanan, dan konten profesional untuk bidan.',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colors.suffixText,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // ======= Cards =======
+                      const SizedBox(height: 4),
+                      ...products.map((product) => buildCard(product, wording)),
+
+                      // ======= Restore =======
+                      const SizedBox(height: 16),
+                      Center(
+                        child: GestureDetector(
+                          onTap: () => cubit.restoreSubscription(),
+                          child: Text(
+                            'Sudah berlangganan? Pulihkan langganan',
+                            style: TextStyle(
+                              color: colors.secondaryContainer,
+                              fontSize: 14,
+                              decoration: TextDecoration.underline,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          RemoteConfigHelper.promoActive
-                              ? 'Akses lengkap untuk bidan kini lebih terjangkau. Manfaatkan kesempatan spesial ini sebelum berakhir.'
-                              : 'Nikmati fitur lengkap seperti statistik, laporan bulanan, dan konten profesional untuk bidan.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.suffixText,
-                          ),
+                      ),
+
+                      // ======= Info Section =======
+                      const SizedBox(height: 36),
+                      Divider(color: Colors.grey.shade300),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Informasi Billing & Pembatalan',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colors.darkGrey,
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Langganan diperpanjang otomatis melalui Google Play kecuali dibatalkan sebelum periode berikutnya. '
+                        'Anda dapat mengelola atau membatalkan langganan kapan saja melalui Play Store > Pembayaran & Langganan.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.suffixText,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                    ],
                   ),
 
-                  // ======= Cards =======
-                  const SizedBox(height: 4),
-                  ...products.map(buildCard),
-
-                  // ======= Restore =======
-                  const SizedBox(height: 16),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () => cubit.restoreSubscription(),
-                      child: Text(
-                        'Sudah berlangganan? Pulihkan langganan',
-                        style: TextStyle(
-                          color: colors.secondaryContainer,
-                          fontSize: 14,
-                          decoration: TextDecoration.underline,
+                  // ======= Loading Overlay =======
+                  if (isLoading)
+                    Container(
+                      color: Colors.black.withOpacity(0.25),
+                      child: const Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 12),
+                            Text('Memproses pembelian...'),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-
-                  // ======= Info Section =======
-                  const SizedBox(height: 36),
-                  Divider(color: Colors.grey.shade300),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Informasi Billing & Pembatalan',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: colors.darkGrey,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Langganan diperpanjang otomatis melalui Google Play kecuali dibatalkan sebelum periode berikutnya. '
-                    'Anda dapat mengelola atau membatalkan langganan kapan saja melalui Play Store > Pembayaran & Langganan.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.suffixText,
-                      height: 1.4,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
                 ],
-              ),
-
-              // ======= Loading Overlay =======
-              if (isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.25),
-                  child: const Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 12),
-                        Text('Memproses pembelian...'),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
+              );
+            },
           );
         },
       ),
     );
+  }
+
+  String normalizeNewLine(
+    String text, {
+    required String price,
+    required String discountPercentage,
+  }) {
+    final normalizeText = text.replaceAll(r'\n', '\n');
+    final textWithPrice = normalizeText
+        .replaceAll('<price>', price)
+        .replaceAll('<percent>', discountPercentage);
+    return textWithPrice;
   }
 }

@@ -15,6 +15,7 @@ import 'package:ebidan/presentation/widgets/summary_chart.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
 import 'package:ebidan/state_management/banner/cubit/banner_cubit.dart';
 import 'package:ebidan/state_management/banner/cubit/get_banner_cubit.dart';
+import 'package:ebidan/state_management/general/cubit/wording_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/general/cubit/back_press_cubit.dart';
@@ -75,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     context.read<ProfileCubit>().getProfile();
     context.read<GetBannerCubit>().getBanner();
+    context.read<WordingCubit>().getSubscriptionWording();
     verifySubs();
     _checkAppVersionInPlaystore();
   }
