@@ -77,66 +77,57 @@ class SubscriptionScreen extends StatelessWidget {
           ? wording != null
                 ? normalizeNewLine(
                     wording.promoAnnual,
-                    price: _priceConvertToMonthly(
-                      product.rawPrice,
-                      monthCounter: 12,
-                    ),
+                    price: _priceConvertToMonthly(product),
                     discountPercentage: _getDiscountPercentage(
                       id: product.id,
                       basePrice: wording.basePrice,
                       currentPrice: product.rawPrice,
                     ),
                   )
-                : 'Hemat Besar!\nHarga spesial terbatas\npilihan favorit para bidan.\nCukup keluarkan ${_priceConvertToMonthly(product.rawPrice, monthCounter: 12)}/bulan.'
+                : 'Hemat Besar!\nHarga spesial terbatas\npilihan favorit para bidan.\nCukup keluarkan ${_priceConvertToMonthly(product)}/bulan.'
           : wording != null
           ? normalizeNewLine(
               wording.premiumAnnual,
-              price: _priceConvertToMonthly(product.rawPrice, monthCounter: 12),
+              price: _priceConvertToMonthly(product),
               discountPercentage: _getDiscountPercentage(
                 id: product.id,
                 basePrice: wording.basePrice,
                 currentPrice: product.rawPrice,
               ),
             )
-          : 'Super Hemat! Paling populer di kalangan bidan.\nCukup keluarkan ${_priceConvertToMonthly(product.rawPrice, monthCounter: 12)}/bulan.';
+          : 'Super Hemat! Paling populer di kalangan bidan.\nCukup keluarkan ${_priceConvertToMonthly(product)}/bulan.';
     }
     if (product.id.contains('semiannual')) {
       return RemoteConfigHelper.promoActive
           ? wording != null
                 ? normalizeNewLine(
                     wording.promoSemiannual,
-                    price: _priceConvertToMonthly(
-                      product.rawPrice,
-                      monthCounter: 6,
-                    ),
+                    price: _priceConvertToMonthly(product),
                     discountPercentage: _getDiscountPercentage(
                       id: product.id,
                       basePrice: wording.basePrice,
                       currentPrice: product.rawPrice,
                     ),
                   )
-                : 'Nilai terbaik!\nDiskon periode menengah, pas untuk pemakaian rutin.\nHanya ${_priceConvertToMonthly(product.rawPrice, monthCounter: 6)}/bulan.'
+                : 'Nilai terbaik!\nDiskon periode menengah, pas untuk pemakaian rutin.\nHanya ${_priceConvertToMonthly(product)}/bulan.'
           : wording != null
           ? normalizeNewLine(
               wording.premiumSemiannual,
-              price: _priceConvertToMonthly(product.rawPrice, monthCounter: 6),
+              price: _priceConvertToMonthly(product),
               discountPercentage: _getDiscountPercentage(
                 id: product.id,
                 basePrice: wording.basePrice,
                 currentPrice: product.rawPrice,
               ),
             )
-          : 'Pilihan cerdas untuk penggunaan jangka menengah.\nLebih hemat, hanya ${_priceConvertToMonthly(product.rawPrice, monthCounter: 6)}/bulan.';
+          : 'Pilihan cerdas untuk penggunaan jangka menengah.\nLebih hemat, hanya ${_priceConvertToMonthly(product)}/bulan.';
     }
     if (product.id.contains('quarterly')) {
       return RemoteConfigHelper.promoActive
           ? wording != null
                 ? normalizeNewLine(
                     wording.promoQuarterly,
-                    price: _priceConvertToMonthly(
-                      product.rawPrice,
-                      monthCounter: 3,
-                    ),
+                    price: _priceConvertToMonthly(product),
                     discountPercentage: _getDiscountPercentage(
                       id: product.id,
                       basePrice: wording.basePrice,
@@ -147,7 +138,7 @@ class SubscriptionScreen extends StatelessWidget {
           : wording != null
           ? normalizeNewLine(
               wording.premiumQuarterly,
-              price: _priceConvertToMonthly(product.rawPrice, monthCounter: 3),
+              price: _priceConvertToMonthly(product),
               discountPercentage: _getDiscountPercentage(
                 id: product.id,
                 basePrice: wording.basePrice,
@@ -169,22 +160,7 @@ class SubscriptionScreen extends StatelessWidget {
         : 'Langganan fleksibel setiap bulan.';
   }
 
-  String _priceConvertToMonthly(double price, {required int monthCounter}) {
-    final unitPrice = price / monthCounter;
-    final unitPriceString = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    ).format(unitPrice);
-    return unitPriceString;
-  }
-
-  Widget buildRichTextWithBoldPrice(
-    BuildContext context,
-    String text,
-    ProductDetails product,
-  ) {
-    final bool isBest = product.id.toLowerCase().endsWith('_annual');
+  String _priceConvertToMonthly(ProductDetails product) {
     var monthCounter = 1;
     if (product.id.contains('_annual')) {
       monthCounter = 12;
@@ -193,10 +169,77 @@ class SubscriptionScreen extends StatelessWidget {
     } else if (product.id.contains('quarterly')) {
       monthCounter = 3;
     }
-    final unitPrice = _priceConvertToMonthly(
-      product.rawPrice,
-      monthCounter: monthCounter,
+    final unitPrice = product.rawPrice / monthCounter;
+    final unitPriceString = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(unitPrice);
+    return unitPriceString;
+  }
+
+  Widget buildRichTextWithBoldValues({
+    required String text,
+    required List<String> boldValues,
+    required bool isBest,
+  }) {
+    final spans = <TextSpan>[];
+    var remainingText = text;
+    final values = List<String>.from(boldValues); // avoid side effect
+
+    while (values.isNotEmpty) {
+      String? match;
+      int matchIndex = remainingText.length;
+
+      for (final value in values) {
+        final index = remainingText.indexOf(value);
+        if (index != -1 && index < matchIndex) {
+          match = value;
+          matchIndex = index;
+        }
+      }
+
+      if (match == null) {
+        break;
+      }
+
+      if (matchIndex > 0) {
+        spans.add(TextSpan(text: remainingText.substring(0, matchIndex)));
+      }
+
+      spans.add(
+        TextSpan(
+          text: match,
+          style: const TextStyle(fontWeight: FontWeight.w900),
+        ),
+      );
+
+      remainingText = remainingText.substring(matchIndex + match.length);
+      values.remove(match);
+    }
+
+    if (remainingText.isNotEmpty) {
+      spans.add(TextSpan(text: remainingText));
+    }
+
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(
+          fontSize: 14,
+          color: isBest ? Colors.white70 : Colors.grey[700],
+        ),
+        children: spans,
+      ),
     );
+  }
+
+  Widget buildRichTextWithBoldPrice(
+    BuildContext context,
+    String text,
+    ProductDetails product,
+  ) {
+    final bool isBest = product.id.toLowerCase().endsWith('_annual');
+    final unitPrice = _priceConvertToMonthly(product);
     final start = text.indexOf(unitPrice);
 
     if (start == -1) {
@@ -350,10 +393,17 @@ class SubscriptionScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  buildRichTextWithBoldPrice(
-                    context,
-                    _getPlanHighlight(product, wording),
-                    product,
+                  buildRichTextWithBoldValues(
+                    text: _getPlanHighlight(product, wording),
+                    boldValues: [
+                      _getDiscountPercentage(
+                        id: product.id,
+                        basePrice: wording?.basePrice ?? 35000,
+                        currentPrice: product.rawPrice,
+                      ),
+                      _priceConvertToMonthly(product),
+                    ],
+                    isBest: isBest,
                   ),
                   const SizedBox(height: 8),
                   Text(
