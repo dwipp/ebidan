@@ -89,16 +89,6 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
           .toList();
     }
 
-    if (f.month != null) {
-      result = result
-          .where(
-            (b) =>
-                (b.latestKunjungan?.createdAt?.year == f.month!.year) &&
-                (b.latestKunjungan?.createdAt?.month == f.month!.month),
-          )
-          .toList();
-    }
-
     return result;
   }
 
@@ -120,16 +110,6 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
         ? ['K1', 'K2', 'K3', 'K4', 'K5', 'K6']
         : [status];
     final newFilter = state.filter.copyWith(statuses: statuses);
-    emit(
-      state.copyWith(
-        filter: newFilter,
-        filteredList: _applyFilters(state.bumilList, filter: newFilter),
-      ),
-    );
-  }
-
-  void setMonth(DateTime? month) {
-    final newFilter = state.filter.copyWith(month: month);
     emit(
       state.copyWith(
         filter: newFilter,
