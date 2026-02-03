@@ -38,7 +38,7 @@ class PilihBumilScreen extends StatelessWidget {
                   ? const Text("Pilih Ibu Hamil")
                   : const Text("Pilih Pasien"),
               actions: [
-                if (pilihState == 'bumil')
+                if (pilihState == 'bumil') ...[
                   IconButton(
                     tooltip: state.filter.showHamilOnly
                         ? 'Tampilkan semua'
@@ -63,6 +63,15 @@ class PilihBumilScreen extends StatelessWidget {
                       }
                     },
                   ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle, color: Colors.cyan),
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed(AppRouter.addBumil)
+                          .then((_) => _refresh(context));
+                    },
+                  ),
+                ],
                 if (pilihState == 'kunjungan')
                   IconButton(
                     icon: const Icon(Icons.add_circle, color: Colors.cyan),
