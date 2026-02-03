@@ -1,8 +1,10 @@
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/data/models/bumil_model.dart';
 import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/selected_bumil_cubit.dart';
+import 'package:ebidan/state_management/mode_bidan/kehamilan/cubit/selected_kehamilan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -47,37 +49,46 @@ class DataBumilScreen extends StatelessWidget {
           ),
 
           // Sticky bottom container
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child:
-                (bumil?.latestKehamilanId == null ||
-                    bumil?.latestKehamilanPersalinan == true)
-                ?
-                  // kehamilan baru
-                  Expanded(child: _showKehamilanBaru(context))
-                : Row(
-                    children: [
-                      if (!bumil!.latestKehamilanKunjungan) ...[
-                        // kunjungan baru
-                        Expanded(
-                          child: _showButtonKunjunganBaru(
-                            context,
-                            showChevron: true,
+          BlocListener<SelectedBumilCubit, Bumil?>(
+            listener: (context, state) {
+              if (state?.latestKehamilan != null) {
+                context.read<SelectedKehamilanCubit>().selectKehamilan(
+                  state!.latestKehamilan!,
+                );
+              }
+            },
+            child: Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child:
+                  (bumil?.latestKehamilanId == null ||
+                      bumil?.latestKehamilanPersalinan == true)
+                  ?
+                    // kehamilan baru
+                    _showKehamilanBaru(context)
+                  : Row(
+                      children: [
+                        if (!bumil!.latestKehamilanKunjungan) ...[
+                          // kunjungan baru
+                          Expanded(
+                            child: _showButtonKunjunganBaru(
+                              context,
+                              showChevron: true,
+                            ),
                           ),
-                        ),
-                      ] else ...[
-                        // kunjungan baru
-                        // BUTTON KIRI
-                        Expanded(child: _showButtonKunjunganBaru(context)),
-                        SizedBox(width: 1),
-                        // persalinan
-                        // BUTTON KANAN
-                        Expanded(child: _showCatatPersalinan(context)),
+                        ] else ...[
+                          // kunjungan baru
+                          // BUTTON KIRI
+                          Expanded(child: _showButtonKunjunganBaru(context)),
+                          SizedBox(width: 1),
+                          // persalinan
+                          // BUTTON KANAN
+                          Expanded(child: _showCatatPersalinan(context)),
+                        ],
                       ],
-                    ],
-                  ),
+                    ),
+            ),
           ),
         ],
       ),
@@ -90,7 +101,11 @@ class DataBumilScreen extends StatelessWidget {
   }) {
     return InkWell(
       onTap: () {
-        print('Kunjungan Baru');
+        Navigator.pushNamed(
+          context,
+          AppRouter.kunjungan,
+          arguments: {'firstTime': showChevron},
+        );
       },
       child: Container(
         height: 60,
@@ -127,7 +142,7 @@ class DataBumilScreen extends StatelessWidget {
   Widget _showKehamilanBaru(BuildContext context) {
     return InkWell(
       onTap: () {
-        print('kehamilan baru');
+        Navigator.pushNamed(context, AppRouter.addKehamilan);
       },
       child: Container(
         height: 60,
@@ -163,7 +178,7 @@ class DataBumilScreen extends StatelessWidget {
   Widget _showCatatPersalinan(BuildContext context) {
     return InkWell(
       onTap: () {
-        print('Catat Persalinan');
+        Navigator.pushNamed(context, AppRouter.addPersalinan);
       },
       child: Container(
         height: 60,

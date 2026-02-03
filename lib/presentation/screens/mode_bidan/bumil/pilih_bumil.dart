@@ -38,49 +38,14 @@ class PilihBumilScreen extends StatelessWidget {
                   ? const Text("Pilih Ibu Hamil")
                   : const Text("Pilih Pasien"),
               actions: [
-                if (pilihState == 'bumil') ...[
-                  IconButton(
-                    tooltip: state.filter.showHamilOnly
-                        ? 'Tampilkan semua'
-                        : 'Filter hanya yang sedang hamil',
-                    icon: Icon(
-                      state.filter.showHamilOnly
-                          ? Icons.pregnant_woman
-                          : Icons.filter_alt_outlined,
-                      color: state.filter.showHamilOnly
-                          ? Colors.pinkAccent
-                          : Colors.grey,
-                    ),
-                    onPressed: () {
-                      if (!state.filter.showHamilOnly) {
-                        context.read<SearchBumilCubit>().toggleFilterHamil();
-                        context.read<SearchBumilCubit>().setMonth(
-                          DateTime.now(),
-                        );
-                        context.read<SearchBumilCubit>().setStatus('Semua');
-                      } else {
-                        context.read<SearchBumilCubit>().resetFilter();
-                      }
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle, color: Colors.cyan),
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(AppRouter.addBumil)
-                          .then((_) => _refresh(context));
-                    },
-                  ),
-                ],
-                if (pilihState == 'kunjungan')
-                  IconButton(
-                    icon: const Icon(Icons.add_circle, color: Colors.cyan),
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(AppRouter.addBumil)
-                          .then((_) => _refresh(context));
-                    },
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.add_circle, color: Colors.cyan),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pushNamed(AppRouter.addBumil)
+                        .then((_) => _refresh(context));
+                  },
+                ),
               ],
             ),
             body: Column(
@@ -88,24 +53,57 @@ class PilihBumilScreen extends StatelessWidget {
                 // ===== Search Box dalam Card =====
                 Padding(
                   padding: const EdgeInsets.all(12),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 1,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Cari nama atau NIK...',
-                        prefixIcon: const Icon(Icons.search),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 14,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 1,
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Cari nama atau NIK...',
+                              prefixIcon: const Icon(Icons.search),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 14,
+                              ),
+                            ),
+                            onChanged: (val) {
+                              context.read<SearchBumilCubit>().search(val);
+                            },
+                          ),
                         ),
                       ),
-                      onChanged: (val) {
-                        context.read<SearchBumilCubit>().search(val);
-                      },
-                    ),
+                      SizedBox(width: 8),
+                      IconButton(
+                        tooltip: state.filter.showHamilOnly
+                            ? 'Tampilkan semua'
+                            : 'Filter hanya yang sedang hamil',
+                        icon: Icon(
+                          state.filter.showHamilOnly
+                              ? Icons.pregnant_woman
+                              : Icons.filter_alt_outlined,
+                          color: state.filter.showHamilOnly
+                              ? Colors.pinkAccent
+                              : Colors.grey,
+                        ),
+                        onPressed: () {
+                          if (!state.filter.showHamilOnly) {
+                            context
+                                .read<SearchBumilCubit>()
+                                .toggleFilterHamil();
+                            context.read<SearchBumilCubit>().setMonth(
+                              DateTime.now(),
+                            );
+                            context.read<SearchBumilCubit>().setStatus('Semua');
+                          } else {
+                            context.read<SearchBumilCubit>().resetFilter();
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
 
@@ -267,45 +265,10 @@ class PilihBumilScreen extends StatelessWidget {
                                   bumil,
                                 );
 
-                                if (pilihState == 'bumil') {
-                                  Navigator.pushNamed(
-                                    context,
-                                    state.filter.showHamilOnly
-                                        ? AppRouter.ringkasanBumil
-                                        : AppRouter.dataBumil,
-                                  ).then((_) => _refresh(context));
-                                } else {
-                                  if (bumil.latestKehamilanId == null ||
-                                      bumil.latestKehamilanPersalinan == true) {
-                                    Navigator.pushNamed(
-                                      context,
-                                      AppRouter.addKehamilan,
-                                    ).then((_) => _refresh(context));
-                                  } else {
-                                    final firstTime =
-                                        !bumil.latestKehamilanKunjungan;
-
-                                    if (firstTime) {
-                                      Navigator.pushNamed(
-                                        context,
-                                        AppRouter.kunjungan,
-                                        arguments: {'firstTime': true},
-                                      ).then((_) => _refresh(context));
-                                    } else {
-                                      if (bumil.latestKehamilan != null) {
-                                        context
-                                            .read<SelectedKehamilanCubit>()
-                                            .selectKehamilan(
-                                              bumil.latestKehamilan!,
-                                            );
-                                      }
-                                      Navigator.pushNamed(
-                                        context,
-                                        AppRouter.updateKehamilan,
-                                      ).then((_) => _refresh(context));
-                                    }
-                                  }
-                                }
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRouter.dataBumil,
+                                ).then((_) => _refresh(context));
                               },
                             ),
                           );
