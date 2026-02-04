@@ -30,7 +30,13 @@ class GetKunjunganCubit extends Cubit<GetKunjunganState> {
           .toList();
       emit(GetKunjunganSuccess(kunjungans: kunjunganList));
     } catch (e) {
-      emit(GetKunjunganFailure(e.toString()));
+      emit(
+        GetKunjunganFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 

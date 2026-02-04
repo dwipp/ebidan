@@ -36,7 +36,13 @@ class ProfileCubit extends Cubit<ProfileState> {
 
       emit(ProfileLoaded(bidan));
     } catch (e) {
-      emit(ProfileFailure(e.toString()));
+      emit(
+        ProfileFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 
@@ -72,7 +78,13 @@ class ProfileCubit extends Cubit<ProfileState> {
 
       emit(ProfileLoaded(refreshedBidan));
     } catch (e) {
-      emit(ProfileFailure(e.toString()));
+      emit(
+        ProfileFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 }

@@ -55,7 +55,14 @@ class SearchBumilCubit extends HydratedCubit<SearchBumilState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(error: e.toString(), filter: state.filter));
+      emit(
+        state.copyWith(
+          error: e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+          filter: state.filter,
+        ),
+      );
     }
   }
 

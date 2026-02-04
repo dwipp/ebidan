@@ -86,7 +86,9 @@ class SubmitBumilCubit extends Cubit<SubmitBumilState> {
         state.copyWith(
           isSubmitting: false,
           isSuccess: false,
-          error: e.toString(),
+          error: e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
         ),
       );
     }

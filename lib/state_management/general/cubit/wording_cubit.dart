@@ -33,7 +33,7 @@ class WordingCubit extends Cubit<WordingState> {
         WordingFailure(
           e is Exception
               ? e.toString().replaceAll('Exception: ', '')
-              : 'Terjadi kesalahan',
+              : 'Terjadi kesalahan. Mohon coba kembali.',
         ),
       );
     }

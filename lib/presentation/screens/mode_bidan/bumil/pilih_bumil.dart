@@ -6,7 +6,6 @@ import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:month_year_picker/month_year_picker.dart';
 
 class PilihBumilScreen extends StatelessWidget {
   final String pilihState;
@@ -156,37 +155,6 @@ class PilihBumilScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // const SizedBox(width: 8),
-
-                            // Month picker
-                            // OutlinedButton.icon(
-                            //   style: OutlinedButton.styleFrom(
-                            //     shape: RoundedRectangleBorder(
-                            //       borderRadius: BorderRadius.circular(12),
-                            //     ),
-                            //   ),
-                            //   onPressed: () async {
-                            //     final selected = await showMonthYearPicker(
-                            //       context: context,
-                            //       locale: const Locale('id', 'ID'),
-                            //       initialDate:
-                            //           state.filter.month ?? DateTime.now(),
-                            //       firstDate: DateTime(2020),
-                            //       lastDate: DateTime(2100),
-                            //     );
-                            //     if (selected != null) {
-                            //       context.read<SearchBumilCubit>().setMonth(
-                            //         selected,
-                            //       );
-                            //     }
-                            //   },
-                            //   icon: const Icon(Icons.calendar_today, size: 18),
-                            //   label: Text(
-                            //     state.filter.month != null
-                            //         ? '${state.filter.month!.month}/${state.filter.month!.year}'
-                            //         : 'Bulan',
-                            //   ),
-                            // ),
                           ],
                         ),
                       ),

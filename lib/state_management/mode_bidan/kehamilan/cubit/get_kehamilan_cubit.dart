@@ -33,7 +33,13 @@ class GetKehamilanCubit extends Cubit<GetKehamilanState> {
       }
       emit(GetKehamilanSuccess(kehamilans: list));
     } catch (e) {
-      emit(GetKehamilanFailure(e.toString()));
+      emit(
+        GetKehamilanFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 

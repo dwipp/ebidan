@@ -170,7 +170,13 @@ class SubmitKunjunganCubit extends Cubit<SubmitKunjunganState> {
 
       emit(AddKunjunganSuccess());
     } catch (e) {
-      emit(AddKunjunganFailure(e.toString()));
+      emit(
+        AddKunjunganFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 

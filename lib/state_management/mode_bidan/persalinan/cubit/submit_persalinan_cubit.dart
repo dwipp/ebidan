@@ -97,7 +97,13 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
 
       emit(AddPersalinanSuccess());
     } catch (e) {
-      emit(AddPersalinanFailure(e.toString()));
+      emit(
+        AddPersalinanFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 
@@ -186,7 +192,13 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
 
       emit(AddPersalinanSuccess());
     } catch (e) {
-      emit(AddPersalinanFailure(e.toString()));
+      emit(
+        AddPersalinanFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 
