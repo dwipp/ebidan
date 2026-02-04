@@ -14,7 +14,7 @@ class BannerContentScreen extends StatelessWidget {
         child: BlocBuilder<GetBannerCubit, GetBannerState>(
           builder: (context, state) {
             return Markdown(
-              data: state.content,
+              data: state.content!,
               padding: const EdgeInsets.all(16),
               styleSheet: MarkdownStyleSheet(
                 h1: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),

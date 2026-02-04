@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:avatar_glow/avatar_glow.dart';
+// import 'package:avatar_glow/avatar_glow.dart';
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/common/utility/remote_config_helper.dart';
@@ -156,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          floatingActionButton: user?.role.toLowerCase() != 'bidan'
+          /*floatingActionButton: user?.role.toLowerCase() != 'bidan'
               ? null
               : AvatarGlow(
                   glowRadiusFactor: 0.7,
@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
           floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
+              FloatingActionButtonLocation.centerFloat,*/
           body: SafeArea(
             child: Stack(
               children: [

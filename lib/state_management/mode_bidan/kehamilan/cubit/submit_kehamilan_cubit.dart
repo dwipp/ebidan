@@ -96,7 +96,13 @@ class SubmitKehamilanCubit extends Cubit<SubmitKehamilanState> {
 
       emit(AddKehamilanSuccess(idKehamilan: id, firstTime: true));
     } catch (e) {
-      emit(AddKehamilanFailure(e.toString()));
+      emit(
+        AddKehamilanFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 

@@ -4,7 +4,7 @@ part of 'get_banner_cubit.dart';
 abstract class GetBannerState {
   final String title;
   final String subtitle;
-  final String content;
+  final String? content;
 
   const GetBannerState({
     required this.title,
@@ -14,7 +14,7 @@ abstract class GetBannerState {
 }
 
 class GetBannerInitial extends GetBannerState {
-  const GetBannerInitial() : super(title: '', subtitle: '', content: '');
+  const GetBannerInitial() : super(title: '', subtitle: '', content: null);
 }
 
 class GetBannerLoading extends GetBannerState {

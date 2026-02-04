@@ -44,10 +44,11 @@ class GetBannerCubit extends HydratedCubit<GetBannerState> {
         );
       }
     } catch (e) {
-      print('banner error: ${e.toString()}');
       emit(
         GetBannerError(
-          message: e.toString(),
+          message: e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
           title: state.title,
           subtitle: state.subtitle,
           content: state.content,
