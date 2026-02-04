@@ -72,7 +72,7 @@ class BannerHome extends StatelessWidget {
                         ],
                       ),
 
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
 
                       // TITLE
                       Text(
@@ -84,7 +84,7 @@ class BannerHome extends StatelessWidget {
                         ),
                       ),
 
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
 
                       // SUBTITLE
                       Text(
@@ -96,10 +96,9 @@ class BannerHome extends StatelessWidget {
                         ),
                       ),
 
-                      const SizedBox(height: 16),
-
                       // CTA
                       if (state.content != null) ...[
+                        const SizedBox(height: 16),
                         Row(
                           children: [
                             Container(
