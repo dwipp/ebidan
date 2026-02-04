@@ -4,7 +4,7 @@ class BannerModel {
   // final String id;
   final String title;
   final String subtitle;
-  final String content;
+  final String? content;
   final bool isActive;
 
   BannerModel({
@@ -27,7 +27,7 @@ class BannerModel {
       // id: doc.id,
       title: data['title'] as String? ?? '',
       subtitle: data['subtitle'] as String? ?? '',
-      content: data['content'] as String? ?? '',
+      content: data['content'] != null ? data['content'] as String : null,
       isActive: data['is_active'] as bool? ?? false,
     );
   }
