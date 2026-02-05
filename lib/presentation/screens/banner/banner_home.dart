@@ -21,7 +21,11 @@ class BannerHome extends StatelessWidget {
         } else {
           return InkWell(
             borderRadius: BorderRadius.circular(20),
-            onTap: onTap,
+            onTap: () {
+              if (state.content != null) {
+                onTap();
+              }
+            },
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
