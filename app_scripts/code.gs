@@ -3,6 +3,13 @@ const BATCH_SIZE = 500;
 const MAX_RETRIES = 3; 
 const RETRY_DELAY = 5000; 
 
+function setEnv(env) {
+  if (env !== 'dev' && env !== 'prod') {
+    throw new Error('ENV harus dev atau prod');
+  }
+  PropertiesService.getScriptProperties().setProperty('ENV', env);
+}
+
 function getFirebaseConfig() {
   const props = PropertiesService.getScriptProperties();
   const env = props.getProperty('ENV') || 'dev';
@@ -24,7 +31,7 @@ function getFirebaseConfig() {
   if (!projectId || !serviceAccountJson) {
     throw new Error(`Config ${env} belum lengkap`);
   }
-
+  Logger.log(`🔥 ENV AKTIF: ${env.toUpperCase()} | PROJECT: ${projectId}`);
   return {
     env,
     projectId,
@@ -172,10 +179,14 @@ function sendBatchWithRetry(writes, batchIndex) {
 }
 
 function updateProgress(message) {
-  const template = HtmlService.createHtmlOutput(`<script>
-    document.getElementById("progress").innerText = "${message}";
-  </script>`);
-  SpreadsheetApp.getUi().showModelessDialog(template, "Upload Progress");
+  const html = HtmlService.createHtmlOutput(`
+    <div style="font-family: Arial; font-size: 14px; padding: 10px;">
+      <b>Status Upload</b><br><br>
+      <div id="progress">${message}</div>
+    </div>
+  `).setWidth(320).setHeight(120);
+
+  SpreadsheetApp.getUi().showModelessDialog(html, "Upload Progress");
 }
 
 function createResumeTrigger() {
@@ -246,11 +257,15 @@ function syncToFirestoreBatchWithResume() {
     });
 
     if (writes.length > 0) {
-      updateProgress(`Batch ${batchIndex + 1}/${totalBatches} sedang dikirim...`);
+      updateProgress(`Batch ${batchIndex + 1} dari ${totalBatches} sedang diproses`);
+      Logger.log(`⏳ Batch ${batchIndex + 1} dari ${totalBatches} sedang diproses`);
+
       const success = sendBatchWithRetry(writes, batchIndex);
       if (success) {
         userProps.setProperty("LAST_BATCH_INDEX", batchIndex + 1);
+        updateProgress(`Batch ${batchIndex + 1} dari ${totalBatches} selesai`);
         Logger.log(`✅ Batch ${batchIndex + 1} dari ${totalBatches} selesai`);
+
       } else {
         Logger.log(`❌ Batch ${batchIndex + 1} gagal setelah retry`);
         updateProgress(`Batch ${batchIndex + 1} gagal. Hentikan eksekusi.`);
@@ -261,7 +276,8 @@ function syncToFirestoreBatchWithResume() {
     // Cek waktu eksekusi, kalau hampir habis → stop & buat trigger
     if (Date.now() - startTime > MAX_RUNTIME) {
       Logger.log(`⏳ Waktu hampir habis, stop di batch ${batchIndex + 1}. Akan lanjut otomatis.`);
-      updateProgress(`Pause di batch ${batchIndex + 1}, lanjut otomatis sebentar lagi...`);
+      updateProgress(`Pause di batch ${batchIndex + 1} dari ${totalBatches}. Akan lanjut otomatis...`);
+
       createResumeTrigger();
       return;
     }
@@ -271,5 +287,46 @@ function syncToFirestoreBatchWithResume() {
   updateProgress("Sinkronisasi selesai!");
   userProps.deleteProperty("LAST_BATCH_INDEX");
   deleteAllResumeTriggers();
-  Logger.log("🎉 Semua batch berhasil diupload.");
+  updateProgress("🎉 Semua batch berhasil diupload");
+  Logger.log("🎉 Semua batch berhasil diupload");
+}
+
+function syncToFirestoreBatchWithResumeDEV() {
+  setEnv('dev');
+  Logger.log('🚀 Mulai sinkronisasi ke DEV');
+  syncToFirestoreBatchWithResume();
+}
+
+function syncToFirestoreBatchWithResumePROD() {
+  if (!confirmProdSync()) {
+    Logger.log('❌ Sinkronisasi PROD dibatalkan oleh user');
+    SpreadsheetApp.getUi().alert('Sinkronisasi PROD dibatalkan.');
+    return;
+  }
+
+  setEnv('prod');
+  Logger.log('🚀 Mulai sinkronisasi ke PROD');
+  syncToFirestoreBatchWithResume();
+}
+
+function confirmProdSync() {
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.alert(
+    '⚠️ KONFIRMASI PRODUCTION',
+    'Anda akan upload data ke FIRESTORE PROD.\n\nTindakan ini TIDAK bisa dibatalkan.\n\nLanjutkan?',
+    ui.ButtonSet.YES_NO
+  );
+
+  return response === ui.Button.YES;
+}
+
+// =============================================================================
+// 3) MENU
+// =============================================================================
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('eBidan Sync')
+    .addItem('Sync Data Puskesmas (DEV)', 'syncToFirestoreBatchWithResumeDEV')
+    .addItem('Sync Data Puskesmas (PROD)', 'syncToFirestoreBatchWithResumePROD')
+    .addToUi();
 }

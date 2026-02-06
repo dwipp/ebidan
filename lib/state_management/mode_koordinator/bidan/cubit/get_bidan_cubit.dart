@@ -52,7 +52,14 @@ class GetBidanCubit extends Cubit<GetBidanState> {
       }
       emit(GetBidanState(bidanList: bidanList));
     } catch (e) {
-      emit(state.copyWith(bidanList: [], error: e.toString()));
+      emit(
+        state.copyWith(
+          bidanList: [],
+          error: e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 }

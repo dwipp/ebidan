@@ -4,10 +4,8 @@ import 'package:ebidan/state_management/mode_bidan/bumil/cubit/search_bumil_cubi
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
-import 'package:ebidan/state_management/mode_bidan/kehamilan/cubit/selected_kehamilan_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:month_year_picker/month_year_picker.dart';
 
 class PilihBumilScreen extends StatelessWidget {
   final String pilihState;
@@ -38,40 +36,14 @@ class PilihBumilScreen extends StatelessWidget {
                   ? const Text("Pilih Ibu Hamil")
                   : const Text("Pilih Pasien"),
               actions: [
-                if (pilihState == 'bumil')
-                  IconButton(
-                    tooltip: state.filter.showHamilOnly
-                        ? 'Tampilkan semua'
-                        : 'Filter hanya yang sedang hamil',
-                    icon: Icon(
-                      state.filter.showHamilOnly
-                          ? Icons.pregnant_woman
-                          : Icons.filter_alt_outlined,
-                      color: state.filter.showHamilOnly
-                          ? Colors.pinkAccent
-                          : Colors.grey,
-                    ),
-                    onPressed: () {
-                      if (!state.filter.showHamilOnly) {
-                        context.read<SearchBumilCubit>().toggleFilterHamil();
-                        context.read<SearchBumilCubit>().setMonth(
-                          DateTime.now(),
-                        );
-                        context.read<SearchBumilCubit>().setStatus('Semua');
-                      } else {
-                        context.read<SearchBumilCubit>().resetFilter();
-                      }
-                    },
-                  ),
-                if (pilihState == 'kunjungan')
-                  IconButton(
-                    icon: const Icon(Icons.add_circle, color: Colors.cyan),
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(AppRouter.checkDataBumil)
-                          .then((_) => _refresh(context));
-                    },
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.add_circle, color: Colors.cyan),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pushNamed(AppRouter.addBumil)
+                        .then((_) => _refresh(context));
+                  },
+                ),
               ],
             ),
             body: Column(
@@ -79,24 +51,54 @@ class PilihBumilScreen extends StatelessWidget {
                 // ===== Search Box dalam Card =====
                 Padding(
                   padding: const EdgeInsets.all(12),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 1,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Cari nama atau NIK...',
-                        prefixIcon: const Icon(Icons.search),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 14,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 1,
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Cari nama atau NIK...',
+                              prefixIcon: const Icon(Icons.search),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 14,
+                              ),
+                            ),
+                            onChanged: (val) {
+                              context.read<SearchBumilCubit>().search(val);
+                            },
+                          ),
                         ),
                       ),
-                      onChanged: (val) {
-                        context.read<SearchBumilCubit>().search(val);
-                      },
-                    ),
+                      SizedBox(width: 8),
+                      IconButton(
+                        tooltip: state.filter.showHamilOnly
+                            ? 'Tampilkan semua'
+                            : 'Filter hanya yang sedang hamil',
+                        icon: Icon(
+                          state.filter.showHamilOnly
+                              ? Icons.pregnant_woman
+                              : Icons.filter_alt_outlined,
+                          color: state.filter.showHamilOnly
+                              ? Colors.pinkAccent
+                              : Colors.grey,
+                        ),
+                        onPressed: () {
+                          if (!state.filter.showHamilOnly) {
+                            context
+                                .read<SearchBumilCubit>()
+                                .toggleFilterHamil();
+                            context.read<SearchBumilCubit>().setStatus('Semua');
+                          } else {
+                            context.read<SearchBumilCubit>().resetFilter();
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
 
@@ -151,37 +153,6 @@ class PilihBumilScreen extends StatelessWidget {
                                           )
                                           .toList(),
                                 ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-
-                            // Month picker
-                            OutlinedButton.icon(
-                              style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              onPressed: () async {
-                                final selected = await showMonthYearPicker(
-                                  context: context,
-                                  locale: const Locale('id', 'ID'),
-                                  initialDate:
-                                      state.filter.month ?? DateTime.now(),
-                                  firstDate: DateTime(2020),
-                                  lastDate: DateTime(2100),
-                                );
-                                if (selected != null) {
-                                  context.read<SearchBumilCubit>().setMonth(
-                                    selected,
-                                  );
-                                }
-                              },
-                              icon: const Icon(Icons.calendar_today, size: 18),
-                              label: Text(
-                                state.filter.month != null
-                                    ? '${state.filter.month!.month}/${state.filter.month!.year}'
-                                    : 'Bulan',
                               ),
                             ),
                           ],
@@ -249,7 +220,7 @@ class PilihBumilScreen extends StatelessWidget {
                                 ),
                               ),
                               subtitle: Text(
-                                'NIK: ${bumil.nikIbu}',
+                                'NIK: ${bumil.nikIbu.isNotEmpty ? bumil.nikIbu : '-'}',
                                 style: const TextStyle(fontSize: 13),
                               ),
                               trailing: const Icon(Icons.chevron_right),
@@ -258,45 +229,10 @@ class PilihBumilScreen extends StatelessWidget {
                                   bumil,
                                 );
 
-                                if (pilihState == 'bumil') {
-                                  Navigator.pushNamed(
-                                    context,
-                                    state.filter.showHamilOnly
-                                        ? AppRouter.ringkasanBumil
-                                        : AppRouter.dataBumil,
-                                  ).then((_) => _refresh(context));
-                                } else {
-                                  if (bumil.latestKehamilanId == null ||
-                                      bumil.latestKehamilanPersalinan == true) {
-                                    Navigator.pushNamed(
-                                      context,
-                                      AppRouter.addKehamilan,
-                                    ).then((_) => _refresh(context));
-                                  } else {
-                                    final firstTime =
-                                        !bumil.latestKehamilanKunjungan;
-
-                                    if (firstTime) {
-                                      Navigator.pushNamed(
-                                        context,
-                                        AppRouter.kunjungan,
-                                        arguments: {'firstTime': true},
-                                      ).then((_) => _refresh(context));
-                                    } else {
-                                      if (bumil.latestKehamilan != null) {
-                                        context
-                                            .read<SelectedKehamilanCubit>()
-                                            .selectKehamilan(
-                                              bumil.latestKehamilan!,
-                                            );
-                                      }
-                                      Navigator.pushNamed(
-                                        context,
-                                        AppRouter.updateKehamilan,
-                                      ).then((_) => _refresh(context));
-                                    }
-                                  }
-                                }
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRouter.dataBumil,
+                                ).then((_) => _refresh(context));
                               },
                             ),
                           );

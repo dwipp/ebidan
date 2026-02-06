@@ -34,11 +34,14 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
 
     emit(AddPersalinanLoading());
     try {
-      final docRef = FirebaseFirestore.instance
+      final batch = FirebaseFirestore.instance.batch();
+
+      final docRefKehamilan = FirebaseFirestore.instance
           .collection('kehamilan')
           .doc(kehamilanId);
 
-      docRef.update({
+      // 1. Tambah ke batch untuk update kehamilan
+      batch.update(docRefKehamilan, {
         'persalinan': persalinans.map((e) => e.toFirestore()).toList(),
       });
 
@@ -58,14 +61,49 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
         );
         riwayats.add(riwayat);
       }
-      _tambahRiwayatBumil(
-        bumilId,
-        riwayatList: riwayats,
-        persalinanList: persalinans,
-      );
+
+      // 2. Tambah ke batch untuk update bumil
+      final docRefBumil = FirebaseFirestore.instance
+          .collection('bumil')
+          .doc(bumilId);
+      batch.update(docRefBumil, {
+        'riwayat': FieldValue.arrayUnion(
+          riwayats.map((e) => e.toFirestore()).toList(),
+        ),
+        'latest_kehamilan_persalinan': true,
+        'latest_kehamilan.persalinan': persalinans
+            .map((e) => e.toFirestore())
+            .toList(),
+        'is_hamil': false,
+      });
+
+      // 3. Eksekusi Batch
+      batch.commit();
+
+      // lokal
+      // update persalinan di dalam doc kehamilan
+      var currentKehamilan = selectedKehamilanCubit.state;
+      if (currentKehamilan != null) {
+        currentKehamilan.persalinan = persalinans;
+        selectedKehamilanCubit.selectKehamilan(currentKehamilan);
+      }
+
+      // update riwayat di dalam doc bumil
+      var currentBumil = selectedBumilCubit.state;
+      if (currentBumil != null) {
+        currentBumil.riwayat = riwayats;
+        selectedBumilCubit.selectBumil(currentBumil);
+      }
+
       emit(AddPersalinanSuccess());
     } catch (e) {
-      emit(AddPersalinanFailure(e.toString()));
+      emit(
+        AddPersalinanFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 
@@ -80,10 +118,8 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
     var currentKehamilan = selectedKehamilanCubit.state;
     if (currentKehamilan == null) return;
 
-    // ambil riwayat lama
     final List<Persalinan> oldPersalinans = currentKehamilan.persalinan ?? [];
 
-    // update sesuai id
     final List<Persalinan> newPersalinans = oldPersalinans.map((r) {
       if (r.id == updatedPersalinan.id) {
         return updatedPersalinan;
@@ -92,29 +128,24 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
     }).toList();
 
     try {
-      // simpan ke Firestore
-      await FirebaseFirestore.instance
+      final batch = FirebaseFirestore.instance.batch();
+
+      final docRefKehamilan = FirebaseFirestore.instance
           .collection('kehamilan')
-          .doc(currentKehamilan.id)
-          .update({
-            'persalinan': newPersalinans
-                .map((persalinan) => persalinan.toFirestore())
-                .toList(),
-          });
+          .doc(currentKehamilan.id);
 
-      // update cubit state biar langsung sinkron
-      currentKehamilan.persalinan = newPersalinans;
-      selectedKehamilanCubit.selectKehamilan(currentKehamilan);
-      selectedPersalinanCubit.selectPersalinan(updatedPersalinan);
+      // 1. Tambah update kehamilan ke batch
+      batch.update(docRefKehamilan, {
+        'persalinan': newPersalinans
+            .map((persalinan) => persalinan.toFirestore())
+            .toList(),
+      });
 
-      // PERLU UPDATE RIWAYAT JUGA
-      // ID RIWAYAT DAN ID PERSALINAN ADALAH SAMA
       var currentBumil = selectedBumilCubit.state;
       if (currentBumil == null) return;
 
       final List<Riwayat> newRiwayats = currentBumil.riwayat!.map((r) {
         if (r.id == updatedPersalinan.id) {
-          // bikin object riwayat baru
           final updatedRiwayat = Riwayat(
             id: updatedPersalinan.id,
             tglLahir: updatedPersalinan.tglPersalinan ?? DateTime.now(),
@@ -134,59 +165,44 @@ class SubmitPersalinanCubit extends Cubit<SubmitPersalinanState> {
         return r;
       }).toList();
 
-      _updateRiwayatBumil(
-        currentBumil.idBumil,
-        riwayatList: newRiwayats,
-        persalinanList: newPersalinans,
-      );
+      // 2. Tambah update bumil ke batch
+      final docRefBumil = FirebaseFirestore.instance
+          .collection('bumil')
+          .doc(currentBumil.idBumil);
+
+      batch.update(docRefBumil, {
+        'riwayat': newRiwayats.map((e) => e.toFirestore()).toList(),
+        'latest_kehamilan_persalinan': true,
+        'latest_kehamilan.persalinan': newPersalinans
+            .map((persalinan) => persalinan.toFirestore())
+            .toList(),
+        'is_hamil': false,
+      });
+
+      // 3. Eksekusi batch
+      batch.commit();
 
       // update cubit state biar langsung sinkron
+      currentKehamilan.persalinan = newPersalinans;
+      selectedKehamilanCubit.selectKehamilan(currentKehamilan);
+      selectedPersalinanCubit.selectPersalinan(updatedPersalinan);
+
       currentBumil.riwayat = newRiwayats;
       selectedBumilCubit.selectBumil(currentBumil);
 
       emit(AddPersalinanSuccess());
     } catch (e) {
-      emit(AddPersalinanFailure(e.toString()));
+      emit(
+        AddPersalinanFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 
   void setInitial() => emit(AddPersalinanInitial());
-
-  void _tambahRiwayatBumil(
-    String bumilId, {
-    required List<Riwayat> riwayatList,
-    required List<Persalinan> persalinanList,
-  }) {
-    final docRef = FirebaseFirestore.instance.collection('bumil').doc(bumilId);
-
-    docRef.update({
-      'riwayat': FieldValue.arrayUnion(
-        riwayatList.map((e) => e.toFirestore()).toList(),
-      ),
-      'latest_kehamilan_persalinan': true,
-      'latest_kehamilan.persalinan': persalinanList
-          .map((e) => e.toFirestore())
-          .toList(),
-      'is_hamil': false,
-    });
-  }
-
-  void _updateRiwayatBumil(
-    String bumilId, {
-    required List<Riwayat> riwayatList,
-    required List<Persalinan> persalinanList,
-  }) {
-    final docRef = FirebaseFirestore.instance.collection('bumil').doc(bumilId);
-
-    docRef.update({
-      'riwayat': riwayatList.map((e) => e.toFirestore()).toList(),
-      'latest_kehamilan_persalinan': true,
-      'latest_kehamilan.persalinan': persalinanList
-          .map((persalinan) => persalinan.toFirestore())
-          .toList(),
-      'is_hamil': false,
-    });
-  }
 
   String _getStatusKehamilan(String input) {
     // Parsing string "X minggu Y hari"

@@ -31,8 +31,9 @@ import { saveSubscription } from "./modules/subscription/save_subscription.js";
 import { verifySubscription } from "./modules/subscription/verify_subscription.js";
 import { handleSubscriptionUpdate } from "./modules/subscription/rtdn_subscription.js";
 import { migratePremiumUntil } from "./modules/subscription/migrate_premium_until.js";
-import { weeklyWednesdayBroadcast } from "./modules/notification/broadcast_notif.js";
-import { monthlyReportBroadcast } from "./modules/notification/broadcast_notif.js";
+import { weeklyThursdayBroadcast } from "./modules/notification/notif_weekly_thursday.js";
+import { weeklySundayBroadcast } from "./modules/notification/notif_weekly_edu.js";
+import { monthlyReportBroadcast } from "./modules/notification/notif_monthly_report.js";
 
 export { 
     incrementPasienCount, 
@@ -52,6 +53,7 @@ export {
     verifySubscription,
     handleSubscriptionUpdate,
     migratePremiumUntil,
-    weeklyWednesdayBroadcast,
+    weeklyThursdayBroadcast,
+    weeklySundayBroadcast,
     monthlyReportBroadcast
 };

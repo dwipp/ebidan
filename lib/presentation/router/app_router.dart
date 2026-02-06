@@ -1,7 +1,6 @@
 import 'package:ebidan/presentation/screens/mode_koordinator/bidan/list_bidan.dart';
 import 'package:ebidan/presentation/screens/profile/edit_profile.dart';
 import 'package:ebidan/presentation/screens/profile/profile.dart';
-import 'package:ebidan/presentation/screens/mode_bidan/bumil/check_bumil.dart';
 import 'package:ebidan/presentation/screens/mode_bidan/bumil/data_bumil.dart';
 import 'package:ebidan/presentation/screens/mode_bidan/bumil/edit_bumil.dart';
 import 'package:ebidan/presentation/screens/mode_bidan/bumil/ringkasan_bumil.dart';
@@ -44,6 +43,7 @@ import 'package:ebidan/presentation/screens/mode_bidan/statistics/sf/tren_sf_sta
 import 'package:ebidan/presentation/screens/mode_bidan/statistics/statistics.dart';
 import 'package:ebidan/presentation/screens/mode_bidan/subscription/subs_status.dart';
 import 'package:ebidan/presentation/screens/mode_bidan/subscription/subscription.dart';
+import 'package:ebidan/presentation/screens/banner/banner_content_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ebidan/common/exceptions/route_exception.dart';
 import 'package:ebidan/presentation/screens/mode_bidan/bumil/add_bumil.dart';
@@ -54,6 +54,7 @@ class AppRouter {
   static const String register = '/register';
   static const String profile = '/profile';
   static const String editProfile = '/editprofile';
+  static const String bannerContent = '/bannercontent';
 
   static const String addBumil = '/addbumil';
   static const String pilihBumil = '/pilihbumil';
@@ -61,7 +62,6 @@ class AppRouter {
   static const String dataBumil = '/databumil';
   static const String detailBumil = '/detailbumil';
   static const String ringkasanBumil = '/ringkasanbumil';
-  static const String checkDataBumil = '/checkbumil';
 
   static const String addKehamilan = '/addkehamilan';
   static const String editKehamilan = '/editkehamilan';
@@ -125,16 +125,15 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => ProfileScreen());
       case editProfile:
         return MaterialPageRoute(builder: (_) => EditProfileScreen());
+      case bannerContent:
+        return MaterialPageRoute(builder: (_) => BannerContentScreen());
       case pilihBumil:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => PilihBumilScreen(pilihState: args['state']),
         );
       case addBumil:
-        final args = routeSettings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => AddBumilScreen(nikIbu: args['nikIbu']),
-        );
+        return MaterialPageRoute(builder: (_) => AddBumilScreen());
       case dataBumil:
         return MaterialPageRoute(builder: (_) => DataBumilScreen());
       case detailBumil:
@@ -146,8 +145,6 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => EditBumilScreen(bumil: args['bumil']),
         );
-      case checkDataBumil:
-        return MaterialPageRoute(builder: (_) => CheckBumilScreen());
       case addRiwayat:
         final args = routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(

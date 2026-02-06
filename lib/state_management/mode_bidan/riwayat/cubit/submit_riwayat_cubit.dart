@@ -111,7 +111,13 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
         ),
       );
     } catch (e) {
-      emit(SubmitRiwayatFailure(e.toString()));
+      emit(
+        SubmitRiwayatFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 
@@ -139,7 +145,7 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
 
     try {
       // simpan ke Firestore
-      await FirebaseFirestore.instance
+      FirebaseFirestore.instance
           .collection('bumil')
           .doc(currentBumil.idBumil)
           .update({
@@ -171,7 +177,13 @@ class SubmitRiwayatCubit extends Cubit<SubmitiwayatState> {
         ),
       );
     } catch (e) {
-      emit(SubmitRiwayatFailure(e.toString()));
+      emit(
+        SubmitRiwayatFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 

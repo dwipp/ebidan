@@ -98,7 +98,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _tbController.text = widget.kehamilan.tb ?? '';
-    _hemoglobinController.text = widget.kehamilan.hemoglobin.toString();
+    _hemoglobinController.text = '${widget.kehamilan.hemoglobin ?? ''}';
     _bpjsController.text = widget.kehamilan.bpjs ?? '';
     _noKohortController.text = widget.kehamilan.noKohortIbu ?? '';
     _noRekaMedisController.text = widget.kehamilan.noRekaMedis ?? '';
@@ -320,7 +320,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
                 labelText: 'Hari Pertama Haid Terakhir (HPHT)',
                 prefixIcon: Icons.date_range,
                 context: context,
-                initialValue: _hpht,
+                value: _hpht,
                 onDateSelected: (date) {
                   setState(() {
                     _hpht = date;
@@ -334,7 +334,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
                 labelText: 'Hari Taksiran Persalinan (HTP)',
                 prefixIcon: Icons.event,
                 context: context,
-                initialValue: _htp,
+                value: _htp,
                 readOnly: true,
                 lastDate: DateTime(
                   DateTime.now().year + 1,
@@ -411,7 +411,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
               DatePickerFormField(
                 labelText: 'Tanggal Terima Buku KIA',
                 prefixIcon: Icons.calendar_view_day,
-                initialValue: _createdAt,
+                value: _createdAt,
                 context: context,
                 readOnly: true,
                 onDateSelected: (date) {
@@ -450,7 +450,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
               DatePickerFormField(
                 labelText: 'Tanggal Periksa USG',
                 prefixIcon: Icons.calendar_today,
-                initialValue: _tglPeriksaUsg,
+                value: _tglPeriksaUsg,
                 context: context,
                 onDateSelected: (date) {
                   setState(() => _tglPeriksaUsg = date);
