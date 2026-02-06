@@ -13,12 +13,35 @@ class SubmitBumilCubit extends Cubit<SubmitBumilState> {
     : super(SubmitBumilState());
 
   Future<void> submitBumil(Bumil bumil) async {
-    emit(state.copyWith(isSubmitting: true, error: null));
+    emit(state.copyWith(isSubmitting: true, isSuccess: false, error: null));
 
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      emit(state.copyWith(isSubmitting: false, error: 'User belum login'));
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          isSuccess: false,
+          error: 'User belum login',
+        ),
+      );
       return;
+    }
+
+    if (bumil.nikIbu.isNotEmpty) {
+      final registered = await isNikRegistered(
+        nik: bumil.nikIbu,
+        uid: user.uid,
+      );
+      if (registered) {
+        emit(
+          state.copyWith(
+            isSubmitting: false,
+            isSuccess: false,
+            error: 'NIK Ibu sudah terdaftar.',
+          ),
+        );
+        return;
+      }
     }
 
     try {
@@ -29,7 +52,7 @@ class SubmitBumilCubit extends Cubit<SubmitBumilState> {
           .collection('bumil')
           .doc(bumilId);
 
-      await docRef.set({
+      final Map<String, dynamic> rawBumil = {
         "nama_ibu": bumil.namaIbu,
         "nama_suami": bumil.namaSuami,
         "alamat": bumil.alamat,
@@ -50,16 +73,48 @@ class SubmitBumilCubit extends Cubit<SubmitBumilState> {
         "birthdate_ibu": bumil.birthdateIbu,
         "birthdate_suami": bumil.birthdateSuami,
         "created_at": bumil.createdAt,
-      }, SetOptions(merge: true));
+      };
+      docRef.set(rawBumil, SetOptions(merge: true));
 
-      final snapshot = await docRef.get(const GetOptions(source: Source.cache));
-      final newBumil = Bumil.fromMap(bumilId, snapshot.data()!);
+      final newBumil = Bumil.fromMap(bumilId, rawBumil);
       selectedBumilCubit.selectBumil(newBumil);
       emit(
         state.copyWith(isSubmitting: false, isSuccess: true, bumilId: bumilId),
       );
     } catch (e) {
-      emit(state.copyWith(isSubmitting: false, error: e.toString()));
+      emit(
+        state.copyWith(
+          isSubmitting: false,
+          isSuccess: false,
+          error: e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
+    }
+  }
+
+  Future<bool> isNikRegistered({
+    required String nik,
+    required String uid,
+  }) async {
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      final snapshot = await firestore
+          .collection('bumil')
+          .where('id_bidan', isEqualTo: uid)
+          .where('nik_ibu', isEqualTo: nik.trim())
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
     }
   }
 

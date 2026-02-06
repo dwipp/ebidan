@@ -1,10 +1,12 @@
 import 'package:ebidan/state_management/auth/cubit/login_cubit.dart';
+import 'package:ebidan/state_management/banner/cubit/banner_cubit.dart';
+import 'package:ebidan/state_management/banner/cubit/get_banner_cubit.dart';
+import 'package:ebidan/state_management/general/cubit/wording_cubit.dart';
 import 'package:ebidan/state_management/mode_koordinator/bidan/cubit/get_bidan_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/access_code_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/register_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
-import 'package:ebidan/state_management/mode_bidan/bumil/cubit/check_bumil_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/submit_bumil_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/search_bumil_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/selected_bumil_cubit.dart';
@@ -49,11 +51,6 @@ class BlocProviders {
       BlocProvider<SearchBumilCubit>(create: (context) => SearchBumilCubit()),
       BlocProvider<SubmitBumilCubit>(
         create: (context) => SubmitBumilCubit(
-          selectedBumilCubit: context.read<SelectedBumilCubit>(),
-        ),
-      ),
-      BlocProvider<CheckBumilCubit>(
-        create: (context) => CheckBumilCubit(
           selectedBumilCubit: context.read<SelectedBumilCubit>(),
         ),
       ),
@@ -113,6 +110,9 @@ class BlocProviders {
         create: (context) =>
             AccessCodeCubit(userCubit: context.read<UserCubit>()),
       ),
+      BlocProvider<BannerCubit>(create: (_) => BannerCubit()..load()),
+      BlocProvider<GetBannerCubit>(create: (context) => GetBannerCubit()),
+      BlocProvider<WordingCubit>(create: (context) => WordingCubit()),
     ];
   }
 }

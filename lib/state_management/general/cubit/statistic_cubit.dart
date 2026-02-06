@@ -30,7 +30,14 @@ class StatisticCubit extends HydratedCubit<StatisticState> {
         emit(StatisticSuccess(statistic: null));
       }
     } catch (e) {
-      emit(StatisticFailure(message: e.toString(), statistic: null));
+      emit(
+        StatisticFailure(
+          message: e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+          statistic: null,
+        ),
+      );
     }
   }
 

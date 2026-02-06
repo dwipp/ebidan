@@ -46,6 +46,8 @@ extension CustomColors on ColorScheme {
   Color get complaint => brightness == Brightness.dark
       ? Colors.redAccent
       : Colors.redAccent.shade100;
+  Color get complaintWa =>
+      brightness == Brightness.dark ? Colors.green : Colors.green.shade200;
 
   Color get shadowPink => brightness == Brightness.dark
       ? Colors.transparent

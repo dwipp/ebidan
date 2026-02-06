@@ -237,7 +237,7 @@ class _KunjunganState extends State<KunjunganScreen> {
               DatePickerFormField(
                 labelText: 'Tanggal Kunjungan',
                 prefixIcon: Icons.calendar_view_day,
-                initialValue: _createdAt,
+                value: _createdAt,
                 context: context,
                 onDateSelected: (date) {
                   setState(() => _createdAt = date);

@@ -26,7 +26,7 @@ class LoginCubit extends Cubit<LoginState> {
       await _googleSignIn.initialize();
       _initialized = true;
     } catch (e) {
-      emit(const LoginFailure('GoogleSignIn init failed'));
+      emit(const LoginFailure('Terjadi kesalahan. Mohon dicoba kembali.'));
     }
   }
 
@@ -48,7 +48,7 @@ class LoginCubit extends Cubit<LoginState> {
       final userCred = await _auth.signInWithCredential(credential);
       final auth = userCred.user;
       if (auth == null) {
-        emit(const LoginFailure('User not found'));
+        emit(const LoginFailure('User tidak ditemukan'));
         return;
       }
 
@@ -78,7 +78,13 @@ class LoginCubit extends Cubit<LoginState> {
     } on GoogleSignInException catch (e) {
       emit(LoginFailure('${e.code.name} - ${e.description}'));
     } catch (e) {
-      emit(LoginFailure(e.toString()));
+      emit(
+        LoginFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 

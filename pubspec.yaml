@@ -1,7 +1,7 @@
 name: ebidan
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.4.0+13
+version: 0.12.0+22
 
 environment:
   sdk: ^3.8.0
@@ -29,6 +29,7 @@ dependencies:
   cloud_functions: ^6.0.4
   firebase_remote_config: ^6.1.1
   firebase_messaging: ^16.1.0
+  shared_preferences: ^2.5.3
 
   uuid: ^4.5.1
   package_info_plus: ^8.3.0
@@ -42,7 +43,15 @@ dependencies:
   avatar_glow: ^3.0.1
   pdf: ^3.11.3
   printing: ^5.14.2
+  flutter_markdown_plus: ^1.0.7
 
+  # ktp scanner
+  camera: ^0.11.2
+  google_mlkit_text_recognition: ^0.15.0
+  google_mlkit_object_detection: ^0.15.0
+  path: ^1.9.1
+  string_similarity: ^2.1.1
+  image: ^4.2.0
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +66,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/images/
+    - assets/models/
 
 flutter_icons:
   android: true

@@ -167,7 +167,13 @@ class RegisterCubit extends Cubit<RegisterState> {
 
       emit(RegisterSuccess(role: role));
     } catch (e) {
-      emit(RegisterFailure(e.toString()));
+      emit(
+        RegisterFailure(
+          e is Exception
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Terjadi kesalahan. Mohon coba kembali.',
+        ),
+      );
     }
   }
 }

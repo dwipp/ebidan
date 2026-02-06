@@ -84,3 +84,10 @@
 ########################################
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 -keepattributes SourceFile,LineNumberTable
+
+# Keep semua ML Kit Text Recognition classes
+-keep class com.google.mlkit.vision.text.** { *; }
+-keep class com.google.mlkit.** { *; }
+
+# Optional: jika ada dependencies internal yang di-strip, keep juga
+-dontwarn com.google.mlkit.**

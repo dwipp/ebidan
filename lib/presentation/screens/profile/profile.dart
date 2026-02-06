@@ -1,7 +1,7 @@
+import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
-import 'package:ebidan/presentation/widgets/browser_launcher.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
@@ -66,37 +66,72 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.small(
-        heroTag: "complaintFab",
-        backgroundColor: context.themeColors.complaint,
-        onPressed: () {
-          BrowserLauncher.openInApp("https://forms.gle/2SR34kx1xjMgA3G27");
-        },
-        child: const Icon(Icons.feedback, color: Colors.white),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _buildProfileHeader(user),
-              const SizedBox(height: 24),
-              _buildSubscriptionCard(
-                context,
-                status: user.premiumStatus,
-                user: user,
+      // floatingActionButton: Column(
+      //   mainAxisSize: MainAxisSize.min,
+      //   children: [
+      //     FloatingActionButton.small(
+      //       heroTag: "complaintWa",
+      //       backgroundColor: context.themeColors.complaintWa,
+      //       onPressed: () {
+      //         final auth = FirebaseAuth.instance.currentUser;
+      //         if (auth == null) return;
+      //         final message =
+      //             "Halo eBidan,\nsaya ${user.nama}\n(UID: ${auth.uid}),\n"
+      //             "ingin menyampaikan keluhan sebagai berikut:\n\n";
+
+      //         final url =
+      //             "https://wa.me/628991904891?text=${Uri.encodeComponent(message)}";
+
+      //         BrowserLauncher.openInApp(url);
+      //       },
+      //       child: const Icon(Icons.feedback, color: Colors.white),
+      //     ),
+      //     SizedBox(height: 4),
+      //     FloatingActionButton.small(
+      //       heroTag: "complaintFab",
+      //       backgroundColor: context.themeColors.complaint,
+      //       onPressed: () {
+      //         BrowserLauncher.openInApp("https://forms.gle/2SR34kx1xjMgA3G27");
+      //       },
+      //       child: const Icon(Icons.feedback, color: Colors.white),
+      //     ),
+      //   ],
+      // ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    _buildProfileHeader(user),
+                    const SizedBox(height: 24),
+                    _buildSubscriptionCard(
+                      context,
+                      status: user.premiumStatus,
+                      user: user,
+                    ),
+                    if (user.premiumSource !=
+                        PremiumType.subscription.name) ...[
+                      const SizedBox(height: 16),
+                      _buildAccessCodeTrigger(context, user),
+                    ],
+                    const SizedBox(height: 16),
+                    _buildUserInfoCard(context, user),
+                    const SizedBox(height: 8),
+                    _buildVersionInfo(),
+                  ],
+                ),
               ),
-              if (user.premiumSource != PremiumType.subscription.name) ...[
-                const SizedBox(height: 16),
-                _buildAccessCodeTrigger(context, user),
-              ],
-              const SizedBox(height: 16),
-              _buildUserInfoCard(context, user),
-              const SizedBox(height: 8),
-              _buildVersionInfo(),
-            ],
-          ),
+            ),
+            Positioned(
+              bottom: 24,
+              right: 24,
+              child: Utils.floatingComplaint(context, user),
+            ),
+          ],
         ),
       ),
     );

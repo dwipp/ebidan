@@ -1,14 +1,21 @@
-import 'package:avatar_glow/avatar_glow.dart';
+import 'dart:io';
+
+// import 'package:avatar_glow/avatar_glow.dart';
+import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/common/utility/remote_config_helper.dart';
 import 'package:ebidan/common/utility/subscription_helper.dart';
 import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/data/models/statistic_model.dart';
-import 'package:ebidan/presentation/widgets/browser_launcher.dart';
+import 'package:ebidan/presentation/screens/banner/banner_home.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/summary_chart.dart';
 import 'package:ebidan/state_management/auth/cubit/user_cubit.dart';
+import 'package:ebidan/state_management/banner/cubit/banner_cubit.dart';
+import 'package:ebidan/state_management/banner/cubit/get_banner_cubit.dart';
+import 'package:ebidan/state_management/general/cubit/wording_cubit.dart';
 import 'package:ebidan/state_management/mode_bidan/bumil/cubit/selected_bumil_cubit.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/state_management/general/cubit/back_press_cubit.dart';
@@ -23,6 +30,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,8 +42,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   void verifySubs() async {
     final userCubit = context.read<UserCubit>();
+    final user = userCubit.state;
     final subs = userCubit.state?.subscription;
-    if (subs?.status == "expired") return;
+    if (user?.premiumSource != PremiumType.subscription.name) return;
+    if (subs?.status == "expired" || subs?.status == "") return;
     if (subs?.productId == null || subs?.purchaseToken == null) return;
 
     final now = DateTime.now();
@@ -65,7 +75,24 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     context.read<ProfileCubit>().getProfile();
+    context.read<GetBannerCubit>().getBanner();
+    context.read<WordingCubit>().getSubscriptionWording();
     verifySubs();
+    _checkAppVersionInPlaystore();
+  }
+
+  Future<void> _checkAppVersionInPlaystore() async {
+    await RemoteConfigHelper.shouldShowUpdateAnnouncement(context);
+  }
+
+  Future<File> assetToFile(String assetPath) async {
+    final byteData = await rootBundle.load(assetPath);
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/ktp.jpeg');
+
+    await file.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+
+    return file;
   }
 
   @override
@@ -129,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          floatingActionButton: user?.role.toLowerCase() != 'bidan'
+          /*floatingActionButton: user?.role.toLowerCase() != 'bidan'
               ? null
               : AvatarGlow(
                   glowRadiusFactor: 0.7,
@@ -153,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
           floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
+              FloatingActionButtonLocation.centerFloat,*/
           body: SafeArea(
             child: Stack(
               children: [
@@ -173,6 +200,27 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 12,
                           children: [
+                            BlocBuilder<BannerCubit, bool>(
+                              builder: (context, showBanner) {
+                                if (!showBanner) return const SizedBox.shrink();
+
+                                return StaggeredGridTile.fit(
+                                  crossAxisCellCount: 4,
+                                  child: BannerHome(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRouter.bannerContent,
+                                      );
+                                    },
+                                    onClose: () {
+                                      context.read<BannerCubit>().dismiss();
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+
                             // Card Bumil (Total + Bulan Ini)
                             StaggeredGridTile.fit(
                               crossAxisCellCount: 4,
@@ -412,6 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             ),
+                            SizedBox(height: 24),
                           ],
                         );
                       },
@@ -420,17 +469,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Positioned(
                   bottom: 16,
-                  left: 16,
-                  child: FloatingActionButton.small(
-                    heroTag: "complaintFab",
-                    backgroundColor: context.themeColors.complaint,
-                    onPressed: () {
-                      BrowserLauncher.openInApp(
-                        "https://forms.gle/2SR34kx1xjMgA3G27",
-                      );
-                    },
-                    child: const Icon(Icons.feedback, color: Colors.white),
-                  ),
+                  right: 16,
+                  child: user != null
+                      ? Utils.floatingComplaint(context, user)
+                      : SizedBox(),
                 ),
               ],
             ),

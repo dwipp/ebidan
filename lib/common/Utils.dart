@@ -1,14 +1,56 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
+import 'package:ebidan/data/models/bidan_model.dart';
+import 'package:ebidan/presentation/widgets/browser_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
+import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
+import 'package:image/image.dart' as img;
+import 'package:path/path.dart';
 
 class Utils {
   // ====== DATE ======
+
+  /// Utility agar Timestamp/String bisa jadi DateTime
+  static DateTime? toDateTime(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
   static String formattedDate(DateTime? date) {
     if (date == null) return "-";
     // Format ke bahasa Indonesia: 1 Januari 1990
     return DateFormat("d MMMM yyyy", "id_ID").format(date);
+  }
+
+  static DateTime? parseDateKTP(String? tanggal) {
+    if (tanggal == null) return null;
+    try {
+      final parts = tanggal.split('-');
+      if (parts.length != 3) return null;
+
+      final day = int.parse(parts[0]);
+      final month = int.parse(parts[1]);
+      final year = int.parse(parts[2]);
+
+      final dt = DateTime(year, month, day);
+
+      // validasi tanggal palsu (misal 32-13-1991)
+      if (dt.day != day || dt.month != month || dt.year != year) {
+        return null;
+      }
+
+      return dt;
+    } catch (_) {
+      return null;
+    }
   }
 
   static String formattedDateTime(DateTime? date) {
@@ -287,5 +329,164 @@ class Utils {
         ],
       ),
     );
+  }
+
+  static Widget floatingComplaint(BuildContext context, Bidan user) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (user.premiumUntil != null &&
+            user.premiumUntil!.isAfter(
+              DateTime.now().add(const Duration(days: 1)),
+            )) ...[
+          FloatingActionButton.small(
+            heroTag: "complaintWa",
+            backgroundColor: context.themeColors.complaintWa,
+            onPressed: () {
+              final auth = FirebaseAuth.instance.currentUser;
+              if (auth == null) return;
+              final message =
+                  "Halo eBidan,\nsaya ${user.nama}\n(UID: ${auth.uid}),\n"
+                  "ingin menyampaikan keluhan sebagai berikut:\n\n";
+
+              final url =
+                  "https://wa.me/628991904891?text=${Uri.encodeComponent(message)}";
+
+              BrowserLauncher.openInApp(url);
+            },
+            child: Image.asset(
+              'assets/icons/ic_wa.png',
+              width: 24,
+              height: 24,
+              color: Colors.white,
+            ),
+          ),
+        ],
+
+        SizedBox(height: 4),
+        FloatingActionButton.small(
+          heroTag: "complaintFab",
+          backgroundColor: context.themeColors.complaint,
+          onPressed: () {
+            BrowserLauncher.openInApp("https://forms.gle/2SR34kx1xjMgA3G27");
+          },
+          child: const Icon(Icons.feedback, color: Colors.white),
+        ),
+      ],
+    );
+  }
+
+  // ktp extractor
+  static Future<String> getAssetPath(String asset) async {
+    final path = await getLocalPath(asset);
+    await Directory(dirname(path)).create(recursive: true);
+    final file = File(path);
+    if (!await file.exists()) {
+      final byteData = await rootBundle.load(asset);
+      await file.writeAsBytes(
+        byteData.buffer.asUint8List(
+          byteData.offsetInBytes,
+          byteData.lengthInBytes,
+        ),
+      );
+    }
+    return file.path;
+  }
+
+  static Future<String> getLocalPath(String path) async {
+    return '${(await getApplicationSupportDirectory()).path}/$path';
+  }
+
+  static Future<File?> cropImage(File imageFile, DetectedObject object) async {
+    final parse = await img.decodeImageFile(imageFile.absolute.path);
+    if (parse == null) return null;
+    final result = img.copyCrop(
+      parse,
+      x: object.boundingBox.left.toInt(),
+      y: object.boundingBox.top.toInt(),
+      width: (object.boundingBox.right - object.boundingBox.left).toInt(),
+      height: (object.boundingBox.bottom - object.boundingBox.top).toInt(),
+    );
+    List<int> cropByte = [];
+    cropByte = img.encodeJpg(result);
+    final File imageFileCrop = await File(
+      imageFile.absolute.path,
+    ).writeAsBytes(cropByte);
+    return imageFileCrop;
+  }
+
+  static Future<File?> cropPassportMrz(
+    File imageFile,
+    DetectedObject object,
+  ) async {
+    final parse = await img.decodeImageFile(imageFile.absolute.path);
+    if (parse == null) return null;
+
+    final passportCrop = img.copyCrop(
+      parse,
+      x: object.boundingBox.left.toInt(),
+      y: object.boundingBox.top.toInt(),
+      width: (object.boundingBox.right - object.boundingBox.left).toInt(),
+      height: (object.boundingBox.bottom - object.boundingBox.top).toInt(),
+    );
+
+    final mrzHeight = (passportCrop.height * 0.25).toInt();
+    final mrzY = passportCrop.height - mrzHeight;
+
+    final mrzCrop = img.copyCrop(
+      passportCrop,
+      x: 0,
+      y: mrzY,
+      width: passportCrop.width,
+      height: mrzHeight,
+    );
+
+    final enhanced = img.contrast(mrzCrop, contrast: 1.2);
+    final sharpened = img.convolution(
+      enhanced,
+      filter: [0, -1, 0, -1, 5, -1, 0, -1, 0],
+    );
+
+    List<int> cropByte = img.encodeJpg(sharpened);
+    final String tempPath =
+        '${imageFile.parent.path}/mrz_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final File mrzFile = await File(tempPath).writeAsBytes(cropByte);
+    return mrzFile;
+  }
+
+  static String calculateCheckDigit(String input) {
+    const weights = [7, 3, 1];
+    int sum = 0;
+
+    String cleanInput = input
+        .replaceAll('«', '<')
+        .replaceAll('»', '<')
+        .replaceAll('‹', '<')
+        .replaceAll('›', '<')
+        .replaceAll('〈', '<')
+        .replaceAll('〉', '<')
+        .replaceAll('＜', '<')
+        .replaceAll('＞', '<');
+
+    for (int i = 0; i < cleanInput.length; i++) {
+      final char = cleanInput[i];
+      int value;
+
+      if (char == '<') {
+        value = 0;
+      } else if (RegExp(r'\d').hasMatch(char)) {
+        value = int.parse(char);
+      } else {
+        value = char.codeUnitAt(0) - 'A'.codeUnitAt(0) + 10;
+      }
+
+      sum += value * weights[i % 3];
+    }
+
+    return (sum % 10).toString();
+  }
+
+  static bool validateMrzChecksum(String data, String checkDigit) {
+    return calculateCheckDigit(data) == checkDigit;
   }
 }

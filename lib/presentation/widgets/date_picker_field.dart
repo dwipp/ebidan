@@ -7,7 +7,7 @@ class DatePickerFormField extends FormField<DateTime> {
     Key? key,
     required String labelText,
     required IconData prefixIcon,
-    DateTime? initialValue, // ✅ bisa binding langsung
+    required DateTime? value,
     DateTime? initialDate,
     DateTime? lastDate,
     required BuildContext context,
@@ -16,16 +16,17 @@ class DatePickerFormField extends FormField<DateTime> {
     bool readOnly = false,
   }) : super(
          key: key,
-         initialValue: initialValue, // pakai value terbaru
+         initialValue: value,
          validator: validator,
-         builder: (FormFieldState<DateTime> field) {
+         builder: (field) {
            return InkWell(
              onTap: readOnly
                  ? null
                  : () async {
                      final picked = await showDatePicker(
                        context: context,
-                       initialDate: initialDate ?? DateTime.now(),
+                       initialDate:
+                           field.value ?? initialDate ?? DateTime.now(),
                        firstDate: DateTime(1960),
                        lastDate: lastDate ?? DateTime.now(),
                      );
@@ -56,4 +57,24 @@ class DatePickerFormField extends FormField<DateTime> {
            );
          },
        );
+
+  @override
+  FormFieldState<DateTime> createState() => _DatePickerFormFieldState();
+}
+
+class _DatePickerFormFieldState extends FormFieldState<DateTime> {
+  @override
+  void didUpdateWidget(covariant DatePickerFormField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final newValue = widget.initialValue;
+
+    if (newValue != value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          didChange(newValue);
+        }
+      });
+    }
+  }
 }
