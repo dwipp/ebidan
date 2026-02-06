@@ -66,37 +66,6 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-      // floatingActionButton: Column(
-      //   mainAxisSize: MainAxisSize.min,
-      //   children: [
-      //     FloatingActionButton.small(
-      //       heroTag: "complaintWa",
-      //       backgroundColor: context.themeColors.complaintWa,
-      //       onPressed: () {
-      //         final auth = FirebaseAuth.instance.currentUser;
-      //         if (auth == null) return;
-      //         final message =
-      //             "Halo eBidan,\nsaya ${user.nama}\n(UID: ${auth.uid}),\n"
-      //             "ingin menyampaikan keluhan sebagai berikut:\n\n";
-
-      //         final url =
-      //             "https://wa.me/628991904891?text=${Uri.encodeComponent(message)}";
-
-      //         BrowserLauncher.openInApp(url);
-      //       },
-      //       child: const Icon(Icons.feedback, color: Colors.white),
-      //     ),
-      //     SizedBox(height: 4),
-      //     FloatingActionButton.small(
-      //       heroTag: "complaintFab",
-      //       backgroundColor: context.themeColors.complaint,
-      //       onPressed: () {
-      //         BrowserLauncher.openInApp("https://forms.gle/2SR34kx1xjMgA3G27");
-      //       },
-      //       child: const Icon(Icons.feedback, color: Colors.white),
-      //     ),
-      //   ],
-      // ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: Stack(
@@ -231,6 +200,7 @@ class ProfileScreen extends StatelessWidget {
         if (expiry != null) {
           final now = DateTime.now();
           final daysLeft = expiry.difference(now).inDays;
+          final daysLeftInText = Utils.formatSubscriptionRemaining(now, expiry);
 
           descriptionWidget = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,7 +209,7 @@ class ProfileScreen extends StatelessWidget {
                 daysLeft >= 0
                     ? daysLeft == 0
                           ? "Berakhir hari ini"
-                          : "Berakhir dalam $daysLeft hari (${DateFormat('dd MMMM yyyy').format(expiry)})"
+                          : "Berakhir dalam $daysLeftInText (${DateFormat('dd MMMM yyyy').format(expiry)})"
                     : "Berakhir pada: ${DateFormat('dd MMMM yyyy').format(expiry)}",
                 style: textTheme.bodyMedium,
               ),
@@ -273,11 +243,15 @@ class ProfileScreen extends StatelessWidget {
               () {
                 final now = DateTime.now();
                 final daysLeft = expiry.difference(now).inDays;
+                final daysLeftInText = Utils.formatSubscriptionRemaining(
+                  now,
+                  expiry,
+                );
                 String expiryText;
 
                 if (daysLeft > 0) {
                   expiryText =
-                      "Berakhir dalam $daysLeft hari (${DateFormat('dd MMMM yyyy').format(expiry)})";
+                      "Berakhir dalam $daysLeftInText (${DateFormat('dd MMMM yyyy').format(expiry)})";
                 } else if (daysLeft == 0) {
                   expiryText = "Berakhir hari ini";
                 } else {
