@@ -125,6 +125,37 @@ class Utils {
     return months;
   }
 
+  static String formatSubscriptionRemaining(DateTime now, DateTime expiry) {
+    int totalDays = expiry.difference(now).inDays;
+    if (totalDays == 0) {
+      return '0';
+    } else if (totalDays < 0) {
+      return '-';
+    }
+
+    const int daysInYear = 365;
+    const int daysInMonth = 30;
+    const int daysInWeek = 7;
+
+    final parts = <String>[];
+
+    int years = totalDays ~/ daysInYear;
+    totalDays %= daysInYear;
+
+    int months = totalDays ~/ daysInMonth;
+    totalDays %= daysInMonth;
+
+    int weeks = totalDays ~/ daysInWeek;
+    int days = totalDays % daysInWeek;
+
+    if (years > 0) parts.add('$years tahun');
+    if (months > 0) parts.add('$months bulan');
+    if (weeks > 0) parts.add('$weeks minggu');
+    if (days > 0) parts.add('$days hari');
+
+    return parts.take(2).join(' ');
+  }
+
   static void sortByDateTime<T>(
     List<T> list,
     DateTime Function(T item) getDateTime, {
