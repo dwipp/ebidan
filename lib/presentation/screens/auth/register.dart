@@ -96,27 +96,6 @@ class _RegisterState extends State<RegisterScreen> {
     );
   }
 
-  bool _isKoordinator() {
-    return _role.toLowerCase() == 'koordinator';
-  }
-
-  bool _isBidanDesa() {
-    if (_role.toLowerCase() == 'bidan' &&
-        _bidanKind.toLowerCase() == 'bidan desa') {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  String _getKategori() {
-    if (_role.toLowerCase() == 'koordinator') {
-      return _role;
-    } else {
-      return _bidanKind;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return PopScope(
