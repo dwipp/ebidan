@@ -39,28 +39,27 @@ class _IntroScreenState extends State<IntroScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: _slides.length,
-                onPageChanged: (index) {
-                  setState(() => _currentIndex = index);
-                },
-                itemBuilder: (context, index) {
-                  final slide = _slides[index];
-                  return _IntroSlide(slide: slide);
-                },
-              ),
+      extendBodyBehindAppBar: true,
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: _slides.length,
+              onPageChanged: (index) {
+                setState(() => _currentIndex = index);
+              },
+              itemBuilder: (context, index) {
+                final slide = _slides[index];
+                return _IntroSlide(slide: slide);
+              },
             ),
-            _buildIndicator(),
-            const SizedBox(height: 16),
-            _buildButton(context),
-            const SizedBox(height: 24),
-          ],
-        ),
+          ),
+          _buildIndicator(),
+          const SizedBox(height: 16),
+          _buildButton(context),
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }
@@ -124,31 +123,27 @@ class _IntroSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Background image
         Positioned.fill(
           child: Image.asset(slide.background, fit: BoxFit.cover),
         ),
-
-        // Gradient overlay
         Positioned.fill(
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
-                stops: [0.0, 0.35, 0.7],
+                stops: const [0.0, 0.35, 0.7],
                 colors: [
                   context.themeColors.surface,
-                  Color.fromARGB(200, 255, 255, 255),
+                  const Color.fromARGB(200, 255, 255, 255),
                   Colors.transparent,
                 ],
               ),
             ),
           ),
         ),
-
-        // Content
-        Center(
+        SafeArea(
+          bottom: false,
           child: Padding(
             padding: const EdgeInsets.all(32),
             child: Column(
