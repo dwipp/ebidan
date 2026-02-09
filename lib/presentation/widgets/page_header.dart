@@ -7,6 +7,7 @@ class PageHeader extends StatelessWidget implements PreferredSizeWidget {
   final Widget title;
   final List<Widget>? actions;
   final bool hideBackButton;
+  final Widget? leftButton;
   final bool hideNetworkStatus;
 
   const PageHeader({
@@ -14,26 +15,29 @@ class PageHeader extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     this.actions,
     this.hideBackButton = false,
+    this.leftButton,
     this.hideNetworkStatus = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      leading: hideBackButton
-          ? null
-          : GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                if (Navigator.of(context).canPop()) {
-                  Navigator.of(context).maybePop();
-                }
-              },
-              onLongPress: () {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              },
-              child: const Icon(Icons.arrow_back),
-            ),
+      leading:
+          leftButton ??
+          (hideBackButton
+              ? null
+              : GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    if (Navigator.of(context).canPop()) {
+                      Navigator.of(context).maybePop();
+                    }
+                  },
+                  onLongPress: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  child: const Icon(Icons.arrow_back),
+                )),
       title: title,
       actions: [
         if (!hideNetworkStatus)

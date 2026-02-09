@@ -78,9 +78,9 @@ class _RegisterState extends State<RegisterScreen> {
       return;
     }
 
-    if ((_isKoordinator() || _isBidanDesa()) && _selectedPuskesmas == null) {
-      return;
-    }
+    // if ((_isKoordinator() || _isBidanDesa()) && _selectedPuskesmas == null) {
+    //   return;
+    // }
 
     context.read<RegisterCubit>().submitForm(
       nama: _namaController.text,
@@ -103,15 +103,6 @@ class _RegisterState extends State<RegisterScreen> {
   bool _isBidanDesa() {
     if (_role.toLowerCase() == 'bidan' &&
         _bidanKind.toLowerCase() == 'bidan desa') {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  bool _isBPM() {
-    if (_role.toLowerCase() == 'bidan' &&
-        _bidanKind.toLowerCase() == 'praktik mandiri bidan') {
       return true;
     } else {
       return false;
@@ -143,7 +134,7 @@ class _RegisterState extends State<RegisterScreen> {
       },
       child: Scaffold(
         appBar: PageHeader(
-          title: Text("Registrasi"),
+          title: Text("Tentukan Role Anda"),
           hideBackButton: true,
           actions: [
             IconButton(
@@ -162,21 +153,34 @@ class _RegisterState extends State<RegisterScreen> {
             if (state is RegisterSuccess) {
               showDialog(
                 context: context,
-                builder: (_) => AlertDialog(
-                  title: const Text('Sukses'),
-                  content: Text('${_getKategori()} berhasil di registrasi'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          AppRouter.homepage,
-                          (route) => false,
-                        );
-                      },
-                      child: const Text('OK'),
+                barrierDismissible: false,
+                builder: (ctx) => PopScope(
+                  canPop: false,
+                  child: AlertDialog(
+                    title: const Text('Mulai dari 1 Data Ibu Hamil'),
+                    content: const Text(
+                      'Data ini akan menjadi dasar pembuatan laporan otomatis Anda.',
                     ),
-                  ],
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          Navigator.pushNamed(
+                            context,
+                            AppRouter.addBumil,
+                            arguments: {'fromReg': true},
+                          ).then((_) {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              AppRouter.homepage,
+                              (route) => false,
+                            );
+                          });
+                        },
+                        child: const Text('Tambah Ibu Hamil'),
+                      ),
+                    ],
+                  ),
                 ),
               );
             } else if (state is RegisterFailure) {
@@ -188,7 +192,6 @@ class _RegisterState extends State<RegisterScreen> {
             }
           },
           builder: (context, state) {
-            final cubit = context.read<RegisterCubit>();
             final isSubmitting = state is RegisterSubmitting;
 
             return SingleChildScrollView(
@@ -212,25 +215,6 @@ class _RegisterState extends State<RegisterScreen> {
                       textCapitalization: TextCapitalization.words,
                       validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
                     ),
-                    // const SizedBox(height: 12),
-                    // CustomTextField(
-                    //   label: 'No HP',
-                    //   icon: Icons.phone,
-                    //   controller: _noHpController,
-                    //   keyboardType: TextInputType.phone,
-                    //   validator: (val) {
-                    //     final hp = val?.trim();
-                    //     final pattern = RegExp(
-                    //       r'^(\+62|62|0)8[1-9][0-9]{7,11}$',
-                    //     );
-                    //     if (hp == null || hp.isEmpty) {
-                    //       return 'Wajib diisi';
-                    //     } else if (!pattern.hasMatch(hp)) {
-                    //       return 'Format no HP tidak valid';
-                    //     }
-                    //     return null;
-                    //   },
-                    // ),
                     const SizedBox(height: 12),
                     CustomTextField(
                       label: 'Email',
@@ -274,132 +258,6 @@ class _RegisterState extends State<RegisterScreen> {
                         onChanged: (val) => setState(() => _bidanKind = val!),
                       ),
                     ],
-
-                    // const SizedBox(height: 16),
-                    // _buildSectionTitle('Misc'),
-
-                    // if (_bidanKind.toLowerCase() == 'bidan desa' ||
-                    //     _role.toLowerCase() == 'koordinator') ...[
-                    //   CustomTextField(
-                    //     label: 'NIP',
-                    //     icon: Icons.badge,
-                    //     controller: _nipController,
-                    //     validator: (val) => _isBidanDesa() && val!.isEmpty
-                    //         ? 'Wajib diisi'
-                    //         : null,
-                    //   ),
-                    //   const SizedBox(height: 12),
-                    //   Autocomplete<Map<String, dynamic>>(
-                    //     displayStringForOption: (option) =>
-                    //         option['nama'], // tetap simpan nama saja untuk hasil pilihan
-                    //     optionsBuilder: (textEditingValue) async {
-                    //       await cubit.searchPuskesmas(textEditingValue.text);
-                    //       return cubit.puskesmasList;
-                    //     },
-                    //     onSelected: (option) {
-                    //       setState(() {
-                    //         _selectedPuskesmas = option;
-                    //         _puskesmasTextController.text = option['nama'];
-                    //       });
-                    //     },
-                    //     fieldViewBuilder: (context, controller, focusNode, _) {
-                    //       focusNode.addListener(() {
-                    //         if (focusNode.hasFocus) {
-                    //           Future.delayed(Duration(milliseconds: 300), () {
-                    //             Scrollable.ensureVisible(
-                    //               focusNode.context!,
-                    //               duration: const Duration(milliseconds: 400),
-                    //               curve: Curves.easeInOut,
-                    //             );
-                    //           });
-                    //         }
-                    //       });
-                    //       _puskesmasTextController.value = controller.value;
-                    //       return TextFormField(
-                    //         controller: controller,
-                    //         focusNode: focusNode,
-                    //         textCapitalization: TextCapitalization.characters,
-                    //         decoration: InputDecoration(
-                    //           labelText: 'Cari Puskesmas',
-                    //           prefixIcon: const Icon(Icons.local_hospital),
-                    //           suffixIcon: cubit.isSearchLoading
-                    //               ? const SizedBox(
-                    //                   width: 20,
-                    //                   height: 20,
-                    //                   child: Padding(
-                    //                     padding: EdgeInsets.all(10),
-                    //                     child: CircularProgressIndicator(
-                    //                       strokeWidth: 4,
-                    //                     ),
-                    //                   ),
-                    //                 )
-                    //               : null,
-                    //         ),
-                    //         validator: (_) =>
-                    //             (_isKoordinator() || _isBidanDesa()) &&
-                    //                 _selectedPuskesmas == null
-                    //             ? 'Pilih puskesmas'
-                    //             : null,
-                    //       );
-                    //     },
-                    //     optionsViewBuilder: (context, onSelected, options) {
-                    //       return Align(
-                    //         alignment: Alignment.topLeft,
-                    //         child: Material(
-                    //           elevation: 4,
-                    //           child: SizedBox(
-                    //             height: 200,
-                    //             child: ListView.builder(
-                    //               padding: EdgeInsets.zero,
-                    //               itemCount: options.length,
-                    //               itemBuilder: (context, index) {
-                    //                 final option = options.elementAt(index);
-                    //                 return ListTile(
-                    //                   title: Text(
-                    //                     option['nama'],
-                    //                     style: TextStyle(
-                    //                       fontWeight: FontWeight.w500,
-                    //                     ),
-                    //                   ),
-                    //                   subtitle: Text(
-                    //                     '${option['kecamatan'] ?? ''}, ${option['kabupaten'] ?? ''}, ${option['provinsi'] ?? ''}',
-                    //                   ),
-                    //                   onTap: () => onSelected(option),
-                    //                 );
-                    //               },
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       );
-                    //     },
-                    //   ),
-                    //   if (_role.toLowerCase() == 'bidan') ...[
-                    //     const SizedBox(height: 12),
-                    //     CustomTextField(
-                    //       label: 'Desa',
-                    //       icon: Icons.house,
-                    //       controller: _desaController,
-                    //       validator: (val) => _isBidanDesa() && val!.isEmpty
-                    //           ? 'Wajib diisi'
-                    //           : null,
-                    //     ),
-                    //   ],
-                    // ] else ...[
-                    //   CustomTextField(
-                    //     label: 'Nama Praktik',
-                    //     icon: Icons.house_sharp,
-                    //     controller: _namaPraktikController,
-                    //     textCapitalization: TextCapitalization.words,
-                    //     validator: (val) =>
-                    //         _isBPM() && val!.isEmpty ? 'Wajib diisi' : null,
-                    //   ),
-                    //   const SizedBox(height: 12),
-                    //   CustomTextField(
-                    //     label: 'Alamat Praktik',
-                    //     icon: Icons.near_me,
-                    //     controller: _alamatPraktikController,
-                    //   ),
-                    // ],
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,

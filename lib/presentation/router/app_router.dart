@@ -134,7 +134,10 @@ class AppRouter {
           builder: (_) => PilihBumilScreen(pilihState: args['state']),
         );
       case addBumil:
-        return MaterialPageRoute(builder: (_) => AddBumilScreen());
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => AddBumilScreen(isFromRegistration: args['fromReg']),
+        );
       case dataBumil:
         return MaterialPageRoute(builder: (_) => DataBumilScreen());
       case detailBumil:
