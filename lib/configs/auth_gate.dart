@@ -1,7 +1,9 @@
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/common/utility/remote_config_helper.dart';
+import 'package:ebidan/common/utility/user_preferences.dart';
 import 'package:ebidan/presentation/screens/auth/login.dart';
 import 'package:ebidan/presentation/screens/home.dart';
+import 'package:ebidan/presentation/screens/intro/intro.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +17,21 @@ class AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<AuthGate> {
+  bool? _hasSeenIntro;
+
   @override
   void initState() {
     super.initState();
     _requestNotifPermission();
     _checkForceUpdate();
+    _loadIntroStatus();
+  }
+
+  Future<void> _loadIntroStatus() async {
+    final seen = await UserPreferences().getBool(UserPrefs.intro);
+    setState(() {
+      _hasSeenIntro = seen;
+    });
   }
 
   Future<void> _requestNotifPermission() async {
@@ -111,11 +123,22 @@ class _AuthGateState extends State<AuthGate> {
 
         final user = snapshot.data;
 
+        // ❗ PRIORITAS INTRO
+        if (_hasSeenIntro == false) {
+          return const IntroScreen();
+        }
+
         if (user == null) {
           return const LoginScreen();
-        } else {
-          return const HomeScreen();
         }
+
+        return const HomeScreen();
+
+        // if (user == null) {
+        //   return const LoginScreen();
+        // } else {
+        //   return const HomeScreen();
+        // }
       },
     );
   }
