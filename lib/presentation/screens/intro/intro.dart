@@ -1,3 +1,4 @@
+import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/common/utility/user_preferences.dart';
 import 'package:ebidan/configs/auth_gate.dart';
 import 'package:ebidan/presentation/widgets/button.dart';
@@ -14,24 +15,24 @@ class _IntroScreenState extends State<IntroScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
-  final List<_IntroSlideData> _slides = const [
+  final List<_IntroSlideData> _slides = [
     _IntroSlideData(
-      title: 'Masalah',
+      title: 'Lelah Lembur?',
       description:
-          'Pasien sudah pulang.\nBidan masih lembur.\nLaporan menumpuk, waktu keluarga terpotong.',
-      icon: Icons.warning_amber_rounded,
+          'Pasien sudah pulang, tapi laporan menumpuk?\nJangan biarkan waktu istirahatmu tersita.',
+      background: 'assets/images/slide-1.png',
     ),
     _IntroSlideData(
-      title: 'Solusi',
+      title: 'Solusi Cerdas',
       description:
-          'eBidan bantu pencatatan, laporan, dan administrasi\nlangsung dari HP.\nCepat. Rapi. Terintegrasi.',
-      icon: Icons.lightbulb_outline,
+          'eBidan mudahkan pencatatan & laporan langsung dari HP.\nLebih cepat, rapi, dan terintegrasi.',
+      background: 'assets/images/slide-2.png',
     ),
     _IntroSlideData(
-      title: 'Hasil',
+      title: 'Kerja Tenang',
       description:
-          'Laporan beres tepat waktu.\nBidan pulang lebih cepat.\nWaktu untuk keluarga kembali.',
-      icon: Icons.check_circle_outline,
+          'Laporan beres tepat waktu.\nLebih banyak waktu berkualitas bersama keluarga.',
+      background: 'assets/images/slide-3.png',
     ),
   ];
 
@@ -121,25 +122,56 @@ class _IntroSlide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(slide.icon, size: 96, color: Colors.blue),
-          const SizedBox(height: 24),
-          Text(
-            slide.title,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    return Stack(
+      children: [
+        // Background image
+        Positioned.fill(
+          child: Image.asset(slide.background, fit: BoxFit.cover),
+        ),
+
+        // Gradient overlay
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                stops: [0.0, 0.35, 0.7],
+                colors: [
+                  context.themeColors.surface,
+                  Color.fromARGB(200, 255, 255, 255),
+                  Colors.transparent,
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            slide.description,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 16, height: 1.5),
+        ),
+
+        // Content
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              children: [
+                const Spacer(),
+                Text(
+                  slide.title,
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  slide.description,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18, height: 1.5),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -147,11 +179,11 @@ class _IntroSlide extends StatelessWidget {
 class _IntroSlideData {
   final String title;
   final String description;
-  final IconData icon;
+  final String background;
 
   const _IntroSlideData({
     required this.title,
     required this.description,
-    required this.icon,
+    required this.background,
   });
 }
