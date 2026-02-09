@@ -7,7 +7,7 @@ class Button extends StatelessWidget {
   final VoidCallback? onPressed;
   final String label;
   final String loadingLabel;
-  final IconData icon;
+  final IconData? icon;
 
   const Button({
     super.key,
@@ -16,7 +16,7 @@ class Button extends StatelessWidget {
     required this.onPressed,
     required this.label,
     this.loadingLabel = 'Loading...',
-    required this.icon,
+    this.icon,
   });
 
   @override
@@ -32,7 +32,9 @@ class Button extends StatelessWidget {
                 strokeWidth: 2,
               ),
             )
-          : Icon(icon),
+          : icon != null
+          ? Icon(icon)
+          : null,
       label: Text(isSubmitting ? loadingLabel : label),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),

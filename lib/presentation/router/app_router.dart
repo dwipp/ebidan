@@ -50,6 +50,7 @@ import 'package:ebidan/presentation/screens/mode_bidan/bumil/add_bumil.dart';
 
 class AppRouter {
   static const String homepage = '/';
+  static const String intro = '/intro';
   static const String login = '/login';
   static const String register = '/register';
   static const String profile = '/profile';
