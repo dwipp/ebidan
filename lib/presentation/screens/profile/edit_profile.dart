@@ -356,7 +356,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     } else if (state is ProfileFailure) {
                       Snackbar.show(
                         context,
-                        message: 'Gagal: ${state.message}',
+                        message: state.message,
                         type: SnackbarType.error,
                       );
                     }

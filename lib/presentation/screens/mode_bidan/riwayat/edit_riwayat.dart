@@ -331,7 +331,7 @@ class _EditRiwayatBumilState extends State<EditRiwayatBumilScreen> {
                     } else if (state is SubmitRiwayatFailure) {
                       Snackbar.show(
                         context,
-                        message: 'Gagal: ${state.message}',
+                        message: state.message,
                         type: SnackbarType.error,
                       );
                     } else if (state is AddRiwayatEmpty) {

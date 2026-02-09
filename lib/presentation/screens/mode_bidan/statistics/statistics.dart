@@ -1,6 +1,7 @@
 import 'package:ebidan/common/Utils.dart';
 import 'package:ebidan/common/utility/app_colors.dart';
 import 'package:ebidan/common/utility/pdf_helper.dart';
+import 'package:ebidan/data/models/bidan_model.dart';
 import 'package:ebidan/presentation/widgets/menu_button.dart';
 import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
@@ -79,21 +80,11 @@ class StatisticsScreen extends StatelessWidget {
             bottom: 0,
             child: InkWell(
               onTap: () async {
-                try {
-                  final bidan = context.read<UserCubit>().state;
-                  if (bidan == null) {
-                    return;
-                  }
-                  final service = PdfHelper();
-
-                  // await service.generateAndDownload();
-                  await service.generateAndPreview(context, bidan);
-                } catch (e) {
-                  Snackbar.show(
-                    context,
-                    message: 'Gagal: $e',
-                    type: SnackbarType.error,
-                  );
+                final bidan = context.read<UserCubit>().state;
+                if (bidan != null && _isProfileValid(bidan)) {
+                  _afterProfileUpdated(context, bidan);
+                } else {
+                  await _shouldFillBidanInfo(context);
                 }
               },
               child: Container(
@@ -137,5 +128,66 @@ class StatisticsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _shouldFillBidanInfo(BuildContext context) async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Lengkapi Data"),
+        content: const Text(
+          "Agar laporan bisa digunakan secara resmi, mohon lengkapi data Anda.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx, true);
+            },
+            child: const Text("Update Profile"),
+          ),
+        ],
+      ),
+    );
+
+    if (result != true) return;
+    Navigator.pushNamed(context, AppRouter.editProfile);
+  }
+
+  bool _isProfileValid(Bidan bidan) {
+    final kategori = bidan.kategoriBidan?.toLowerCase();
+
+    if (kategori == 'bidan desa') {
+      return _isFilled(bidan.nip) &&
+          _isFilled(bidan.puskesmas) &&
+          _isFilled(bidan.desa);
+    }
+
+    if (kategori == 'praktik mandiri bidan') {
+      return _isFilled(bidan.namaPraktik);
+    }
+
+    return false;
+  }
+
+  bool _isFilled(String? value) {
+    return value != null && value.trim().isNotEmpty;
+  }
+
+  void _afterProfileUpdated(BuildContext context, Bidan bidan) async {
+    try {
+      final service = PdfHelper();
+
+      // await service.generateAndDownload();
+      await service.generateAndPreview(context, bidan);
+    } catch (e) {
+      Snackbar.show(
+        context,
+        message: e is Exception
+            ? e.toString().replaceAll('Exception: ', '')
+            : 'Terjadi kesalahan. Mohon coba kembali.',
+        type: SnackbarType.error,
+      );
+    }
   }
 }

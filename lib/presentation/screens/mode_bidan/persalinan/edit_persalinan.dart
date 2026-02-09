@@ -428,7 +428,7 @@ class _EditPersalinanState extends State<EditPersalinanScreen> {
                         } else if (state is AddPersalinanFailure) {
                           Snackbar.show(
                             context,
-                            message: 'Gagal: ${state.message}',
+                            message: state.message,
                             type: SnackbarType.error,
                           );
                         }

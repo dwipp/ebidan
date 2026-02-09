@@ -487,7 +487,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
                     } else if (state is AddKehamilanFailure) {
                       Snackbar.show(
                         context,
-                        message: 'Gagal: ${state.message}',
+                        message: state.message,
                         type: SnackbarType.error,
                       );
                     }

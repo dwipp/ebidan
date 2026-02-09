@@ -17,7 +17,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ebidan/common/utility/form_validator.dart';
 
 class AddBumilScreen extends StatefulWidget {
-  AddBumilScreen({super.key});
+  final bool isFromRegistration;
+  AddBumilScreen({super.key, required this.isFromRegistration});
 
   @override
   State<AddBumilScreen> createState() => _AddBumilState();
@@ -281,7 +282,25 @@ class _AddBumilState extends State<AddBumilScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PageHeader(title: Text('Tambah Data Bumil')),
+      appBar: PageHeader(
+        title: Text('Tambah Data Bumil'),
+        hideBackButton: widget.isFromRegistration,
+        leftButton: !widget.isFromRegistration
+            ? null
+            : TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'skip',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w200,
+                  ),
+                ),
+              ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
