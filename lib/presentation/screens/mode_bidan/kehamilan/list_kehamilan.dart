@@ -48,7 +48,7 @@ class _ListKehamilanScreenState extends State<ListKehamilanScreen> {
           } else if (state is GetKehamilanFailure) {
             Snackbar.show(
               context,
-              message: 'Gagal: ${state.message}',
+              message: state.message,
               type: SnackbarType.error,
             );
             _expanded = false;

@@ -49,10 +49,15 @@ class LogoutHandler {
 
   /// Proses logout
   static Future<void> _logout(BuildContext context) async {
+    // ambil dependency sebelum async
+    final loginCubit = context.read<LoginCubit>();
+    final userCubit = context.read<UserCubit>();
+    final navigator = Navigator.of(context);
+
     try {
-      // tunggu logout selesai
-      await context.read<LoginCubit>().signOut();
-      await context.read<UserCubit>().clearAll();
+      await loginCubit.signOut();
+      await userCubit.clearAll();
+
       final messaging = FirebaseMessaging.instance;
       await messaging.unsubscribeFromTopic('all');
       await messaging.unsubscribeFromTopic('bidan');
@@ -60,18 +65,11 @@ class LogoutHandler {
       await messaging.unsubscribeFromTopic('pmb');
       await messaging.unsubscribeFromTopic('koordinator');
 
-      // pastikan context masih mounted
       if (!context.mounted) return;
 
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRouter.login,
-        (route) => false, // hapus semua route sebelumnya
-      );
+      navigator.pushNamedAndRemoveUntil(AppRouter.login, (route) => false);
     } catch (e) {
-      // opsional: tampilkan error kalau gagal logout
-      print('Logout error: $e');
-      // Snackbar.show(context, message: 'Gagal logout, coba lagi');
+      debugPrint('Logout error: $e');
     }
   }
 }

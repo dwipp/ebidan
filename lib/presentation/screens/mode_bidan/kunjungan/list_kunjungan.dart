@@ -72,7 +72,7 @@ class _ListKunjunganScreenState extends State<ListKunjunganScreen> {
               } else if (state is GetKunjunganFailure) {
                 Snackbar.show(
                   context,
-                  message: 'Gagal: ${state.message}',
+                  message: state.message,
                   type: SnackbarType.error,
                 );
               }
