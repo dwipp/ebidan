@@ -492,7 +492,7 @@ class _EditKehamilanState extends State<EditKehamilanScreen> {
                     } else if (state is AddKehamilanFailure) {
                       Snackbar.show(
                         context,
-                        message: 'Gagal: ${state.message}',
+                        message: state.message,
                         type: SnackbarType.error,
                       );
                     }

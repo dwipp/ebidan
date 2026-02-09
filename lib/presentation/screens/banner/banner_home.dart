@@ -5,8 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class BannerHome extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onClose;
+  final bool isEmptyData;
 
-  const BannerHome({super.key, required this.onTap, required this.onClose});
+  const BannerHome({
+    super.key,
+    required this.onTap,
+    required this.onClose,
+    required this.isEmptyData,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +28,7 @@ class BannerHome extends StatelessWidget {
           return InkWell(
             borderRadius: BorderRadius.circular(20),
             onTap: () {
-              if (state.content != null) {
+              if (state.content != null || isEmptyData == true) {
                 onTap();
               }
             },
@@ -80,7 +86,9 @@ class BannerHome extends StatelessWidget {
 
                       // TITLE
                       Text(
-                        state.title,
+                        isEmptyData
+                            ? 'Mulai Input Data Ibu Hamil'
+                            : state.title,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -92,7 +100,9 @@ class BannerHome extends StatelessWidget {
 
                       // SUBTITLE
                       Text(
-                        normalizeNewLine(state.subtitle),
+                        isEmptyData
+                            ? 'Input data sekarang agar laporan siap di awal bulan.'
+                            : normalizeNewLine(state.subtitle),
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
                           fontSize: 14,
@@ -101,7 +111,7 @@ class BannerHome extends StatelessWidget {
                       ),
 
                       // CTA
-                      if (state.content != null) ...[
+                      if (state.content != null || isEmptyData == true) ...[
                         const SizedBox(height: 16),
                         Row(
                           children: [
@@ -115,7 +125,9 @@ class BannerHome extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                'Baca Selengkapnya',
+                                isEmptyData
+                                    ? 'Tambah Ibu Hamil'
+                                    : 'Baca Selengkapnya',
                                 style: TextStyle(
                                   color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.bold,
