@@ -3,8 +3,11 @@ import 'package:ebidan/presentation/widgets/button.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/presentation/widgets/snack_bar.dart';
 import 'package:ebidan/presentation/widgets/textfield.dart';
+import 'package:ebidan/state_management/access_code/cubit/check_access_code_cubit.dart';
 import 'package:ebidan/state_management/auth/cubit/register_cubit.dart';
 import 'package:ebidan/state_management/general/cubit/back_press_cubit.dart';
+import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
+import 'package:ebidan/state_management/access_code/cubit/access_code_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +23,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _namaController = TextEditingController();
+  final _kodeController = TextEditingController();
   final _nipController = TextEditingController();
   final _noHpController = TextEditingController();
   final _emailController = TextEditingController();
@@ -55,6 +59,7 @@ class _RegisterState extends State<RegisterScreen> {
     _noHpController.dispose();
     _nipController.dispose();
     _namaController.dispose();
+    _kodeController.dispose();
     _namaPraktikController.dispose();
     _alamatPraktikController.dispose();
     super.dispose();
@@ -82,18 +87,14 @@ class _RegisterState extends State<RegisterScreen> {
     //   return;
     // }
 
-    context.read<RegisterCubit>().submitForm(
-      nama: _namaController.text,
-      nip: _nipController.text,
-      noHp: _noHpController.text,
-      email: _emailController.text,
-      role: _role,
-      desa: _desaController.text,
-      selectedPuskesmas: _selectedPuskesmas,
-      bidanKind: _bidanKind,
-      namaPraktik: _namaPraktikController.text,
-      alamatPraktik: _alamatPraktikController.text,
-    );
+    if (_kodeController.text.isNotEmpty) {
+      context.read<CheckAccessCodeCubit>().checkAccessCode(
+        _kodeController.text,
+        connectivity: context.read<ConnectivityCubit>().state,
+      );
+    } else {
+      _submitRegistration();
+    }
   }
 
   @override
@@ -127,134 +128,260 @@ class _RegisterState extends State<RegisterScreen> {
             ),
           ],
         ),
-        body: BlocConsumer<RegisterCubit, RegisterState>(
-          listener: (context, state) {
-            if (state is RegisterSuccess) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (ctx) => PopScope(
-                  canPop: false,
-                  child: AlertDialog(
-                    title: const Text('Mulai dari 1 Data Ibu Hamil'),
-                    content: const Text(
-                      'Data ini akan menjadi dasar pembuatan laporan otomatis Anda.',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                          Navigator.pushNamed(
-                            context,
-                            AppRouter.addBumil,
-                            arguments: {'fromReg': true},
-                          ).then((_) {
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              AppRouter.homepage,
-                              (route) => false,
-                            );
-                          });
-                        },
-                        child: const Text('Tambah Ibu Hamil'),
+        body: MultiBlocListener(
+          listeners: [
+            BlocListener<CheckAccessCodeCubit, CheckAccessCodeState>(
+              listener: (context, state) {
+                if (state is CheckAccessCodeSuccess) {
+                  _submitRegistration();
+                } else if (state is CheckAccessCodeFailure) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (ctx) => PopScope(
+                      canPop: false,
+                      child: AlertDialog(
+                        title: Text('Oops!'),
+                        content: Text(state.message),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              Future.microtask(() {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                              });
+                              _kodeController.text = '';
+                              _submitRegistration();
+                            },
+                            child: const Text('Lanjut tanpa kode akses'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                            },
+                            child: const Text('Ganti kode akses'),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                }
+              },
+            ),
+            BlocListener<RegisterCubit, RegisterState>(
+              listener: (context, state) {
+                if (state is RegisterSuccess) {
+                  if (_kodeController.text.isNotEmpty) {
+                    context.read<AccessCodeCubit>().redeemAccessCode(
+                      _kodeController.text,
+                      connectivity: context.read<ConnectivityCubit>().state,
+                    );
+                  } else {
+                    _showIbuHamilDialog();
+                  }
+                } else if (state is RegisterFailure) {
+                  Snackbar.show(
+                    context,
+                    message: state.message,
+                    type: SnackbarType.error,
+                  );
+                }
+              },
+            ),
+            BlocListener<AccessCodeCubit, AccessCodeState>(
+              listener: (context, state) {
+                if (state is AccessCodeSuccess) {
+                  _showIbuHamilDialog();
+                } else if (state is AccessCodeFailure) {
+                  Snackbar.show(
+                    context,
+                    message: state.message,
+                    type: SnackbarType.error,
+                  );
+                }
+              },
+            ),
+          ],
+          child: BlocBuilder<RegisterCubit, RegisterState>(
+            builder: (context, state) {
+              final isRegisterSubmitting = state is RegisterSubmitting;
+
+              final isCheckSubmitting = context
+                  .select<CheckAccessCodeCubit, bool>(
+                    (cubit) => cubit.state is CheckAccessCodeLoading,
+                  );
+
+              final isRedeemSubmitting = context.select<AccessCodeCubit, bool>(
+                (cubit) => cubit.state is AccessCodeLoading,
               );
-            } else if (state is RegisterFailure) {
-              Snackbar.show(
-                context,
-                message: state.message,
-                type: SnackbarType.error,
-              );
-            }
-          },
-          builder: (context, state) {
-            final isSubmitting = state is RegisterSubmitting;
 
-            return SingleChildScrollView(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    if (user?.photoURL != null)
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundImage: NetworkImage(user!.photoURL!),
+              final isSubmitting =
+                  isRegisterSubmitting ||
+                  isCheckSubmitting ||
+                  isRedeemSubmitting;
+              String whichProcess = 'register';
+              if (isCheckSubmitting) whichProcess = 'checkCode';
+              if (isRedeemSubmitting) whichProcess = 'redeemCode';
+              if (isRegisterSubmitting) whichProcess = 'register';
+
+              return SingleChildScrollView(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      if (user?.photoURL != null)
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundImage: NetworkImage(user!.photoURL!),
+                        ),
+                      const SizedBox(height: 12),
+                      _buildSectionTitle('Data Pribadi'),
+                      CustomTextField(
+                        label: 'Nama Lengkap',
+                        icon: Icons.person,
+                        controller: _namaController,
+                        textCapitalization: TextCapitalization.words,
+                        validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
                       ),
-                    const SizedBox(height: 12),
-                    _buildSectionTitle('Data Pribadi'),
-                    CustomTextField(
-                      label: 'Nama Lengkap',
-                      icon: Icons.person,
-                      controller: _namaController,
-                      textCapitalization: TextCapitalization.words,
-                      validator: (val) => val!.isEmpty ? 'Wajib diisi' : null,
-                    ),
-                    const SizedBox(height: 12),
-                    CustomTextField(
-                      label: 'Email',
-                      icon: Icons.email,
-                      controller: _emailController,
-                      textCapitalization: TextCapitalization.none,
-                      keyboardType: TextInputType.emailAddress,
-                      readOnly: true,
-                    ),
-
-                    const SizedBox(height: 16),
-                    _buildSectionTitle('Role'),
-                    DropdownButtonFormField<String>(
-                      value: _role,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.assignment_ind),
+                      const SizedBox(height: 12),
+                      CustomTextField(
+                        label: 'Email',
+                        icon: Icons.email,
+                        controller: _emailController,
+                        textCapitalization: TextCapitalization.none,
+                        keyboardType: TextInputType.emailAddress,
+                        readOnly: true,
                       ),
-                      items: ['Bidan'].map((role) {
-                        //, 'Koordinator'
-                        return DropdownMenuItem(value: role, child: Text(role));
-                      }).toList(),
-                      onChanged: (val) => setState(() => _role = val!),
-                    ),
 
-                    if (_role.toLowerCase() == 'bidan') ...[
                       const SizedBox(height: 16),
-                      _buildSectionTitle('Kategori Bidan'),
+                      _buildSectionTitle('Role'),
                       DropdownButtonFormField<String>(
-                        value: _bidanKind,
+                        value: _role,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.assignment_ind),
                         ),
-                        items: ['Bidan Desa', 'Praktik Mandiri Bidan'].map((
-                          role,
-                        ) {
+                        items: ['Bidan'].map((role) {
+                          //, 'Koordinator'
                           return DropdownMenuItem(
                             value: role,
                             child: Text(role),
                           );
                         }).toList(),
-                        onChanged: (val) => setState(() => _bidanKind = val!),
+                        onChanged: (val) => setState(() => _role = val!),
+                      ),
+
+                      if (_role.toLowerCase() == 'bidan') ...[
+                        const SizedBox(height: 16),
+                        _buildSectionTitle('Kategori Bidan'),
+                        DropdownButtonFormField<String>(
+                          value: _bidanKind,
+                          decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.assignment_ind),
+                          ),
+                          items: ['Bidan Desa', 'Praktik Mandiri Bidan'].map((
+                            role,
+                          ) {
+                            return DropdownMenuItem(
+                              value: role,
+                              child: Text(role),
+                            );
+                          }).toList(),
+                          onChanged: (val) => setState(() => _bidanKind = val!),
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      _buildSectionTitle('Punya Kode Akses?'),
+                      CustomTextField(
+                        label: 'Kode Akses',
+                        icon: Icons.vpn_key,
+                        controller: _kodeController,
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Button(
+                          isSubmitting: isSubmitting,
+                          onPressed: () => _submitForm(context),
+                          label: 'Simpan',
+                          loadingLabel: _loadingLabel(
+                            whichProcess: whichProcess,
+                          ),
+                          icon: Icons.check,
+                        ),
                       ),
                     ],
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Button(
-                        isSubmitting: isSubmitting,
-                        onPressed: () => _submitForm(context),
-                        label: 'Simpan',
-                        loadingLabel: 'Menyimpan...',
-                        icon: Icons.check,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
+    );
+  }
+
+  String _loadingLabel({required String whichProcess}) {
+    switch (whichProcess) {
+      case 'checkCode':
+        return 'Cek kode akses...';
+      case 'redeemCode':
+        return 'Redeem kode akses...';
+      case 'register':
+        return 'Registrasi...';
+      default:
+        return 'Menyimpan...';
+    }
+  }
+
+  void _showIbuHamilDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => PopScope(
+        canPop: false,
+        child: AlertDialog(
+          title: const Text('Mulai dari 1 Data Ibu Hamil'),
+          content: const Text(
+            'Data ini akan menjadi dasar pembuatan laporan otomatis Anda.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.addBumil,
+                  arguments: {'fromReg': true},
+                ).then((_) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    AppRouter.homepage,
+                    (route) => false,
+                  );
+                });
+              },
+              child: const Text('Tambah Ibu Hamil'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _submitRegistration() {
+    context.read<RegisterCubit>().submitForm(
+      nama: _namaController.text,
+      nip: _nipController.text,
+      noHp: _noHpController.text,
+      email: _emailController.text,
+      role: _role,
+      desa: _desaController.text,
+      selectedPuskesmas: _selectedPuskesmas,
+      bidanKind: _bidanKind,
+      namaPraktik: _namaPraktikController.text,
+      alamatPraktik: _alamatPraktikController.text,
     );
   }
 }

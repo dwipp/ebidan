@@ -5,7 +5,7 @@ import 'package:ebidan/presentation/router/app_router.dart';
 import 'package:ebidan/presentation/widgets/logout_handler.dart';
 import 'package:ebidan/presentation/widgets/page_header.dart';
 import 'package:ebidan/state_management/general/cubit/connectivity_cubit.dart';
-import 'package:ebidan/state_management/profile/cubit/access_code_cubit.dart';
+import 'package:ebidan/state_management/access_code/cubit/access_code_cubit.dart';
 import 'package:ebidan/state_management/profile/cubit/profile_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
