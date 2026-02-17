@@ -47,6 +47,16 @@ class CheckAccessCodeCubit extends Cubit<CheckAccessCodeState> {
         return;
       }
 
+      final redemptionRef = codeRef.collection('redemptions').doc(uid);
+      final redemptionSnap = await redemptionRef.get();
+
+      if (redemptionSnap.exists) {
+        emit(
+          const CheckAccessCodeFailure('Kode ini sudah pernah Anda gunakan'),
+        );
+        return;
+      }
+
       if (accessCode.redeemedCount >= accessCode.maxRedemptions) {
         emit(const CheckAccessCodeFailure('Kuota penggunaan kode telah habis'));
         return;
