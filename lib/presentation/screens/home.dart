@@ -220,11 +220,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                           return BannerHome(
                                             onTap: () {
                                               if (state.filteredList.isEmpty) {
-                                                Navigator.pushNamed(
-                                                  context,
-                                                  AppRouter.addBumil,
-                                                  arguments: {'fromReg': false},
-                                                );
+                                                if (FirebaseAuth
+                                                            .instance
+                                                            .currentUser !=
+                                                        null &&
+                                                    user == null) {
+                                                  _shouldRegister(context);
+                                                } else {
+                                                  Navigator.pushNamed(
+                                                    context,
+                                                    AppRouter.addBumil,
+                                                    arguments: {
+                                                      'fromReg': false,
+                                                    },
+                                                  );
+                                                }
                                               } else {
                                                 Navigator.pushNamed(
                                                   context,
