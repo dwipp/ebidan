@@ -40,7 +40,7 @@ class StatisticsScreen extends StatelessWidget {
                 ),
                 MenuButton(
                   icon: Icons.health_and_safety,
-                  title: 'Resti',
+                  title: 'Risti',
                   onTap: () {
                     Navigator.pushNamed(
                       context,

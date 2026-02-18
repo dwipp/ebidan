@@ -267,7 +267,7 @@ class _PendataanKehamilanState extends State<AddKehamilanScreen> {
               const SizedBox(height: 12),
               DropdownField(
                 key: _fieldKeys['statusResti'],
-                label: 'Status Resti',
+                label: 'Status Risti',
                 icon: Icons.person,
                 items: _statusRestiList,
                 value: _selectedStatusResti,

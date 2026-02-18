@@ -101,7 +101,7 @@ class RingkasanBumilScreen extends StatelessWidget {
                 ),
               Utils.generateRowLabelValue(
                 context,
-                label: "Resti",
+                label: "Risti",
                 value: bumil?.latestKehamilan?.statusResti,
               ),
               Utils.generateRowLabelValue(

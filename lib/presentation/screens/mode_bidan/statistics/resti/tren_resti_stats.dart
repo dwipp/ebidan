@@ -13,18 +13,18 @@ class TrenRestiStatsScreen extends StatelessWidget {
     final statistic = context.read<StatisticCubit>().state.statistic!;
 
     return TrenStatsScreen(
-      title: "Tren Resti",
+      title: "Tren Risti",
       monthKeys: monthKeys,
       dataGetter: (key) => statistic.byMonth[key],
       indicators: [
         TrenIndicator(
-          label: "Resti Nakes",
-          color: Utils.generateDistinctColor('Resti Nakes'),
+          label: "Risti Nakes",
+          color: Utils.generateDistinctColor('Risti Nakes'),
           valueGetter: (data) => data.resti.restiNakes,
         ),
         TrenIndicator(
-          label: "Resti Masyarakat",
-          color: Utils.generateDistinctColor('Resti Masyarakat'),
+          label: "Risti Masyarakat",
+          color: Utils.generateDistinctColor('Risti Masyarakat'),
           valueGetter: (data) => data.resti.restiMasyarakat,
         ),
         TrenIndicator(

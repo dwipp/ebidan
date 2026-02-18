@@ -121,7 +121,7 @@ class DetailKehamilanScreen extends StatelessWidget {
                     ),
                     Utils.generateRowLabelValue(
                       context,
-                      label: "Status Resti",
+                      label: "Status Risti",
                       value: kehamilan.statusResti,
                     ),
                     Utils.generateRowLabelValue(
@@ -204,7 +204,7 @@ class DetailKehamilanScreen extends StatelessWidget {
 
                     const SizedBox(height: 16),
                     const Text(
-                      "Resti",
+                      "Risti",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

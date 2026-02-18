@@ -23,13 +23,13 @@ class RestiStatsScreen extends StatelessWidget {
 
     final List<Map<String, dynamic>> kategori = [
       {
-        "label": "Resti Nakes",
+        "label": "Risti Nakes",
         "value": selectedResti?.restiNakes,
         'cross': 1,
         'main': 1,
       },
       {
-        "label": "Resti Masyarakat",
+        "label": "Risti Masyarakat",
         "value": selectedResti?.restiMasyarakat,
         'cross': 2,
         'main': 1,
@@ -96,7 +96,7 @@ class RestiStatsScreen extends StatelessWidget {
         crossAxisCellCount: 3,
         mainAxisCellCount: 1,
         child: AnimatedDataCard(
-          label: "Total Resti (pasien)",
+          label: "Total Risti (pasien)",
           value: selectedResti?.totalResti ?? 0,
           isTotal: true,
           icon: Icons.bar_chart,
@@ -117,17 +117,17 @@ class RestiStatsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: PageHeader(
-        title: Text('Stats Resti'),
+        title: Text('Stats Risti'),
         actions: [
           InfoButtonBar(
-            title: 'Tentang Statistik Resti',
+            title: 'Tentang Statistik Risti',
             contentSpans: [
               const TextSpan(
                 text:
-                    'Statistik Resti digunakan untuk menampilkan jumlah ibu hamil yang memiliki faktor risiko tinggi (RESTI) berdasarkan berbagai kategori.\n\n',
+                    'Statistik Risti digunakan untuk menampilkan jumlah ibu hamil yang memiliki faktor risiko tinggi (RISTI) berdasarkan berbagai kategori.\n\n',
               ),
               const TextSpan(
-                text: '• Resti Nakes: ',
+                text: '• Risti Nakes: ',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const TextSpan(
@@ -135,7 +135,7 @@ class RestiStatsScreen extends StatelessWidget {
                     'Ibu hamil yang dikategorikan risiko tinggi oleh tenaga kesehatan berdasarkan hasil pemeriksaan medis.\n\n',
               ),
               const TextSpan(
-                text: '• Resti Masyarakat: ',
+                text: '• Risti Masyarakat: ',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const TextSpan(

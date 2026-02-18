@@ -13,10 +13,10 @@ class ListRestiStatsScreen extends StatelessWidget {
         context.read<StatisticCubit>().state.statistic?.byMonth ?? {};
 
     return ListStatsScreen(
-      title: "Statistik Resti",
+      title: "Statistik Risti",
       dataMap: statsMap,
       routeName: AppRouter.restiStats,
-      subtitleBuilder: (key, value) => "Total resti: ${value.resti.totalResti}",
+      subtitleBuilder: (key, value) => "Total risti: ${value.resti.totalResti}",
       leadingIcon: Icons.health_and_safety,
     );
   }
