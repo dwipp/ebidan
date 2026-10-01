@@ -1,3 +1,4 @@
+import 'package:ebidan/presentation/screens/mode_bidan/kunjungan_nifas/add_kunj_nifas.dart';
 import 'package:ebidan/presentation/screens/mode_koordinator/bidan/list_bidan.dart';
 import 'package:ebidan/presentation/screens/profile/edit_profile.dart';
 import 'package:ebidan/presentation/screens/profile/profile.dart';
@@ -86,6 +87,8 @@ class AppRouter {
   static const String detailPersalinan = '/detailpersalinan';
   static const String listPersalinan = '/listpersalinan';
   static const String editPersalinan = '/editpersalinan';
+
+  static const String addKunjNifas = '/addkunjnifas';
 
   // subs
   static const String subs = '/subscription';
@@ -212,6 +215,11 @@ class AppRouter {
         );
       case editPersalinan:
         return MaterialPageRoute(builder: (_) => EditPersalinanScreen());
+      case addKunjNifas:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => KunjunganNifasScreen(firstTime: args['firstTime']),
+        );
       case subs:
         return MaterialPageRoute(builder: (_) => SubscriptionScreen());
       case subsStatus:

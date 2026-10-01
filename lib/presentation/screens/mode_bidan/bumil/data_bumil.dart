@@ -65,8 +65,11 @@ class DataBumilScreen extends StatelessWidget {
                   (bumil?.latestKehamilanId == null ||
                       bumil?.latestKehamilanPersalinan == true)
                   ?
-                    // kehamilan baru
-                    _showKehamilanBaru(context)
+                    // CEK APAKAH BARU SAJA MELAHIRKAN.
+                    // TENTUKAN JARAK NIFAS SAMPAI KE KEHAMILAN BARU (42 hari)
+                    // JIKA BARU MELAHIRKAN, TAMPILKAN KUNJUNGAN NIFAS
+                    // JIKA SUDAH LAMA MELAHIRKAN ATAU BELUM ADA RIWAYAT, TAMPILKAN KEHAMILAN BARU
+                    _noKehamilan(context, bumil)
                   : Row(
                       children: [
                         if (!bumil!.latestKehamilanKunjungan) ...[
@@ -139,6 +142,24 @@ class DataBumilScreen extends StatelessWidget {
     );
   }
 
+  Widget _noKehamilan(BuildContext context, Bumil? bumil) {
+    final persalinanDate = bumil?.latestKehamilan?.persalinan?[0].createdAt;
+
+    if (persalinanDate == null) {
+      return _showKehamilanBaru(context);
+    }
+
+    final sixWeeksAfterPersalinan = persalinanDate.add(
+      const Duration(days: 42),
+    );
+
+    if (DateTime.now().isAfter(sixWeeksAfterPersalinan)) {
+      return _showKehamilanBaru(context);
+    } else {
+      return _showKunjunganNifas(context);
+    }
+  }
+
   Widget _showKehamilanBaru(BuildContext context) {
     return InkWell(
       onTap: () {
@@ -205,6 +226,46 @@ class DataBumilScreen extends StatelessWidget {
                 ),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _showKunjunganNifas(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.pushNamed(context, AppRouter.addKunjNifas);
+      },
+      child: Container(
+        height: 60,
+        color: context.themeColors.primary,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Kiri: Icon + Text
+            Row(
+              children: const [
+                Icon(
+                  Icons.baby_changing_station_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  "Kunjungan Nifas",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+              ],
+            ),
+
+            // Kanan: Chevron
+            const Icon(Icons.chevron_right, color: Colors.white, size: 28),
           ],
         ),
       ),

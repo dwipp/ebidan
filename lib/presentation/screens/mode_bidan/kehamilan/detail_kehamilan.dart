@@ -87,7 +87,21 @@ class DetailKehamilanScreen extends StatelessWidget {
                         }
                       },
                     ),
-
+                    // === Nifas ===
+                    MenuButton(
+                      icon: Icons.child_friendly_outlined,
+                      title: 'Nifas',
+                      enabled: kehamilan.kunjungan,
+                      onTap: () {
+                        if (kehamilan.id != null) {
+                          // Navigator.pushNamed(
+                          //   context,
+                          //   AppRouter.listKunjungan,
+                          //   arguments: {'docId': kehamilan.id},
+                          // );
+                        }
+                      },
+                    ),
                     const SizedBox(height: 16),
                     const Text(
                       "Data Kehamilan",
